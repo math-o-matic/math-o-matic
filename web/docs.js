@@ -1,7 +1,7 @@
 docs = {
 	simpleTypes: {
 		St: {
-			description: '문장 타입. 기본으로 제공되므로 정의하면 안 된다.'
+			description: '문장 타입. 정의하지 않으면 에러가 난다.'
 		},
 		Class: {
 			description: '클래스 타입'
@@ -52,8 +52,14 @@ docs = {
 				return `\\left(${args[0].toTeXString()} \\in ${args[1].toTeXString()} \\right)`
 			}
 		},
+		eq: {
+			description: '= 연산자.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()} = ${args[1].toTeXString()} \\right)`
+			}
+		},
 		notin: {
-			description: 'notin',
+			description: '간단한 notin 함수.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()} \\notin ${args[1].toTeXString()} \\right)`
 			}
@@ -82,10 +88,13 @@ docs = {
 			description: 'universal instantiation.'
 		},
 		einst: {
-			description: 'existential instantiation. 사실 instantiation을 하지는 않으나 동등한 표현력을 가진다.'
+			description: 'existential instantiation. 사실 instantiation을 하지는 않으나 동등한 표현력을 가질 것으로 보인다.'
 		},
 		exists: {
 			description: '지목할 수 있으면 존재한다는 의미. uinst와 합치면 ∀f |- ∃f가 될 것도 같으나 어떤 Class x가 있어야 한다.'
+		},
+		spec: {
+			description: 'axiom schema of specification. ZFC 공리계의 공리.'
 		}
 	},
 	links: {

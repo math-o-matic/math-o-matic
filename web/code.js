@@ -1,5 +1,7 @@
 code = `
 # propositional calculus
+typedef St;
+
 defun St implies(St p, St q);
 
 defun St not(St p);
@@ -46,6 +48,16 @@ defrule exists([Class -> St] f, Class x) =>
 
 defun St in(Class a, Class b);
 
+defun St eq(Class x, Class y) =>
+	and(
+		forall((Class z) =>
+			iff(in(z, x), in(z, y))
+		),
+		forall((Class w) =>
+			iff(in(x, w), in(y, w))
+		)
+	);
+
 defun St notin(Class a, Class b) =>
 	not(in(a, b));
 
@@ -54,7 +66,18 @@ defun St setbuildereq(Class x, Class y, [Class -> St] f) =>
 		iff(in(z, x), and(in(z, y), f(z)))
 	);
 
-defrule spe([Class -> St] p) =>
+defrule ext(Class x, Class y) =>
+	|- implies(
+		forall((Class z) =>
+			iff(
+				in(z, x),
+				in(z, y)
+			)
+		),
+		eq(x, y)
+	);
+
+defrule spec([Class -> St] p) =>
 	|-
 	forall((Class z) =>
 		exists((Class y) =>
@@ -63,7 +86,7 @@ defrule spe([Class -> St] p) =>
 	);
 
 deflink uinstspe([Class -> St] f, Class c) =>
-	spe(f) ~ uinst((Class z) =>
+	spec(f) ~ uinst((Class z) =>
 			exists((Class y) => setbuildereq(y, z, f)
 		),
 		c

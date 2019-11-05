@@ -23,6 +23,10 @@
 				border-radius: 3px;
 				margin: 1em 0;
 			}
+
+			.label {
+				margin-top: 0;
+			}
 		</style>
 	</head>
 	<body style="font-family: monospace;">
@@ -92,11 +96,12 @@
 
 					$('#simple-types').innerHTML +=
 						`<div class="block">`
+						+ `<p class="label"><b>Type</b> ${k}</p>`
 						+ `<div>${katex.renderToString(v.toTeXString())}</div>`
 						+ (
 							docs.simpleTypes && docs.simpleTypes[k] && docs.simpleTypes[k].description
 							? `<p class="description">${escapeHtml(docs.simpleTypes[k].description)}</p>`
-							: ''
+							: '<p class="description"><i>No description provided.</i></p>'
 						)
 						+ `<pre>${escapeHtml(v)}</pre>`
 						+ `</div>`;
@@ -107,11 +112,12 @@
 
 					$('#typevars').innerHTML +=
 						`<div class="block">`
+						+ `<p class="label"><b>Typevar</b> ${k}</p>`
 						+ `<div>${katex.renderToString(v.toTeXString())}</div>`
 						+ (
 							docs.typevars && docs.typevars[k] && docs.typevars[k].description
 							? `<p class="description">${escapeHtml(docs.typevars[k].description)}</p>`
-							: ''
+							: '<p class="description"><i>No description provided.</i></p>'
 						)
 						+ `<pre>${escapeHtml(v)}</pre>`
 						+ `</div>`;
@@ -122,11 +128,12 @@
 
 					$('#rules').innerHTML +=
 						`<div class="block">`
+						+ `<p class="label"><b>Rule</b> ${k}</p>`
 						+ `<div>${katex.renderToString(v.toTeXString())}</div>`
 						+ (
 							docs.rules && docs.rules[k] && docs.rules[k].description
 							? `<p class="description">${escapeHtml(docs.rules[k].description)}</p>`
-							: ''
+							: '<p class="description"><i>No description provided.</i></p>'
 						)
 						+ `<pre>${escapeHtml(v)}</pre>`
 						+ `</div>`;
@@ -135,13 +142,14 @@
 				for (var k in program.scope.linkMap) {
 					var v = program.scope.linkMap[k];
 
-					$('#rules').innerHTML +=
+					$('#links').innerHTML +=
 						`<div class="block">`
+						+ `<p class="label"><b>Link</b> ${k}</p>`
 						+ `<div>${katex.renderToString(v.toTeXString())}</div>`
 						+ (
 							docs.links && docs.links[k] && docs.links[k].description
 							? `<p class="description">${escapeHtml(docs.links[k].description)}</p>`
-							: ''
+							: '<p class="description"><i>No description provided.</i></p>'
 						)
 						+ `<pre>${escapeHtml(v)}</pre>`
 						+ `</div>`;
