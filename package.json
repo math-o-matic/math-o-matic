@@ -1,0 +1,32 @@
+{
+  "name": "m42-math",
+  "version": "0.1.0",
+  "description": "Yet another proof checker in JavaScript",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/logico-philosophical/m42-math.git"
+  },
+  "bugs": {
+    "url": "http://github.com/logico-philosophical/m42-math/issues"
+  },
+  "main": "src/entry.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "nodemon": "nodemon -e * --watch src/ --exec \"npm run build\"",
+    "build": "pegjs -o dist/parser.js src/parser.pegjs && webpack"
+  },
+  "keywords": [],
+  "author": {
+    "name": "logico-philosophical",
+    "url": "http://github.com/logico-philosophical",
+    "email": "ossia@korea.ac.kr"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "katex": "^0.11.1",
+    "nodemon": "^1.19.4",
+    "pegjs": "^0.10.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
+}
