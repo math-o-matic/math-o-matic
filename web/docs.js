@@ -93,13 +93,26 @@ docs = {
 		exists: {
 			description: '지목할 수 있으면 존재한다는 의미. uinst와 합치면 ∀f |- ∃f가 될 것도 같으나 어떤 Class x가 있어야 한다.'
 		},
+		ext: {
+			description: 'axiom of extensionality. ZFC 공리계의 공리.'
+		},
 		spec: {
 			description: 'axiom schema of specification. ZFC 공리계의 공리.'
-		}
-	},
-	links: {
-		li1: {
-			description: '...'
+		},
+		spec_uinst: {
+			description: 'spec이랑 uinst를 합친 것.'
+		},
+		mp2: {
+			description: 'Metamath에 있는 mp2.'
+		},
+		mp2b: {
+			description: 'Metamath에 있는 mp2b.'
+		},
+		a1i: {
+			description: 'Metamath에 있는 a1i.'
+		},
+		mp1i: {
+			description: 'Metamath에 있는 mp1i.'
 		}
 	}
 };

@@ -1,8 +1,8 @@
+var Node = require('./Node');
 var Type = require('./Type');
 var Typevar = require('./Typevar');
 var Fun = require('./Fun');
 var Funcall = require('./Funcall');
-var Rule = require('./Rule');
 
 function Rulecall({rule, args}) {
 	this._type = 'rulecall';
@@ -11,6 +11,9 @@ function Rulecall({rule, args}) {
 	this.rule = rule;
 	this.args = args;
 }
+
+Rulecall.prototype = Object.create(Node.prototype);
+Rulecall.prototype.constructor = Rulecall;
 
 Rulecall.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -48,7 +51,7 @@ Rulecall.prototype.toIndentedString = function (indent) {
 }
 
 Rulecall.prototype.toTeXString = function () {
-	return `\\mathrm{${this.rule.name}}(${this.args.map(e => e.toTeXString()).join(', ')})`
+	return `\\textsf{${this.escapeTeX(this.rule.name)}}(${this.args.map(e => e.toTeXString()).join(', ')})`
 }
 
 module.exports = Rulecall;

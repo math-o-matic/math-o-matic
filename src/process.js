@@ -7,10 +7,9 @@ var Funcall = require('./nodes/Funcall');
 var Rule = require('./nodes/Rule');
 var Yield = require('./nodes/Yield');
 var Rulecall = require('./nodes/Rulecall');
-var Link = require('./nodes/Link');
 
 var Translator = require('./Translator');
-Translator.init({Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall, Link});
+Translator.init({Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall});
 
 function Program(start) {
 	this.scope = new Scope(null);
@@ -28,9 +27,6 @@ function Program(start) {
 				break;
 			case 'defrule':
 				this.scope.addRule(line);
-				break;
-			case 'deflink':
-				this.scope.addLink(line);
 				break;
 			default:
 				throw Error(`Unknown line type ${line._type}`);

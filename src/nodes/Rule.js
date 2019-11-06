@@ -1,15 +1,43 @@
+var Node = require('./Node');
 var Type = require('./Type');
 var Typevar = require('./Typevar');
 var Fun = require('./Fun');
 var Funcall = require('./Funcall');
+var Yield = require('./Yield');
+var Rulecall = require('./Rulecall');
 
-function Rule({name, params, expr}) {
-	this._type = 'rule';
+var Translator = require('../Translator');
+
+function Rule({name, params, rules}) {
+	this._type = 'link';
 	
 	this.name = name;
 	this.params = params;
-	this.expr = expr;
+	this.rules = rules;
+
+	// all yields
+	var expands = this.rules.map(Translator.expand1);
+
+	this.expr = expands.reduce((l, r) => {
+		for (var i = 0; i < r.left.length; i++) {
+			if (Translator.expr0Equals(l.right, r.left[i])) {
+				var newleft = r.left.slice(0, i)
+					.concat(l.left)
+					.concat(r.left.slice(i + 1));
+
+				return new Yield({
+					left: newleft.map(Translator.expand0Funcalls),
+					right: Translator.expand0Funcalls(r.right)
+				});
+			}
+		}
+
+		throw Error(`Link ${name} failed:\n\n${l},\n\n${r}\n`);
+	});
 }
+
+Rule.prototype = Object.create(Node.prototype);
+Rule.prototype.constructor = Rule;
 
 Rule.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -17,15 +45,26 @@ Rule.prototype.toString = function () {
 
 Rule.prototype.toIndentedString = function (indent) {
 	return [
-		`R ${this.name}(${this.params.join(', ')}) =>`,
-		`\t${this.expr.toIndentedString(indent + 1)}`
+		`L ${this.name}(${this.params.join(', ')}) =>`,
+		'\t\t' + this.rules
+			.map(e => e.toIndentedString(indent + 2))
+			.join('\n' + '\t'.repeat(indent + 1) + '~' + '\n' + '\t'.repeat(indent + 2)),
+		`\t=`,
+		'\t\t' + this.expr.toIndentedString(indent + 2)
 	].join('\n' + '\t'.repeat(indent));
 }
 
 Rule.prototype.toTeXString = function () {
-	return `\\mathsf{${this.name}}`
-		+ `(${this.params.map(e => e.toTeXString()).join(', ')})`
-		+ `\\coloneqq ` + this.expr.toTeXString();
+	return `\\mathsf{${this.escapeTeX(this.name)}}`
+		+ `(${this.params.map(e => e.toTeXString()).join(', ')}):`
+		+ (
+			this.rules.length > 1
+			? '\\\\\\ \\ \\ \\ '
+				+ this.rules.map(e => e.toTeXString()).join('\\\\\\ \\ \\ \\ \\sim ')
+				+ '\\\\\\ \\ \\ \\ = '
+			: '\\\\\\ \\ \\ \\ '
+		)
+		+ this.expr.toTeXString();
 }
 
 module.exports = Rule;

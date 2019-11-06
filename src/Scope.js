@@ -5,7 +5,6 @@ function Scope(parent) {
 	this.simpleTypeMap = {};
 	this.typevarMap = {};
 	this.ruleMap = {};
-	this.linkMap = {};
 
 	this.parent = parent;
 	this.root = parent ? parent.root : this;
@@ -121,32 +120,6 @@ Scope.prototype.getRule = function (name) {
 
 	return this.ruleMap[name] ||
 		(!!this.parent && this.parent.getRule(name));
-}
-
-Scope.prototype.hasOwnLinkByName = function (name) {
-	return !!this.linkMap[name];
-}
-
-Scope.prototype.hasLinkByName = function (name) {
-	return this.hasOwnLinkByName(name)
-		|| (!!this.parent && this.parent.hasLinkByName(name));
-}
-
-Scope.prototype.addLink = function (deflinkobj) {
-	var link = PegInterface.link(deflinkobj, this);
-
-	if (this.hasOwnLinkByName(link.name))
-		throw Error(`Link with name ${name} already is there`);
-
-	return this.linkMap[link.name] = link;
-}
-
-Scope.prototype.getLink = function (name) {
-	if (!this.hasLinkByName(name))
-		throw Error(`Link with name ${name} not found`);
-
-	return this.linkMap[name] ||
-		(!!this.parent && this.parent.getLink(name));
 }
 
 module.exports = Scope;

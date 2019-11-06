@@ -42,9 +42,6 @@
 		<div id="rules">
 			<h2>Rules</h2>
 		</div>
-		<div id="links">
-			<h2>Links</h2>
-		</div>
 		<div>
 			<h2>Log</h2>
 			<pre id="log"></pre>
@@ -133,22 +130,6 @@
 						+ (
 							docs.rules && docs.rules[k] && docs.rules[k].description
 							? `<p class="description">${escapeHtml(docs.rules[k].description)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-						+ `<pre>${escapeHtml(v)}</pre>`
-						+ `</div>`;
-				}
-
-				for (var k in program.scope.linkMap) {
-					var v = program.scope.linkMap[k];
-
-					$('#links').innerHTML +=
-						`<div class="block">`
-						+ `<p class="label"><b>Link</b> ${k}</p>`
-						+ `<div>${katex.renderToString(v.toTeXString())}</div>`
-						+ (
-							docs.links && docs.links[k] && docs.links[k].description
-							? `<p class="description">${escapeHtml(docs.links[k].description)}</p>`
 							: '<p class="description"><i>No description provided.</i></p>'
 						)
 						+ `<pre>${escapeHtml(v)}</pre>`

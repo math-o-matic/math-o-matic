@@ -1,3 +1,4 @@
+var Node = require('./Node');
 var Type = require('./Type');
 var Typevar = require('./Typevar');
 var Fun = require('./Fun');
@@ -21,6 +22,9 @@ function Yield({left, right}) {
 
 	this.right = right;
 }
+
+Yield.prototype = Object.create(Node.prototype);
+Yield.prototype.constructor = Yield;
 
 Yield.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -51,6 +55,9 @@ Yield.prototype.toIndentedString = function (indent) {
 }
 
 Yield.prototype.toTeXString = function () {
+	if (!this.left.length)
+		return `\\ \\vdash ${this.right.toTeXString()}`;
+	
 	return `${this.left.map(e => e.toTeXString()).join(', ')} \\vdash ${this.right.toTeXString()}`;
 }
 

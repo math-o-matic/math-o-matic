@@ -6,7 +6,6 @@ line
 	/ defv
 	/ defun
 	/ defrule
-	/ deflink
 
 comment
 	= "#" (!newline .)* _
@@ -75,37 +74,11 @@ defrule
 			{return p || []}
 		)
 		"=>" _
-		expr:expr1 _
-		SEM _
-		{
-			return {
-				_type: 'defrule',
-				name,
-				params,
-				expr
-			}
-		}
-
-deflink
-	=
-		"deflink" __
-		name:IDENT _
-		params:(
-			"(" _
-			p:(
-				head:typevar _
-				tail:("," _ tv:typevar _ {return tv})*
-				{return [head].concat(tail)}
-			)?
-			")" _
-			{return p || []}
-		)
-		"=>" _
 		expr:expr2 _
 		SEM _
 		{
 			return {
-				_type: 'deflink',
+				_type: 'defrule',
 				name,
 				params,
 				rules: expr.rules
@@ -117,12 +90,12 @@ expr2
 	=
 		rules:(
 			head:expr1 _
-			tail:("~" _ e:expr1 _ {return e})+
+			tail:("~" _ e:expr1 _ {return e})*
 			{return [head].concat(tail)}
 		)
 		{
 			return {
-				_type: 'link',
+				_type: 'chain',
 				rules
 			}
 		}
@@ -294,7 +267,7 @@ var
 	}
 
 IDENT
-	= id:[a-zA-Z0-9]+ {return id.join('')}
+	= id:[a-zA-Z0-9_]+ {return id.join('')}
 
 newline = "\r\n" / "\r" / "\n"
 

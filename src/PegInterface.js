@@ -9,7 +9,6 @@ var Funcall = require('./nodes/Funcall');
 var Rule = require('./nodes/Rule');
 var Yield = require('./nodes/Yield');
 var Rulecall = require('./nodes/Rulecall');
-var Link = require('./nodes/Link');
 
 var PegInterface = {};
 
@@ -213,21 +212,21 @@ PegInterface.rule = function (obj, parentScope) {
 		return scope.addTypevar(tvo);
 	});
 
-	var expr = null;
+	var foo = obj => {
+		switch (obj._type) {
+			case 'yield':
+				return PegInterface.yield(obj, scope);
+			case 'rulecall':
+				return PegInterface.rulecall(obj, scope);
+			default:
+				throw Error(`Unknown type ${obj._type}`);
+		}
+	};
 
-	switch (obj.expr._type) {
-		case 'yield':
-			expr = PegInterface.yield(obj.expr, scope);
-			break;
-		case 'rulecall':
-			expr = PegInterface.rulecall(obj.expr, scope);
-			break;
-		default:
-			throw Error(`Unknown type ${obj.expr._type}`);
-	}
+	var rules = obj.rules.map(foo);
 
-	return new Rule({name, params, expr});
-}
+	return new Rule({name, params, rules});
+};
 
 PegInterface.yield = function (obj, parentScope) {
 	var scope = parentScope.extend();
@@ -294,35 +293,5 @@ PegInterface.rulecall = function (obj, parentScope) {
 		args: obj.args.map(foo)
 	});
 }
-
-PegInterface.link = function (obj, parentScope) {
-	var scope = parentScope.extend();
-
-	var name = obj.name;
-	var params = obj.params.map(tvo => {
-		if (!scope.hasType(tvo.type))
-			throw Error(`Param type ${Type.getType(tvo.type)} not found`);
-
-		if (scope.hasOwnTypevarByName(tvo.name))
-			throw Error(`Param name ${tvo.name} already is there`);
-
-		return scope.addTypevar(tvo);
-	});
-
-	var foo = obj => {
-		switch (obj._type) {
-			case 'yield':
-				return PegInterface.yield(obj, scope);
-			case 'rulecall':
-				return PegInterface.rulecall(obj, scope);
-			default:
-				throw Error(`Unknown type ${obj._type}`);
-		}
-	};
-
-	var rules = obj.rules.map(foo);
-
-	return new Link({name, params, rules});
-};
 
 module.exports = PegInterface;

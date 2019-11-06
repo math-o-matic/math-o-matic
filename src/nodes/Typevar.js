@@ -1,3 +1,4 @@
+var Node = require('./Node');
 var Type = require('./Type');
 
 function Typevar(type, name) {
@@ -9,6 +10,9 @@ function Typevar(type, name) {
 	this.type = type;
 	this.name = name;
 }
+
+Typevar.prototype = Object.create(Node.prototype);
+Typevar.prototype.constructor = Typevar;
 
 Typevar.prototype.toString = function () {
 	return this.toIndentedString(0);

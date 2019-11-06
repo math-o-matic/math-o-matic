@@ -1,3 +1,4 @@
+var Node = require('./Node');
 var Type = require('./Type');
 var Typevar = require('./Typevar');
 var Fun = require('./Fun');
@@ -10,6 +11,9 @@ function Funcall({fun, args}) {
 	this.type = fun.type.to;
 	this.args = args;
 }
+
+Funcall.prototype = Object.create(Node.prototype);
+Funcall.prototype.constructor = Funcall;
 
 Funcall.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -55,9 +59,11 @@ Funcall.prototype.toTeXString = function () {
 		return arg.toTeXString();
 	});
 
+	var n = this.escapeTeX(this.fun.name);
+
 	return `${this.fun.anonymous
 			? '(' + this.fun.toTeXString() + ')'
-			: `${this.fun.name.length == 1 ? this.fun.name : `\\mathrm{${this.fun.name}}`}`}`
+			: `${this.fun.name.length == 1 ? n : `\\mathrm{${n}}`}`}`
 		+ `(${args.join(', ')})`;
 }
 

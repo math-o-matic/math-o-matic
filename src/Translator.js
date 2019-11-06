@@ -1,9 +1,9 @@
-var Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall, Link;
+var Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall;
 
 var Translator = {};
 
 Translator.init = function (o) {
-	['Type', 'Typevar', 'Fun', 'Funcall', 'Rule', 'Yield', 'Rulecall', 'Link']
+	['Type', 'Typevar', 'Fun', 'Funcall', 'Rule', 'Yield', 'Rulecall']
 		.forEach(e => eval(e + ' = o.' + e));
 }
 

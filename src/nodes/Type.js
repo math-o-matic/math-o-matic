@@ -1,3 +1,5 @@
+var Node = require('./Node');
+
 function Type(o) {
 	this._type = 'type';
 	
@@ -20,6 +22,9 @@ function Type(o) {
 		this.to = o.to;
 	}
 }
+
+Type.prototype = Object.create(Node.prototype);
+Type.prototype.constructor = Type;
 
 Type.prototype.toString = function () {
 	return this.toIndentedString(0);

@@ -24,9 +24,6 @@ defrule luk3(St p, St q) =>
 defrule mp(St p, St q) =>
 	p, implies(p, q) |- q;
 
-deflink li1(St p, St q) =>
-	luk1(p, q) ~ mp(p, implies(q, p));
-
 # predicate
 typedef Class;
 
@@ -85,10 +82,28 @@ defrule spec([Class -> St] p) =>
 		)
 	);
 
-deflink uinstspe([Class -> St] f, Class c) =>
+defrule spec_uinst([Class -> St] f, Class c) =>
 	spec(f) ~ uinst((Class z) =>
 			exists((Class y) => setbuildereq(y, z, f)
 		),
 		c
 	);
+
+defrule mp2(St p, St q, St r) =>
+	mp(p, implies(q, r))
+	~ mp(q, r);
+
+defrule mp2b(St p, St q, St r) =>
+	mp(p, q)
+	~ mp(q, r);
+
+defrule a1i(St p, St q) =>
+	luk1(p, q) ~ mp(p, implies(q, p));
+
+defrule mp1i(St p, St q, St r) =>
+	mp(p, q) ~ a1i(q, r);
+
+defrule and(St p, St q) =>
+	p, q |- and(p, q);
+
 `;
