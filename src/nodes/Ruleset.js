@@ -24,27 +24,11 @@ Ruleset.prototype.toString = function () {
 }
 
 Ruleset.prototype.toIndentedString = function (indent) {
-	return [
-		`R ${this.name}(${this.params.join(', ')}) =>`,
-		'\t\t' + this.rules
-			.map(e => e.toIndentedString(indent + 2))
-			.join('\n' + '\t'.repeat(indent + 1) + '~' + '\n' + '\t'.repeat(indent + 2)),
-		`\t=`,
-		'\t\t' + this.expr.toIndentedString(indent + 2)
-	].join('\n' + '\t'.repeat(indent));
+	return `RS ${this.name}`;
 }
 
 Ruleset.prototype.toTeXString = function (root) {
-	return `\\href{#rule-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
-		+ `(${this.params.map(e => e.toTeXString()).join(', ')}):`
-		+ (
-			this.rules.length > 1 || true
-			? '\\\\\\ \\ \\ \\ '
-				+ this.rules.map(e => e.toTeXString()).join('\\\\\\ \\ \\ \\ \\sim ')
-				+ '\\\\\\ \\ \\ \\ = '
-			: '\\\\\\ \\ \\ \\ '
-		)
-		+ this.expr.toTeXString();
+	return `\\href{#ruleset-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`;
 }
 
 module.exports = Ruleset;

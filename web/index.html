@@ -7,10 +7,24 @@
 		<script src="./docs-propositional.js"></script>
 		<script src="./nativeMap.js"></script>
 		<script src="./katex/katex.min.js"></script>
+		<script src="./m42kup.js"></script>
 		<link rel="stylesheet" href="./katex/katex.min.css">
 		<style>
 			* {
 				tab-size: 4;
+			}
+
+			body {
+				font-size: 14px;
+				font-family: monospace, monospace;
+			}
+
+			p {
+				margin: 0;
+			}
+
+			p + p {
+				margin-top: 1em;
 			}
 
 			pre {
@@ -31,6 +45,15 @@
 
 			.label {
 				margin-top: 0;
+				margin-bottom: 1em;
+			}
+
+			.description {
+				margin: 1em 0;
+			}
+
+			.math {
+				font-size: 1.2em;
 			}
 
 			.katex a {
@@ -43,13 +66,16 @@
 			}
 		</style>
 	</head>
-	<body style="font-family: monospace;">
+	<body>
 		<h1>M42/math</h1>
 		<div id="simple-types">
 			<h2>Simple types</h2>
 		</div>
 		<div id="typevars">
 			<h2>Typevars</h2>
+		</div>
+		<div id="rulesets">
+			<h2>Rulesets</h2>
 		</div>
 		<div id="rules">
 			<h2>Rules</h2>
@@ -68,6 +94,10 @@
 					return true;
 				}
 			}
+
+			m42kup.set({
+				katex
+			});
 
 			var escapeHtml = s => (s + '').replace(/[&<>"']/g, m => ({
 			    '&': '&amp;', '<': '&lt;', '>': '&gt;',
@@ -110,10 +140,10 @@
 					$('#simple-types').innerHTML +=
 						`<div class="block">`
 						+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>Type</b> ${k}</a></p>`
-						+ `<div>${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+						+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
 						+ (
 							docs.simpleTypes && docs.simpleTypes[k] && docs.simpleTypes[k].description
-							? `<p class="description">${escapeHtml(docs.simpleTypes[k].description)}</p>`
+							? `<p class="description">${m42kup.render(docs.simpleTypes[k].description)}</p>`
 							: '<p class="description"><i>No description provided.</i></p>'
 						)
 						// + `<pre>${escapeHtml(v)}</pre>`
@@ -126,10 +156,26 @@
 					$('#typevars').innerHTML +=
 						`<div class="block">`
 						+ `<p class="label"><a id="typevar-${k}" href="#typevar-${k}"><b>Typevar</b> ${k}</a></p>`
-						+ `<div>${katex.renderToString(v.toTeXString(true), katexOpts)}</div>`
+						+ `<div class="math">${katex.renderToString(v.toTeXString(true), katexOpts)}</div>`
 						+ (
 							docs.typevars && docs.typevars[k] && docs.typevars[k].description
-							? `<p class="description">${escapeHtml(docs.typevars[k].description)}</p>`
+							? `<p class="description">${m42kup.render(docs.typevars[k].description)}</p>`
+							: '<p class="description"><i>No description provided.</i></p>'
+						)
+						// + `<pre>${escapeHtml(v)}</pre>`
+						+ `</div>`;
+				}
+
+				for (var k in program.scope.rulesetMap) {
+					var v = program.scope.rulesetMap[k];
+
+					$('#rulesets').innerHTML +=
+						`<div class="block">`
+						+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>Ruleset</b> ${k}</a></p>`
+						+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+						+ (
+							docs.rulesets && docs.rulesets[k] && docs.rulesets[k].description
+							? `<p class="description">${m42kup.render(docs.rulesets[k].description)}</p>`
 							: '<p class="description"><i>No description provided.</i></p>'
 						)
 						// + `<pre>${escapeHtml(v)}</pre>`
@@ -142,10 +188,10 @@
 					$('#rules').innerHTML +=
 						`<div class="block">`
 						+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>Rule</b> ${k}</a></p>`
-						+ `<div>${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+						+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
 						+ (
 							docs.rules && docs.rules[k] && docs.rules[k].description
-							? `<p class="description">${escapeHtml(docs.rules[k].description)}</p>`
+							? `<p class="description">${m42kup.render(docs.rules[k].description)}</p>`
 							: '<p class="description"><i>No description provided.</i></p>'
 						)
 						// + `<pre>${escapeHtml(v)}</pre>`
