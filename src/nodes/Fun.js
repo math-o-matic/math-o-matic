@@ -35,7 +35,7 @@ Fun.prototype.toIndentedString = function (indent) {
 	].join('\n' + '\t'.repeat(indent));
 }
 
-Fun.prototype.toTeXString = function () {
+Fun.prototype.toTeXString = function (root) {
 	if (this.anonymous)
 		return `\\left(`
 			+ (
@@ -44,6 +44,9 @@ Fun.prototype.toTeXString = function () {
 				: `\\left(${this.params.map(e => e.toTeXString()).join(', ')}\\right)`
 			)
 			+ `\\mapsto ${this.expr.toTeXString()}\\right)`;
+
+	if (!root)
+		return `\\href{#typevar-${this.name}}\\mathrm{${this.name}}`;
 
 	if (!this.expr)
 		return this.funcallToTeXString(this.params);

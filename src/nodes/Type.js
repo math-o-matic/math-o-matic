@@ -36,7 +36,7 @@ Type.prototype.toIndentedString = function (indent) {
 	return '[' + this.from.join(', ') + ' -> ' + this.to + ']';
 }
 
-Type.prototype.toTeXString = function () {
+Type.prototype.toTeXString = function (root) {
 	if (this.isSimple) return `\\mathrm{${this.name}}`;
 
 	return `\\left[${this.from.map(e => e.toTeXString()).join(' \\times ')}`

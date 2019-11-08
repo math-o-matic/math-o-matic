@@ -22,12 +22,12 @@ Typevar.prototype.toIndentedString = function () {
 	return `${this.type} ${this.name}`;
 }
 
-Typevar.prototype.toTeXString = function () {
+Typevar.prototype.toTeXString = function (root) {
 	if (this.name.length == 1) {
 		return `${this.name}`;
 	}
 
-	return `\\mathrm{${this.name}}`;
+	return `\\href{#typevar-${this.name}}\\mathrm{${this.escapeTeX(this.name)}}`;
 }
 
 module.exports = Typevar;

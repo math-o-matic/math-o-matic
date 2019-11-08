@@ -50,7 +50,7 @@ Funcall.prototype.toIndentedString = function (indent) {
 	}
 }
 
-Funcall.prototype.toTeXString = function () {
+Funcall.prototype.toTeXString = function (root) {
 	if (this.fun instanceof Fun)
 		return this.fun.funcallToTeXString(this.args);
 

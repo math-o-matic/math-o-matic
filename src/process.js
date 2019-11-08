@@ -7,14 +7,17 @@ var Funcall = require('./nodes/Funcall');
 var Rule = require('./nodes/Rule');
 var Yield = require('./nodes/Yield');
 var Rulecall = require('./nodes/Rulecall');
+var Ruleset = require('./nodes/Ruleset');
 
 var Translator = require('./Translator');
-Translator.init({Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall});
+Translator.init({Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall, Ruleset});
 
-function Program(start) {
+function Program() {
 	this.scope = new Scope(null);
+}
 
-	start.forEach(line => {
+Program.prototype.feed = function (lines, nativeMap) {
+	lines.forEach(line => {
 		switch (line._type) {
 			case 'typedef':
 				this.scope.addType(line.type);
@@ -28,14 +31,18 @@ function Program(start) {
 			case 'defrule':
 				this.scope.addRule(line);
 				break;
+			case 'defruleset':
+				this.scope.addRuleset(line, nativeMap);
+				break;
 			default:
 				throw Error(`Unknown line type ${line._type}`);
 		}
 	});
 }
 
-function process(start) {
-	var program = new Program(start);
+function process(lines, nativeMap) {
+	var program = new Program();
+	program.feed(lines, nativeMap);
 	return program;
 }
 

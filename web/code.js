@@ -9,6 +9,9 @@ defun St not(St p);
 defun St and(St p, St q) =>
 	not(implies(p, not(q)));
 
+defun St or(St p, St q) =>
+	implies(not(p), q);
+
 defun St iff(St p, St q) =>
 	and(implies(p, q), implies(q, p));
 
@@ -29,8 +32,18 @@ typedef Class;
 
 defun St forall([Class -> St] f);
 
+defun St forall2([(Class, Class) -> St] f) =>
+	forall((Class x) =>
+		forall((Class y) =>
+			f(x, y)
+		)
+	);
+
 defun St exists([Class -> St] f) =>
 	not(forall((Class x) => not(f(x))));
+
+defun St exists2([(Class, Class) -> St] f) =>
+	not(forall2((Class x, Class y) => not(f(x, y))));
 
 # universal instantiation
 defrule uinst([Class -> St] f, Class x) =>
@@ -105,5 +118,13 @@ defrule mp1i(St p, St q, St r) =>
 
 defrule and(St p, St q) =>
 	p, q |- and(p, q);
+
+defun St sym([(Class, Class) -> St] f) =>
+	forall2((Class x, Class y) =>
+		implies(f(x, y), f(y, x))
+	);
+
+defrule eq_sym() =>
+	|- sym(eq);
 
 `;

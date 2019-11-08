@@ -9,65 +9,96 @@ docs = {
 	},
 	typevars: {
 		implies: {
-			description: 'implies',
+			description: 'implies. not과 함께 명제논리에서 사용할 기본 함수입니다.',
 			display: function (args) {
-				return `\\left(${args[0].toTeXString()} \\to ${args[1].toTeXString()}\\right)`;
+				return `\\left(${args[0].toTeXString()}`
+					+ `\\href{#typevar-implies}{\\to} ${args[1].toTeXString()}\\right)`;
 			}
 		},
 		not: {
-			description: 'not',
+			description: 'not. implies와 함께 명제논리에서 사용할 기본 함수입니다.',
 			display: function (args) {
-				return `\\left(\\neg ${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#typevar-not}{\\neg} ${args[0].toTeXString()}\\right)`;
 			}
 		},
 		and: {
-			description: 'and',
+			description: 'and. not과 implies로부터 정의됨.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-						+ ` \\land ${args[1].toTeXString()} \\right)`;
+						+ `\\href{#typevar-and}{\\land} ${args[1].toTeXString()} \\right)`;
+			}
+		},
+		or: {
+			description: 'or. not과 implies로부터 정의됨.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()}`
+						+ `\\href{#typevar-or}{\\lor} ${args[1].toTeXString()} \\right)`;
 			}
 		},
 		iff: {
-			description: 'iff',
+			description: 'iff. implies와 and로부터 정의됨.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-						+ ` \\leftrightarrow ${args[1].toTeXString()}\\right)`;
+						+ `\\href{#typevar-iff}{\\leftrightarrow} ${args[1].toTeXString()}\\right)`;
 			}
 		},
 		forall: {
-			description: 'forall 연산자. 일반적인 표기법과는 다르게 함수를 입력으로 받는다.',
+			description: '보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다.',
 			display: function (args) {
-				return `\\left(\\forall ${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#typevar-forall}{\\forall}${args[0].toTeXString()}\\right)`;
+			}
+		},
+		forall2: {
+			description: '입력항이 두 개인 함수를 위한 보편 양화. forall에 의존한다.',
+			display: function (args) {
+				return `\\left(\\href{#typevar-forall}{\\forall}${args[0].toTeXString()}\\right)`;
 			}
 		},
 		exists: {
-			description: 'exists 연산자. 일반적인 표기법과는 다르게 함수를 입력으로 받으며 forall에 의존한다.',
+			description: '존재 양화(existential quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받으며 forall에 의존한다.',
 			display: function (args) {
-				return `\\left(\\exists ${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#typevar-exists}{\\exists}${args[0].toTeXString()}\\right)`;
+			}
+		},
+		exists2: {
+			description: '입력항이 두 개인 함수를 위한 존재 양화. forall2에 의존한다.',
+			display: function (args) {
+				return `\\left(\\href{#typevar-exists}{\\exists}${args[0].toTeXString()}\\right)`;
 			}
 		},
 		in: {
 			description: '집합론에서 정의하는 in 연산자.',
 			display: function (args) {
-				return `\\left(${args[0].toTeXString()} \\in ${args[1].toTeXString()} \\right)`
+				return `\\left(${args[0].toTeXString()}`
+					+ `\\href{#typevar-in}{\\in}${args[1].toTeXString()} \\right)`
 			}
 		},
 		eq: {
 			description: '= 연산자.',
 			display: function (args) {
-				return `\\left(${args[0].toTeXString()} = ${args[1].toTeXString()} \\right)`
+				return `\\left(${args[0].toTeXString()}`
+					+ `\\href{#typevar-eq}{=}${args[1].toTeXString()} \\right)`
 			}
 		},
 		notin: {
 			description: '간단한 notin 함수.',
 			display: function (args) {
-				return `\\left(${args[0].toTeXString()} \\notin ${args[1].toTeXString()} \\right)`
+				return `\\left(${args[0].toTeXString()}`
+					+ `\\href{#typevar-notin}{\\notin}${args[1].toTeXString()} \\right)`
 			}
 		},
 		setbuildereq: {
 			description: '술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.',
 			display: function (args) {
-				return `\\left(${args[0].toTeXString()} = \\left\\{ ${args[1].toTeXString()} / ${args[2].toTeXString()} \\right\\} \\right)`;
+				return `\\left(${args[0].toTeXString()}`
+					+ `\\href{#typevar-setbuildereq}{=}`
+					+ `\\left\\{ ${args[1].toTeXString()} / ${args[2].toTeXString()} \\right\\} \\right)`;
+			}
+		},
+		sym: {
+			description: 'binary relation의 symmetricity.',
+			display: function (args) {
+				return `${args[0].toTeXString()}\\ \\href{#typevar-sym}{\\text{is symmetric}}`;
 			}
 		}
 	},

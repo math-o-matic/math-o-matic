@@ -6,6 +6,7 @@ line
 	/ defv
 	/ defun
 	/ defrule
+	/ defruleset
 
 comment
 	= "#" (!newline .)* _
@@ -20,7 +21,7 @@ typedef
 	}
 
 defv
-	= "defv" __ typevar:typevar _ SEM _
+	= typevar:typevar _ SEM _
 	{
 		return {
 			_type: 'defv',
@@ -30,7 +31,6 @@ defv
 
 defun
 	=
-		"defun" __
 		rettype:type __
 		name:IDENT _
 		params:(
@@ -44,11 +44,12 @@ defun
 			{return p || []}
 		)
 		expr:(
-			"=>" _
+			"{" _
 			expr:expr0 _
+			"}" _
 			{return expr}
-		)?
-		SEM _
+			/ SEM _ {return null}
+		)
 		{
 			return {
 				_type: 'defun',
@@ -59,9 +60,24 @@ defun
 			}
 		}
 
+defruleset
+	=
+		"native" __
+		"ruleset" __
+		name:IDENT _
+		SEM _
+		{
+			return {
+				_type: 'defruleset',
+				name,
+				native: true
+			}
+		}
+
+
 defrule
 	=
-		"defrule" __
+		"rule" __
 		name:IDENT _
 		params:(
 			"(" _
@@ -73,9 +89,9 @@ defrule
 			")" _
 			{return p || []}
 		)
-		"=>" _
+		"{" _
 		expr:expr2 _
-		SEM _
+		"}" _
 		{
 			return {
 				_type: 'defrule',
@@ -84,25 +100,6 @@ defrule
 				rules: expr.rules
 			}
 		}
-
-// expr1 ~ ... ~ expr1
-expr2
-	=
-		rules:(
-			head:expr1 _
-			tail:("~" _ e:expr1 _ {return e})*
-			{return [head].concat(tail)}
-		)
-		{
-			return {
-				_type: 'chain',
-				rules
-			}
-		}
-
-expr1
-	= yield
-	/ rulecall
 
 // expr0... |- expr0
 yield
@@ -127,6 +124,7 @@ yield
 // rule(...)
 rulecall
 	=
+		rulesetName:(id:IDENT _ "." _ {return id})?
 		name:IDENT _
 		args:(
 			"(" _
@@ -141,16 +139,11 @@ rulecall
 		{
 			return {
 				_type: 'rulecall',
+				rulesetName,
 				name,
 				args
 			}
 		}
-
-expr0
-	= funcall
-	/ funexpr
-	/ var
-	/ "(" _ e:expr0 _ ")" {return e}
 
 // forall(f, g)
 // ((...) => ...)(f, g)
@@ -204,6 +197,31 @@ funexpr
 				expr
 			}
 		}
+
+// expr1 ~ ... ~ expr1
+expr2
+	=
+		rules:(
+			head:expr1 _
+			tail:("~" _ e:expr1 _ {return e})*
+			{return [head].concat(tail)}
+		)
+		{
+			return {
+				_type: 'chain',
+				rules
+			}
+		}
+
+expr1
+	= yield
+	/ rulecall
+
+expr0
+	= funcall
+	/ funexpr
+	/ var
+	/ "(" _ e:expr0 _ ")" {return e}
 
 typevar
 	= type:type __ name:IDENT
@@ -266,8 +284,14 @@ var
 		}
 	}
 
+keyword
+	= "typedef"
+	/ "rule"
+	/ "ruleset"
+	/ "native";
+
 IDENT
-	= id:[a-zA-Z0-9_]+ {return id.join('')}
+	= !keyword id:[a-zA-Z0-9_]+ {return id.join('')}
 
 newline = "\r\n" / "\r" / "\n"
 

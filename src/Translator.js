@@ -1,10 +1,16 @@
-var Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall;
+var Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall, Ruleset;
 
 var Translator = {};
 
 Translator.init = function (o) {
-	['Type', 'Typevar', 'Fun', 'Funcall', 'Rule', 'Yield', 'Rulecall']
-		.forEach(e => eval(e + ' = o.' + e));
+	Type = o.Type;
+	Typevar = o.Typevar;
+	Fun = o.Fun;
+	Funcall = o.Funcall;
+	Rule = o.Rule;
+	Yield = o.Yield;
+	Rulecall = o.Rulecall;
+	Ruleset = o.Ruleset;
 }
 
 Translator.substitute0 = function (expr, map) {

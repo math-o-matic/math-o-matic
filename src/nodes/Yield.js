@@ -54,7 +54,7 @@ Yield.prototype.toIndentedString = function (indent) {
 	].join('\n' + '\t'.repeat(indent));
 }
 
-Yield.prototype.toTeXString = function () {
+Yield.prototype.toTeXString = function (root) {
 	if (!this.left.length)
 		return `\\ \\vdash ${this.right.toTeXString()}`;
 	

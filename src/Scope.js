@@ -1,10 +1,28 @@
 var Type = require('./nodes/Type');
+var Typevar = require('./nodes/Typevar');
+var Fun = require('./nodes/Fun');
+var Funcall = require('./nodes/Funcall');
+var Rule = require('./nodes/Rule');
+var Yield = require('./nodes/Yield');
+var Rulecall = require('./nodes/Rulecall');
+var Ruleset = require('./nodes/Ruleset');
+
 var PegInterface = require('./PegInterface');
 
 function Scope(parent) {
 	this.simpleTypeMap = {};
 	this.typevarMap = {};
 	this.ruleMap = {};
+	this.rulesetMap = {};
+
+	this.Type = Type;
+	this.Typevar = Typevar;
+	this.Fun = Fun;
+	this.Funcall = Funcall;
+	this.Rule = Rule;
+	this.Yield = Yield;
+	this.Rulecall = Rulecall;
+	this.Ruleset = Ruleset;
 
 	this.parent = parent;
 	this.root = parent ? parent.root : this;
@@ -120,6 +138,32 @@ Scope.prototype.getRule = function (name) {
 
 	return this.ruleMap[name] ||
 		(!!this.parent && this.parent.getRule(name));
+}
+
+Scope.prototype.hasOwnRulesetByName = function (name) {
+	return !!this.rulesetMap[name];
+}
+
+Scope.prototype.hasRulesetByName = function (name) {
+	return this.hasOwnRulesetByName(name)
+		|| (!!this.parent && this.parent.hasRulesetByName(name));
+}
+
+Scope.prototype.addRuleset = function (defrulesetobj, nativeMap) {
+	var ruleset = PegInterface.ruleset(defrulesetobj, this, nativeMap);
+
+	if (this.hasOwnRulesetByName(ruleset.name))
+		throw Error(`Ruleset with name ${ruleset.name} already is there`);
+
+	return this.rulesetMap[ruleset.name] = ruleset;
+}
+
+Scope.prototype.getRuleset = function (name) {
+	if (!this.hasRulesetByName(name))
+		throw Error(`Ruleset with name ${name} not found`);
+
+	return this.rulesetMap[name] ||
+		(!!this.parent && this.parent.getRuleset(name));
 }
 
 module.exports = Scope;

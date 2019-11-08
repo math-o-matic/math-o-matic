@@ -9,6 +9,7 @@ var Funcall = require('./nodes/Funcall');
 var Rule = require('./nodes/Rule');
 var Yield = require('./nodes/Yield');
 var Rulecall = require('./nodes/Rulecall');
+var Ruleset = require('./nodes/Ruleset');
 
 var PegInterface = {};
 
@@ -265,10 +266,27 @@ PegInterface.yield = function (obj, parentScope) {
 PegInterface.rulecall = function (obj, parentScope) {
 	var scope = parentScope.extend();
 
-	if (!scope.hasRuleByName(obj.name))
-		throw Error(`Rule ${obj.name} is not defined`);
+	var rule;
 
-	var rule = scope.getRule(obj.name);
+	if (obj.rulesetName) {
+		if (!scope.hasRulesetByName(obj.rulesetName))
+			throw Error(`Ruleset ${obj.rulesetName} is not defined`);
+
+		var ruleset = scope.getRuleset(obj.rulesetName);
+
+		rule = ruleset.code.get(obj.name, scope);
+
+		if (!rule)
+			throw Error(`Rule ${obj.rulesetName}.${obj.name} not found`);
+	} else {
+		if (!scope.hasRuleByName(obj.name))
+			throw Error(`Rule ${obj.name} is not defined`);
+
+		rule = scope.getRule(obj.name);
+	}
+
+	if (rule.params.length != obj.args.length)
+		throw Error(`Invalid number of arguments: ${obj.args.length}`);
 
 	var foo = obj => {
 		switch (obj._type) {
@@ -292,6 +310,22 @@ PegInterface.rulecall = function (obj, parentScope) {
 		rule,
 		args: obj.args.map(foo)
 	});
+}
+
+PegInterface.ruleset = function (obj, parentScope, nativeMap) {
+	var scope = parentScope.extend();
+
+	var name = obj.name;
+
+	if (!obj.native)
+		throw Error('Assertion failed');
+
+	if (!nativeMap.ruleset[name])
+		throw Error(`Native code for native ruleset ${name} not found`);
+
+	var nativeCode = nativeMap.ruleset[name];
+
+	return new Ruleset({name, code: nativeCode});
 }
 
 module.exports = PegInterface;

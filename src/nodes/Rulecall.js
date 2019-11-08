@@ -50,8 +50,9 @@ Rulecall.prototype.toIndentedString = function (indent) {
 	}
 }
 
-Rulecall.prototype.toTeXString = function () {
-	return `\\textsf{${this.escapeTeX(this.rule.name)}}(${this.args.map(e => e.toTeXString()).join(', ')})`
+Rulecall.prototype.toTeXString = function (root) {
+	return `\\href{#rule-${this.rule.name}}{\\textsf{${this.escapeTeX(this.rule.name)}}}`
+		+ `(${this.args.map(e => e.toTeXString()).join(', ')})`
 }
 
 module.exports = Rulecall;

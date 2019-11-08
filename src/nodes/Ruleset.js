@@ -3,47 +3,27 @@ var Type = require('./Type');
 var Typevar = require('./Typevar');
 var Fun = require('./Fun');
 var Funcall = require('./Funcall');
+var Rule = require('./Rule');
 var Yield = require('./Yield');
 var Rulecall = require('./Rulecall');
 
 var Translator = require('../Translator');
 
-function Rule({name, params, rules}) {
-	this._type = 'link';
+function Ruleset({name, code}) {
+	this._type = 'ruleset';
 	
 	this.name = name;
-	this.params = params;
-	this.rules = rules;
-
-	// all yields
-	var expands = this.rules.map(Translator.expand1);
-
-	this.expr = expands.reduceRight((r, l) => {
-		for (var i = 0; i < r.left.length; i++) {
-			if (Translator.expr0Equals(l.right, r.left[i])) {
-				var newleft = r.left.slice(0, i)
-					.concat(l.left)
-					.concat(r.left.slice(i + 1));
-
-				return new Yield({
-					left: newleft.map(Translator.expand0Funcalls),
-					right: Translator.expand0Funcalls(r.right)
-				});
-			}
-		}
-
-		throw Error(`Link ${name} failed:\n\n${l},\n\n${r}\n`);
-	});
+	this.code = code;
 }
 
-Rule.prototype = Object.create(Node.prototype);
-Rule.prototype.constructor = Rule;
+Ruleset.prototype = Object.create(Node.prototype);
+Ruleset.prototype.constructor = Rule;
 
-Rule.prototype.toString = function () {
+Ruleset.prototype.toString = function () {
 	return this.toIndentedString(0);
 }
 
-Rule.prototype.toIndentedString = function (indent) {
+Ruleset.prototype.toIndentedString = function (indent) {
 	return [
 		`R ${this.name}(${this.params.join(', ')}) =>`,
 		'\t\t' + this.rules
@@ -54,7 +34,7 @@ Rule.prototype.toIndentedString = function (indent) {
 	].join('\n' + '\t'.repeat(indent));
 }
 
-Rule.prototype.toTeXString = function (root) {
+Ruleset.prototype.toTeXString = function (root) {
 	return `\\href{#rule-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
 		+ `(${this.params.map(e => e.toTeXString()).join(', ')}):`
 		+ (
@@ -67,4 +47,4 @@ Rule.prototype.toTeXString = function (root) {
 		+ this.expr.toTeXString();
 }
 
-module.exports = Rule;
+module.exports = Ruleset;
