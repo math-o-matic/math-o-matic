@@ -1,64 +1,177 @@
 code = `
-# propositional calculus
+#####################################
+######## PROPOSITIONAL LOGIC ########
+#####################################
+
 typedef St;
 
-defun St implies(St p, St q);
+St verum;
+St falsum;
 
-defun St not(St p);
+St nand(St p, St q);
 
-defun St and(St p, St q) =>
-	not(implies(p, not(q)));
+St not(St p) {
+	nand(p, p)
+}
 
-defun St or(St p, St q) =>
-	implies(not(p), q);
+St and(St p, St q) {
+	not(nand(p, q))
+}
 
-defun St iff(St p, St q) =>
-	and(implies(p, q), implies(q, p));
+St or(St p, St q) {
+	nand(not(p), not(q))
+}
 
-defrule luk1(St p, St q) =>
-	|- implies(p, implies(q, p));
+St implies(St p, St q) {
+	or(not(p), q)
+}
 
-defrule luk2(St p, St q, St r) =>
-	|- implies(implies(p, implies(q, r)), implies(implies(p, q), implies(p, r)));
+St iff(St p, St q) {
+	and(implies(p, q), implies(q, p))
+}
 
-defrule luk3(St p, St q) =>
-	|- implies(implies(not(p), not(q)), implies(q, p));
+native ruleset tt;
 
-defrule mp(St p, St q) =>
-	p, implies(p, q) |- q;
+rule mp(St p, St q) {
+	p, implies(p, q) |- q
+}
 
-# predicate
+rule andi(St p, St q) {
+	tt.IqIpApq(p, q) ~ mp(
+		q,
+		implies(p, and(p, q))
+	) ~ mp(p, and(p, q))
+}
+
+rule and3i(St p, St q, St r) {
+	andi(p, q) ~ andi(and(p, q), r)
+}
+
+rule ande1(St p, St q) {
+	tt.IApqp(p, q) ~ mp(and(p, q), p)
+}
+
+rule ande2(St p, St q) {
+	tt.IApqq(p, q) ~ mp(and(p, q), q)
+}
+
+rule ori1(St p, St q) {
+	tt.IpOpq(p, q) ~ mp(p, or(p, q))
+}
+
+rule ori2(St p, St q) {
+	tt.IqOpq(p, q) ~ mp(q, or(p, q))
+}
+
+rule ore(St p, St q, St r) {
+	and3i(
+		or(p, q),
+		implies(p, r),
+		implies(q, r)
+	)
+	~ tt.IAAOpqIprIqrr(p, q, r)
+	~ mp(
+		and(
+			and(or(p, q), implies(p, r)),
+			implies(q, r)
+		),
+		r
+	)
+}
+
+rule noti(St p, St q) {
+	andi(
+		implies(p, q),
+		implies(p, not(q))
+	)
+	~ tt.IAIpqIpNqNp(p, q)
+	~ mp(
+		and(
+			implies(p, q),
+			implies(p, not(q))
+		),
+		not(p)
+	)
+}
+
+rule note(St p, St q) {
+	tt.INpIpq(p, q) ~ mp(not(p), implies(p, q))
+}
+
+rule notnote(St p) {
+	tt.INNpp(p)
+	~ mp(not(not(p)), p)
+}
+
+rule iffi(St p, St q) {
+	andi(implies(p, q), implies(q, p))
+	~ tt.IAIpqIqpEpq(p, q)
+	~ mp(
+		and(implies(p, q), implies(q, p)),
+		iff(p, q)
+	)
+}
+
+rule iffe1(St p, St q) {
+	tt.IEpqIpq(p, q)
+	~ mp(iff(p, q), implies(p, q))
+}
+
+rule iffe2(St p, St q) {
+	tt.IEpqIqp(p, q)
+	~ mp(iff(p, q), implies(q, p))
+}
+
+rule destroy(St p) {
+	andi(p, not(p))
+	~ tt.IApNpF(p)
+	~ mp(
+		and(p, not(p)),
+		falsum
+	)
+}
+
+#################################
+######## PREDICATE LOGIC ########
+#################################
+
 typedef Class;
 
-defun St forall([Class -> St] f);
+St forall([Class -> St] f);
 
-defun St forall2([(Class, Class) -> St] f) =>
+St forall2([(Class, Class) -> St] f) {
 	forall((Class x) =>
 		forall((Class y) =>
 			f(x, y)
 		)
-	);
+	)
+}
 
-defun St exists([Class -> St] f) =>
-	not(forall((Class x) => not(f(x))));
+St exists([Class -> St] f) {
+	not(forall((Class x) => not(f(x))))
+}
 
-defun St exists2([(Class, Class) -> St] f) =>
-	not(forall2((Class x, Class y) => not(f(x, y))));
+St exists2([(Class, Class) -> St] f) {
+	not(forall2((Class x, Class y) => not(f(x, y))))
+}
 
 # universal instantiation
-defrule uinst([Class -> St] f, Class x) =>
-	forall(f) |- f(x);
+rule uinst([Class -> St] f, Class x) {
+	forall(f) |- f(x)
+}
 
 # existential instantiation
-defrule einst([Class -> St] f, [Class -> St] g) =>
-	and(exists(f), forall((Class x) => implies(f(x), g(x)))) |- exists(g);
+rule einst([Class -> St] f, [Class -> St] g) {
+	and(exists(f), forall((Class x) => implies(f(x), g(x)))) |- exists(g)
+}
 
-defrule exists([Class -> St] f, Class x) =>
-	f(x) |- exists(f);
+rule exists([Class -> St] f, Class x) {
+	f(x) |- exists(f)
+}
 
-defun St in(Class a, Class b);
+St in(Class a, Class b);
 
-defun St eq(Class x, Class y) =>
+St eq(Class x, Class y) {
 	and(
 		forall((Class z) =>
 			iff(in(z, x), in(z, y))
@@ -66,17 +179,20 @@ defun St eq(Class x, Class y) =>
 		forall((Class w) =>
 			iff(in(x, w), in(y, w))
 		)
-	);
+	)
+}
 
-defun St notin(Class a, Class b) =>
-	not(in(a, b));
+St notin(Class a, Class b) {
+	not(in(a, b))
+}
 
-defun St setbuildereq(Class x, Class y, [Class -> St] f) =>
+St setbuildereq(Class x, Class y, [Class -> St] f) {
 	forall((Class z) =>
 		iff(in(z, x), and(in(z, y), f(z)))
-	);
+	)
+}
 
-defrule ext(Class x, Class y) =>
+rule ext(Class x, Class y) {
 	|- implies(
 		forall((Class z) =>
 			iff(
@@ -85,46 +201,26 @@ defrule ext(Class x, Class y) =>
 			)
 		),
 		eq(x, y)
-	);
+	)
+}
 
-defrule spec([Class -> St] p) =>
+rule spec([Class -> St] p) {
 	|-
 	forall((Class z) =>
 		exists((Class y) =>
 			setbuildereq(y, z, p)
 		)
-	);
+	)
+}
 
-defrule spec_uinst([Class -> St] f, Class c) =>
-	spec(f) ~ uinst((Class z) =>
-			exists((Class y) => setbuildereq(y, z, f)
-		),
-		c
-	);
-
-defrule mp2(St p, St q, St r) =>
-	mp(p, implies(q, r))
-	~ mp(q, r);
-
-defrule mp2b(St p, St q, St r) =>
-	mp(p, q)
-	~ mp(q, r);
-
-defrule a1i(St p, St q) =>
-	luk1(p, q) ~ mp(p, implies(q, p));
-
-defrule mp1i(St p, St q, St r) =>
-	mp(p, q) ~ a1i(q, r);
-
-defrule and(St p, St q) =>
-	p, q |- and(p, q);
-
-defun St sym([(Class, Class) -> St] f) =>
+St sym([(Class, Class) -> St] f) {
 	forall2((Class x, Class y) =>
 		implies(f(x, y), f(y, x))
-	);
+	)
+}
 
-defrule eq_sym() =>
-	|- sym(eq);
+rule eq_sym() {
+	|- sym(eq)
+}
 
 `;

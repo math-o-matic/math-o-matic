@@ -3,8 +3,8 @@
 	<head>
 		<meta charset="utf-8">
 		<script src="../dist/math.js"></script>
-		<script src="./code-propositional.js"></script>
-		<script src="./docs-propositional.js"></script>
+		<script src="./code.js"></script>
+		<script src="./docs.js"></script>
 		<script src="./nativeMap.js"></script>
 		<script src="./katex/katex.min.js"></script>
 		<script src="./m42kup.js"></script>
@@ -129,8 +129,12 @@
 					for (k in docs.typevars) {
 						var typevar = docs.typevars[k];
 
-						if (typevar.display)
-							program.scope.typevarMap[k].funcallToTeXString = typevar.display;
+						if (typevar.display) {
+							if (program.scope.typevarMap[k]._type == 'fun')
+								program.scope.typevarMap[k].funcallToTeXString = typevar.display;
+							else
+								program.scope.typevarMap[k].toTeXString = typevar.display;
+						}
 					}
 				}
 
