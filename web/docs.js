@@ -249,10 +249,16 @@ tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없�
 		foralli: {
 			description: String.raw`
 universal quantification introduction. 어떤 규칙
-[$$(x, \cdots, y, z):\ \vdash f(x, \cdots, y, z)]
+[$$(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y)]
 를 주면 규칙
-[$$(x, \cdots, y):\ \vdash \forall(x \mapsto f(x, \cdots, y, z))]
+[$$(x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))]
 를 뱉는다. 매개변수 맨 마지막에 있는 Class 하나를 [$\forall]로 돌리는 방식이다.
+
+제한사항
+[ul
+	[*] 입력 규칙의 마지막 매개변수의 타입이 Class여야 함.
+	[*] [$\vdash]의 좌변에 아무것도 없어야 함.
+]
 `
 		}
 	}
