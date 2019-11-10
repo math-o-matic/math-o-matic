@@ -17,7 +17,7 @@ function Ruleset({name, code}) {
 }
 
 Ruleset.prototype = Object.create(Node.prototype);
-Ruleset.prototype.constructor = Rule;
+Ruleset.prototype.constructor = Ruleset;
 
 Ruleset.prototype.toString = function () {
 	return this.toIndentedString(0);

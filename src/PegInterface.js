@@ -10,6 +10,7 @@ var Rule = require('./nodes/Rule');
 var Yield = require('./nodes/Yield');
 var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
+var Link = require('./nodes/Link');
 
 var PegInterface = {};
 
@@ -268,21 +269,42 @@ PegInterface.rulecall = function (obj, parentScope) {
 
 	var rule;
 
-	if (obj.rulesetName) {
-		if (!scope.hasRulesetByName(obj.rulesetName))
-			throw Error(`Ruleset ${obj.rulesetName} is not defined`);
+	switch (obj.name._type) {
+		case 'rulename_ruleset':
+			if (!scope.hasRulesetByName(obj.name.rulesetName))
+				throw Error(`Ruleset ${obj.name.rulesetName} is not defined`);
 
-		var ruleset = scope.getRuleset(obj.rulesetName);
+			var ruleset = scope.getRuleset(obj.name.rulesetName);
 
-		rule = ruleset.code.get(obj.name, scope);
+			rule = ruleset.code.get(obj.name.name, scope);
 
-		if (!rule)
-			throw Error(`Rule ${obj.rulesetName}.${obj.name} not found`);
-	} else {
-		if (!scope.hasRuleByName(obj.name))
-			throw Error(`Rule ${obj.name} is not defined`);
+			if (!rule)
+				throw Error(`Rule ${obj.name.rulesetName}.${obj.name.name} not found`);
+			break;
+		case 'rulename_link':
+			if (!scope.hasLinkByName(obj.name.linkName))
+				throw Error(`Link ${obj.name.linkName} is not defined`);
 
-		rule = scope.getRule(obj.name);
+			var link = scope.getLink(obj.name.linkName);
+
+			if (!scope.hasRuleByName(obj.name.name))
+				throw Error(`Rule ${obj.name.name} is not defined`);
+
+			var rule_ = scope.getRule(obj.name.name);
+
+			rule = link.code.get([rule_], scope);
+
+			if (!rule)
+				throw Error(`Rule ${obj.name.linkName}[${obj.name.name}] not found`);
+			break;
+		case 'rulename':
+			if (!scope.hasRuleByName(obj.name.name))
+				throw Error(`Rule ${obj.name.name} is not defined`);
+
+			rule = scope.getRule(obj.name.name);
+			break;
+		default:
+			throw Error(`Unknown type ${obj.name._type}`);
 	}
 
 	if (rule.params.length != obj.args.length)
@@ -326,6 +348,22 @@ PegInterface.ruleset = function (obj, parentScope, nativeMap) {
 	var nativeCode = nativeMap.ruleset[name];
 
 	return new Ruleset({name, code: nativeCode});
+}
+
+PegInterface.link = function (obj, parentScope, nativeMap) {
+	var scope = parentScope.extend();
+
+	var name = obj.name;
+
+	if (!obj.native)
+		throw Error('Assertion failed');
+
+	if (!nativeMap.link[name])
+		throw Error(`Native code for native link ${name} not found`);
+
+	var nativeCode = nativeMap.link[name];
+
+	return new Link({name, code: nativeCode});
 }
 
 module.exports = PegInterface;

@@ -174,5 +174,81 @@ nativeMap = {
 				return rule;
 			}
 		}
+	},
+	link: {
+		foralli: {
+			get: (rules, scope) => {
+				if (rules.length != 1) throw 1 // return false;
+				var rule = rules[0];
+
+				if (!scope.hasTypeByName('St'))
+					throw Error(`Type St not found`);
+
+				var St = scope.getTypeByName('St');
+				
+				if (!scope.hasTypeByName('Class'))
+					throw Error(`Type Class not found`);
+
+				var Class = scope.getTypeByName('Class');
+
+				if (!rule.params[rule.params.length - 1].type.equals(Class))
+					throw 2 // return false;
+
+				var last = rule.params[rule.params.length - 1];
+
+				if (rule.rules.length != 1)
+					throw 3 // return false;
+
+				var yield_ = scope.Translator.expand1(rule.rules[0]);
+
+				if (yield_._type != 'yield')
+					throw 4 // return false;
+
+				if (yield_.left.length)
+					throw 5 // return false;
+
+				if (!scope.hasTypevarByName('forall'))
+					throw Error(`Typevar forall not found`);
+
+				var forall = scope.getTypevarByName('forall');
+
+				if (!forall.type.equals(new scope.Type({
+					functional: true,
+					from: [new scope.Type({
+						functional: true,
+						from: [Class],
+						to: St
+					})],
+					to: St
+				})))
+					throw Error(`Wrong type for forall`);
+
+				return new scope.Rule({
+					name: `foralli[${rule.name}]`,
+					params: rule.params.slice(0, rule.params.length - 1),
+					rules: [
+						new scope.Yield({
+							left: [],
+							right: new scope.Funcall({
+								fun: forall,
+								args: [
+									new scope.Fun({
+										anonymous: true,
+										type: new scope.Type({
+											functional: true,
+											from: [Class],
+											to: St
+										}),
+										atomic: false,
+										params: [last],
+										expr: yield_.right
+									})
+								]
+							})
+						})
+					]
+				});
+			}
+		}
 	}
-}
+};

@@ -1,4 +1,4 @@
 var parser = require('../dist/parser');
-var process = require('./process');
+var Program = require('./Program');
 
-module.exports = {parser, process};
+module.exports = {parser, Program};

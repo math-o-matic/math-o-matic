@@ -137,7 +137,17 @@ rule destroy(St p) {
 
 typedef Class;
 
+[Class -> St] andf([Class -> St] f, [Class -> St] g) {
+	(Class x) => and(f(x), g(x))
+}
+
+[Class -> St] orf([Class -> St] f, [Class -> St] g) {
+	(Class x) => or(f(x), g(x))
+}
+
 St forall([Class -> St] f);
+
+native link foralli;
 
 St forall2([(Class, Class) -> St] f) {
 	forall((Class x) =>
@@ -168,6 +178,64 @@ rule einst([Class -> St] f, [Class -> St] g) {
 rule exists([Class -> St] f, Class x) {
 	f(x) |- exists(f)
 }
+
+rule forall_and([Class -> St] f, [Class -> St] g) {
+	|- iff(
+		forall(andf(f, g)),
+		and(forall(f), forall(g))
+	)
+}
+
+rule forall_and_mp1([Class -> St] f, [Class -> St] g) {
+	forall_and(f, g)
+	~ iffe1(
+		forall(andf(f, g)),
+		and(forall(f), forall(g))
+	)
+	~ mp(
+		forall(andf(f, g)),
+		and(forall(f), forall(g))
+	)
+}
+
+rule forall_and_mp2([Class -> St] f, [Class -> St] g) {
+	forall_and(f, g)
+	~ iffe2(
+		forall(andf(f, g)),
+		and(forall(f), forall(g))
+	)
+	~ mp(
+		and(forall(f), forall(g)),
+		forall(andf(f, g))
+	)
+}
+
+rule forall_implies([Class -> St] f, [Class -> St] g) {
+	|- implies(
+		forall((Class x) => implies(f(x), g(x))),
+		implies(forall(f), forall(g))
+	)
+}
+
+rule _ttf_IEpqEqp([Class -> St] f, [Class -> St] g, Class x) {
+	tt.IEpqEqp(f(x), g(x))
+}
+
+rule _ttf_IEpqEqp_foralli([Class -> St] f, [Class -> St] g) {
+	foralli[_ttf_IEpqEqp](f, g)
+}
+
+St sym([(Class, Class) -> St] f) {
+	forall2((Class x, Class y) =>
+		implies(f(x, y), f(y, x))
+	)
+}
+
+############################
+######## SET THEORY ########
+############################
+
+/****************************************
 
 St in(Class a, Class b);
 
@@ -213,14 +281,10 @@ rule spec([Class -> St] p) {
 	)
 }
 
-St sym([(Class, Class) -> St] f) {
-	forall2((Class x, Class y) =>
-		implies(f(x, y), f(y, x))
-	)
-}
-
 rule eq_sym() {
 	|- sym(eq)
 }
+
+****************************************/
 
 `;

@@ -61,6 +61,20 @@ docs = {
 						+ `\\href{#typevar-iff}{\\leftrightarrow} ${args[1].toTeXString()}\\right)`;
 			}
 		},
+		andf: {
+			description: 'and의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()}`
+						+ `\\href{#typevar-andf}{\\land} ${args[1].toTeXString()} \\right)`;
+			}
+		},
+		orf: {
+			description: 'or의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()}`
+						+ `\\href{#typevar-orf}{\\lor} ${args[1].toTeXString()} \\right)`;
+			}
+		},
 		forall: {
 			description: '보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다.',
 			display: function (args) {
@@ -170,7 +184,10 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 			description: 'biconditional elimination 2.'
 		},
 		destroy: {
-			description: 'falsum을 만들어 내는 방법. 계의 기본규칙으로부터 이걸 호출할 수 있다면 계를 파-괴할 수 있다.'
+			description: String.raw`
+[$\bot]을 만들어 내는 방법. 계의 기본규칙으로부터 이걸 호출할 수 있다면 계를 파-괴할 수 있다.
+
+비슷한 방법으로 [$p, \neg p \vdash q]를 유도할 수 있다. 이는 [$p \vdash \top] 또는 [$\vdash p \to \top]이라고 [$\vdash p]가 아님을 시사한다.`
 		},
 		uinst: {
 			description: 'universal instantiation.'
@@ -225,6 +242,17 @@ Metamath처럼 Łukasiewicz의 공리계로 어떻게 해보려 했으나 예전
 틀린 식은 없다고 나오므로 주의하기 바란다.
 
 tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없으므로, 뭔가를 좌변에 넣으려면 modus ponens를 적용해야 한다.
+`
+		}
+	},
+	links: {
+		foralli: {
+			description: String.raw`
+universal quantification introduction. 어떤 규칙
+[$$(x, \cdots, y, z):\ \vdash f(x, \cdots, y, z)]
+를 주면 규칙
+[$$(x, \cdots, y):\ \vdash \forall(x \mapsto f(x, \cdots, y, z))]
+를 뱉는다. 매개변수 맨 마지막에 있는 Class 하나를 [$\forall]로 돌리는 방식이다.
 `
 		}
 	}

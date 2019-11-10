@@ -34,16 +34,13 @@ Program.prototype.feed = function (lines, nativeMap) {
 			case 'defruleset':
 				this.scope.addRuleset(line, nativeMap);
 				break;
+			case 'deflink':
+				this.scope.addLink(line, nativeMap);
+				break;
 			default:
 				throw Error(`Unknown line type ${line._type}`);
 		}
 	});
 }
 
-function process(lines, nativeMap) {
-	var program = new Program();
-	program.feed(lines, nativeMap);
-	return program;
-}
-
-module.exports = process;
+module.exports = Program;

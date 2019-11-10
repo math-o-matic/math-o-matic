@@ -15,8 +15,10 @@ function Rule({name, params, rules}) {
 	this.params = params;
 	this.rules = rules;
 
-	// all yields
 	var expands = this.rules.map(Translator.expand1);
+
+	if (expands.map(e => e._type == 'yield').some(e => !e))
+		throw Error(`Assertion failed`);
 
 	this.expr = expands.reduceRight((r, l) => {
 		for (var i = 0; i < r.left.length; i++) {

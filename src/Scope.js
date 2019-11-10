@@ -6,6 +6,9 @@ var Rule = require('./nodes/Rule');
 var Yield = require('./nodes/Yield');
 var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
+var Link = require('./nodes/Link');
+
+var Translator = require('./Translator');
 
 var PegInterface = require('./PegInterface');
 
@@ -14,6 +17,7 @@ function Scope(parent) {
 	this.typevarMap = {};
 	this.ruleMap = {};
 	this.rulesetMap = {};
+	this.linkMap = {};
 
 	this.Type = Type;
 	this.Typevar = Typevar;
@@ -23,6 +27,9 @@ function Scope(parent) {
 	this.Yield = Yield;
 	this.Rulecall = Rulecall;
 	this.Ruleset = Ruleset;
+	this.Link = Link;
+
+	this.Translator = Translator;
 
 	this.parent = parent;
 	this.root = parent ? parent.root : this;
@@ -164,6 +171,32 @@ Scope.prototype.getRuleset = function (name) {
 
 	return this.rulesetMap[name] ||
 		(!!this.parent && this.parent.getRuleset(name));
+}
+
+Scope.prototype.hasOwnLinkByName = function (name) {
+	return !!this.linkMap[name];
+}
+
+Scope.prototype.hasLinkByName = function (name) {
+	return this.hasOwnLinkByName(name)
+		|| (!!this.parent && this.parent.hasLinkByName(name));
+}
+
+Scope.prototype.addLink = function (deflinkobj, nativeMap) {
+	var link = PegInterface.link(deflinkobj, this, nativeMap);
+
+	if (this.hasOwnLinkByName(link.name))
+		throw Error(`Link with name ${link.name} already is there`);
+
+	return this.linkMap[link.name] = link;
+}
+
+Scope.prototype.getLink = function (name) {
+	if (!this.hasLinkByName(name))
+		throw Error(`Link with name ${name} not found`);
+
+	return this.linkMap[name] ||
+		(!!this.parent && this.parent.getLink(name));
 }
 
 module.exports = Scope;

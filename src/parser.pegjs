@@ -7,9 +7,7 @@ line
 	/ defun
 	/ defrule
 	/ defruleset
-
-comment
-	= "#" (!newline .)* _
+	/ deflink
 
 typedef
 	= "typedef" __ type:stype _ SEM _
@@ -57,6 +55,20 @@ defun
 				name,
 				params,
 				expr
+			}
+		}
+
+deflink
+	=
+		"native" __
+		"link" __
+		name:IDENT _
+		SEM _
+		{
+			return {
+				_type: 'deflink',
+				name,
+				native: true
 			}
 		}
 
@@ -124,8 +136,38 @@ yield
 // rule(...)
 rulecall
 	=
-		rulesetName:(id:IDENT _ "." _ {return id})?
-		name:IDENT _
+		name:(
+			(
+				linkName:IDENT _
+				"[" _
+				name:IDENT _
+				"]" _
+				{
+					return {
+						_type: 'rulename_link',
+						linkName,
+						name
+					}
+				}
+			)
+			/
+			(
+				rulesetName:(id:IDENT _ "." _ {return id})?
+				name:IDENT _
+				{
+					return rulesetName
+						? {
+							_type: 'rulename_ruleset',
+							rulesetName,
+							name
+						}
+						: {
+							_type: 'rulename',
+							name
+						}
+				}
+			)
+		)
 		args:(
 			"(" _
 			a:(
@@ -139,7 +181,6 @@ rulecall
 		{
 			return {
 				_type: 'rulecall',
-				rulesetName,
 				name,
 				args
 			}
@@ -292,6 +333,11 @@ keyword
 
 IDENT
 	= !keyword id:[a-zA-Z0-9_]+ {return id.join('')}
+
+comment
+	= "#" (!newline .)* _
+	/ "//" (!newline .)* _
+	/ "/*" (!"*/" .)* "*/" _
 
 newline = "\r\n" / "\r" / "\n"
 
