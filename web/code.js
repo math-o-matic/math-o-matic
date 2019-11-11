@@ -31,6 +31,7 @@ St iff(St p, St q) {
 }
 
 native ruleset tt;
+native link cp;
 
 rule mp(St p, St q) {
 	p, implies(p, q) |- q
@@ -120,6 +121,10 @@ rule iffe1(St p, St q) {
 rule iffe2(St p, St q) {
 	tt.IEpqIqp(p, q)
 	~ mp(iff(p, q), implies(q, p))
+}
+
+rule id(St p) {
+	tt.Ipp(p) ~ mp(p, p)
 }
 
 rule destroy(St p) {
@@ -240,21 +245,6 @@ rule forall_forall_mp([(Class, Class) -> St] f) {
 	)
 }
 
-rule _ttf_IEpqEqp([Class -> St] f, [Class -> St] g, Class x) {
-	tt.IEpqEqp(f(x), g(x))
-}
-
-rule _naming_is_hard([Class -> St] f, [Class -> St] g) {
-	foralli[_ttf_IEpqEqp](f, g)
-	~ forall_implies_mp(
-		(Class x) => iff(f(x), g(x)),
-		(Class x) => iff(g(x), f(x))
-	) ~ mp(
-		forall((Class x) => iff(f(x), g(x))),
-		forall((Class x) => iff(g(x), f(x)))
-	)
-}
-
 St sym([(Class, Class) -> St] f) {
 	forall2((Class x, Class y) =>
 		implies(f(x, y), f(y, x))
@@ -309,11 +299,26 @@ rule spec([Class -> St] p) {
 	)
 }
 
+rule _ttf_IEpqEqp([Class -> St] f, [Class -> St] g, Class x) {
+	tt.IEpqEqp(f(x), g(x))
+}
+
+rule _tmp0([Class -> St] f, [Class -> St] g) {
+	foralli[_ttf_IEpqEqp](f, g)
+	~ forall_implies_mp(
+		(Class x) => iff(f(x), g(x)),
+		(Class x) => iff(g(x), f(x))
+	) ~ mp(
+		forall((Class x) => iff(f(x), g(x))),
+		forall((Class x) => iff(g(x), f(x)))
+	)
+}
+
 rule _tmp(Class x, Class y) {
 	ande1(
 		forall((Class z) => iff(in(z, x), in(z, y))),
 		forall((Class w) => iff(in(x, w), in(y, w)))
-	) ~ _naming_is_hard(
+	) ~ _tmp0(
 		(Class z) => in(z, x),
 		(Class z) => in(z, y)
 	)
@@ -323,7 +328,7 @@ rule _tmp2(Class x, Class y) {
 	ande2(
 		forall((Class z) => iff(in(z, x), in(z, y))),
 		forall((Class w) => iff(in(x, w), in(y, w)))
-	) ~ _naming_is_hard(
+	) ~ _tmp0(
 		(Class w) => in(x, w),
 		(Class w) => in(y, w)
 	)
@@ -336,12 +341,16 @@ rule _tmp3(Class x, Class y) {
 	)
 }
 
-rule id(St p) {
-	tt.Ipp(p) ~ mp(p, p)
+rule _tmp4(Class x, Class y) {
+	cp[_tmp3](x, y)
+}
+
+rule _tmp5(Class x) {
+	foralli[_tmp4](x)
 }
 
 rule eq_sym() {
-	|- sym(eq)
+	foralli[_tmp5]()
 }
 
 `;

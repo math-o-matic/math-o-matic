@@ -203,6 +203,9 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 		},
 		spec: {
 			description: 'axiom schema of specification. ZFC 공리계의 공리.'
+		},
+		eq_sym: {
+			description: '[$=]는 대칭적(symmetric)이다.'
 		}
 	},
 	rulesets: {

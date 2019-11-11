@@ -178,7 +178,7 @@ nativeMap = {
 	link: {
 		foralli: {
 			get: (rules, scope) => {
-				if (rules.length != 1) throw 1 // return false;
+				if (rules.length != 1) return false;
 				var rule = rules[0];
 
 				if (!scope.hasTypeByName('St'))
@@ -192,20 +192,17 @@ nativeMap = {
 				var Class = scope.getTypeByName('Class');
 
 				if (!rule.params[rule.params.length - 1].type.equals(Class))
-					throw 2 // return false;
+					return false;
 
 				var last = rule.params[rule.params.length - 1];
 
-				if (rule.rules.length != 1)
-					throw 3 // return false;
-
-				var yield_ = scope.Translator.expand1(rule.rules[0]);
+				var yield_ = rule.expr;
 
 				if (yield_._type != 'yield')
-					throw 4 // return false;
+					return false;
 
 				if (yield_.left.length)
-					throw 5 // return false;
+					return false;
 
 				if (!scope.hasTypevarByName('forall'))
 					throw Error(`Typevar forall not found`);
@@ -248,6 +245,54 @@ nativeMap = {
 						})
 					]
 				});
+			}
+		},
+		cp: {
+			get: (rules, scope) => {
+				if (rules.length != 1) return false;
+				var rule = rules[0];
+
+				if (!scope.hasTypeByName('St'))
+					throw Error(`Type St not found`);
+
+				var St = scope.getTypeByName('St');
+
+				var yield_ = rule.expr;
+
+				if (yield_._type != 'yield')
+					return false;
+
+				if (!yield_.left.length)
+					return false;
+
+				if (!scope.hasTypevarByName('implies'))
+					throw Error(`Typevar implies not found`);
+
+				var implies = scope.getTypevarByName('implies');
+
+				if (!implies.type.equals(new scope.Type({
+					functional: true,
+					from: [St, St],
+					to: St
+				})))
+					throw Error(`Wrong type for implies`);
+var result;
+				return result=new scope.Rule({
+					name: `cp[${rule.name}]`,
+					params: rule.params,
+					rules: [
+						new scope.Yield({
+							left: yield_.left.slice(0, yield_.left.length - 1),
+							right: new scope.Funcall({
+								fun: implies,
+								args: [
+									yield_.left[yield_.left.length - 1],
+									yield_.right
+								]
+							})
+						})
+					]
+				}),console.log(result),result;
 			}
 		}
 	}

@@ -12,6 +12,9 @@ function Yield({left, right}) {
 	
 	if (!left || !right) throw Error('Missing required argument');
 
+	if (!(left instanceof Array))
+		throw Error(`left not array`);
+
 	// remove duplicates
 	this.left = left.reduce((l, r) => {
 		for (var i = 0; i < l.length; i++)
