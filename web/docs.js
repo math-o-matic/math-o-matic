@@ -133,7 +133,7 @@ docs = {
 		sym: {
 			description: 'binary relation의 symmetricity.',
 			display: function (args) {
-				return `${args[0].toTeXString()}\\ \\href{#typevar-sym}{\\text{is symmetric}}`;
+				return `\\left(${args[0].toTeXString()}\\ \\href{#typevar-sym}{\\text{is symmetric}}\\right)`;
 			}
 		}
 	},

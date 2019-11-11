@@ -64,7 +64,7 @@ Fun.prototype.funcallToTeXString = function (args) {
 	var n = this.escapeTeX(this.name);
 
 	return `${this.anonymous
-			? '(' + this.toTeXString() + ')'
+			? this.toTeXString()
 			: `${this.name.length == 1 ? n : `\\mathrm{${n}}`}`}`
 		+ `(${args.join(', ')})`;
 }

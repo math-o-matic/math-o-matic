@@ -2,6 +2,8 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no">
+		<title>M42/math</title>
 		<script src="../dist/math.js"></script>
 		<script src="./code.js"></script>
 		<script src="./docs.js"></script>
@@ -111,6 +113,7 @@
 				`<pre>${escapeHtml(code)}</pre>`;
 
 			console.log('--- PARSE START ---');
+			var parseStartTime = new Date() * 1;
 			var parsed, err;
 			try {
 				parsed = math.parser.parse(code);
@@ -121,13 +124,23 @@
 				err = e;
 			}
 
+			var parseEndTime = new Date() * 1;
+
 			if (!err) {
 				console.log(JSON.stringify(parsed, null, 2));
 				console.log('--- PARSE END ---');
+				console.log(`Parsed ended in ${parseEndTime - parseStartTime} ms`);
 				console.log('--- PROCESS START --');
+				var processStartTime = new Date() * 1;
+
 				var program = new math.Program();
 				program.feed(parsed, nativeMap);
+
+				var processEndTime = new Date() * 1;
+
 				console.log(program);
+				console.log('--- PROCESS END ---');
+				console.log(`Process ended in ${processEndTime - processStartTime} ms`);
 
 				if (docs.typevars) {
 					for (k in docs.typevars) {
@@ -227,8 +240,6 @@
 				[].forEach.call($$('.katex a'), a => {
 					a.title = a.getAttribute('href');
 				});
-
-				console.log('--- PROCESS END ---');
 			}
 		</script>
 	</body>

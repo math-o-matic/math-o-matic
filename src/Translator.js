@@ -15,7 +15,7 @@ Translator.init = function (o) {
 
 Translator.substitute0 = function (expr, map) {
 	if (expr._type == 'funcall') {
-		var fun2 = map(expr.fun) || expr.fun;
+		var fun2 = Translator.substitute0(expr.fun, map);
 		var args2 = expr.args.map(arg => Translator.substitute0(arg, map));
 		return new Funcall({
 			fun: fun2,
@@ -25,7 +25,12 @@ Translator.substitute0 = function (expr, map) {
 		if (expr.atomic) return map(expr) || expr;
 		if (expr.params.map(p => p == expr).some(e => e))
 			throw Error(`Duplicate parameter found`);
+
 		var expr2 = Translator.substitute0(expr.expr, map);
+		
+		if (Translator.expr0Equals(expr.expr, expr2))
+			return expr;
+
 		return new Fun({
 			anonymous: true,
 			type: expr.type,

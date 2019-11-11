@@ -186,6 +186,20 @@ rule forall_and([Class -> St] f, [Class -> St] g) {
 	)
 }
 
+rule forall_implies([Class -> St] f, [Class -> St] g) {
+	|- implies(
+		forall((Class x) => implies(f(x), g(x))),
+		implies(forall(f), forall(g))
+	)
+}
+
+rule forall_forall([(Class, Class) -> St] f) {
+	|- implies(
+		forall2((Class x, Class y) => f(x, y)),
+		forall2((Class y, Class x) => f(x, y))
+	)
+}
+
 rule forall_and_mp1([Class -> St] f, [Class -> St] g) {
 	forall_and(f, g)
 	~ iffe1(
@@ -210,10 +224,19 @@ rule forall_and_mp2([Class -> St] f, [Class -> St] g) {
 	)
 }
 
-rule forall_implies([Class -> St] f, [Class -> St] g) {
-	|- implies(
+rule forall_implies_mp([Class -> St] f, [Class -> St] g) {
+	forall_implies(f, g)
+	~ mp(
 		forall((Class x) => implies(f(x), g(x))),
 		implies(forall(f), forall(g))
+	)
+}
+
+rule forall_forall_mp([(Class, Class) -> St] f) {
+	forall_forall(f)
+	~ mp(
+		forall2((Class x, Class y) => f(x, y)),
+		forall2((Class y, Class x) => f(x, y))
 	)
 }
 
@@ -221,8 +244,15 @@ rule _ttf_IEpqEqp([Class -> St] f, [Class -> St] g, Class x) {
 	tt.IEpqEqp(f(x), g(x))
 }
 
-rule _ttf_IEpqEqp_foralli([Class -> St] f, [Class -> St] g) {
+rule _naming_is_hard([Class -> St] f, [Class -> St] g) {
 	foralli[_ttf_IEpqEqp](f, g)
+	~ forall_implies_mp(
+		(Class x) => iff(f(x), g(x)),
+		(Class x) => iff(g(x), f(x))
+	) ~ mp(
+		forall((Class x) => iff(f(x), g(x))),
+		forall((Class x) => iff(g(x), f(x)))
+	)
 }
 
 St sym([(Class, Class) -> St] f) {
@@ -234,8 +264,6 @@ St sym([(Class, Class) -> St] f) {
 ############################
 ######## SET THEORY ########
 ############################
-
-/****************************************
 
 St in(Class a, Class b);
 
@@ -281,10 +309,39 @@ rule spec([Class -> St] p) {
 	)
 }
 
+rule _tmp(Class x, Class y) {
+	ande1(
+		forall((Class z) => iff(in(z, x), in(z, y))),
+		forall((Class w) => iff(in(x, w), in(y, w)))
+	) ~ _naming_is_hard(
+		(Class z) => in(z, x),
+		(Class z) => in(z, y)
+	)
+}
+
+rule _tmp2(Class x, Class y) {
+	ande2(
+		forall((Class z) => iff(in(z, x), in(z, y))),
+		forall((Class w) => iff(in(x, w), in(y, w)))
+	) ~ _naming_is_hard(
+		(Class w) => in(x, w),
+		(Class w) => in(y, w)
+	)
+}
+
+rule _tmp3(Class x, Class y) {
+	_tmp(x, y) ~ _tmp2(x, y) ~ andi(
+		forall((Class z) => iff(in(z, y), in(z, x))),
+		forall((Class w) => iff(in(y, w), in(x, w)))
+	)
+}
+
+rule id(St p) {
+	tt.Ipp(p) ~ mp(p, p)
+}
+
 rule eq_sym() {
 	|- sym(eq)
 }
-
-****************************************/
 
 `;
