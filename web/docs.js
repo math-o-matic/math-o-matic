@@ -84,7 +84,7 @@ docs = {
 		forall2: {
 			description: '입력항이 두 개인 함수를 위한 보편 양화. forall에 의존한다.',
 			display: function (args) {
-				return `\\left(\\href{#typevar-forall}{\\forall}${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#typevar-forall2}{\\forall}${args[0].toTeXString()}\\right)`;
 			}
 		},
 		exists: {
@@ -96,7 +96,7 @@ docs = {
 		exists2: {
 			description: '입력항이 두 개인 함수를 위한 존재 양화. forall2에 의존한다.',
 			display: function (args) {
-				return `\\left(\\href{#typevar-exists}{\\exists}${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#typevar-exists2}{\\exists}${args[0].toTeXString()}\\right)`;
 			}
 		},
 		in: {
