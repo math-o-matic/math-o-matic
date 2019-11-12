@@ -1,6 +1,7 @@
 var Node = require('./Node');
 
 function Type(o) {
+	Node.call(this);
 	this._type = 'type';
 	
 	if (typeof o.functional != 'boolean')

@@ -1,11 +1,15 @@
 var Node = require('./Node');
 var Type = require('./Type');
 
-function Typevar(type, name) {
+function Typevar({type, name}) {
+	Node.call(this);
 	this._type = 'typevar';
-	
-	if (!(type instanceof Type))
-		throw Error(`!(type instanceof Type)`);
+
+	if (type._type != 'type')
+		throw Error(`Assertion failed`);
+
+	if (typeof name != 'string')
+		throw Error(`Assertion failed`);
 
 	this.type = type;
 	this.name = name;

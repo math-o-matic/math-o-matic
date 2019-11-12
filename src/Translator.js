@@ -13,7 +13,23 @@ Translator.init = function (o) {
 	Ruleset = o.Ruleset;
 }
 
+Translator.isfree0 = function (expr, map) {
+	if (expr._type == 'funcall') {
+		return Translator.isfree0(expr.fun, map)
+			&& expr.args.map(arg => Translator.isfree0(arg, map)).every(e => e);
+	} else if (expr._type == 'fun') {
+		if (expr.atomic) return !map(expr);
+		return Translator.isfree0(expr.expr, map);
+	} else if (expr._type == 'typevar') {
+		return !map(expr);
+	} else {
+		throw Error(`Unknown type ${expr._type}`);
+	}
+}
+
 Translator.substitute0 = function (expr, map) {
+	if (Translator.isfree0(expr, map)) return expr;
+
 	if (expr._type == 'funcall') {
 		var fun2 = Translator.substitute0(expr.fun, map);
 		var args2 = expr.args.map(arg => Translator.substitute0(arg, map));
@@ -23,13 +39,8 @@ Translator.substitute0 = function (expr, map) {
 		});
 	} else if (expr._type == 'fun') {
 		if (expr.atomic) return map(expr) || expr;
-		if (expr.params.map(p => p == expr).some(e => e))
-			throw Error(`Duplicate parameter found`);
 
 		var expr2 = Translator.substitute0(expr.expr, map);
-		
-		if (Translator.expr0Equals(expr.expr, expr2))
-			return expr;
 
 		return new Fun({
 			anonymous: true,
@@ -38,8 +49,10 @@ Translator.substitute0 = function (expr, map) {
 			params: expr.params,
 			expr: expr2
 		});
-	} else {
+	} else if (expr._type == 'typevar') {
 		return map(expr) || expr;
+	} else {
+		throw Error(`Unknown type ${expr._type}`);
 	}
 }
 
@@ -57,9 +70,26 @@ Translator.substitute1 = function (expr, map) {
 		return new Yield({
 			left, right
 		});
-	} else throw Error(`wut`);
+	} else {
+		throw Error(`Unknown type ${expr._type}`);
+	}
 }
 
+// 네임드도 푼다. 한 번만.
+Translator.expand0FuncallOnce = function (expr) {
+	if (expr._type == 'funcall') {
+		var map = param => expr.args[expr.fun.params.indexOf(param)];
+
+		if (!expr.fun.expr)
+			return expr;
+
+		return Translator.substitute0(expr.fun.expr, map);
+	} else {
+		return expr;
+	}
+}
+
+// 네임드는 안 푼다. 재귀적.
 Translator.expand0Funcalls = function (expr) {
 	if (expr._type == 'funcall') {
 		var fun = Translator.expand0Funcalls(expr.fun);
@@ -169,38 +199,157 @@ Translator.expand1Full = function (expr) {
 }
 
 Translator.expr0Equals = function (a, b) {
-	a = Translator.expand0(a);
-	b = Translator.expand0(b);
 
-	if ((a._type == 'funcall') != (b._type == 'funcall')) return false;
+	var cache = [];
 
-	if (a._type == 'funcall') {
-		if (a.fun != b.fun) return false;
+	// https://stackoverflow.com/a/29018745
+	function search(a, b) {
+		var m = 0;
+		var n = cache.length - 1;
+		while (m <= n) {
+			var k = (n + m) >> 1;
+			var c = cache[k][0], d = cache[k][1];
 
-		for (var i = 0; i < a.args.length; i++)
-			if (!Translator.expr0Equals(a.args[i], b.args[i])) return false;
-		return true;
+			if (a > c || (a == c && b > d)) {
+				m = k + 1;
+			} else if (a < c || (a == c && b < d)) {
+				n = k - 1;
+			} else {
+				return k;
+			}
+		}
+
+		return ~m; // -m - 1
 	}
 
-	if (a.type.isFunctional && b.type.isFunctional) {
-		if (!a.type.equals(b.type)) return false;
-		
-		var placeholders = Array(a.type.from.length).fill().map((_, i) =>
-			new Typevar(a.type.from[i], '$'));
+	function addCache(a, b, v) {
+		var aid = a._id, bid = b._id;
 
-		return Translator.expr0Equals(
-			new Funcall({
+		if (aid > bid)
+			[aid, bid] = [bid, aid];
+
+		var i = search(aid, bid);
+
+		if (i < 0)
+			cache.splice(~i, 0, [aid, bid, v]);
+	}
+
+	function getCache(a, b) {
+		var aid = a._id, bid = b._id;
+
+		if (aid > bid)
+			[aid, bid] = [bid, aid];
+
+		var i = search(aid, bid);
+
+		if (i < 0) return;
+
+		return cache[i][2];
+	}
+
+	function recurse(a, b, depth) {
+		// console.log(`${depth}\n${a}\n\n${b}`);
+
+		if (a == b) return true;
+		if (a._type == 'typevar' || b._type == 'typevar') return a == b;
+		if (!a.type.equals(b.type)) return false;
+
+		if (a._type == 'funcall' && b._type == 'funcall') {
+			if (a.fun == b.fun) {
+				if (!a.fun.expr) {
+					for (var i = 0; i < a.args.length; i++)
+						if (!cachedRecurse(a.args[i], b.args[i], depth+1)) return false;
+					return true;
+				}
+
+				var foo = true;
+
+				for (var i = 0; i < a.args.length; i++) {
+					if (!cachedRecurse(
+						a.args[i], b.args[i],depth+1
+					)) {
+						foo = false;
+						break;
+					}
+				}
+
+				if (foo) return true;
+
+				return cachedRecurse(
+					Translator.expand0FuncallOnce(a),
+					Translator.expand0FuncallOnce(b),
+					depth+1
+				);
+			}
+
+			if (!a.fun.expr && !b.fun.expr) return false;
+
+			if (!a.fun.expr && b.fun.expr)
+				[a, b] = [b, a];
+
+			if (b.fun.anonymous)
+				[a, b] = [b, a];
+
+			if (b.fun.expr && b.fun.expr._type == 'funcall' && b.fun.expr.fun == a.fun) {
+				[a, b] = [b, a];
+			}
+
+			return cachedRecurse(
+				Translator.expand0FuncallOnce(a),
+				b,
+				depth+1
+			);
+		}
+
+		if (a._type == 'fun' && b._type == 'funcall')
+			[a, b] = [b, a];
+
+		while (a._type == 'funcall') {
+			if (!a.fun.expr) return false;
+			a = Translator.expand0FuncallOnce(a);
+		}
+
+		if (a._type != 'fun') return false;
+
+		var placeholders = Array(a.type.from.length).fill().map((_, i) =>
+			new Typevar({
+				type: a.type.from[i],
+				name: '$' + i
+			})
+		);
+
+		return cachedRecurse(
+			Translator.expand0FuncallOnce(new Funcall({
 				fun: a,
 				args: placeholders
-			}),
-			new Funcall({
+			})),
+			Translator.expand0FuncallOnce(new Funcall({
 				fun: b,
 				args: placeholders
-			})
+			})),
+			depth+1
 		);
 	}
 
-	return a == b;
+	function cachedRecurse(a, b, depth) {
+		var cached = getCache(a, b);
+		if (typeof cached == 'boolean') {
+			// console.warn(`${depth} (cache: ${cached})\n${a}\n\n${b}`);
+			return cached;
+		}
+
+		var v = recurse(a, b, depth);
+
+		// typevar는 캐싱 하지 않는다.
+		if (!(a._type == 'typevar'))
+			addCache(a, b, v);
+
+		return v;
+	}
+
+	var ret = cachedRecurse(a, b, 0);
+	// console.error(`result: ${ret}\ncache length: ${cache.length}`);
+	return ret;
 }
 
 module.exports = Translator;

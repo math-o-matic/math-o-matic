@@ -3,10 +3,30 @@ var Type = require('./Type');
 var Typevar = require('./Typevar');
 
 function Fun({anonymous, name, type, atomic, params, expr}) {
+	Node.call(this);
 	this._type = 'fun';
-	
-	if (!atomic && (!params || !expr))
-		throw Error(`Non-atomic function without params or expr`);
+
+	if (typeof anonymous != 'boolean')
+		throw Error(`Assertion failed`);
+
+	if (!anonymous && typeof name != 'string')
+		throw Error(`Assertion failed`);
+
+	if (type._type != 'type')
+		throw Error(`Assertion failed`);
+
+	if (typeof atomic != 'boolean')
+		throw Error(`Assertion failed`);
+
+	if (!atomic) {
+		if (!(params instanceof Array)
+				|| params.map(e => e instanceof Node).some(e => !e))
+			throw Error(`Assertion failed`);
+
+		if (!(expr instanceof Node))
+			throw Error(`Assertion failed`);
+	}
+
 	this.anonymous = anonymous;
 	this.name = anonymous ? '<anonymous>' : name;
 	this.type = type;

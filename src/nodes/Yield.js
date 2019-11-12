@@ -8,12 +8,15 @@ var Rule = require('./Rule');
 var Translator = require('../Translator');
 
 function Yield({left, right}) {
+	Node.call(this);
 	this._type = 'yield';
-	
-	if (!left || !right) throw Error('Missing required argument');
 
-	if (!(left instanceof Array))
-		throw Error(`left not array`);
+	if (!(left instanceof Array)
+			|| left.map(e => e instanceof Node).some(e => !e))
+		throw Error(`Assertion failed`);
+
+	if (!(right instanceof Node))
+		throw Error(`Assertion failed`);
 
 	// remove duplicates
 	this.left = left.reduce((l, r) => {

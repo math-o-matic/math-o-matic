@@ -29,7 +29,10 @@ PegInterface.typevar = function (obj, parentScope) {
 
 	var type = scope.getType(obj.type);
 
-	return new Typevar(type, obj.name);
+	return new Typevar({
+		type,
+		name: obj.name
+	});
 }
 
 PegInterface.fun = function (obj, parentScope) {

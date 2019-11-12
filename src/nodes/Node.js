@@ -1,4 +1,10 @@
+var ctr = (() => {
+	var i = 1;
+	return () => i++;
+})();
+
 function Node() {
+	this._id = ctr();
 }
 
 Node.prototype.escapeTeX = function (s) {

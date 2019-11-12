@@ -124,7 +124,10 @@ nativeMap = {
 				var St = scope.root.getTypeByName('St');
 
 				var argTypevars = Array(arglen).fill().map((_, i) => {
-					return new scope.Typevar(St, args[i]);
+					return new scope.Typevar({
+						type: St,
+						name: args[i]
+					});
 				});
 
 				var typevarMap = {
@@ -276,8 +279,8 @@ nativeMap = {
 					to: St
 				})))
 					throw Error(`Wrong type for implies`);
-var result;
-				return result=new scope.Rule({
+
+				return new scope.Rule({
 					name: `cp[${rule.name}]`,
 					params: rule.params,
 					rules: [
@@ -292,7 +295,7 @@ var result;
 							})
 						})
 					]
-				}),console.log(result),result;
+				});
 			}
 		}
 	}

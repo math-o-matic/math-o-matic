@@ -4,9 +4,18 @@ var Typevar = require('./Typevar');
 var Fun = require('./Fun');
 
 function Funcall({fun, args}) {
+	Node.call(this);
 	this._type = 'funcall';
+
+	if (!(fun instanceof Node))
+		throw Error(`Assertion failed`);
+
+	if (!['typevar', 'fun', 'funcall'].includes(fun._type))
+		throw Error(`Assertion failed`);
+
+	if (!(args instanceof Array) || args.map(e => e instanceof Node).some(e => !e))
+		throw Error(`Assertion failed`);
 	
-	if (!fun || !args) throw Error('Missing required argument');
 	this.fun = fun;
 	this.type = fun.type.to;
 	this.args = args;
@@ -34,7 +43,7 @@ Funcall.prototype.toIndentedString = function (indent) {
 		args = args.join(', ');
 
 		return [
-			`${this.fun.anonymous ? '(' + this.fun + ')' : this.fun.name}(`,
+			`${this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
 			args,
 			`)`
 		].join('')
@@ -43,7 +52,7 @@ Funcall.prototype.toIndentedString = function (indent) {
 		args = args.join(',\n' + '\t'.repeat(indent + 1));
 
 		return [
-			`${this.fun.anonymous ? '(' + this.fun + ')' : this.fun.name}(`,
+			`${this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
 			'\t' + args,
 			`)`
 		].join('\n' + '\t'.repeat(indent));

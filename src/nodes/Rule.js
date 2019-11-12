@@ -9,7 +9,19 @@ var Rulecall = require('./Rulecall');
 var Translator = require('../Translator');
 
 function Rule({name, params, rules}) {
-	this._type = 'link';
+	Node.call(this);
+	this._type = 'rule';
+
+	if (typeof name != 'string')
+		throw Error(`Assertion failed`);
+
+	if (!(params instanceof Array)
+			|| params.map(e => e._type == 'typevar').some(e => !e))
+		throw Error(`Assertion failed`);
+
+	if (!(rules instanceof Array)
+			|| rules.map(e => e instanceof Node).some(e => !e))
+		throw Error(`Assertion failed`);
 	
 	this.name = name;
 	this.params = params;

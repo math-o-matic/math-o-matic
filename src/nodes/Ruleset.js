@@ -10,7 +10,14 @@ var Rulecall = require('./Rulecall');
 var Translator = require('../Translator');
 
 function Ruleset({name, code}) {
+	Node.call(this);
 	this._type = 'ruleset';
+
+	if (typeof name != 'string')
+		throw Error(`Assertion failed`);
+
+	if (!code)
+		throw Error(`Assertion failed`);
 	
 	this.name = name;
 	this.code = code;

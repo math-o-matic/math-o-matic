@@ -5,9 +5,16 @@ var Fun = require('./Fun');
 var Funcall = require('./Funcall');
 
 function Rulecall({rule, args}) {
+	Node.call(this);
 	this._type = 'rulecall';
+
+	if (!(rule instanceof Node))
+		throw Error(`Assertion failed`);
+
+	if (!(args instanceof Array)
+			|| args.map(e => e instanceof Node).some(e => !e))
+		throw Error(`Assertion failed`);
 	
-	if (!rule || !args) throw Error('Missing required argument');
 	this.rule = rule;
 	this.args = args;
 }
