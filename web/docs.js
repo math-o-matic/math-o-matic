@@ -3,7 +3,7 @@ docs = {
 		st: {
 			description: '문장 타입. 정의하지 않으면 에러가 난다.'
 		},
-		class: {
+		'class': {
 			description: '클래스 타입. 술어 논리에서 쓰인다.'
 		}
 	},
@@ -87,6 +87,12 @@ docs = {
 				return `\\left(\\href{#typevar-forall2}{\\forall}${args[0].toTeXString()}\\right)`;
 			}
 		},
+		forall3: {
+			description: '입력항이 세 개인 함수를 위한 보편 양화. forall에 의존한다.',
+			display: function (args) {
+				return `\\left(\\href{#typevar-forall3}{\\forall}${args[0].toTeXString()}\\right)`;
+			}
+		},
 		exists: {
 			description: '존재 양화(existential quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받으며 forall에 의존한다.',
 			display: function (args) {
@@ -107,7 +113,7 @@ docs = {
 			}
 		},
 		eq: {
-			description: '= 연산자.',
+			description: '[$=] 연산자. [$\\in]에 의존한다.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
 					+ `\\href{#typevar-eq}{=}${args[1].toTeXString()} \\right)`
@@ -130,10 +136,22 @@ docs = {
 					+ `\\left\\{ ${args[1].toTeXString()} : ${args[2].toTeXString()} \\right\\} \\right)`;
 			}
 		},
-		sym: {
+		reflexive: {
+			description: 'binary relation의 reflexivity.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()}\\ \\href{#typevar-reflexive}{\\text{is reflexive}}\\right)`;
+			}
+		},
+		symmetric: {
 			description: 'binary relation의 symmetricity.',
 			display: function (args) {
-				return `\\left(${args[0].toTeXString()}\\ \\href{#typevar-sym}{\\text{is symmetric}}\\right)`;
+				return `\\left(${args[0].toTeXString()}\\ \\href{#typevar-symmetric}{\\text{is symmetric}}\\right)`;
+			}
+		},
+		transitive: {
+			description: 'binary relation의 transitivity.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()}\\ \\href{#typevar-transitive}{\\text{is transitive}}\\right)`;
 			}
 		}
 	},
@@ -196,7 +214,23 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 			description: 'existential instantiation. 사실 instantiation을 하지는 않으나 동등한 표현력을 가질 것으로 보인다.'
 		},
 		exists: {
-			description: '지목할 수 있으면 존재한다는 의미. uinst와 합치면 ∀f |- ∃f가 될 것도 같으나 어떤 class x가 있어야 한다.'
+			description: String.raw`
+지목할 수 있으면 존재한다는 의미. uinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다.`
+		},
+		forall_and: {
+			description: String.raw`
+[$\forall]과 [$\land] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 forall_implies만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다.
+`
+		},
+		forall_implies: {
+			description: String.raw`
+[$\forall]과 [$\to] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 forall_and만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다.
+`
+		},
+		forall_forall: {
+			description: String.raw`
+[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것.
+`
 		},
 		ext: {
 			description: 'axiom of extensionality. ZFC 공리계의 공리.'
@@ -204,7 +238,7 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 		spec: {
 			description: 'axiom schema of specification. ZFC 공리계의 공리.'
 		},
-		eq_sym: {
+		eq_symmetric: {
 			description: '[$=]는 대칭적(symmetric)이다.'
 		}
 	},
@@ -251,7 +285,11 @@ tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없�
 	links: {
 		cp: {
 			description: String.raw`
-conditional proof. deduction theorem이라고도 한다.
+conditional proof. deduction theorem이라고도 한다. 어떤 규칙
+[$$(\cdots): p, \cdots, r, q \vdash s]
+를 주면 규칙
+[$$(\cdots): p \cdots, r \vdash q \to s]
+를 뱉는다. [$\vdash] 좌항 마지막에 있는 명제 하나를 우항으로 돌린다.
 `
 		},
 		foralli: {
@@ -262,7 +300,7 @@ universal quantification introduction. 어떤 규칙
 [$$(x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))]
 를 뱉는다. 매개변수 맨 마지막에 있는 class 하나를 [$\forall]로 돌리는 방식이다.
 
-제한사항
+제약사항
 [ul
 	[*] 입력 규칙의 마지막 매개변수의 타입이 Class여야 함.
 	[*] [$\vdash]의 좌변에 아무것도 없어야 함.

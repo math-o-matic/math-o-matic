@@ -86,7 +86,6 @@ defruleset
 			}
 		}
 
-
 defrule
 	=
 		"rule" __
@@ -133,20 +132,20 @@ yield
 			}
 		}
 
-// rule(...)
-rulecall
+rulename
 	=
 		name:(
 			(
 				linkName:IDENT _
 				"[" _
-				name:IDENT _
+				rule:rulename _
 				"]" _
 				{
 					return {
-						_type: 'rulename_link',
+						_type: 'rulename',
+						type: 'link',
 						linkName,
-						name
+						rule
 					}
 				}
 			)
@@ -157,17 +156,24 @@ rulecall
 				{
 					return rulesetName
 						? {
-							_type: 'rulename_ruleset',
+							_type: 'rulename',
+							type: 'ruleset',
 							rulesetName,
 							name
 						}
 						: {
 							_type: 'rulename',
+							type: 'normal',
 							name
 						}
 				}
 			)
 		)
+
+// rule(...)
+rulecall
+	=
+		rule:rulename
 		args:(
 			"(" _
 			a:(
@@ -181,7 +187,7 @@ rulecall
 		{
 			return {
 				_type: 'rulecall',
-				name,
+				rule,
 				args
 			}
 		}

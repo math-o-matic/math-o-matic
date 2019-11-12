@@ -127,7 +127,7 @@
 			var parseEndTime = new Date() * 1;
 
 			if (!err) {
-				console.log(JSON.stringify(parsed, null, 2));
+				console.log(parsed);
 				console.log('--- PARSE END ---');
 				console.log(`Parse ended in ${parseEndTime - parseStartTime} ms`);
 				console.log('--- PROCESS START --');
@@ -137,10 +137,11 @@
 				program.feed(parsed, nativeMap);
 
 				var processEndTime = new Date() * 1;
-
 				console.log(program);
 				console.log('--- PROCESS END ---');
 				console.log(`Process ended in ${processEndTime - processStartTime} ms`);
+				console.log('--- HTML RENDER START ---');
+				var renderStartTime = new Date() * 1;
 
 				if (docs.typevars) {
 					for (k in docs.typevars) {
@@ -240,6 +241,10 @@
 				[].forEach.call($$('.katex a'), a => {
 					a.title = a.getAttribute('href');
 				});
+
+				var renderEndTime = new Date() * 1;
+				console.log('--- HTML RENDER END ---');
+				console.log(`HTML render ended in ${renderEndTime - renderStartTime} ms`);
 			}
 		</script>
 	</body>

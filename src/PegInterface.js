@@ -267,48 +267,59 @@ PegInterface.yield = function (obj, parentScope) {
 	return new Yield({left, right});
 }
 
+function rulenameObjToString(obj) {
+	switch (obj.type) {
+		case 'link':
+			return `${obj.linkName}[${rulenameObjToString(obj.rule)}]`;
+		case 'ruleset':
+			return `${obj.rulesetName}.${obj.name}`;
+		case 'normal':
+			return `${obj.name}`;
+		default:
+			throw Error(`Unknown type ${obj.type}`);
+	}
+}
+
 PegInterface.rulecall = function (obj, parentScope) {
 	var scope = parentScope.extend();
 
-	var rule;
+	var rule = (function getRule(obj) {
+		switch (obj.type) {
+			case 'link':
+				if (!scope.hasLinkByName(obj.linkName))
+					throw Error(`Link ${obj.linkName} is not defined`);
 
-	switch (obj.name._type) {
-		case 'rulename_ruleset':
-			if (!scope.hasRulesetByName(obj.name.rulesetName))
-				throw Error(`Ruleset ${obj.name.rulesetName} is not defined`);
+				var link = scope.getLink(obj.linkName);
 
-			var ruleset = scope.getRuleset(obj.name.rulesetName);
+				var rule_ = getRule(obj.rule);
 
-			rule = ruleset.code.get(obj.name.name, scope);
+				var rule = link.code.get([rule_], scope);
 
-			if (!rule)
-				throw Error(`Rule ${obj.name.rulesetName}.${obj.name.name} not found`);
-			break;
-		case 'rulename_link':
-			if (!scope.hasLinkByName(obj.name.linkName))
-				throw Error(`Link ${obj.name.linkName} is not defined`);
+				if (!rule)
+					throw Error(`Rule ${rulenameObjToString(obj)} not found`);
 
-			var link = scope.getLink(obj.name.linkName);
+				return rule;
+			case 'ruleset':
+				if (!scope.hasRulesetByName(obj.rulesetName))
+					throw Error(`Ruleset ${obj.rulesetName} is not defined`);
 
-			if (!scope.hasRuleByName(obj.name.name))
-				throw Error(`Rule ${obj.name.name} is not defined`);
+				var ruleset = scope.getRuleset(obj.rulesetName);
 
-			var rule_ = scope.getRule(obj.name.name);
+				var rule = ruleset.code.get(obj.name, scope);
 
-			rule = link.code.get([rule_], scope);
+				if (!rule)
+					throw Error(`Rule ${rulenameObjToString(obj)} not found`);
+				
+				return rule;
+			case 'normal':
+				if (!scope.hasRuleByName(obj.name))
+					throw Error(`Rule ${obj.name} is not defined`);
 
-			if (!rule)
-				throw Error(`Rule ${obj.name.linkName}[${obj.name.name}] not found`);
-			break;
-		case 'rulename':
-			if (!scope.hasRuleByName(obj.name.name))
-				throw Error(`Rule ${obj.name.name} is not defined`);
-
-			rule = scope.getRule(obj.name.name);
-			break;
-		default:
-			throw Error(`Unknown type ${obj.name._type}`);
-	}
+				return scope.getRule(obj.name);
+			default:
+				throw Error(`Unknown type ${obj.type}`);
+		}
+	})(obj.rule);
 
 	if (rule.params.length != obj.args.length)
 		throw Error(`Invalid number of arguments: ${obj.args.length}`);

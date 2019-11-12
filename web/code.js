@@ -162,6 +162,16 @@ st forall2([(class, class) -> st] f) {
 	)
 }
 
+st forall3([(class, class, class) -> st] f) {
+	forall((class x) =>
+		forall((class y) =>
+			forall((class z) =>
+				f(x, y, z)
+			)
+		)
+	)
+}
+
 st exists([class -> st] f) {
 	not(forall((class x) => not(f(x))))
 }
@@ -245,9 +255,24 @@ rule forall_forall_mp([(class, class) -> st] f) {
 	)
 }
 
-st sym([(class, class) -> st] f) {
+st reflexive([(class, class) -> st] f) {
+	forall((class x) =>
+		f(x, x)
+	)
+}
+
+st symmetric([(class, class) -> st] f) {
 	forall2((class x, class y) =>
 		implies(f(x, y), f(y, x))
+	)
+}
+
+st transitive([(class, class) -> st] f) {
+	forall3((class x, class y, class z) =>
+		implies(
+			and(f(x, y), f(y, z)),
+			f(x, z)
+		)
 	)
 }
 
@@ -341,16 +366,8 @@ rule _tmp3(class x, class y) {
 	)
 }
 
-rule _tmp4(class x, class y) {
-	cp[_tmp3](x, y)
-}
-
-rule _tmp5(class x) {
-	foralli[_tmp4](x)
-}
-
-rule eq_sym() {
-	foralli[_tmp5]()
+rule eq_symmetric() {
+	foralli[foralli[cp[_tmp3]]]()
 }
 
 `;
