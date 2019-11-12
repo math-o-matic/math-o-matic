@@ -1,9 +1,9 @@
 docs = {
 	simpleTypes: {
-		St: {
+		st: {
 			description: '문장 타입. 정의하지 않으면 에러가 난다.'
 		},
-		Class: {
+		class: {
 			description: '클래스 타입. 술어 논리에서 쓰인다.'
 		}
 	},
@@ -196,7 +196,7 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 			description: 'existential instantiation. 사실 instantiation을 하지는 않으나 동등한 표현력을 가질 것으로 보인다.'
 		},
 		exists: {
-			description: '지목할 수 있으면 존재한다는 의미. uinst와 합치면 ∀f |- ∃f가 될 것도 같으나 어떤 Class x가 있어야 한다.'
+			description: '지목할 수 있으면 존재한다는 의미. uinst와 합치면 ∀f |- ∃f가 될 것도 같으나 어떤 class x가 있어야 한다.'
 		},
 		ext: {
 			description: 'axiom of extensionality. ZFC 공리계의 공리.'
@@ -220,7 +220,7 @@ Metamath처럼 Łukasiewicz의 공리계로 어떻게 해보려 했으나 예전
 [ul
 	[*] 말단
 		[ul
-			[*] p, q, r, s, t, u, v, w, x, y, z: 순서대로 1~11번째의 St 타입 입력항.
+			[*] p, q, r, s, t, u, v, w, x, y, z: 순서대로 1~11번째의 st 타입 입력항.
 			[*] T: verum ([$\top]). true의 T.
 			[*] F: falsum ([$\bot]). false의 F.
 		]
@@ -249,13 +249,18 @@ tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없�
 		}
 	},
 	links: {
+		cp: {
+			description: String.raw`
+conditional proof. deduction theorem이라고도 한다.
+`
+		},
 		foralli: {
 			description: String.raw`
 universal quantification introduction. 어떤 규칙
 [$$(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y)]
 를 주면 규칙
 [$$(x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))]
-를 뱉는다. 매개변수 맨 마지막에 있는 Class 하나를 [$\forall]로 돌리는 방식이다.
+를 뱉는다. 매개변수 맨 마지막에 있는 class 하나를 [$\forall]로 돌리는 방식이다.
 
 제한사항
 [ul

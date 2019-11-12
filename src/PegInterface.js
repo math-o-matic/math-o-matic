@@ -240,20 +240,20 @@ PegInterface.yield = function (obj, parentScope) {
 		switch (obj._type) {
 			case 'funcall':
 				var funcall = PegInterface.funcall(obj, scope);
-				if (!scope.root.getTypeByName('St').equals(funcall.type))
-					throw Error(`Return type is not St: ${funcall.type}`);
+				if (!scope.root.getTypeByName('st').equals(funcall.type))
+					throw Error(`Return type is not st: ${funcall.type}`);
 				return funcall;
 			case 'funexpr':
 				var fun = PegInterface.fun(obj, scope);
-				if (!scope.root.getTypeByName('St').equals(fun.type))
-					throw Error(`Return type is not St: ${fun.type}`);
+				if (!scope.root.getTypeByName('st').equals(fun.type))
+					throw Error(`Return type is not st: ${fun.type}`);
 				return fun;
 			case 'var':
 				if (!scope.hasTypevarByName(obj.name))
 					throw Error(`Undefined identifier ${obj.name}`);
 				var typevar = scope.getTypevarByName(obj.name);
-				if (!scope.root.getTypeByName('St').equals(typevar.type)) {
-					throw Error(`Return type is not St: ${typevar.type}`);
+				if (!scope.root.getTypeByName('st').equals(typevar.type)) {
+					throw Error(`Return type is not st: ${typevar.type}`);
 				}
 				return typevar;
 			default:

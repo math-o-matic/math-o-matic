@@ -118,14 +118,14 @@ nativeMap = {
 					return false;
 
 				// 3: 노드 트리 만들기
-				if (!scope.root.hasTypeByName('St'))
-					throw Error(`Type St not found`);
+				if (!scope.root.hasTypeByName('st'))
+					throw Error(`Type st not found`);
 
-				var St = scope.root.getTypeByName('St');
+				var st = scope.root.getTypeByName('st');
 
 				var argTypevars = Array(arglen).fill().map((_, i) => {
 					return new scope.Typevar({
-						type: St,
+						type: st,
 						name: args[i]
 					});
 				});
@@ -184,17 +184,17 @@ nativeMap = {
 				if (rules.length != 1) return false;
 				var rule = rules[0];
 
-				if (!scope.hasTypeByName('St'))
-					throw Error(`Type St not found`);
+				if (!scope.hasTypeByName('st'))
+					throw Error(`Type st not found`);
 
-				var St = scope.getTypeByName('St');
+				var st = scope.getTypeByName('st');
 				
-				if (!scope.hasTypeByName('Class'))
-					throw Error(`Type Class not found`);
+				if (!scope.hasTypeByName('class'))
+					throw Error(`Type class not found`);
 
-				var Class = scope.getTypeByName('Class');
+				var class_ = scope.getTypeByName('class');
 
-				if (!rule.params[rule.params.length - 1].type.equals(Class))
+				if (!rule.params[rule.params.length - 1].type.equals(class_))
 					return false;
 
 				var last = rule.params[rule.params.length - 1];
@@ -216,10 +216,10 @@ nativeMap = {
 					functional: true,
 					from: [new scope.Type({
 						functional: true,
-						from: [Class],
-						to: St
+						from: [class_],
+						to: st
 					})],
-					to: St
+					to: st
 				})))
 					throw Error(`Wrong type for forall`);
 
@@ -236,8 +236,8 @@ nativeMap = {
 										anonymous: true,
 										type: new scope.Type({
 											functional: true,
-											from: [Class],
-											to: St
+											from: [class_],
+											to: st
 										}),
 										atomic: false,
 										params: [last],
@@ -255,10 +255,10 @@ nativeMap = {
 				if (rules.length != 1) return false;
 				var rule = rules[0];
 
-				if (!scope.hasTypeByName('St'))
-					throw Error(`Type St not found`);
+				if (!scope.hasTypeByName('st'))
+					throw Error(`Type st not found`);
 
-				var St = scope.getTypeByName('St');
+				var st = scope.getTypeByName('st');
 
 				var yield_ = rule.expr;
 
@@ -275,8 +275,8 @@ nativeMap = {
 
 				if (!implies.type.equals(new scope.Type({
 					functional: true,
-					from: [St, St],
-					to: St
+					from: [st, st],
+					to: st
 				})))
 					throw Error(`Wrong type for implies`);
 
