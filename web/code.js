@@ -5,122 +5,146 @@ code = `
 
 typedef st;
 
-st verum;
-st falsum;
+st T;
+st F;
 
-st nand(st p, st q);
+st S(st p, st q);
 
-st not(st p) {
-	nand(p, p)
+st N(st p);
+
+st A(st p, st q);
+
+st O(st p, st q);
+
+st I(st p, st q);
+
+st E(st p, st q) {
+	A(
+		I(p, q),
+		I(q, p)
+	)
 }
 
-st and(st p, st q) {
-	not(nand(p, q))
-}
+// st N(st p) {
+// 	S(p, p)
+// }
 
-st or(st p, st q) {
-	nand(not(p), not(q))
-}
+// st A(st p, st q) {
+// 	N(S(p, q))
+// }
 
-st implies(st p, st q) {
-	or(not(p), q)
-}
+// st O(st p, st q) {
+// 	S(N(p), N(q))
+// }
 
-st iff(st p, st q) {
-	and(implies(p, q), implies(q, p))
-}
+// st I(st p, st q) {
+// 	S(p, N(q))
+// }
+
+// st E(st p, st q) {
+// 	S(
+// 		S(p, q),
+// 		S(N(p), N(q))
+// 	)
+// }
 
 native ruleset tt;
 native link cp;
 
 rule mp(st p, st q) {
-	p, implies(p, q) |- q
+	p, I(p, q) |- q
 }
 
-rule andi(st p, st q) {
+rule Ai(st p, st q) {
 	tt.IqIpApq(p, q) ~ mp(
 		q,
-		implies(p, and(p, q))
-	) ~ mp(p, and(p, q))
+		I(p, A(p, q))
+	) ~ mp(p, A(p, q))
 }
 
-rule and3i(st p, st q, st r) {
-	andi(p, q) ~ andi(and(p, q), r)
+rule A3i(st p, st q, st r) {
+	Ai(p, q) ~ Ai(A(p, q), r)
 }
 
-rule ande1(st p, st q) {
-	tt.IApqp(p, q) ~ mp(and(p, q), p)
+rule Ae1(st p, st q) {
+	tt.IApqp(p, q) ~ mp(A(p, q), p)
 }
 
-rule ande2(st p, st q) {
-	tt.IApqq(p, q) ~ mp(and(p, q), q)
+rule Ae2(st p, st q) {
+	tt.IApqq(p, q) ~ mp(A(p, q), q)
 }
 
-rule ori1(st p, st q) {
-	tt.IpOpq(p, q) ~ mp(p, or(p, q))
+rule Oi1(st p, st q) {
+	tt.IpOpq(p, q) ~ mp(p, O(p, q))
 }
 
-rule ori2(st p, st q) {
-	tt.IqOpq(p, q) ~ mp(q, or(p, q))
+rule Oi2(st p, st q) {
+	tt.IqOpq(p, q) ~ mp(q, O(p, q))
 }
 
-rule ore(st p, st q, st r) {
-	and3i(
-		or(p, q),
-		implies(p, r),
-		implies(q, r)
+rule Oe(st p, st q, st r) {
+	A3i(
+		O(p, q),
+		I(p, r),
+		I(q, r)
 	)
 	~ tt.IAAOpqIprIqrr(p, q, r)
 	~ mp(
-		and(
-			and(or(p, q), implies(p, r)),
-			implies(q, r)
+		A(
+			A(O(p, q), I(p, r)),
+			I(q, r)
 		),
 		r
 	)
 }
 
-rule noti(st p, st q) {
-	andi(
-		implies(p, q),
-		implies(p, not(q))
+rule Ni(st p, st q) {
+	Ai(
+		I(p, q),
+		I(p, N(q))
 	)
 	~ tt.IAIpqIpNqNp(p, q)
 	~ mp(
-		and(
-			implies(p, q),
-			implies(p, not(q))
+		A(
+			I(p, q),
+			I(p, N(q))
 		),
-		not(p)
+		N(p)
 	)
 }
 
-rule note(st p, st q) {
-	tt.INpIpq(p, q) ~ mp(not(p), implies(p, q))
+rule Ne(st p, st q) {
+	tt.INpIpq(p, q) ~ mp(N(p), I(p, q))
 }
 
-rule notnote(st p) {
+rule NNe(st p) {
 	tt.INNpp(p)
-	~ mp(not(not(p)), p)
+	~ mp(N(N(p)), p)
 }
 
-rule iffi(st p, st q) {
-	andi(implies(p, q), implies(q, p))
+rule Ei(st p, st q) {
+	Ai(I(p, q), I(q, p))
 	~ tt.IAIpqIqpEpq(p, q)
 	~ mp(
-		and(implies(p, q), implies(q, p)),
-		iff(p, q)
+		A(I(p, q), I(q, p)),
+		E(p, q)
 	)
 }
 
-rule iffe1(st p, st q) {
+rule Ee1(st p, st q) {
 	tt.IEpqIpq(p, q)
-	~ mp(iff(p, q), implies(p, q))
+	~ mp(E(p, q), I(p, q))
 }
 
-rule iffe2(st p, st q) {
+rule Ee2(st p, st q) {
 	tt.IEpqIqp(p, q)
-	~ mp(iff(p, q), implies(q, p))
+	~ mp(E(p, q), I(q, p))
+}
+
+rule syll(st p, st q, st r) {
+	Ai(I(p, q), I(q, r))
+	~ tt.IAIpqIqrIpr(p, q, r)
+	~ mp(A(I(p, q), I(q, r)), I(p, r))
 }
 
 rule id(st p) {
@@ -128,11 +152,11 @@ rule id(st p) {
 }
 
 rule destroy(st p) {
-	andi(p, not(p))
+	Ai(p, N(p))
 	~ tt.IApNpF(p)
 	~ mp(
-		and(p, not(p)),
-		falsum
+		A(p, N(p)),
+		F
 	)
 }
 
@@ -142,135 +166,143 @@ rule destroy(st p) {
 
 typedef class;
 
-[class -> st] andf([class -> st] f, [class -> st] g) {
-	(class x) => and(f(x), g(x))
+[class -> st] Af([class -> st] f, [class -> st] g) {
+	(class x) => A(f(x), g(x))
 }
 
-[class -> st] orf([class -> st] f, [class -> st] g) {
-	(class x) => or(f(x), g(x))
+[class -> st] Of([class -> st] f, [class -> st] g) {
+	(class x) => O(f(x), g(x))
 }
 
-st forall([class -> st] f);
+st V([class -> st] f);
 
-native link foralli;
+native link Vi;
 
-st forall2([(class, class) -> st] f) {
-	forall((class x) =>
-		forall((class y) =>
+st V2([(class, class) -> st] f) {
+	V((class x) =>
+		V((class y) =>
 			f(x, y)
 		)
 	)
 }
 
-st forall3([(class, class, class) -> st] f) {
-	forall((class x) =>
-		forall((class y) =>
-			forall((class z) =>
+st V3([(class, class, class) -> st] f) {
+	V((class x) =>
+		V((class y) =>
+			V((class z) =>
 				f(x, y, z)
 			)
 		)
 	)
 }
 
-st exists([class -> st] f) {
-	not(forall((class x) => not(f(x))))
+st X([class -> st] f) {
+	N(V((class x) => N(f(x))))
 }
 
-st exists2([(class, class) -> st] f) {
-	not(forall2((class x, class y) => not(f(x, y))))
+st X2([(class, class) -> st] f) {
+	N(V2((class x, class y) => N(f(x, y))))
 }
 
 # universal instantiation
 rule uinst([class -> st] f, class x) {
-	forall(f) |- f(x)
+	V(f) |- f(x)
 }
 
-# existential instantiation
-rule einst([class -> st] f, [class -> st] g) {
-	and(exists(f), forall((class x) => implies(f(x), g(x)))) |- exists(g)
+rule X([class -> st] f, class x) {
+	f(x) |- X(f)
 }
 
-rule exists([class -> st] f, class x) {
-	f(x) |- exists(f)
-}
-
-rule forall_and([class -> st] f, [class -> st] g) {
-	|- iff(
-		forall(andf(f, g)),
-		and(forall(f), forall(g))
+rule VA([class -> st] f, [class -> st] g) {
+	|- E(
+		V((class x) => (
+			A(f(x), g(x))
+		)),
+		A(V(f), V(g))
 	)
 }
 
-rule forall_implies([class -> st] f, [class -> st] g) {
-	|- implies(
-		forall((class x) => implies(f(x), g(x))),
-		implies(forall(f), forall(g))
+rule VI([class -> st] f, [class -> st] g) {
+	|- I(
+		V((class x) => I(f(x), g(x))),
+		I(V(f), V(g))
 	)
 }
 
-rule forall_forall([(class, class) -> st] f) {
-	|- implies(
-		forall2((class x, class y) => f(x, y)),
-		forall2((class y, class x) => f(x, y))
+rule VV([(class, class) -> st] f) {
+	|- I(
+		V2((class x, class y) => f(x, y)),
+		V2((class y, class x) => f(x, y))
 	)
 }
 
-rule forall_and_mp1([class -> st] f, [class -> st] g) {
-	forall_and(f, g)
-	~ iffe1(
-		forall(andf(f, g)),
-		and(forall(f), forall(g))
-	)
-	~ mp(
-		forall(andf(f, g)),
-		and(forall(f), forall(g))
+rule VE([class -> st] f, [class -> st] g) {
+	VA(
+		(class x) => (
+			I(f(x), g(x))
+		),
+		(class x) => (
+			I(g(x), f(x))
+		)
 	)
 }
 
-rule forall_and_mp2([class -> st] f, [class -> st] g) {
-	forall_and(f, g)
-	~ iffe2(
-		forall(andf(f, g)),
-		and(forall(f), forall(g))
+rule VAm1([class -> st] f, [class -> st] g) {
+	VA(f, g)
+	~ Ee1(
+		V(Af(f, g)),
+		A(V(f), V(g))
 	)
 	~ mp(
-		and(forall(f), forall(g)),
-		forall(andf(f, g))
+		V(Af(f, g)),
+		A(V(f), V(g))
 	)
 }
 
-rule forall_implies_mp([class -> st] f, [class -> st] g) {
-	forall_implies(f, g)
+rule VAm2([class -> st] f, [class -> st] g) {
+	VA(f, g)
+	~ Ee2(
+		V(Af(f, g)),
+		A(V(f), V(g))
+	)
 	~ mp(
-		forall((class x) => implies(f(x), g(x))),
-		implies(forall(f), forall(g))
+		A(V(f), V(g)),
+		V(Af(f, g))
 	)
 }
 
-rule forall_forall_mp([(class, class) -> st] f) {
-	forall_forall(f)
+rule VIm([class -> st] f, [class -> st] g) {
+	VI(f, g)
 	~ mp(
-		forall2((class x, class y) => f(x, y)),
-		forall2((class y, class x) => f(x, y))
+		V((class x) => I(f(x), g(x))),
+		I(V(f), V(g))
+	)
+}
+
+rule VVm([(class, class) -> st] f) {
+	VV(f)
+	~ mp(
+		V2((class x, class y) => f(x, y)),
+		V2((class y, class x) => f(x, y))
 	)
 }
 
 st reflexive([(class, class) -> st] f) {
-	forall((class x) =>
+	V((class x) =>
 		f(x, x)
 	)
 }
 
 st symmetric([(class, class) -> st] f) {
-	forall2((class x, class y) =>
-		implies(f(x, y), f(y, x))
+	V2((class x, class y) =>
+		I(f(x, y), f(y, x))
 	)
 }
 
 st transitive([(class, class) -> st] f) {
-	forall3((class x, class y, class z) =>
-		implies(
-			and(f(x, y), f(y, z)),
+	V3((class x, class y, class z) =>
+		I(
+			A(f(x, y), f(y, z)),
 			f(x, z)
 		)
 	)
@@ -282,31 +314,27 @@ st transitive([(class, class) -> st] f) {
 
 st in(class a, class b);
 
+st set(class a) {
+	X((class b) =>
+		in(a, b)
+	)
+}
+
 st eq(class x, class y) {
-	and(
-		forall((class z) =>
-			iff(in(z, x), in(z, y))
+	A(
+		V((class z) =>
+			E(in(z, x), in(z, y))
 		),
-		forall((class w) =>
-			iff(in(x, w), in(y, w))
+		V((class w) =>
+			E(in(x, w), in(y, w))
 		)
 	)
 }
 
-st notin(class a, class b) {
-	not(in(a, b))
-}
-
-st setbuildereq(class x, class y, [class -> st] f) {
-	forall((class z) =>
-		iff(in(z, x), and(in(z, y), f(z)))
-	)
-}
-
 rule ext(class x, class y) {
-	|- implies(
-		forall((class z) =>
-			iff(
+	|- I(
+		V((class z) =>
+			E(
 				in(z, x),
 				in(z, y)
 			)
@@ -315,34 +343,114 @@ rule ext(class x, class y) {
 	)
 }
 
-rule spec([class -> st] p) {
-	|-
-	forall((class z) =>
-		exists((class y) =>
-			setbuildereq(y, z, p)
+st subseteq(class x, class y) {
+	V((class z) => (
+		I(
+			in(z, x),
+			in(z, y)
+		)
+	))
+}
+
+st Nin(class a, class b) {
+	N(in(a, b))
+}
+
+class emptyset;
+
+rule emptyset_def() {
+	|- V((class x) =>
+		Nin(x, emptyset)
+	)
+}
+
+class setbuilder([class -> st] f);
+
+rule setbuilder_def([class -> st] f) {
+	|- V((class x) =>
+		E(
+			in(x, setbuilder(f)),
+			f(x)
 		)
 	)
 }
+
+class subsetbuilder(class x, [class -> st] f) {
+	setbuilder((class y) => (
+		A(
+			in(y, x),
+			f(y)
+		)
+	))
+}
+
+class power(class x) {
+	setbuilder((class z) => (
+		subseteq(z, x)
+	))
+}
+
+class singleton(class x) {
+	setbuilder((class z) => (
+		eq(z, x)
+	))
+}
+
+rule singleton_subseteq_power(class x) {
+	|- subseteq(singleton(x), power(x))
+}
+
+rule singleton_subseteq_power_(class x) {
+	setbuilder_def((class z) => eq(z, x))
+}
+
+st subsetbuildereq(class x, class y, [class -> st] f) {
+	V((class z) =>
+		E(in(z, x), A(in(z, y), f(z)))
+	)
+}
+
+rule spec([class -> st] f) {
+	|-
+	V((class x) =>
+		I(
+			set(x),
+			set(subsetbuilder(x, f))
+		)
+	)
+}
+
+/*rule infinity() {
+	X((class x) =>
+		A3(
+			set(x),
+			in(emptyset, x),
+			V((class y) =>
+
+			)
+		)
+	)
+}*/
 
 rule _ttf_IEpqEqp([class -> st] f, [class -> st] g, class x) {
 	tt.IEpqEqp(f(x), g(x))
 }
 
 rule _tmp0([class -> st] f, [class -> st] g) {
-	foralli[_ttf_IEpqEqp](f, g)
-	~ forall_implies_mp(
-		(class x) => iff(f(x), g(x)),
-		(class x) => iff(g(x), f(x))
+	Vi[_ttf_IEpqEqp](f, g)
+	~ VIm(
+		(class x) => E(f(x), g(x)),
+		(class x) => E(g(x), f(x))
 	) ~ mp(
-		forall((class x) => iff(f(x), g(x))),
-		forall((class x) => iff(g(x), f(x)))
+		V((class x) => E(f(x), g(x))),
+		V((class x) => E(g(x), f(x)))
 	)
 }
 
 rule _tmp(class x, class y) {
-	ande1(
-		forall((class z) => iff(in(z, x), in(z, y))),
-		forall((class w) => iff(in(x, w), in(y, w)))
+	Ae1(
+		V((class z) => E(in(z, x), in(z, y))),
+		V((class w) => E(in(x, w), in(y, w)))
 	) ~ _tmp0(
 		(class z) => in(z, x),
 		(class z) => in(z, y)
@@ -350,9 +458,9 @@ rule _tmp(class x, class y) {
 }
 
 rule _tmp2(class x, class y) {
-	ande2(
-		forall((class z) => iff(in(z, x), in(z, y))),
-		forall((class w) => iff(in(x, w), in(y, w)))
+	Ae2(
+		V((class z) => E(in(z, x), in(z, y))),
+		V((class w) => E(in(x, w), in(y, w)))
 	) ~ _tmp0(
 		(class w) => in(x, w),
 		(class w) => in(y, w)
@@ -360,14 +468,14 @@ rule _tmp2(class x, class y) {
 }
 
 rule _tmp3(class x, class y) {
-	_tmp(x, y) ~ _tmp2(x, y) ~ andi(
-		forall((class z) => iff(in(z, y), in(z, x))),
-		forall((class w) => iff(in(y, w), in(x, w)))
+	_tmp(x, y) ~ _tmp2(x, y) ~ Ai(
+		V((class z) => E(in(z, y), in(z, x))),
+		V((class w) => E(in(y, w), in(x, w)))
 	)
 }
 
 rule eq_symmetric() {
-	foralli[foralli[cp[_tmp3]]]()
+	Vi[Vi[cp[_tmp3]]]()
 }
 
 `;

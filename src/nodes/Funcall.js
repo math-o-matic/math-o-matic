@@ -64,7 +64,6 @@ Funcall.prototype.toTeXString = function (root) {
 		return this.fun.funcallToTeXString(this.args);
 
 	var args = this.args.map(arg => {
-		if (arg instanceof Typevar) return arg.name;
 		return arg.toTeXString();
 	});
 

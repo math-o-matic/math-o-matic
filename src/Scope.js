@@ -14,7 +14,7 @@ var PegInterface = require('./PegInterface');
 
 function Scope(parent) {
 	this.simpleTypeMap = {};
-	this.typevarMap = {};
+	this.defMap = {};
 	this.ruleMap = {};
 	this.rulesetMap = {};
 	this.linkMap = {};
@@ -87,7 +87,7 @@ Scope.prototype.getTypeByName = function (name) {
 }
 
 Scope.prototype.hasOwnTypevarByName = function (name) {
-	return !!this.typevarMap[name];
+	return !!this.defMap[name];
 }
 
 Scope.prototype.hasTypevarByName = function (name) {
@@ -99,16 +99,16 @@ Scope.prototype.addTypevar = function (obj) {
 	var typevar = PegInterface.typevar(obj, this);
 
 	if (this.hasOwnTypevarByName(obj.name))
-		throw Error(`Var with name ${obj.name} already is there`);
+		throw Error(`Def with name ${obj.name} already is there`);
 
-	return this.typevarMap[obj.name] = typevar;
+	return this.defMap[obj.name] = typevar;
 }
 
 Scope.prototype.getTypevarByName = function (name) {
 	if (!this.hasTypevarByName(name))
-		throw Error(`Var with name ${name} not found`);
+		throw Error(`Def with name ${name} not found`);
 
-	return this.typevarMap[name] ||
+	return this.defMap[name] ||
 		(!!this.parent && this.parent.getTypevarByName(name));
 }
 
@@ -116,9 +116,9 @@ Scope.prototype.addFun = function (obj) {
 	var fun = PegInterface.fun(obj, this);
 
 	if (!fun.anonymous && this.hasOwnTypevarByName(fun.name))
-		throw Error(`Var with name ${fun.name} already is there`);
+		throw Error(`Def with name ${fun.name} already is there`);
 
-	return this.typevarMap[fun.name] = fun;
+	return this.defMap[fun.name] = fun;
 }
 
 Scope.prototype.hasOwnRuleByName = function (name) {

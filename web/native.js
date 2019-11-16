@@ -1,4 +1,4 @@
-nativeMap = {
+native = {
 	ruleset: {
 		tt: {
 			get: (name, scope) => {
@@ -131,14 +131,14 @@ nativeMap = {
 				});
 
 				var typevarMap = {
-					'T': 'verum',
-					'F': 'falsum',
-					'N': 'not',
-					'A': 'and',
-					'O': 'or',
-					'I': 'implies',
-					'E': 'iff',
-					'S': 'nand'
+					'T': 'T',
+					'F': 'F',
+					'N': 'N',
+					'A': 'A',
+					'O': 'O',
+					'I': 'I',
+					'E': 'E',
+					'S': 'S'
 				};
 
 				Object.keys(typevarMap).forEach(k => {
@@ -179,7 +179,7 @@ nativeMap = {
 		}
 	},
 	link: {
-		foralli: {
+		Vi: {
 			get: (rules, scope) => {
 				if (rules.length != 1) return false;
 				var rule = rules[0];
@@ -207,12 +207,12 @@ nativeMap = {
 				if (yield_.left.length)
 					return false;
 
-				if (!scope.hasTypevarByName('forall'))
-					throw Error(`Typevar forall not found`);
+				if (!scope.hasTypevarByName('V'))
+					throw Error(`Typevar V not found`);
 
-				var forall = scope.getTypevarByName('forall');
+				var V = scope.getTypevarByName('V');
 
-				if (!forall.type.equals(new scope.Type({
+				if (!V.type.equals(new scope.Type({
 					functional: true,
 					from: [new scope.Type({
 						functional: true,
@@ -221,16 +221,16 @@ nativeMap = {
 					})],
 					to: st
 				})))
-					throw Error(`Wrong type for forall`);
+					throw Error(`Wrong type for V`);
 
 				return new scope.Rule({
-					name: `foralli[${rule.name}]`,
+					name: `Vi[${rule.name}]`,
 					params: rule.params.slice(0, rule.params.length - 1),
 					rules: [
 						new scope.Yield({
 							left: [],
 							right: new scope.Funcall({
-								fun: forall,
+								fun: V,
 								args: [
 									new scope.Fun({
 										anonymous: true,
@@ -268,17 +268,17 @@ nativeMap = {
 				if (!yield_.left.length)
 					return false;
 
-				if (!scope.hasTypevarByName('implies'))
-					throw Error(`Typevar implies not found`);
+				if (!scope.hasTypevarByName('I'))
+					throw Error(`Typevar I not found`);
 
-				var implies = scope.getTypevarByName('implies');
+				var I = scope.getTypevarByName('I');
 
-				if (!implies.type.equals(new scope.Type({
+				if (!I.type.equals(new scope.Type({
 					functional: true,
 					from: [st, st],
 					to: st
 				})))
-					throw Error(`Wrong type for implies`);
+					throw Error(`Wrong type for I`);
 
 				return new scope.Rule({
 					name: `cp[${rule.name}]`,
@@ -287,7 +287,7 @@ nativeMap = {
 						new scope.Yield({
 							left: yield_.left.slice(0, yield_.left.length - 1),
 							right: new scope.Funcall({
-								fun: implies,
+								fun: I,
 								args: [
 									yield_.left[yield_.left.length - 1],
 									yield_.right

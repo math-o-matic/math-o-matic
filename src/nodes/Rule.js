@@ -32,7 +32,7 @@ function Rule({name, params, rules}) {
 	if (expands.map(e => e._type == 'yield').some(e => !e))
 		throw Error(`Assertion failed`);
 
-	this.expr = expands.reduceRight((r, l) => {
+	this.expr = Translator.expand1Funcalls(expands.reduceRight((r, l) => {
 		for (var i = 0; i < r.left.length; i++) {
 			if (Translator.expr0Equals(l.right, r.left[i])) {
 				var newleft = r.left.slice(0, i)
@@ -40,14 +40,14 @@ function Rule({name, params, rules}) {
 					.concat(r.left.slice(i + 1));
 
 				return new Yield({
-					left: newleft.map(Translator.expand0Funcalls),
-					right: Translator.expand0Funcalls(r.right)
+					left: newleft,
+					right: r.right
 				});
 			}
 		}
 
 		throw Error(`Link ${name} failed:\n\n${l},\n\n${r}\n`);
-	});
+	}));
 }
 
 Rule.prototype = Object.create(Node.prototype);

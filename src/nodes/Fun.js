@@ -77,7 +77,6 @@ Fun.prototype.toTeXString = function (root) {
 
 Fun.prototype.funcallToTeXString = function (args) {
 	var args = args.map(arg => {
-		if (arg instanceof Typevar) return arg.name;
 		return arg.toTeXString();
 	});
 

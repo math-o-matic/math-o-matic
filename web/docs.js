@@ -7,198 +7,248 @@ docs = {
 			description: '클래스 타입. 술어 논리에서 쓰인다.'
 		}
 	},
-	typevars: {
-		verum: {
+	defs: {
+		T: {
 			description: '합리적인 것. 정말이지 맞는 것이다. 이걸 만들어 내도 계에는 별 일이 생기지 않는다.',
 			display: function () {
-				return `\\href{#typevar-verum}{\\top}`
+				return `\\href{#def-T}{\\top}`
 			}
 		},
-		falsum: {
+		F: {
 			description: '모순. 정말이지 틀린 것이다. 이걸 만들어 낸다면 계를 파-괴할 수 있다.',
 			display: function () {
-				return `\\href{#typevar-falsum}{\\bot}`
+				return `\\href{#def-F}{\\bot}`
 			}
 		},
-		nand: {
-			description: 'nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유도할 수 있는 것이 증명된 것 같다. nor(FFFT) 역시 같은 성질을 갖고 있으나, 업계에서는 NAND 게이트를 NOR 게이트보다 선호하는 것 같다.',
+		S: {
+			description: String.raw`
+nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유도할 수 있는 것이 증명된 것 같다. nor(FFFT) 역시 같은 성질을 갖고 있다(그러나 업계에서는 NAND 게이트를 NOR 게이트보다 선호하는 것 같다).
+
+그러나 여기서는 다른 논리 기호를 유도하지 않고 모든 논리 기호를 primitive 하게 하였다. 이는 어차피 진리표를 가정하므로 별 필요 없기 때문이다. 또 실행 속도를 빠르게 하기 위함이다[&hellip].`,
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-					+ `\\href{#typevar-nand}{\\barwedge} ${args[1].toTeXString()}\\right)`;
+					+ `\\href{#def-S}{\\barwedge} ${args[1].toTeXString()}\\right)`;
 			}
 		},
-		implies: {
+		I: {
 			description: 'implies(TFTT).',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-					+ `\\href{#typevar-implies}{\\to} ${args[1].toTeXString()}\\right)`;
+					+ `\\href{#def-I}{\\to} ${args[1].toTeXString()}\\right)`;
 			}
 		},
-		not: {
+		N: {
 			description: 'not(FT).',
 			display: function (args) {
-				return `\\left(\\href{#typevar-not}{\\neg} ${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#def-N}{\\neg} ${args[0].toTeXString()}\\right)`;
 			}
 		},
-		and: {
+		A: {
 			description: 'and(TFFF).',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-						+ `\\href{#typevar-and}{\\land} ${args[1].toTeXString()} \\right)`;
+						+ `\\href{#def-A}{\\land} ${args[1].toTeXString()} \\right)`;
 			}
 		},
-		or: {
-			description: 'or(TTTF).',
+		O: {
+			description: 'O(TTTF).',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-						+ `\\href{#typevar-or}{\\lor} ${args[1].toTeXString()} \\right)`;
+						+ `\\href{#def-O}{\\lor} ${args[1].toTeXString()} \\right)`;
 			}
 		},
-		iff: {
-			description: 'iff(TFFT).',
+		E: {
+			description: 'iff(TFFT). 모든 논리 기호를 primitive 하게 해도 된다고 하였으나 VE에서 막혔다.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-						+ `\\href{#typevar-iff}{\\leftrightarrow} ${args[1].toTeXString()}\\right)`;
+						+ `\\href{#def-E}{\\leftrightarrow} ${args[1].toTeXString()}\\right)`;
 			}
 		},
-		andf: {
-			description: 'and의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다.',
+		Af: {
+			description: 'A의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-						+ `\\href{#typevar-andf}{\\land} ${args[1].toTeXString()} \\right)`;
+						+ `\\href{#def-Af}{\\land} ${args[1].toTeXString()} \\right)`;
 			}
 		},
-		orf: {
-			description: 'or의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다.',
+		Of: {
+			description: 'O의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-						+ `\\href{#typevar-orf}{\\lor} ${args[1].toTeXString()} \\right)`;
+						+ `\\href{#def-Of}{\\lor} ${args[1].toTeXString()} \\right)`;
 			}
 		},
-		forall: {
+		V: {
 			description: '보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다.',
 			display: function (args) {
-				return `\\left(\\href{#typevar-forall}{\\forall}${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#def-V}{\\forall}${args[0].toTeXString()}\\right)`;
 			}
 		},
-		forall2: {
-			description: '입력항이 두 개인 함수를 위한 보편 양화. forall에 의존한다.',
+		V2: {
+			description: '입력항이 두 개인 함수를 위한 보편 양화. V에 의존한다.',
 			display: function (args) {
-				return `\\left(\\href{#typevar-forall2}{\\forall}${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#def-V2}{\\forall}${args[0].toTeXString()}\\right)`;
 			}
 		},
-		forall3: {
-			description: '입력항이 세 개인 함수를 위한 보편 양화. forall에 의존한다.',
+		V3: {
+			description: '입력항이 세 개인 함수를 위한 보편 양화. V에 의존한다.',
 			display: function (args) {
-				return `\\left(\\href{#typevar-forall3}{\\forall}${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#def-V3}{\\forall}${args[0].toTeXString()}\\right)`;
 			}
 		},
-		exists: {
-			description: '존재 양화(existential quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받으며 forall에 의존한다.',
+		X: {
+			description: '존재 양화(existential quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받으며 V에 의존한다.',
 			display: function (args) {
-				return `\\left(\\href{#typevar-exists}{\\exists}${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#def-X}{\\exists}${args[0].toTeXString()}\\right)`;
 			}
 		},
-		exists2: {
-			description: '입력항이 두 개인 함수를 위한 존재 양화. forall2에 의존한다.',
+		X2: {
+			description: '입력항이 두 개인 함수를 위한 존재 양화. V2에 의존한다.',
 			display: function (args) {
-				return `\\left(\\href{#typevar-exists2}{\\exists}${args[0].toTeXString()}\\right)`;
+				return `\\left(\\href{#def-X2}{\\exists}${args[0].toTeXString()}\\right)`;
 			}
 		},
-		in: {
+		'in': {
 			description: '집합론에서 정의하는 in 연산자.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-					+ `\\href{#typevar-in}{\\in}${args[1].toTeXString()} \\right)`
+					+ `\\href{#def-in}{\\in}${args[1].toTeXString()} \\right)`
+			}
+		},
+		'set': {
+			description: '어떤 class가 집합이라는 것. 어떤 class의 원소면 된다.',
+			display: function (args) {
+				return `\\left( \\href{#def-set}{\\mathsf{set}}\\ ${args[0].toTeXString()}\\right)`
 			}
 		},
 		eq: {
 			description: '[$=] 연산자. [$\\in]에 의존한다.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-					+ `\\href{#typevar-eq}{=}${args[1].toTeXString()} \\right)`
+					+ `\\href{#def-eq}{=}${args[1].toTeXString()} \\right)`;
 			}
 		},
-		notin: {
+		subseteq: {
+			description: String.raw`[$\subseteq].`,
+			display(args) {
+				return `\\left(${args[0].toTeXString()}`
+					+ `\\href{#def-subseteq}{\\subseteq}${args[1].toTeXString()} \\right)`;
+			}
+		},
+		Nin: {
 			description: '간단한 notin 함수.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-					+ `\\href{#typevar-notin}{\\notin}${args[1].toTeXString()} \\right)`
+					+ `\\href{#def-Nin}{\\notin}${args[1].toTeXString()} \\right)`
 			}
 		},
-		setbuildereq: {
+		setbuilder: {
+			description: String.raw`
+술어를 만족하는 class를 만든다. 일반적으로는 [$\{z: f(z)\}]라고 쓰는 것.
+`,
+			display(args) {
+				return `\\left\\{ \\href{#def-setbuilder}{:} ${args[0].toTeXString()} \\right\\}`;
+			}
+		},
+		subsetbuilder: {
+			description: String.raw`
+술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
+일반적으로는 [$\{z \in x: f(z)\}]라고 쓰는 것인데 더미 변수를 없애버렸다.`,
+			display: function (args) {
+				return `\\left\\{ ${args[0].toTeXString()} \\href{#def-subsetbuilder}{:} ${args[1].toTeXString()} \\right\\}`;
+			}
+		},
+		power: {
+			description: 'power class.',
+			display: function (args) {
+				return `\\href{#def-power}{\\mathcal P}(${args[0].toTeXString()})`;
+			}
+		},
+		singleton: {
+			description: 'singleton class.',
+			display(args) {
+				return `\\href{#def-singleton}{\\{} ${args[0].toTeXString()} \\}`;
+			}
+		},
+		subsetbuildereq: {
 			description: String.raw`
 술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
 일반적으로는 [$x = \{z \in y: f(z)\}]라고 쓰는 것인데 더미 변수를 없애버렸다.`,
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
-					+ `\\href{#typevar-setbuildereq}{=}`
+					+ `\\href{#def-subsetbuildereq}{=}`
 					+ `\\left\\{ ${args[1].toTeXString()} : ${args[2].toTeXString()} \\right\\} \\right)`;
+			}
+		},
+		emptyset: {
+			description: 'empty class. ZFC에 의하면 set이다.',
+			display() {
+				return '\\href{#def-emptyset}{\\varnothing}';
 			}
 		},
 		reflexive: {
 			description: 'binary relation의 reflexivity.',
 			display: function (args) {
-				return `\\left(${args[0].toTeXString()}\\ \\href{#typevar-reflexive}{\\text{is reflexive}}\\right)`;
+				return `\\left(${args[0].toTeXString()}\\ \\href{#def-reflexive}{\\text{is reflexive}}\\right)`;
 			}
 		},
 		symmetric: {
 			description: 'binary relation의 symmetricity.',
 			display: function (args) {
-				return `\\left(${args[0].toTeXString()}\\ \\href{#typevar-symmetric}{\\text{is symmetric}}\\right)`;
+				return `\\left(${args[0].toTeXString()}\\ \\href{#def-symmetric}{\\text{is symmetric}}\\right)`;
 			}
 		},
 		transitive: {
 			description: 'binary relation의 transitivity.',
 			display: function (args) {
-				return `\\left(${args[0].toTeXString()}\\ \\href{#typevar-transitive}{\\text{is transitive}}\\right)`;
+				return `\\left(${args[0].toTeXString()}\\ \\href{#def-transitive}{\\text{is transitive}}\\right)`;
 			}
 		}
 	},
 	rules: {
 		mp: {
-			description: 'modus ponens 추론 규칙. 추론 규칙은 이것만 있어도 적당히 되는 것 같다.'
+			description: 'modus ponens 추론 규칙. 추론 규칙은 이것만 있어도 적당히 되는 것 같다. cp와는 역연산 관계가 있다고 할 수 있다.'
 		},
-		andi: {
+		Ai: {
 			description: String.raw`
 conjunction introduction. [$ \vdash] 좌변의 [$p \land q]를 [$p, q]로 만들 수 있다.
 
 mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임을 보인 것이다.`
 		},
-		and3i: {
+		A3i: {
 			description: 'conjunction introduction 2번.'
 		},
-		ande1: {
+		Ae1: {
 			description: 'conjunction elimination 1.'
 		},
-		ande2: {
+		Ae2: {
 			description: 'conjunction elimination 2.'
 		},
-		ori1: {
+		Oi1: {
 			description: 'disjunction introduction 1.'
 		},
-		ori2: {
+		Oi2: {
 			description: 'disjunction introduction 2.'
 		},
-		ore: {
+		Oe: {
 			description: 'disjunction elimination.'
 		},
-		noti: {
+		Ni: {
 			description: 'negation introduction.'
 		},
-		note: {
+		Ne: {
 			description: 'negation elimination.'
 		},
-		notnote: {
+		NNe: {
 			description: 'double negation elimination.'
 		},
-		iffi: {
+		Ei: {
 			description: 'biconditional introduction.'
 		},
-		iffe1: {
+		Ee1: {
 			description: 'biconditional elimination 1.'
 		},
-		iffe2: {
+		Ee2: {
 			description: 'biconditional elimination 2.'
 		},
 		destroy: {
@@ -210,30 +260,33 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 		uinst: {
 			description: 'universal instantiation.'
 		},
-		einst: {
-			description: 'existential instantiation. 사실 instantiation을 하지는 않으나 동등한 표현력을 가질 것으로 보인다.'
-		},
-		exists: {
+		X: {
 			description: String.raw`
 지목할 수 있으면 존재한다는 의미. uinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다.`
 		},
-		forall_and: {
+		VA: {
 			description: String.raw`
-[$\forall]과 [$\land] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 forall_implies만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다.
+[$\forall]과 [$\land] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VI만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다.
 `
 		},
-		forall_implies: {
+		VI: {
 			description: String.raw`
-[$\forall]과 [$\to] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 forall_and만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다.
+[$\forall]과 [$\to] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VA만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다.
 `
 		},
-		forall_forall: {
+		VV: {
 			description: String.raw`
 [$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것.
 `
 		},
 		ext: {
 			description: 'axiom of extensionality. ZFC 공리계의 공리.'
+		},
+		emptyset_def: {
+			description: 'emptyset의 definition rule.'
+		},
+		setbuilder_def: {
+			description: 'setbuilder의 definition rule.'
 		},
 		spec: {
 			description: 'axiom schema of specification. ZFC 공리계의 공리.'
@@ -260,7 +313,7 @@ Metamath처럼 Łukasiewicz의 공리계로 어떻게 해보려 했으나 예전
 		]
 	[*] 일항 연산자
 		[ul
-			[*] N: not ([$\neg]).
+			[*] N: I ([$\neg]).
 		]
 	[*] 이항 연산자
 		[ul
@@ -289,10 +342,10 @@ conditional proof. deduction theorem이라고도 한다. 어떤 규칙
 [$$(\cdots): p, \cdots, r, q \vdash s]
 를 주면 규칙
 [$$(\cdots): p \cdots, r \vdash q \to s]
-를 뱉는다. [$\vdash] 좌항 마지막에 있는 명제 하나를 우항으로 돌린다.
+를 뱉는다. [$\vdash] 좌항 마지막에 있는 명제 하나를 우항으로 돌린다. mp와는 역연산 관계가 있다고 할 수 있다.
 `
 		},
-		foralli: {
+		Vi: {
 			description: String.raw`
 universal quantification introduction. 어떤 규칙
 [$$(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y)]

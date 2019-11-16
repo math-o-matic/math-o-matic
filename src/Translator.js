@@ -101,6 +101,15 @@ Translator.expand0Funcalls = function (expr) {
 		var map = param => args[fun.params.indexOf(param)];
 
 		return Translator.expand0Funcalls(Translator.substitute0(fun.expr, map));
+	} else if (expr._type == 'fun' && expr.anonymous) {
+		var expr2 = Translator.expand0Funcalls(expr.expr);
+		return new Fun({
+			anonymous: true,
+			type: expr.type,
+			atomic: false,
+			params: expr.params,
+			expr: expr2
+		});
 	} else {
 		return expr;
 	}

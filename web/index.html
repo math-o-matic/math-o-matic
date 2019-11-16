@@ -7,7 +7,7 @@
 		<script src="../dist/math.js"></script>
 		<script src="./code.js"></script>
 		<script src="./docs.js"></script>
-		<script src="./nativeMap.js"></script>
+		<script src="./native.js"></script>
 		<script src="./katex/katex.min.js"></script>
 		<script src="./m42kup.js"></script>
 		<link rel="stylesheet" href="./katex/katex.min.css">
@@ -70,27 +70,36 @@
 	</head>
 	<body>
 		<h1>M42/math</h1>
-		<div id="simple-types">
-			<h2>Simple types</h2>
-		</div>
-		<div id="typevars">
-			<h2>Typevars</h2>
-		</div>
-		<div id="links">
-			<h2>Links</h2>
-		</div>
-		<div id="rulesets">
-			<h2>Rulesets</h2>
-		</div>
-		<div id="rules">
-			<h2>Rules</h2>
-		</div>
+		<blockquote>
+			<p><b>꿀팁</b>. 이름을 정할 때 몇 가지 작명 방식을 따르고 있습니다.</p>
+
+			<ul>
+				<li>T: verum. true의 T.
+				<li>F: falsum. false의 F.
+				<li>S: nand. sheffer stroke의 S.
+				<li>N: not. not의 N.
+				<li>A: and. and의 A.
+				<li>O: or. or의 O.
+				<li>I: implies. implies의 I.
+				<li>E: iff. equivalent의 E.
+				<li>V: forall. every의 V.
+				<li>X: exists. exist의 X.
+				<li>i: introduction. introduction의 i.
+				<li>e: elimination. elimination의 e.
+				<li>m: modus ponens. modus ponens의 m. |- p -> q 형태에 mp를 적용해서 p |- q 형태로 만들었을 경우 m을 붙입니다. |- p <-> q의 경우 p |- q가 m1이고 q |- p가 m2가 됩니다.
+				<li>f: functional. functional의 f. Af나 Of처럼 함수 작용소 버전을 만들 때 붙입니다.
+				<li>_def: 어떤 def의 정의로서 사용되는 rule의 이름의 경우 해당 def의 이름에 _def를 붙입니다. def emptyset과 rule emptyset_def의 관계를 참조하세요.
+			</ul>
+		</blockquote>
+		<div id="all"></div>
 		<div id="code">
 			<h2>The code</h2>
 		</div>
 		<script>
 			$ = (q, n) => (n || document).querySelector(q);
 			$$ = (q, n) => (n || document).querySelectorAll(q);
+
+			(() => {
 
 			var katexOpts = {
 				trust: context => {
@@ -109,143 +118,153 @@
 			    '"': '&quot;', "'": '&#39;'
 			})[m]);
 
-			$('#code').innerHTML +=
-				`<pre>${escapeHtml(code)}</pre>`;
+			$('#code').innerHTML += `<pre>${escapeHtml(code)}</pre>`;
 
 			console.log('--- PARSE START ---');
 			var parseStartTime = new Date() * 1;
-			var parsed, err;
+			var parsed;
 			try {
 				parsed = math.parser.parse(code);
 			} catch (e) {
 				console.error(e);
 				console.error(`Error: ${e.message}\n\tat ${e.location.start.line}:${e.location.start.column}`);
 				console.log('--- PARSE FAILED ---');
-				err = e;
+				return;
 			}
 
 			var parseEndTime = new Date() * 1;
+			console.log(parsed);
+			console.log('--- PARSE END ---');
+			console.log(`Parse ended in ${parseEndTime - parseStartTime} ms`);
 
-			if (!err) {
-				console.log(parsed);
-				console.log('--- PARSE END ---');
-				console.log(`Parse ended in ${parseEndTime - parseStartTime} ms`);
-				console.log('--- PROCESS START --');
-				var processStartTime = new Date() * 1;
+			console.log('--- PROCESS START --');
+			var processStartTime = new Date() * 1;
 
-				var program = new math.Program();
-				program.feed(parsed, nativeMap);
+			var program = new math.Program();
+			program.feed(parsed, native);
 
-				var processEndTime = new Date() * 1;
-				console.log(program);
-				console.log('--- PROCESS END ---');
-				console.log(`Process ended in ${processEndTime - processStartTime} ms`);
-				console.log('--- HTML RENDER START ---');
-				var renderStartTime = new Date() * 1;
+			var processEndTime = new Date() * 1;
+			console.log(program);
+			console.log('--- PROCESS END ---');
+			console.log(`Process ended in ${processEndTime - processStartTime} ms`);
 
-				if (docs.typevars) {
-					for (k in docs.typevars) {
-						var typevar = docs.typevars[k];
+			console.log('--- HTML RENDER START ---');
+			var renderStartTime = new Date() * 1;
 
-						if (typevar.display) {
-							if (program.scope.typevarMap[k]) {
-								if (program.scope.typevarMap[k]._type == 'fun')
-									program.scope.typevarMap[k].funcallToTeXString = typevar.display;
-								else
-									program.scope.typevarMap[k].toTeXString = typevar.display;
-							}
+			if (docs.defs) {
+				for (k in docs.defs) {
+					var def = docs.defs[k];
+
+					if (def.display) {
+						if (program.scope.defMap[k]) {
+							if (program.scope.defMap[k]._type == 'fun')
+								program.scope.defMap[k].funcallToTeXString = def.display;
+							else
+								program.scope.defMap[k].toTeXString = def.display;
 						}
 					}
 				}
-
-				for (var k in program.scope.simpleTypeMap) {
-					var v = program.scope.simpleTypeMap[k];
-
-					$('#simple-types').innerHTML +=
-						`<div class="block">`
-						+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>Type</b> ${k}</a></p>`
-						+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
-						+ (
-							docs.simpleTypes && docs.simpleTypes[k] && docs.simpleTypes[k].description
-							? `<p class="description">${m42kup.render(docs.simpleTypes[k].description)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-						// + `<pre>${escapeHtml(v)}</pre>`
-						+ `</div>`;
-				}
-
-				for (var k in program.scope.typevarMap) {
-					var v = program.scope.typevarMap[k];
-
-					$('#typevars').innerHTML +=
-						`<div class="block">`
-						+ `<p class="label"><a id="typevar-${k}" href="#typevar-${k}"><b>Typevar</b> ${k}</a></p>`
-						+ `<div class="math">${katex.renderToString(v.toTeXString(true), katexOpts)}</div>`
-						+ (
-							docs.typevars && docs.typevars[k] && docs.typevars[k].description
-							? `<p class="description">${m42kup.render(docs.typevars[k].description)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-						// + `<pre>${escapeHtml(v)}</pre>`
-						+ `</div>`;
-				}
-
-				for (var k in program.scope.linkMap) {
-					var v = program.scope.linkMap[k];
-
-					$('#links').innerHTML +=
-						`<div class="block">`
-						+ `<p class="label"><a id="link-${k}" href="#link-${k}"><b>Link</b> ${k}</a></p>`
-						+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
-						+ (
-							docs.links && docs.links[k] && docs.links[k].description
-							? `<p class="description">${m42kup.render(docs.links[k].description)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-						// + `<pre>${escapeHtml(v)}</pre>`
-						+ `</div>`;
-				}
-
-				for (var k in program.scope.rulesetMap) {
-					var v = program.scope.rulesetMap[k];
-
-					$('#rulesets').innerHTML +=
-						`<div class="block">`
-						+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>Ruleset</b> ${k}</a></p>`
-						+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
-						+ (
-							docs.rulesets && docs.rulesets[k] && docs.rulesets[k].description
-							? `<p class="description">${m42kup.render(docs.rulesets[k].description)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-						// + `<pre>${escapeHtml(v)}</pre>`
-						+ `</div>`;
-				}
-
-				for (var k in program.scope.ruleMap) {
-					var v = program.scope.ruleMap[k];
-
-					$('#rules').innerHTML +=
-						`<div class="block">`
-						+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>Rule</b> ${k}</a></p>`
-						+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
-						+ (
-							docs.rules && docs.rules[k] && docs.rules[k].description
-							? `<p class="description">${m42kup.render(docs.rules[k].description)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-						// + `<pre>${escapeHtml(v)}</pre>`
-						+ `</div>`;
-				}
-
-				[].forEach.call($$('.katex a'), a => {
-					a.title = a.getAttribute('href');
-				});
-
-				var renderEndTime = new Date() * 1;
-				console.log('--- HTML RENDER END ---');
-				console.log(`HTML render ended in ${renderEndTime - renderStartTime} ms`);
 			}
+
+			var arr = {}, r;
+
+			for (var k in program.scope.simpleTypeMap) {
+				var v = program.scope.simpleTypeMap[k];
+
+				r = `<div class="block">`
+					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>Type</b> ${k}</a></p>`
+					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+					+ (
+						docs.simpleTypes && docs.simpleTypes[k] && docs.simpleTypes[k].description
+						? `<p class="description">${m42kup.render(docs.simpleTypes[k].description)}</p>`
+						: '<p class="description"><i>No description provided.</i></p>'
+					)
+					// + `<pre>${escapeHtml(v)}</pre>`
+					+ `</div>`;
+
+				arr[v._id] = r;
+			}
+
+			for (var k in program.scope.defMap) {
+				var v = program.scope.defMap[k];
+
+				r = `<div class="block">`
+					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>Def</b> ${k}</a></p>`
+					+ `<div class="math">${katex.renderToString(v.toTeXString(true), katexOpts)}</div>`
+					+ (
+						docs.defs && docs.defs[k] && docs.defs[k].description
+						? `<p class="description">${m42kup.render(docs.defs[k].description)}</p>`
+						: '<p class="description"><i>No description provided.</i></p>'
+					)
+					// + `<pre>${escapeHtml(v)}</pre>`
+					+ `</div>`;
+
+				arr[v._id] = r;
+			}
+
+			for (var k in program.scope.ruleMap) {
+				var v = program.scope.ruleMap[k];
+
+				r = `<div class="block">`
+					+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>Rule</b> ${k}</a></p>`
+					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+					+ (
+						docs.rules && docs.rules[k] && docs.rules[k].description
+						? `<p class="description">${m42kup.render(docs.rules[k].description)}</p>`
+						: '<p class="description"><i>No description provided.</i></p>'
+					)
+					// + `<pre>${escapeHtml(v)}</pre>`
+					+ `</div>`;
+
+				arr[v._id] = r;
+			}
+
+			for (var k in program.scope.linkMap) {
+				var v = program.scope.linkMap[k];
+
+				r = `<div class="block">`
+					+ `<p class="label"><a id="link-${k}" href="#link-${k}"><b>Link</b> ${k}</a></p>`
+					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+					+ (
+						docs.links && docs.links[k] && docs.links[k].description
+						? `<p class="description">${m42kup.render(docs.links[k].description)}</p>`
+						: '<p class="description"><i>No description provided.</i></p>'
+					)
+					// + `<pre>${escapeHtml(v)}</pre>`
+					+ `</div>`;
+
+				arr[v._id] = r;
+			}
+
+			for (var k in program.scope.rulesetMap) {
+				var v = program.scope.rulesetMap[k];
+
+				r = `<div class="block">`
+					+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>Ruleset</b> ${k}</a></p>`
+					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+					+ (
+						docs.rulesets && docs.rulesets[k] && docs.rulesets[k].description
+						? `<p class="description">${m42kup.render(docs.rulesets[k].description)}</p>`
+						: '<p class="description"><i>No description provided.</i></p>'
+					)
+					// + `<pre>${escapeHtml(v)}</pre>`
+					+ `</div>`;
+
+				arr[v._id] = r;
+			}
+
+			$('#all').innerHTML +=
+				Object.keys(arr).sort((l, r) => l._id - r._id).map(k => arr[k]).join('');
+
+			[].forEach.call($$('.katex a'), a => {
+				a.title = a.getAttribute('href');
+			});
+
+			var renderEndTime = new Date() * 1;
+			console.log('--- HTML RENDER END ---');
+			console.log(`HTML render ended in ${renderEndTime - renderStartTime} ms`);
+
+			})();
 		</script>
 	</body>
 </html>
