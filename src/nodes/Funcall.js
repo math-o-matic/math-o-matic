@@ -67,11 +67,13 @@ Funcall.prototype.toTeXString = function (root) {
 		return arg.toTeXString();
 	});
 
-	var n = this.escapeTeX(this.fun.name);
-
 	return `${this.fun.anonymous
 			? this.fun.toTeXString()
-			: `${this.fun.name.length == 1 ? n : `\\mathrm{${n}}`}`}`
+			: this.fun._type == 'typevar'
+				? this.fun.toTeXString()
+				: this.fun.name.length == 1
+					? this.escapeTeX(this.fun.name)
+					: `\\mathrm{${this.escapeTeX(this.fun.name)}}`}`
 		+ `(${args.join(', ')})`;
 }
 
