@@ -250,6 +250,69 @@ native = {
 				});
 			}
 		},
+		Ve: {
+			get: (rules, scope) => {
+				if (rules.length != 1) return false;
+				var rule = rules[0];
+
+				if (!scope.hasTypeByName('st'))
+					throw Error(`Type st not found`);
+
+				var st = scope.getTypeByName('st');
+				
+				if (!scope.hasTypeByName('class'))
+					throw Error(`Type class not found`);
+
+				var class_ = scope.getTypeByName('class');
+
+				var yield_ = rule.expr;
+
+				if (yield_._type != 'yield')
+					return false;
+
+				if (yield_.left.length)
+					return false;
+
+				if (!scope.hasTypevarByName('V'))
+					throw Error(`Typevar V not found`);
+
+				var V = scope.getTypevarByName('V');
+
+				if (!V.type.equals(new scope.Type({
+					functional: true,
+					from: [new scope.Type({
+						functional: true,
+						from: [class_],
+						to: st
+					})],
+					to: st
+				})))
+					throw Error(`Wrong type for V`);
+
+				if (yield_.right._type != 'funcall'
+						|| yield_.right.fun != V)
+					return false;
+
+				var newvar = new scope.Typevar({
+					type: class_,
+					name: '$'
+				});
+
+				return new scope.Rule({
+					name: `Ve[${rule.name}]`,
+					params: rule.params.concat([newvar]),
+					rules: [
+						new scope.Yield({
+							left: [],
+							right: new scope.Funcall({
+								fun: yield_.right.args[0],
+								args: [newvar]
+							})
+						})
+					]
+				});
+			}
+		},
 		cp: {
 			get: (rules, scope) => {
 				if (rules.length != 1) return false;

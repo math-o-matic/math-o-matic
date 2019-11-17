@@ -28,10 +28,10 @@ Typevar.prototype.toIndentedString = function () {
 
 Typevar.prototype.toTeXString = function (root) {
 	if (this.name.length == 1) {
-		return `\\textcolor{#303F9F}{${this.name}}_{\\scriptscriptstyle ${this._id}}`;
+		return `\\textcolor{#F57C00}{${this.name}}_{\\scriptscriptstyle ${this._id}}`;
 	}
 
-	return `\\textcolor{#303F9F}{\\mathrm{${this.escapeTeX(this.name)}}}_{\\scriptscriptstyle ${this._id}}`;
+	return `\\textcolor{#F57C00}{\\mathrm{${this.escapeTeX(this.name)}}}_{\\scriptscriptstyle ${this._id}}`;
 }
 
 module.exports = Typevar;

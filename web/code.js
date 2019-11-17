@@ -18,12 +18,7 @@ st O(st p, st q);
 
 st I(st p, st q);
 
-st E(st p, st q) {
-	A(
-		I(p, q),
-		I(q, p)
-	)
-}
+st E(st p, st q);
 
 // st N(st p) {
 // 	S(p, p)
@@ -141,10 +136,21 @@ rule Ee2(st p, st q) {
 	~ mp(E(p, q), I(q, p))
 }
 
+rule mpE(st p, st q) {
+	Ee1(p, q)
+	~ mp(p, q)
+}
+
 rule syll(st p, st q, st r) {
 	Ai(I(p, q), I(q, r))
 	~ tt.IAIpqIqrIpr(p, q, r)
 	~ mp(A(I(p, q), I(q, r)), I(p, r))
+}
+
+rule syllE(st p, st q, st r) {
+	Ai(E(p, q), E(q, r))
+	~ tt.IAEpqEqrEpr(p, q, r)
+	~ mp(A(E(p, q), E(q, r)), E(p, r))
 }
 
 rule id(st p) {
@@ -177,6 +183,7 @@ typedef class;
 st V([class -> st] f);
 
 native link Vi;
+native link Ve;
 
 st V2([(class, class) -> st] f) {
 	V((class x) =>
@@ -236,17 +243,6 @@ rule VV([(class, class) -> st] f) {
 	)
 }
 
-rule VE([class -> st] f, [class -> st] g) {
-	VA(
-		(class x) => (
-			I(f(x), g(x))
-		),
-		(class x) => (
-			I(g(x), f(x))
-		)
-	)
-}
-
 rule VAm1([class -> st] f, [class -> st] g) {
 	VA(f, g)
 	~ Ee1(
@@ -287,6 +283,53 @@ rule VVm([(class, class) -> st] f) {
 	)
 }
 
+rule ttf_IEpqEqp([class -> st] f, [class -> st] g, class x) {
+	tt.IEpqEqp(f(x), g(x))
+}
+
+rule IVEpqVEqpfm([class -> st] f, [class -> st] g) {
+	Vi[ttf_IEpqEqp](f, g)
+	~ VIm(
+		(class x) => E(f(x), g(x)),
+		(class x) => E(g(x), f(x))
+	) ~ mp(
+		V((class x) => E(f(x), g(x))),
+		V((class x) => E(g(x), f(x)))
+	)
+}
+
+rule ttf_IEpqIpq([class -> st] f, [class -> st] g, class x) {
+	tt.IEpqIpq(f(x), g(x))
+}
+
+rule IVEpqVIpqfm([class -> st] f, [class -> st] g) {
+	Vi[ttf_IEpqIpq](f, g)
+	~ VIm(
+		(class x) => (E(f(x), g(x))),
+		(class x) => (I(f(x), g(x)))
+	) ~ mp(
+		V((class x) => E(f(x), g(x))),
+		V((class x) => I(f(x), g(x)))
+	)
+}
+
+rule IVEpqVIqpfm([class -> st] f, [class -> st] g) {
+	IVEpqVEqpfm(f, g)
+	~ IVEpqVIpqfm(g, f)
+}
+
+rule VEm([class -> st] f, [class -> st] g) {
+	IVEpqVIpqfm(f, g)
+	~ VIm(f, g)
+	~ IVEpqVIqpfm(f, g)
+	~ VIm(g, f)
+	~ Ei(V(f), V(g))
+}
+
+rule VE([class -> st] f, [class -> st] g) {
+	cp[VEm](f, g)
+}
+
 st reflexive([(class, class) -> st] f) {
 	V((class x) =>
 		f(x, x)
@@ -314,9 +357,30 @@ st transitive([(class, class) -> st] f) {
 
 st in(class a, class b);
 
+st Nin(class a, class b) {
+	N(in(a, b))
+}
+
 st set(class a) {
 	X((class b) =>
 		in(a, b)
+	)
+}
+
+st subseteq(class x, class y) {
+	V((class z) => (
+		I(
+			in(z, x),
+			in(z, y)
+		)
+	))
+}
+
+class emptyset;
+
+rule emptyset_def() {
+	|- V((class x) =>
+		Nin(x, emptyset)
 	)
 }
 
@@ -331,7 +395,7 @@ st eq(class x, class y) {
 	)
 }
 
-rule ext(class x, class y) {
+rule extensional(class x, class y) {
 	|- I(
 		V((class z) =>
 			E(
@@ -343,25 +407,77 @@ rule ext(class x, class y) {
 	)
 }
 
-st subseteq(class x, class y) {
-	V((class z) => (
-		I(
-			in(z, x),
-			in(z, y)
-		)
-	))
-}
-
-st Nin(class a, class b) {
-	N(in(a, b))
-}
-
-class emptyset;
-
-rule emptyset_def() {
-	|- V((class x) =>
-		Nin(x, emptyset)
+rule eq_simple(class x, class y) {
+	tt.IApqp(
+		V((class z) => E(in(z, x), in(z, y))),
+		V((class w) => E(in(x, w), in(y, w)))
 	)
+	~ extensional(x, y)
+	~ Ei(
+		eq(x, y),
+		V((class z) => E(in(z, x), in(z, y)))
+	)
+}
+
+rule eq_then_subseteq_m(class x, class y) {
+	eq_simple(x, y)
+	~ mpE(
+		eq(x, y),
+		V((class z) => E(in(z, x), in(z, y)))
+	)
+	~ IVEpqVIpqfm(
+		(class z) => in(z, x),
+		(class z) => in(z, y)
+	)
+	~ id(subseteq(x, y))
+}
+
+rule eq_reflexive_tmp1(class x, class z) {
+	tt.Epp(in(z, x))
+}
+
+rule eq_reflexive_tmp2(class x, class w) {
+	tt.Epp(in(x, w))
+}
+
+rule eq_reflexive_tmp3(class x) {
+	Vi[eq_reflexive_tmp1](x)
+	~ Vi[eq_reflexive_tmp2](x)
+	~ Ai(
+		V((class z) => E(in(z, x), in(z, x))),
+		V((class w) => E(in(x, w), in(x, w)))
+	)
+}
+
+rule eq_reflexive() {
+	Vi[eq_reflexive_tmp3]()
+	~ id(reflexive(eq))
+}
+
+rule eq_symmetric_tmp(class x, class y) {
+	id(eq(x, y)) ~
+	Ae1(
+		V((class z) => E(in(z, x), in(z, y))),
+		V((class w) => E(in(x, w), in(y, w)))
+	) ~ IVEpqVEqpfm(
+		(class z) => in(z, x),
+		(class z) => in(z, y)
+	) ~ Ae2(
+		V((class z) => E(in(z, x), in(z, y))),
+		V((class w) => E(in(x, w), in(y, w)))
+	) ~ IVEpqVEqpfm(
+		(class w) => in(x, w),
+		(class w) => in(y, w)
+	) ~ Ai(
+		V((class z) => E(in(z, y), in(z, x))),
+		V((class w) => E(in(y, w), in(x, w)))
+	)
+	~ id(eq(y, x))
+}
+
+rule eq_symmetric() {
+	Vi[Vi[cp[eq_symmetric_tmp]]]()
+	~ id(symmetric(eq))
 }
 
 class setbuilder([class -> st] f);
@@ -390,6 +506,31 @@ class power(class x) {
 	))
 }
 
+rule self_in_power(class x, class z) {
+	|- I(
+		eq(z, x),
+		in(z, power(x))
+	)
+}
+
+rule self_in_power_1(class x) {
+	setbuilder_def((class z) => (
+		subseteq(z, x)
+	))
+	~ id(
+		V((class z) => (
+			E(
+				in(z, power(x)),
+				subseteq(z, x)
+			)
+		))
+	)
+}
+
+rule self_in_power_2(class x, class z) {
+	Ve[self_in_power_1](x, z)
+}
+
 class singleton(class x) {
 	setbuilder((class z) => (
 		eq(z, x)
@@ -400,17 +541,23 @@ rule singleton_subseteq_power(class x) {
 	|- subseteq(singleton(x), power(x))
 }
 
-rule singleton_subseteq_power_(class x) {
+rule singleton_subseteq_power_1(class x) {
 	setbuilder_def((class z) => eq(z, x))
-}
-
-st subsetbuildereq(class x, class y, [class -> st] f) {
-	V((class z) =>
-		E(in(z, x), A(in(z, y), f(z)))
+	~ id(
+		V((class z) => (
+			E(
+				in(z, singleton(x)),
+				eq(z, x)
+			)
+		))
 	)
 }
 
-rule spec([class -> st] f) {
+rule singleton_subseteq_power_2(class x, class z) {
+	Ve[singleton_subseteq_power_1](x, z)
+}
+
+rule specify([class -> st] f) {
 	|-
 	V((class x) =>
 		I(
@@ -431,51 +578,5 @@ rule spec([class -> st] f) {
 		)
 	)
 }*/
-
-rule _ttf_IEpqEqp([class -> st] f, [class -> st] g, class x) {
-	tt.IEpqEqp(f(x), g(x))
-}
-
-rule _tmp0([class -> st] f, [class -> st] g) {
-	Vi[_ttf_IEpqEqp](f, g)
-	~ VIm(
-		(class x) => E(f(x), g(x)),
-		(class x) => E(g(x), f(x))
-	) ~ mp(
-		V((class x) => E(f(x), g(x))),
-		V((class x) => E(g(x), f(x)))
-	)
-}
-
-rule _tmp(class x, class y) {
-	Ae1(
-		V((class z) => E(in(z, x), in(z, y))),
-		V((class w) => E(in(x, w), in(y, w)))
-	) ~ _tmp0(
-		(class z) => in(z, x),
-		(class z) => in(z, y)
-	)
-}
-
-rule _tmp2(class x, class y) {
-	Ae2(
-		V((class z) => E(in(z, x), in(z, y))),
-		V((class w) => E(in(x, w), in(y, w)))
-	) ~ _tmp0(
-		(class w) => in(x, w),
-		(class w) => in(y, w)
-	)
-}
-
-rule _tmp3(class x, class y) {
-	_tmp(x, y) ~ _tmp2(x, y) ~ Ai(
-		V((class z) => E(in(z, y), in(z, x))),
-		V((class w) => E(in(y, w), in(x, w)))
-	)
-}
-
-rule eq_symmetric() {
-	Vi[Vi[cp[_tmp3]]]()
-}
 
 `;

@@ -58,7 +58,7 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 			}
 		},
 		E: {
-			description: 'iff(TFFT). 모든 논리 기호를 primitive 하게 해도 된다고 하였으나 VE에서 막혔다.',
+			description: 'iff(TFFT).',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}`
 						+ `\\href{#def-E}{\\leftrightarrow} ${args[1].toTeXString()}\\right)`;
@@ -170,16 +170,6 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 				return `\\href{#def-singleton}{\\{} ${args[0].toTeXString()} \\}`;
 			}
 		},
-		subsetbuildereq: {
-			description: String.raw`
-술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
-일반적으로는 [$x = \{z \in y: f(z)\}]라고 쓰는 것인데 더미 변수를 없애버렸다.`,
-			display: function (args) {
-				return `\\left(${args[0].toTeXString()}`
-					+ `\\href{#def-subsetbuildereq}{=}`
-					+ `\\left\\{ ${args[1].toTeXString()} : ${args[2].toTeXString()} \\right\\} \\right)`;
-			}
-		},
 		emptyset: {
 			description: 'empty class. ZFC에 의하면 set이다.',
 			display() {
@@ -279,7 +269,7 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 [$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것.
 `
 		},
-		ext: {
+		extensional: {
 			description: 'axiom of extensionality. ZFC 공리계의 공리.'
 		},
 		emptyset_def: {
@@ -288,8 +278,11 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 		setbuilder_def: {
 			description: 'setbuilder의 definition rule.'
 		},
-		spec: {
-			description: 'axiom schema of specification. ZFC 공리계의 공리.'
+		specify: {
+			description: 'axiom schema of specification. ZFC 공리계의 공리. 어떤 집합에서 임의 술어를 만족시키는 것의 class를 만들었을 때 이 class가 집합이라는 뜻이다.'
+		},
+		eq_reflexive: {
+			description: '[$=]는 반사적(reflexive)이다.'
 		},
 		eq_symmetric: {
 			description: '[$=]는 대칭적(symmetric)이다.'
@@ -356,6 +349,21 @@ universal quantification introduction. 어떤 규칙
 제약사항
 [ul
 	[*] 입력 규칙의 마지막 매개변수의 타입이 Class여야 함.
+	[*] [$\vdash]의 좌변에 아무것도 없어야 함.
+]
+`
+		},
+		Ve: {
+			description: String.raw`
+universal quantification elimination. 어떤 규칙
+[$$(x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))]
+를 주면 규칙
+[$$(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y)]
+를 뱉는다. Vi의 역연산이라고 볼 수 있다.
+
+제약사항
+[ul
+	[*] [$\vdash]의 우변이 V여야 함.
 	[*] [$\vdash]의 좌변에 아무것도 없어야 함.
 ]
 `

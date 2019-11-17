@@ -9,17 +9,21 @@ var Rulecall = require('./Rulecall');
 
 var Translator = require('../Translator');
 
-function Ruleset({name, code}) {
+function Ruleset({name, native, code}) {
 	Node.call(this);
 	this._type = 'ruleset';
 
 	if (typeof name != 'string')
 		throw Error(`Assertion failed`);
 
+	if (typeof native != 'boolean' || !native)
+		throw Error(`Assertion failed`);
+
 	if (!code)
 		throw Error(`Assertion failed`);
 	
 	this.name = name;
+	this.native = native;
 	this.code = code;
 }
 
@@ -31,11 +35,13 @@ Ruleset.prototype.toString = function () {
 }
 
 Ruleset.prototype.toIndentedString = function (indent) {
-	return `RS ${this.name}`;
+	return `RS ${this.name}`
+		+ (this.native ? ' <native>' : '');
 }
 
 Ruleset.prototype.toTeXString = function (root) {
-	return `\\href{#ruleset-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`;
+	return `\\href{#ruleset-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
+		+ (this.native ? '\\ (\\mathrm{native})' : '');
 }
 
 module.exports = Ruleset;

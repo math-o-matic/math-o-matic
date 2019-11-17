@@ -66,7 +66,7 @@ Fun.prototype.toTeXString = function (root) {
 			+ `\\mapsto ${this.expr.toTeXString()}\\right)`;
 
 	if (!root)
-		return `\\href{#typevar-${this.name}}\\mathrm{${this.name}}`;
+		return `\\href{#def-${this.name}}\\mathrm{${this.name}}`;
 
 	if (!this.expr)
 		return this.funcallToTeXString(this.params);

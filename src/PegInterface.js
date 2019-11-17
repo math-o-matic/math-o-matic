@@ -361,7 +361,7 @@ PegInterface.ruleset = function (obj, parentScope, nativeMap) {
 
 	var nativeCode = nativeMap.ruleset[name];
 
-	return new Ruleset({name, code: nativeCode});
+	return new Ruleset({name, native: true, code: nativeCode});
 }
 
 PegInterface.link = function (obj, parentScope, nativeMap) {
@@ -377,7 +377,7 @@ PegInterface.link = function (obj, parentScope, nativeMap) {
 
 	var nativeCode = nativeMap.link[name];
 
-	return new Link({name, code: nativeCode});
+	return new Link({name, native: true, code: nativeCode});
 }
 
 module.exports = PegInterface;

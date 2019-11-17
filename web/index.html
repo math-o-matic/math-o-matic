@@ -10,6 +10,11 @@
 		<script src="./native.js"></script>
 		<script src="./katex/katex.min.js"></script>
 		<script src="./m42kup.js"></script>
+		<script>
+			m42kup.set({
+				katex
+			});
+		</script>
 		<link rel="stylesheet" href="./katex/katex.min.css">
 		<style>
 			* {
@@ -65,32 +70,52 @@
 
 			.katex a > :not(.mspace) {
 				background-color: #E3F2FD;
+				color: #303F9F;
 			}
 		</style>
 	</head>
 	<body>
 		<h1>M42/math</h1>
-		<blockquote>
-			<p><b>꿀팁</b>. 이름을 정할 때 몇 가지 작명 방식을 따르고 있습니다.</p>
+		<p><a href="https://github.com/logico-philosophical/m42-math">GitHub repo</a></p>
+		<h2>꿀팁</h2>
+		<script>document.write(m42kup.render(String.raw`
+이름을 정할 때 몇 가지 작명 방식을 따르고 있습니다.
+[ul
+	[*] T: verum. true의 T.
+	[*] F: falsum. false의 F.
+	[*] S: nand. sheffer stroke의 S.
+	[*] N: not. not의 N.
+	[*] A: and. and의 A.
+	[*] O: or. or의 O.
+	[*] I: implies. implies의 I.
+	[*] E: iff. equivalent의 E.
+	[*] V: forall. every의 V.
+	[*] X: exists. exist의 X.
+	[*] i: introduction. introduction의 i.
+	[*] e: elimination. elimination의 e.
+	[*] m: modus ponens. modus ponens의 m. [$\vdash p \to q] 형태에 mp를 적용해서 [$p \vdash q] 형태로 만들었을 경우 m을 붙입니다. [$\vdash p \leftrightarrow q]의 경우 [$p \vdash q]가 m1이고 [$q \vdash p]가 m2가 됩니다.
+	[*] f: functional. functional의 f. Af나 Of처럼 함수 작용소 버전을 만들 때 붙입니다.
+	[*] _def: 어떤 def의 정의로서 사용되는 rule의 이름의 경우 해당 def의 이름에 _def를 붙입니다. def emptyset과 rule emptyset_def의 관계를 참조하세요.
+]
 
-			<ul>
-				<li>T: verum. true의 T.
-				<li>F: falsum. false의 F.
-				<li>S: nand. sheffer stroke의 S.
-				<li>N: not. not의 N.
-				<li>A: and. and의 A.
-				<li>O: or. or의 O.
-				<li>I: implies. implies의 I.
-				<li>E: iff. equivalent의 E.
-				<li>V: forall. every의 V.
-				<li>X: exists. exist의 X.
-				<li>i: introduction. introduction의 i.
-				<li>e: elimination. elimination의 e.
-				<li>m: modus ponens. modus ponens의 m. |- p -> q 형태에 mp를 적용해서 p |- q 형태로 만들었을 경우 m을 붙입니다. |- p <-> q의 경우 p |- q가 m1이고 q |- p가 m2가 됩니다.
-				<li>f: functional. functional의 f. Af나 Of처럼 함수 작용소 버전을 만들 때 붙입니다.
-				<li>_def: 어떤 def의 정의로서 사용되는 rule의 이름의 경우 해당 def의 이름에 _def를 붙입니다. def emptyset과 rule emptyset_def의 관계를 참조하세요.
-			</ul>
-		</blockquote>
+이 페이지의 많은 부분은 m42kup([~github.com/logico-philosophical/m42kup])으로 쓰였습니다.
+`));</script>
+		<h2>몇 가지 동형에 관하여</h2>
+		<script>document.write(m42kup.render(String.raw`
+어떤 공리계에서 두 개의 규칙이 동형이라는 것은 그거나 그거나라는 겁니다. 현재 다음과 같은 종류가 있습니다.
+[ul
+	[*] mp[&ndash]cp 동형: 규칙 mp 및 링크 cp에 의해
+[$$${'`'}\vdash p \to q \xrightleftharpoons[\mathsf{cp}]\mathsf{mp} p \vdash q${'`'}.]
+	[*] Ai[&ndash]Ae 동형: 규칙 Ai 및 규칙 Ae1, Ae2에 의해
+[$$${'`'}p \land q \vdash r \xrightleftharpoons[\mathsf{Ae}]\mathsf{Ai} p, q \vdash r${'`'}.]
+왼쪽에 적용하기 때문에 Ai에 의해 없어지고 Ae에 의해 생깁니다.
+	[*] Vi[&ndash]Ve 동형: 링크 Vi 및 링크 Ve에 의해
+[$$${'`'}(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y) \xrightleftharpoons[\mathsf{Ve}]\mathsf{Vi} (x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))${'`'}]
+]
+
+문제는 이것들 중에 무엇을 대표로 취할 것인가입니다. 더 metalogical 한 것, 즉 mp 형, Ai 형, Ve 형을 취하는 것이 좋을 것 같은걸요. 또 동형 규칙 간의 이름 규칙이 있어야 하겠습니다.
+`));</script>
+		<h2>목록</h2>
 		<div id="all"></div>
 		<div id="code">
 			<h2>The code</h2>
@@ -108,10 +133,6 @@
 					return true;
 				}
 			}
-
-			m42kup.set({
-				katex
-			});
 
 			var escapeHtml = s => (s + '').replace(/[&<>"']/g, m => ({
 			    '&': '&amp;', '<': '&lt;', '>': '&gt;',
