@@ -61,7 +61,7 @@ Scope.prototype.hasType = function (typeobj) {
 }
 
 Scope.prototype.addType = function (obj) {
-	var type = PegInterface.type(obj, this);
+	var type = PegInterface.type(obj, this, []);
 
 	if (this.hasOwnTypeByName(type.name))
 		throw Error(`Type with name ${type.name} already is there`);
@@ -96,7 +96,7 @@ Scope.prototype.hasTypevarByName = function (name) {
 }
 
 Scope.prototype.addTypevar = function (obj) {
-	var typevar = PegInterface.typevar(obj, this);
+	var typevar = PegInterface.typevar(obj, this, []);
 
 	if (this.hasOwnTypevarByName(obj.name))
 		throw Error(`Def with name ${obj.name} already is there`);
@@ -113,7 +113,7 @@ Scope.prototype.getTypevarByName = function (name) {
 }
 
 Scope.prototype.addFun = function (obj) {
-	var fun = PegInterface.fun(obj, this);
+	var fun = PegInterface.fun(obj, this, []);
 
 	if (!fun.anonymous && this.hasOwnTypevarByName(fun.name))
 		throw Error(`Def with name ${fun.name} already is there`);
@@ -131,7 +131,7 @@ Scope.prototype.hasRuleByName = function (name) {
 }
 
 Scope.prototype.addRule = function (defruleobj) {
-	var rule = PegInterface.rule(defruleobj, this);
+	var rule = PegInterface.rule(defruleobj, this, []);
 
 	if (this.hasOwnRuleByName(rule.name))
 		throw Error(`Rule with name ${rule.name} already is there`);
@@ -157,7 +157,7 @@ Scope.prototype.hasRulesetByName = function (name) {
 }
 
 Scope.prototype.addRuleset = function (defrulesetobj, nativeMap) {
-	var ruleset = PegInterface.ruleset(defrulesetobj, this, nativeMap);
+	var ruleset = PegInterface.ruleset(defrulesetobj, this, [], nativeMap);
 
 	if (this.hasOwnRulesetByName(ruleset.name))
 		throw Error(`Ruleset with name ${ruleset.name} already is there`);
@@ -183,7 +183,7 @@ Scope.prototype.hasLinkByName = function (name) {
 }
 
 Scope.prototype.addLink = function (deflinkobj, nativeMap) {
-	var link = PegInterface.link(deflinkobj, this, nativeMap);
+	var link = PegInterface.link(deflinkobj, this, [], nativeMap);
 
 	if (this.hasOwnLinkByName(link.name))
 		throw Error(`Link with name ${link.name} already is there`);

@@ -181,6 +181,14 @@ typedef class;
 	(class x) => O(f(x), g(x))
 }
 
+[class -> st] If([class -> st] f, [class -> st] g) {
+	(class x) => I(f(x), g(x))
+}
+
+[class -> st] Ef([class -> st] f, [class -> st] g) {
+	(class x) => E(f(x), g(x))
+}
+
 st V([class -> st] f);
 
 native link Vi;
@@ -212,27 +220,20 @@ st X2([(class, class) -> st] f) {
 	N(V2((class x, class y) => N(f(x, y))))
 }
 
-# universal instantiation
-rule uinst([class -> st] f, class x) {
-	V(f) |- f(x)
-}
-
 rule X([class -> st] f, class x) {
 	f(x) |- X(f)
 }
 
 rule VA([class -> st] f, [class -> st] g) {
 	|- E(
-		V((class x) => (
-			A(f(x), g(x))
-		)),
+		V(Af(f, g)),
 		A(V(f), V(g))
 	)
 }
 
 rule VI([class -> st] f, [class -> st] g) {
 	|- I(
-		V((class x) => I(f(x), g(x))),
+		V(If(f, g)),
 		I(V(f), V(g))
 	)
 }
@@ -289,6 +290,7 @@ rule ttf_IEpqEqp([class -> st] f, [class -> st] g, class x) {
 }
 
 rule IVEpqVEqpfm([class -> st] f, [class -> st] g) {
+	id(V(Ef(f, g))) ~
 	Vi[ttf_IEpqEqp](f, g)
 	~ VIm(
 		(class x) => E(f(x), g(x)),
@@ -297,6 +299,7 @@ rule IVEpqVEqpfm([class -> st] f, [class -> st] g) {
 		V((class x) => E(f(x), g(x))),
 		V((class x) => E(g(x), f(x)))
 	)
+	~ id(V(Ef(g, f)))
 }
 
 rule ttf_IEpqIpq([class -> st] f, [class -> st] g, class x) {
@@ -304,6 +307,7 @@ rule ttf_IEpqIpq([class -> st] f, [class -> st] g, class x) {
 }
 
 rule IVEpqVIpqfm([class -> st] f, [class -> st] g) {
+	id(V(Ef(f, g))) ~
 	Vi[ttf_IEpqIpq](f, g)
 	~ VIm(
 		(class x) => (E(f(x), g(x))),
@@ -312,6 +316,7 @@ rule IVEpqVIpqfm([class -> st] f, [class -> st] g) {
 		V((class x) => E(f(x), g(x))),
 		V((class x) => I(f(x), g(x)))
 	)
+	~ id(V(If(f, g)))
 }
 
 rule IVEpqVIqpfm([class -> st] f, [class -> st] g) {
@@ -329,6 +334,18 @@ rule VEm([class -> st] f, [class -> st] g) {
 
 rule VE([class -> st] f, [class -> st] g) {
 	cp[VEm](f, g)
+}
+
+rule uinst([class -> st] f, class x) {
+	V(f) |- f(x)
+}
+
+rule einst([class -> st] f, [class -> st] g) {
+	X(f), V(If(f, g)) |- X(g)
+}
+
+rule einstE([class -> st] f, [class -> st] g) {
+	IVEpqVIpqfm(f, g) ~ einst(f, g)
 }
 
 st reflexive([(class, class) -> st] f) {
@@ -396,7 +413,34 @@ st eq(class x, class y) {
 	)
 }
 
-rule extensional(class x, class y) {
+rule eq_Ae1(class x, class y) {
+	id(eq(x, y))
+	~ Ae1(
+		V((class z) => E(in(z, x), in(z, y))),
+		V((class w) => E(in(x, w), in(y, w)))
+	)
+}
+
+rule eq_Ae2(class x, class y) {
+// 	id(set(x)) ~
+	id(eq(x, y)) ~
+	Ae2(
+		V((class z) => E(in(z, x), in(z, y))),
+		V((class w) => E(in(x, w), in(y, w)))
+	)
+}
+
+rule set_is_set(class x, class y) {
+	id(set(x)) ~
+	eq_Ae2(x, y)
+	~ einstE(
+		(class w) => in(x, w),
+		(class w) => in(y, w)
+	)
+	~ id(set(y))
+}
+
+rule ax_extensional(class x, class y) {
 	|- I(
 		V((class z) =>
 			E(
@@ -409,11 +453,8 @@ rule extensional(class x, class y) {
 }
 
 rule eq_simple(class x, class y) {
-	tt.IApqp(
-		V((class z) => E(in(z, x), in(z, y))),
-		V((class w) => E(in(x, w), in(y, w)))
-	)
-	~ extensional(x, y)
+	cp[eq_Ae1](x, y)
+	~ ax_extensional(x, y)
 	~ Ei(
 		eq(x, y),
 		V((class z) => E(in(z, x), in(z, y)))
@@ -582,7 +623,7 @@ rule singleton_subseteq_power(class x) {
 	)
 }
 
-rule specify([class -> st] f) {
+rule ax_specify([class -> st] f) {
 	|-
 	V((class x) =>
 		I(
@@ -590,6 +631,62 @@ rule specify([class -> st] f) {
 			set(subsetbuilder(x, f))
 		)
 	)
+}
+
+rule ax_power() {
+	|- V((class x) => (
+		I(
+			set(x),
+			X((class y) => (
+				A(
+					set(y),
+					V((class z) => (
+						I(subseteq(z, x), in(z, y))
+					))
+				)
+			))
+		)
+	))
+}
+
+rule ax_power_ve(class x) {
+	Ve[ax_power](x)
+}
+
+rule power_is_set_2(class x) {
+	|- I(
+		set(x),
+		V((class y) => (
+			I(
+				A(
+					set(y),
+					V((class z) => (
+						I(
+							subseteq(z, x),
+							in(z, y)
+						)
+					))
+				),
+				A(
+					set(y),
+					eq(y, power(x))
+				)
+			)
+		))
+	)
+}
+
+// rule power_is_set_1_(class x, class y) {
+// }
+
+rule power_is_set_1(class x) {
+	|- I(set(x), set(power(x)))
+}
+
+rule power_is_set() {
+	|- V((class x) => (
+		I(set(x), set(power(x)))
+	))
 }
 
 /*rule infinity() {

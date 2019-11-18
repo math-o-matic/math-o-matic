@@ -78,6 +78,20 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 						+ `\\href{#def-Of}{\\lor} ${args[1].toTeXString()} \\right)`;
 			}
 		},
+		If: {
+			description: 'I의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()}`
+						+ `\\href{#def-If}{\\to} ${args[1].toTeXString()} \\right)`;
+			}
+		},
+		Ef: {
+			description: 'E의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()}`
+						+ `\\href{#def-Ef}{\\leftrightarrow} ${args[1].toTeXString()} \\right)`;
+			}
+		},
 		V: {
 			description: '보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다.',
 			display: function (args) {
@@ -118,7 +132,7 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 		'set': {
 			description: '어떤 class가 집합이라는 것. 어떤 class의 원소면 된다.',
 			display: function (args) {
-				return `\\left( \\href{#def-set}{\\mathsf{set}}\\ ${args[0].toTeXString()}\\right)`
+				return `\\left(\\href{#def-set}{\\mathop\\mathsf{set}}${args[0].toTeXString()}\\right)`
 			}
 		},
 		eq: {
@@ -250,6 +264,9 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 		uinst: {
 			description: 'universal instantiation.'
 		},
+		einst: {
+			description: 'existential instantiation 같은 것. 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정.'
+		},
 		X: {
 			description: String.raw`
 지목할 수 있으면 존재한다는 의미. uinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다.`
@@ -269,7 +286,7 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 [$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것.
 `
 		},
-		extensional: {
+		ax_extensional: {
 			description: 'axiom of extensionality. ZFC 공리계의 공리.'
 		},
 		emptyset_def: {
@@ -278,8 +295,11 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 		setbuilder_def: {
 			description: 'setbuilder의 definition rule.'
 		},
-		specify: {
+		ax_specify: {
 			description: 'axiom schema of specification. ZFC 공리계의 공리. 어떤 집합에서 임의 술어를 만족시키는 것의 class를 만들었을 때 이 class가 집합이라는 뜻이다.'
+		},
+		ax_power: {
+			description: 'axiom of power set.'
 		},
 		eq_reflexive: {
 			description: '[$=]는 반사적(reflexive)이다.'

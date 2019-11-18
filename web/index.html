@@ -103,23 +103,46 @@
 		<h2>몇 가지 동형에 관하여</h2>
 		<script>document.write(m42kup.render(String.raw`
 어떤 공리계에서 두 개의 규칙이 동형이라는 것은 그거나 그거나라는 겁니다. 현재 다음과 같은 종류가 있습니다.
+
 [ul
 	[*] mp[&ndash]cp 동형: 규칙 mp 및 링크 cp에 의해
+
 [$$${'`'}\vdash p \to q \xrightleftharpoons[\mathsf{cp}]\mathsf{mp} p \vdash q${'`'}.]
+
 	[*] Ai[&ndash]Ae 동형: 규칙 Ai 및 규칙 Ae1, Ae2에 의해
+
 [$$${'`'}p \land q \vdash r \xrightleftharpoons[\mathsf{Ae}]\mathsf{Ai} p, q \vdash r${'`'}.]
+
 왼쪽에 적용하기 때문에 Ai에 의해 없어지고 Ae에 의해 생깁니다.
 	[*] Vi[&ndash]Ve 동형: 링크 Vi 및 링크 Ve에 의해
+
 [$$${'`'}(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y) \xrightleftharpoons[\mathsf{Ve}]\mathsf{Vi} (x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))${'`'}]
+
 ]
 
-동형 규칙 간에 간단히 변환할 수 있는 수단과 동형 규칙 간의 이름 규칙이 있어야 하겠습니다.
+현재 동형 규칙이 넘 많아서 문제가 되고 있습니다. 예를 들어
+
+[$$(x, y): \mathop\mathsf{set} x, x = y \vdash \mathop\mathsf{set} y]
+
+(rule set_is_set)는
+
+[$$(x, y): (\mathop\mathsf{set} x) \land (x = y) \vdash \mathop\mathsf{set} y]
+
+와 Ai[&ndash]Ae 동형이고 이거는
+
+[$$${'`'}(x, y):\ \vdash [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y)${'`'}]
+
+와 mp[&ndash]cp 동형이고 이거는
+
+[$$${'`'}():\ \vdash \forall((x, y) \mapsto [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y))${'`'}]
+
+와 Vi[&ndash]Ve 동형인데 이 중에 무엇을 택해야 할지 모르겠군요. 동형 규칙 간에 간단히 변환할 수 있는 수단과 동형 규칙 간의 이름 규칙이 있어야 하겠습니다.
 `));</script>
 		<h2>목록</h2>
+		<p>이하의 내용은
+			<a href="./code.js">code.js</a>에 있는 코드와
+			<a href="./docs.js">docs.js</a>에 있는 설명을 렌더링 한 것입니다.</p>
 		<div id="all"></div>
-		<div id="code">
-			<h2>The code</h2>
-		</div>
 		<script>
 			$ = (q, n) => (n || document).querySelector(q);
 			$$ = (q, n) => (n || document).querySelectorAll(q);
@@ -138,8 +161,6 @@
 			    '&': '&amp;', '<': '&lt;', '>': '&gt;',
 			    '"': '&quot;', "'": '&#39;'
 			})[m]);
-
-			$('#code').innerHTML += `<pre>${escapeHtml(code)}</pre>`;
 
 			console.log('--- PARSE START ---');
 			var parseStartTime = new Date() * 1;

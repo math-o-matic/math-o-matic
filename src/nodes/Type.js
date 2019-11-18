@@ -59,17 +59,4 @@ Type.prototype.equals = function (t) {
 	return this.to.equals(t.to);
 }
 
-Type.getType = function (obj) {
-	if (!obj.ftype) return new Type({
-		functional: false,
-		name: obj.name
-	});
-
-	return new Type({
-		functional: true,
-		from: obj.from.map(Type.getType),
-		to: Type.getType(obj.to)
-	});
-}
-
 module.exports = Type;
