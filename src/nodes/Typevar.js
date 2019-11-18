@@ -23,7 +23,7 @@ Typevar.prototype.toString = function () {
 }
 
 Typevar.prototype.toIndentedString = function () {
-	return `${this.type} ${this.name}`;
+	return `${this.type} ${this.name}<${this._id}>`;
 }
 
 Typevar.prototype.toTeXString = function (root) {

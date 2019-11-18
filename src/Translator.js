@@ -18,7 +18,7 @@ Translator.isfree0 = function (expr, map) {
 		return Translator.isfree0(expr.fun, map)
 			&& expr.args.map(arg => Translator.isfree0(arg, map)).every(e => e);
 	} else if (expr._type == 'fun') {
-		if (expr.atomic) return !map(expr);
+		if (expr.atomic || !expr.anonymous) return !map(expr);
 		return Translator.isfree0(expr.expr, map);
 	} else if (expr._type == 'typevar') {
 		return !map(expr);

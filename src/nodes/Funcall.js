@@ -30,13 +30,13 @@ Funcall.prototype.toString = function () {
 
 Funcall.prototype.toIndentedString = function (indent) {
 	var args = this.args.map(arg => {
-		if (arg instanceof Typevar) return arg.name;
+		if (arg instanceof Typevar) return `${arg.name}<${arg._id}>`;
 		return arg.toIndentedString(indent + 1);
 	});
 
 	if (args.join('').length <= 50) {
 		var args = this.args.map(arg => {
-			if (arg instanceof Typevar) return arg.name;
+			if (arg instanceof Typevar) return `${arg.name}<${arg._id}>`;
 			return arg.toIndentedString(indent);
 		});
 

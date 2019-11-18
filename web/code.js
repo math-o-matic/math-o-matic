@@ -136,6 +136,11 @@ rule Ee2(st p, st q) {
 	~ mp(E(p, q), I(q, p))
 }
 
+rule IEpqEqpm(st p, st q) {
+	tt.IEpqEqp(p, q)
+	~ mp(E(p, q), E(q, p))
+}
+
 rule mpE(st p, st q) {
 	Ee1(p, q)
 	~ mp(p, q)
@@ -158,12 +163,8 @@ rule id(st p) {
 }
 
 rule destroy(st p) {
-	Ai(p, N(p))
-	~ tt.IApNpF(p)
-	~ mp(
-		A(p, N(p)),
-		F
-	)
+	Ne(p, F)
+	~ mp(p, F)
 }
 
 #################################
@@ -432,6 +433,10 @@ rule eq_then_subseteq_m(class x, class y) {
 	~ id(subseteq(x, y))
 }
 
+rule eq_then_subseteq(class x, class y) {
+	cp[eq_then_subseteq_m](x, y)
+}
+
 rule eq_reflexive_tmp1(class x, class z) {
 	tt.Epp(in(z, x))
 }
@@ -506,13 +511,6 @@ class power(class x) {
 	))
 }
 
-rule self_in_power(class x, class z) {
-	|- I(
-		eq(z, x),
-		in(z, power(x))
-	)
-}
-
 rule self_in_power_1(class x) {
 	setbuilder_def((class z) => (
 		subseteq(z, x)
@@ -531,14 +529,24 @@ rule self_in_power_2(class x, class z) {
 	Ve[self_in_power_1](x, z)
 }
 
+rule self_in_power(class x, class z) {
+	eq_then_subseteq(z, x)
+	~ self_in_power_2(x, z)
+	~ Ee2(
+		in(z, power(x)),
+		subseteq(z, x)
+	)
+	~ syll(
+		eq(z, x),
+		subseteq(z, x),
+		in(z, power(x))
+	)
+}
+
 class singleton(class x) {
 	setbuilder((class z) => (
 		eq(z, x)
 	))
-}
-
-rule singleton_subseteq_power(class x) {
-	|- subseteq(singleton(x), power(x))
 }
 
 rule singleton_subseteq_power_1(class x) {
@@ -555,6 +563,23 @@ rule singleton_subseteq_power_1(class x) {
 
 rule singleton_subseteq_power_2(class x, class z) {
 	Ve[singleton_subseteq_power_1](x, z)
+	~ Ee1(
+		in(z, singleton(x)),
+		eq(z, x)
+	)
+	~ self_in_power(x, z)
+	~ syll(
+		in(z, singleton(x)),
+		eq(z, x),
+		in(z, power(x))
+	)
+}
+
+rule singleton_subseteq_power(class x) {
+	Vi[singleton_subseteq_power_2](x)
+	~ id(
+		subseteq(singleton(x), power(x))
+	)
 }
 
 rule specify([class -> st] f) {
