@@ -149,6 +149,20 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 					+ `\\href{#def-subseteq}{\\subseteq}${args[1].toTeXString()} \\right)`;
 			}
 		},
+		cap: {
+			description: String.raw`[$\cap].`,
+			display(args) {
+				return `\\left(${args[0].toTeXString()}`
+					+ `\\href{#def-cap}{\\cap}${args[1].toTeXString()} \\right)`;
+			}
+		},
+		cup: {
+			description: String.raw`[$\cup].`,
+			display(args) {
+				return `\\left(${args[0].toTeXString()}`
+					+ `\\href{#def-cup}{\\cup}${args[1].toTeXString()} \\right)`;
+			}
+		},
 		Nin: {
 			description: '간단한 notin 함수.',
 			display: function (args) {
@@ -197,7 +211,7 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 			}
 		},
 		symmetric: {
-			description: 'binary relation의 symmetricity.',
+			description: 'binary relation의 symmetry.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}\\ \\href{#def-symmetric}{\\text{is symmetric}}\\right)`;
 			}
@@ -206,6 +220,18 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 			description: 'binary relation의 transitivity.',
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}\\ \\href{#def-transitive}{\\text{is transitive}}\\right)`;
+			}
+		},
+		associative: {
+			description: 'binary operation의 associativity.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()}\\ \\href{#def-associative}{\\text{is associative}}\\right)`;
+			}
+		},
+		commutative: {
+			description: 'binary operation의 commutativity.',
+			display: function (args) {
+				return `\\left(${args[0].toTeXString()}\\ \\href{#def-commutative}{\\text{is commutative}}\\right)`;
 			}
 		}
 	},
@@ -273,6 +299,11 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 
 비슷한 방법으로 [$p, \neg p \vdash q]를 유도할 수 있다. 이는 [$p \vdash \top] 또는 [$\vdash p \to \top]이라고 [$\vdash p]가 아님을 시사한다.`
 		},
+		contradict: {
+			description: String.raw`
+귀류법(reductio ad absurdum).
+`
+		},
 		Vinst: {
 			description: 'universal instantiation.'
 		},
@@ -303,7 +334,7 @@ existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 
 		},
 		VV: {
 			description: String.raw`
-[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것.
+[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것. 특이하게도 Vi 및 Ve로부터 유도할 수 있는 것으로 보이나 아직 표현할 방식이 없다.
 `
 		},
 		VAm1: {
@@ -321,13 +352,13 @@ existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 
 		IVEpqVEqpfm: {
 			description: 'IEpqEqpm의 V형.'
 		},
-		IVEpqVIpqfm: {
+		Ee1V: {
 			description: 'Ee1의 V형.'
 		},
-		IVEpqVIqpfm: {
+		Ee2V: {
 			description: 'Ee2의 V형.'
 		},
-		ax_extensional: {
+		extensional: {
 			description: 'axiom of extensionality. ZFC 공리계의 공리.'
 		},
 		emptyset_def: {
@@ -336,7 +367,7 @@ existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 
 		setbuilder_def: {
 			description: 'setbuilder의 definition rule.'
 		},
-		ax_specify: {
+		specify: {
 			description: 'axiom schema of specification. ZFC 공리계의 공리. 어떤 집합에서 임의 술어를 만족시키는 것의 class를 만들었을 때 이 class가 집합이라는 뜻이다.'
 		},
 		ax_power: {

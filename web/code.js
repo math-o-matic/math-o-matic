@@ -172,6 +172,11 @@ rule destroy(st p) {
 	~ mp(p, F)
 }
 
+rule contradict(st p) {
+	tt.IIpFNp(p)
+	~ mp(I(p, F), N(p))
+}
+
 #################################
 ######## PREDICATE LOGIC ########
 #################################
@@ -300,14 +305,13 @@ rule IVEpqVEqpfm([class -> st] f, [class -> st] g) {
 		V((class x) => E(f(x), g(x))),
 		V((class x) => E(g(x), f(x)))
 	)
-	~ id(V(Ef(g, f)))
 }
 
 rule ttf_IEpqIpq([class -> st] f, [class -> st] g, class x) {
 	tt.IEpqIpq(f(x), g(x))
 }
 
-rule IVEpqVIpqfm([class -> st] f, [class -> st] g) {
+rule Ee1V([class -> st] f, [class -> st] g) {
 	id(V(Ef(f, g))) ~
 	Vi[ttf_IEpqIpq](f, g)
 	~ VIm(
@@ -317,18 +321,17 @@ rule IVEpqVIpqfm([class -> st] f, [class -> st] g) {
 		V((class x) => E(f(x), g(x))),
 		V((class x) => I(f(x), g(x)))
 	)
-	~ id(V(If(f, g)))
 }
 
-rule IVEpqVIqpfm([class -> st] f, [class -> st] g) {
+rule Ee2V([class -> st] f, [class -> st] g) {
 	IVEpqVEqpfm(f, g)
-	~ IVEpqVIpqfm(g, f)
+	~ Ee1V(g, f)
 }
 
 rule VEm([class -> st] f, [class -> st] g) {
-	IVEpqVIpqfm(f, g)
+	Ee1V(f, g)
 	~ VIm(f, g)
-	~ IVEpqVIqpfm(f, g)
+	~ Ee2V(f, g)
 	~ VIm(g, f)
 	~ Ei(V(f), V(g))
 }
@@ -385,6 +388,15 @@ rule syllVE([class -> st] f, [class -> st] g, [class -> st] h) {
 	)
 }
 
+rule mpV([class -> st] f, [class -> st] g) {
+	VIm(f, g)
+	~ mp(V(f), V(g))
+}
+
+rule mpVE([class -> st] f, [class -> st] g) {
+	Ee1V(f, g) ~ mpV(f, g)
+}
+
 rule Vgen(st p) {
 	p |- V((class x) => p)
 }
@@ -402,7 +414,7 @@ rule Xinst1([class -> st] f, [class -> st] g) {
 }
 
 rule Xinst1E([class -> st] f, [class -> st] g) {
-	IVEpqVIpqfm(f, g) ~ Xinst1(f, g)
+	Ee1V(f, g) ~ Xinst1(f, g)
 }
 
 rule Xinst2(st p) {
@@ -464,14 +476,6 @@ st subseteq(class x, class y) {
 	))
 }
 
-class emptyset;
-
-rule emptyset_def() {
-	|- V((class x) =>
-		Nin(x, emptyset)
-	)
-}
-
 st eq(class x, class y) {
 	A(
 		V((class z) =>
@@ -500,6 +504,24 @@ rule eq_Ae2(class x, class y) {
 	)
 }
 
+st associative([(class, class) -> class] f) {
+	V3((class x, class y, class z) =>
+		eq(
+			f(f(x, y), z),
+			f(x, f(y, z))
+		)
+	)
+}
+
+st commutative([(class, class) -> class] f) {
+	V2((class x, class y) =>
+		eq(
+			f(x, y),
+			f(y, x)
+		)
+	)
+}
+
 rule set_is_set(class x, class y) {
 	id(set(x)) ~
 	eq_Ae2(x, y)
@@ -510,7 +532,18 @@ rule set_is_set(class x, class y) {
 	~ id(set(y))
 }
 
-rule ax_extensional(class x, class y) {
+rule subseteq_subseteq(class x, class y, class z) {
+	id(subseteq(x, y)) ~
+	id(subseteq(y, z)) ~
+	syllV(
+		(class w) => in(w, x),
+		(class w) => in(w, y),
+		(class w) => in(w, z)
+	)
+	~ id(subseteq(x, z))
+}
+
+rule extensional(class x, class y) {
 	|- I(
 		V((class z) =>
 			E(
@@ -523,7 +556,7 @@ rule ax_extensional(class x, class y) {
 }
 
 rule extensional_m(class x, class y) {
-	ax_extensional(x, y)
+	extensional(x, y)
 	~ mp(
 		V((class z) =>
 			E(
@@ -537,7 +570,7 @@ rule extensional_m(class x, class y) {
 
 rule eq_simple(class x, class y) {
 	cp[eq_Ae1](x, y)
-	~ ax_extensional(x, y)
+	~ extensional(x, y)
 	~ Ei(
 		eq(x, y),
 		V((class z) => E(in(z, x), in(z, y)))
@@ -550,7 +583,7 @@ rule eq_then_subseteq_m(class x, class y) {
 		eq(x, y),
 		V((class z) => E(in(z, x), in(z, y)))
 	)
-	~ IVEpqVIpqfm(
+	~ Ee1V(
 		(class z) => in(z, x),
 		(class z) => in(z, y)
 	)
@@ -559,6 +592,16 @@ rule eq_then_subseteq_m(class x, class y) {
 
 rule eq_then_subseteq(class x, class y) {
 	cp[eq_then_subseteq_m](x, y)
+}
+
+rule eq_subseteq(class x, class y, class z) {
+	eq_then_subseteq_m(x, y)
+	~ subseteq_subseteq(x, y, z)
+}
+
+rule subseteq_eq(class x, class y, class z) {
+	eq_then_subseteq_m(y, z)
+	~ subseteq_subseteq(x, y, z)
 }
 
 rule eq_reflexive_tmp1(class x, class z) {
@@ -617,6 +660,43 @@ rule setbuilder_def([class -> st] f) {
 			in(z, setbuilder(f)),
 			f(z)
 		)
+	)
+}
+
+class cap(class x, class y) {
+	setbuilder((class z) => A(
+		in(z, x), in(z, y)
+	))
+}
+
+class cup(class x, class y) {
+	setbuilder((class z) => O(
+		in(z, x), in(z, y)
+	))
+}
+
+class emptyset() {
+	setbuilder((class z) => F)
+}
+
+rule emptyset_is_empty_1(class z) {
+	cp[contradict](in(z, emptyset()))
+}
+
+rule emptyset_is_empty_2() {
+	Vi[emptyset_is_empty_1]()
+}
+
+rule emptyset_is_empty() {
+	setbuilder_def((class z) => F)
+	~ Ee1V(
+		(class z) => in(z, emptyset()),
+		(class z) => F
+	)
+	~ emptyset_is_empty_2()
+	~ mpV(
+		(class z) => I(in(z, emptyset()), F),
+		(class z) => Nin(z, emptyset())
 	)
 }
 
@@ -716,7 +796,7 @@ rule singleton_subseteq_power(class x) {
 	)
 }
 
-rule ax_specify([class -> st] f) {
+rule specify([class -> st] f) {
 	|-
 	V((class x) =>
 		I(
@@ -724,6 +804,47 @@ rule ax_specify([class -> st] f) {
 			set(subsetbuilder(x, f))
 		)
 	)
+}
+
+rule specify_vem([class -> st] f, class x) {
+	Ve[specify](f, x)
+	~ mp(set(x), set(subsetbuilder(x, f)))
+}
+
+rule cap_is_set(class x, class y) {
+	specify_vem((class z) => in(z, y), x)
+	~ id(set(cap(x, y)))
+}
+
+rule subset_cap_is_subset_1(class x, class y, class z) {
+	tt.IIpqEpApq(in(z, x), in(z, y))
+}
+
+rule subset_cap_is_subset_2(class x, class y) {
+	id(subseteq(x, y)) ~
+	Vi[subset_cap_is_subset_1](x, y)
+	~VIm(
+		(class z) => I(in(z, x), in(z, y)),
+		(class z) => E(
+			in(z, x),
+			A(in(z, x), in(z, y))
+		)
+	)
+	~ mp(
+		V((class z) => I(in(z, x), in(z, y))),
+		V((class z) => E(
+			in(z, x),
+			A(in(z, x), in(z, y))
+		))
+	)
+}
+
+rule subset_cap_is_subset(class x, class y) {
+	subseteq(x, y) |- eq(x, cap(x, y))
+}
+
+rule subset_is_set(class x, class y) {
+	set(y), subseteq(x, y) |- set(x)
 }
 
 rule ax_power() {
@@ -746,7 +867,7 @@ rule ax_power_ve(class x) {
 	Ve[ax_power](x)
 }
 
-rule power_is_set_4(class x, class y) {
+rule power_is_set_1(class x, class y) {
 	|- I(
 		V((class z) => (
 			I(
@@ -754,106 +875,8 @@ rule power_is_set_4(class x, class y) {
 				in(z, y)
 			)
 		)),
-		eq(y, power(x))
+		subseteq(power(x), y)
 	)
-}
-
-rule power_is_set_3(class x, class y) {
-	power_is_set_4(x, y)
-	~ tt.IIpqIArpArq(
-		V((class z) => (
-			I(
-				subseteq(z, x),
-				in(z, y)
-			)
-		)),
-		eq(y, power(x)),
-		set(y)
-	)
-	~ mp(
-		I(
-			V((class z) => (
-				I(
-					subseteq(z, x),
-					in(z, y)
-				)
-			)),
-			eq(y, power(x))
-		),
-		I(
-			A(
-				set(y),
-				V((class z) => (
-					I(
-						subseteq(z, x),
-						in(z, y)
-					)
-				))
-			),
-			A(
-				set(y),
-				eq(y, power(x))
-			)
-		)
-	)
-}
-
-rule power_is_set_102(class x, class y) {
-	Ae1(set(y), eq(y, power(x))) ~
-	Ae2(set(y), eq(y, power(x))) ~
-	set_is_set(y, power(x))
-}
-
-rule power_is_set_1001(class x) {
-	ax_power_ve(x)
-	~ mp(
-		set(x),
-		X((class y) => (
-			A(set(y), V((class z) => (
-				I(subseteq(z, x), in(z, y))
-			)))
-		))
-	)
-	~ Vi[power_is_set_3](x)
-	~ IpIqpm(
-		V((class y) => I(
-			A(set(y), V((class z) => (
-				I(subseteq(z, x), in(z, y))
-			))),
-			A(set(y), eq(y, power(x)))
-		)),
-		set(x)
-	)
-	~ mp(
-		set(x),
-		V((class y) => (
-			I(
-				A(set(y), V((class z) => (
-					I(subseteq(z, x), in(z, y))
-				))),
-				A(set(y), eq(y, power(x)))
-			)
-		))
-	)
-	~ Xinst1(
-		(class y) => (
-			A(set(y), V((class z) => (
-				I(subseteq(z, x), in(z, y))
-			)))
-		),
-		(class y) => (
-			A(set(y), eq(y, power(x)))
-		)
-	)
-	~ Vi[cp[power_is_set_102]](x)
-	~ Xinst3(
-		(class y) => A(set(y), eq(y, power(x))),
-		set(power(x))
-	)
-}
-
-rule power_is_set_1() {
-	Vi[cp[power_is_set_1001]]()
 }
 
 rule power_is_set() {
