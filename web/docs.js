@@ -255,6 +255,18 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 		Ee2: {
 			description: 'biconditional elimination 2.'
 		},
+		mpE: {
+			description: 'E를 위한 mp.'
+		},
+		syll: {
+			description: 'cp 형을 위한 삼단논법.'
+		},
+		syllE: {
+			description: 'E를 위한 syll.'
+		},
+		id: {
+			description: '아무것도 하지 않는 무언가. 표현형식을 바꾸는 데 쓰이고 있다.'
+		},
 		destroy: {
 			description: String.raw`
 [$\bot]을 만들어 내는 방법. 계의 기본규칙으로부터 이걸 호출할 수 있다면 계를 파-괴할 수 있다.
@@ -268,7 +280,7 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 			description: 'existential instantiation 같은 것 1. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정.'
 		},
 		Xinst2: {
-			description: 'existential instantiation 같은 것 2. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정. Vgen으로부터 증명 필요.'
+			description: 'existential instantiation 같은 것 2. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정. Vgen으로부터 증명할 수 있다.'
 		},
 		Vgen: {
 			description: String.raw`
@@ -293,6 +305,27 @@ existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 
 			description: String.raw`
 [$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것.
 `
+		},
+		VAm1: {
+			description: 'VA의 m1형.'
+		},
+		VAm2: {
+			description: 'VA의 m2형.'
+		},
+		VIm: {
+			description: 'VI의 m형.'
+		},
+		VVm: {
+			description: 'VV의 m형.'
+		},
+		IVEpqVEqpfm: {
+			description: 'IEpqEqpm의 V형.'
+		},
+		IVEpqVIpqfm: {
+			description: 'Ee1의 V형.'
+		},
+		IVEpqVIqpfm: {
+			description: 'Ee2의 V형.'
 		},
 		ax_extensional: {
 			description: 'axiom of extensionality. ZFC 공리계의 공리.'
