@@ -260,7 +260,6 @@ Translator.expr0Equals = function (a, b) {
 		// console.log(`${depth}\n${a}\n\n${b}`);
 
 		if (a == b) return true;
-		if (a._type == 'typevar' || b._type == 'typevar') return a == b;
 		if (!a.type.equals(b.type)) return false;
 
 		if (a._type == 'funcall' && b._type == 'funcall') {
@@ -299,9 +298,8 @@ Translator.expr0Equals = function (a, b) {
 			if (b.fun.anonymous)
 				[a, b] = [b, a];
 
-			if (b.fun.expr && b.fun.expr._type == 'funcall' && b.fun.expr.fun == a.fun) {
+			if (b.fun.expr && b.fun.expr._type == 'funcall' && b.fun.expr.fun == a.fun)
 				[a, b] = [b, a];
-			}
 
 			return cachedRecurse(
 				Translator.expand0FuncallOnce(a),
@@ -310,7 +308,7 @@ Translator.expr0Equals = function (a, b) {
 			);
 		}
 
-		if (a._type == 'fun' && b._type == 'funcall')
+		if (b._type == 'funcall')
 			[a, b] = [b, a];
 
 		while (a._type == 'funcall') {
@@ -318,7 +316,10 @@ Translator.expr0Equals = function (a, b) {
 			a = Translator.expand0FuncallOnce(a);
 		}
 
-		if (a._type != 'fun') return false;
+		if (a._type == 'typevar' || b._type == 'typevar')
+			return a == b;
+
+		// a, b: fun
 
 		var placeholders = Array(a.type.from.length).fill().map((_, i) =>
 			new Typevar({

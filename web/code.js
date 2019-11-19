@@ -220,10 +220,6 @@ st X2([(class, class) -> st] f) {
 	N(V2((class x, class y) => N(f(x, y))))
 }
 
-rule X([class -> st] f, class x) {
-	f(x) |- X(f)
-}
-
 rule VA([class -> st] f, [class -> st] g) {
 	|- E(
 		V(Af(f, g)),
@@ -336,16 +332,40 @@ rule VE([class -> st] f, [class -> st] g) {
 	cp[VEm](f, g)
 }
 
-rule uinst([class -> st] f, class x) {
+rule Vgen(st p) {
+	p |- V((class x) => p)
+}
+
+rule Xgen([class -> st] f, class x) {
+	f(x) |- X(f)
+}
+
+rule Vinst([class -> st] f, class x) {
 	V(f) |- f(x)
 }
 
-rule einst([class -> st] f, [class -> st] g) {
+rule Xinst1([class -> st] f, [class -> st] g) {
 	X(f), V(If(f, g)) |- X(g)
 }
 
-rule einstE([class -> st] f, [class -> st] g) {
-	IVEpqVIpqfm(f, g) ~ einst(f, g)
+rule Xinst1E([class -> st] f, [class -> st] g) {
+	IVEpqVIpqfm(f, g) ~ Xinst1(f, g)
+}
+
+rule Xinst2_1(st p) {
+	cp[Vgen](N(p))
+	~ tt.IINpqINqp(p, V((class x) => N(p)))
+	~ mp(I(N(p), V((class x) => N(p))), I(N(V((class x) => N(p))), p))
+	~ id(I(X((class x) => p), p))
+}
+
+rule Xinst2(st p) {
+	X((class x) => p) |- p
+}
+
+rule Xinst3([class -> st] f, st p) {
+	Xinst1(f, (class x) => p)
+	~ Xinst2(p)
 }
 
 st reflexive([(class, class) -> st] f) {
@@ -433,7 +453,7 @@ rule eq_Ae2(class x, class y) {
 rule set_is_set(class x, class y) {
 	id(set(x)) ~
 	eq_Ae2(x, y)
-	~ einstE(
+	~ Xinst1E(
 		(class w) => in(x, w),
 		(class w) => in(y, w)
 	)
@@ -676,8 +696,66 @@ rule power_is_set_2(class x) {
 	)
 }
 
-// rule power_is_set_1_(class x, class y) {
-// }
+rule power_is_set_12(class x) {
+	power_is_set_2(x)
+	~ mp(
+		set(x),
+		V((class y) => (
+			I(
+				A(set(y), V((class z) => (
+					I(subseteq(z, x), in(z, y))
+				))),
+				A(set(y), eq(y, power(x)))
+			)
+		))
+	)
+}
+
+rule power_is_set_11(class x) {
+	ax_power_ve(x)
+	~ mp(
+		set(x),
+		X((class y) => (
+			A(set(y), V((class z) => (
+				I(subseteq(z, x), in(z, y))
+			)))
+		))
+	)
+}
+
+rule power_is_set_10(class x) {
+	power_is_set_11(x)
+	~ power_is_set_12(x)
+	~ Xinst1(
+		(class y) => (
+			A(set(y), V((class z) => (
+				I(subseteq(z, x), in(z, y))
+			)))
+		),
+		(class y) => (
+			A(set(y), eq(y, power(x)))
+		)
+	)
+}
+
+rule power_is_set_102(class x, class y) {
+	Ae1(set(y), eq(y, power(x))) ~
+	Ae2(set(y), eq(y, power(x))) ~
+	set_is_set(y, power(x))
+}
+
+rule power_is_set_101(class x) {
+	Vi[cp[power_is_set_102]](x)
+}
+
+rule power_is_set_1001(class x) {
+	power_is_set_10(x)
+	~ power_is_set_101(x)
+	~ Xinst1(
+		(class y) => A(set(y), eq(y, power(x))),
+		(class y) => set(power(x))
+	)
+}
 
 rule power_is_set_1(class x) {
 	|- I(set(x), set(power(x)))

@@ -261,15 +261,23 @@ mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임�
 
 비슷한 방법으로 [$p, \neg p \vdash q]를 유도할 수 있다. 이는 [$p \vdash \top] 또는 [$\vdash p \to \top]이라고 [$\vdash p]가 아님을 시사한다.`
 		},
-		uinst: {
+		Vinst: {
 			description: 'universal instantiation.'
 		},
-		einst: {
-			description: 'existential instantiation 같은 것. 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정.'
+		Xinst1: {
+			description: 'existential instantiation 같은 것 1. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정.'
 		},
-		X: {
+		Xinst2: {
+			description: 'existential instantiation 같은 것 2. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정. Vgen으로부터 증명 필요.'
+		},
+		Vgen: {
 			description: String.raw`
-지목할 수 있으면 존재한다는 의미. uinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다.`
+universal generalization.
+`
+		},
+		Xgen: {
+			description: String.raw`
+existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다.`
 		},
 		VA: {
 			description: String.raw`
