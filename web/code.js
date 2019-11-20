@@ -157,10 +157,18 @@ rule syll(st p, st q, st r) {
 	~ mp(A(I(p, q), I(q, r)), I(p, r))
 }
 
+rule syll4(st p, st q, st r, st s) {
+	syll(p, q, r) ~ syll(p, r, s)
+}
+
 rule syllE(st p, st q, st r) {
 	Ai(E(p, q), E(q, r))
 	~ tt.IAEpqEqrEpr(p, q, r)
 	~ mp(A(E(p, q), E(q, r)), E(p, r))
+}
+
+rule syllE4(st p, st q, st r, st s) {
+	syllE(p, q, r) ~ syllE(p, r, s)
 }
 
 rule id(st p) {
@@ -370,8 +378,8 @@ rule ttf_IAEpqEqrEpr([class -> st] f, [class -> st] g, [class -> st] h, class x)
 
 rule syllVE([class -> st] f, [class -> st] g, [class -> st] h) {
 	Ai(
-		V(Ef(f, g)),
-		V(Ef(g, h))
+		V((class x) => E(f(x), g(x))),
+		V((class x) => E(g(x), h(x)))
 	)
 	~ VAm2(
 		(class x) => E(f(x), g(x)),
@@ -384,7 +392,7 @@ rule syllVE([class -> st] f, [class -> st] g, [class -> st] h) {
 	)
 	~ mp(
 		V((class x) => A(E(f(x), g(x)), E(g(x), h(x)))),
-		V(Ef(f, h))
+		V((class x) => E(f(x), h(x)))
 	)
 }
 
@@ -496,12 +504,59 @@ rule eq_Ae1(class x, class y) {
 }
 
 rule eq_Ae2(class x, class y) {
-// 	id(set(x)) ~
 	id(eq(x, y)) ~
 	Ae2(
 		V((class z) => E(in(z, x), in(z, y))),
 		V((class w) => E(in(x, w), in(y, w)))
 	)
+}
+
+rule eq_reflexive_tmp1(class x, class z) {
+	tt.Epp(in(z, x))
+}
+
+rule eq_reflexive_tmp2(class x, class w) {
+	tt.Epp(in(x, w))
+}
+
+rule eq_reflexive_tmp3(class x) {
+	Vi[eq_reflexive_tmp1](x)
+	~ Vi[eq_reflexive_tmp2](x)
+	~ Ai(
+		V((class z) => E(in(z, x), in(z, x))),
+		V((class w) => E(in(x, w), in(x, w)))
+	)
+}
+
+rule eq_reflexive() {
+	Vi[eq_reflexive_tmp3]()
+	~ id(reflexive(eq))
+}
+
+rule eq_symmetric_tmp(class x, class y) {
+	id(eq(x, y)) ~
+	Ae1(
+		V((class z) => E(in(z, x), in(z, y))),
+		V((class w) => E(in(x, w), in(y, w)))
+	) ~ IVEpqVEqpfm(
+		(class z) => in(z, x),
+		(class z) => in(z, y)
+	) ~ Ae2(
+		V((class z) => E(in(z, x), in(z, y))),
+		V((class w) => E(in(x, w), in(y, w)))
+	) ~ IVEpqVEqpfm(
+		(class w) => in(x, w),
+		(class w) => in(y, w)
+	) ~ Ai(
+		V((class z) => E(in(z, y), in(z, x))),
+		V((class w) => E(in(y, w), in(x, w)))
+	)
+	~ id(eq(y, x))
+}
+
+rule eq_symmetric() {
+	Vi[Vi[cp[eq_symmetric_tmp]]]()
+	~ id(symmetric(eq))
 }
 
 st associative([(class, class) -> class] f) {
@@ -522,7 +577,7 @@ st commutative([(class, class) -> class] f) {
 	)
 }
 
-rule set_is_set(class x, class y) {
+rule set_is_set_1(class x, class y) {
 	id(set(x)) ~
 	eq_Ae2(x, y)
 	~ Xinst1E(
@@ -530,6 +585,11 @@ rule set_is_set(class x, class y) {
 		(class w) => in(y, w)
 	)
 	~ id(set(y))
+}
+
+rule set_is_set_2(class x, class y) {
+	eq_symmetric_tmp(y, x) ~
+	set_is_set_1(x, y)
 }
 
 rule subseteq_subseteq(class x, class y, class z) {
@@ -604,54 +664,6 @@ rule subseteq_eq(class x, class y, class z) {
 	~ subseteq_subseteq(x, y, z)
 }
 
-rule eq_reflexive_tmp1(class x, class z) {
-	tt.Epp(in(z, x))
-}
-
-rule eq_reflexive_tmp2(class x, class w) {
-	tt.Epp(in(x, w))
-}
-
-rule eq_reflexive_tmp3(class x) {
-	Vi[eq_reflexive_tmp1](x)
-	~ Vi[eq_reflexive_tmp2](x)
-	~ Ai(
-		V((class z) => E(in(z, x), in(z, x))),
-		V((class w) => E(in(x, w), in(x, w)))
-	)
-}
-
-rule eq_reflexive() {
-	Vi[eq_reflexive_tmp3]()
-	~ id(reflexive(eq))
-}
-
-rule eq_symmetric_tmp(class x, class y) {
-	id(eq(x, y)) ~
-	Ae1(
-		V((class z) => E(in(z, x), in(z, y))),
-		V((class w) => E(in(x, w), in(y, w)))
-	) ~ IVEpqVEqpfm(
-		(class z) => in(z, x),
-		(class z) => in(z, y)
-	) ~ Ae2(
-		V((class z) => E(in(z, x), in(z, y))),
-		V((class w) => E(in(x, w), in(y, w)))
-	) ~ IVEpqVEqpfm(
-		(class w) => in(x, w),
-		(class w) => in(y, w)
-	) ~ Ai(
-		V((class z) => E(in(z, y), in(z, x))),
-		V((class w) => E(in(y, w), in(x, w)))
-	)
-	~ id(eq(y, x))
-}
-
-rule eq_symmetric() {
-	Vi[Vi[cp[eq_symmetric_tmp]]]()
-	~ id(symmetric(eq))
-}
-
 class setbuilder([class -> st] f);
 
 rule setbuilder_def([class -> st] f) {
@@ -669,35 +681,96 @@ class cap(class x, class y) {
 	))
 }
 
+rule cap_vi(class x, class y) {
+	setbuilder_def((class z) => A(
+		in(z, x), in(z, y)
+	))
+	~ id(V((class z) => E(
+		in(z, cap(x, y)),
+		A(in(z, x), in(z, y))
+	)))
+}
+
+rule cap(class x, class y, class z) {
+	Ve[cap_vi](x, y, z)
+}
+
+rule cap_commutative_1(class x, class y, class z) {
+	cap(x, y, z)
+	~ tt.EApqAqp(in(z, x), in(z, y))
+	~ cap(y, x, z)
+	~ IEpqEqpm(
+		in(z, cap(y, x)),
+		A(in(z, y), in(z, x))
+	)
+	~ syllE4(
+		in(z, cap(x, y)),
+		A(in(z, x), in(z, y)),
+		A(in(z, y), in(z, x)),
+		in(z, cap(y, x))
+	)
+}
+
+rule cap_commutative_2(class x, class y) {
+	Vi[cap_commutative_1](x, y)
+	~ extensional_m(
+		cap(x, y),
+		cap(y, x)
+	)
+}
+
+rule cap_commutative() {
+	Vi[Vi[cap_commutative_2]]()
+	~ id(commutative(cap))
+}
+
 class cup(class x, class y) {
 	setbuilder((class z) => O(
 		in(z, x), in(z, y)
 	))
 }
 
+rule cup_vi(class x, class y) {
+	setbuilder_def((class z) => O(
+		in(z, x), in(z, y)
+	))
+	~ id(V((class z) => E(
+		in(z, cup(x, y)),
+		O(in(z, x), in(z, y))
+	)))
+}
+
+rule cup(class x, class y, class z) {
+	Ve[cup_vi](x, y, z)
+}
+
 class emptyset() {
 	setbuilder((class z) => F)
 }
 
-rule emptyset_is_empty_1(class z) {
+rule emptyset_1(class z) {
 	cp[contradict](in(z, emptyset()))
 }
 
-rule emptyset_is_empty_2() {
-	Vi[emptyset_is_empty_1]()
+rule emptyset_2() {
+	Vi[emptyset_1]()
 }
 
-rule emptyset_is_empty() {
+rule emptyset_vi() {
 	setbuilder_def((class z) => F)
 	~ Ee1V(
 		(class z) => in(z, emptyset()),
 		(class z) => F
 	)
-	~ emptyset_is_empty_2()
+	~ emptyset_2()
 	~ mpV(
 		(class z) => I(in(z, emptyset()), F),
 		(class z) => Nin(z, emptyset())
 	)
+}
+
+rule emptyset(class z) {
+	Ve[emptyset_vi](z)
 }
 
 rule setbuilder_is_setbuilder([class -> st] f, class x) {
@@ -723,6 +796,16 @@ class power(class x) {
 	setbuilder((class z) => (
 		subseteq(z, x)
 	))
+}
+
+rule power_def(class x) {
+	setbuilder_def((class z) => (
+		subseteq(z, x)
+	))
+	~ id(V((class z) => E(
+		in(z, power(x)),
+		subseteq(z, x)
+	)))
 }
 
 rule self_in_power_1(class x) {
@@ -811,16 +894,22 @@ rule specify_vem([class -> st] f, class x) {
 	~ mp(set(x), set(subsetbuilder(x, f)))
 }
 
-rule cap_is_set(class x, class y) {
+rule cap_is_set_1(class x, class y) {
 	specify_vem((class z) => in(z, y), x)
 	~ id(set(cap(x, y)))
+}
+
+rule cap_is_set_2(class x, class y) {
+	specify_vem((class z) => in(z, x), y)
+	~ cap_commutative_2(y, x)
+	~ set_is_set_1(cap(y, x), cap(x, y))
 }
 
 rule subset_cap_is_subset_1(class x, class y, class z) {
 	tt.IIpqEpApq(in(z, x), in(z, y))
 }
 
-rule subset_cap_is_subset_2(class x, class y) {
+rule subset_cap_is_subset(class x, class y) {
 	id(subseteq(x, y)) ~
 	Vi[subset_cap_is_subset_1](x, y)
 	~VIm(
@@ -836,15 +925,33 @@ rule subset_cap_is_subset_2(class x, class y) {
 			in(z, x),
 			A(in(z, x), in(z, y))
 		))
+	) ~
+	cap_vi(x, y) ~ IVEpqVEqpfm(
+		(class z) => in(z, cap(x, y)),
+		(class z) => A(in(z, x), in(z, y))
+	) ~
+	syllVE(
+		(class z) => in(z, x),
+		(class z) => A(in(z, x), in(z, y)),
+		(class z) => in(z, cap(x, y))
 	)
-}
-
-rule subset_cap_is_subset(class x, class y) {
-	subseteq(x, y) |- eq(x, cap(x, y))
+	~ extensional_m(x, cap(x, y))
 }
 
 rule subset_is_set(class x, class y) {
-	set(y), subseteq(x, y) |- set(x)
+	subset_cap_is_subset(x, y)
+	~ cap_is_set_2(x, y)
+	~ set_is_set_2(cap(x, y), x)
+}
+
+rule subset_is_set_ae(class x, class y) {
+	Ae1(set(y), subseteq(x, y))
+	~ Ae2(set(y), subseteq(x, y))
+	~ subset_is_set(x, y)
+}
+
+rule subset_is_set_ae_cvi(class x) {
+	Vi[cp[subset_is_set_ae]](x)
 }
 
 rule ax_power() {
@@ -863,26 +970,98 @@ rule ax_power() {
 	))
 }
 
-rule ax_power_ve(class x) {
+rule ax_power_vem(class x) {
 	Ve[ax_power](x)
-}
-
-rule power_is_set_1(class x, class y) {
-	|- I(
-		V((class z) => (
-			I(
+	~ mp(
+		set(x),
+		X((class y) => A(
+			set(y),
+			V((class z) => I(
 				subseteq(z, x),
 				in(z, y)
-			)
-		)),
-		subseteq(power(x), y)
+			))
+		))
 	)
 }
 
-rule power_is_set() {
-	|- V((class x) => (
-		I(set(x), set(power(x)))
-	))
+rule power_is_set_1(class x, class y) {
+	power_def(x)
+	~ Ee1V(
+		(class z) => in(z, power(x)),
+		(class z) => subseteq(z, x)
+	)
+	~ syllV(
+		(class z) => in(z, power(x)),
+		(class z) => subseteq(z, x),
+		(class z) => in(z, y)
+	)
+	~ id(subseteq(power(x), y))
+}
+
+rule power_is_set_2(class x, class y) {
+	cp[power_is_set_1](x, y)
+	~ tt.IIpqIArpArq(
+		V((class z) => I(
+			subseteq(z, x),
+			in(z, y)
+		)),
+		subseteq(power(x), y),
+		set(y)
+	)
+	~ mp(
+		I(
+			V((class z) => I(
+				subseteq(z, x),
+				in(z, y)
+			)),
+			subseteq(power(x), y)
+		),
+		I(
+			A(
+				set(y),
+				V((class z) => I(
+					subseteq(z, x),
+					in(z, y)
+				))
+			),
+			A(
+				set(y),
+				subseteq(power(x), y)
+			)
+		)
+	)
+}
+
+rule power_is_set_3(class x) {
+	ax_power_vem(x)
+	~ Vi[power_is_set_2](x)
+	~ Xinst1(
+		(class y) => A(
+			set(y), V((class z) => I(
+				subseteq(z, x), in(z, y)
+			))
+		),
+		(class y) => A(
+			set(y), subseteq(power(x), y)
+		)
+	)
+}
+
+rule power_is_set(class x) {
+	power_is_set_3(x)
+	~ subset_is_set_ae_cvi(power(x))
+	~ Xinst3(
+		(class y) => A(
+			set(y), subseteq(power(x), y)
+		),
+		set(power(x))
+	)
+}
+
+rule singleton_is_set(class x) {
+	singleton_subseteq_power(x)
+	~ power_is_set(x)
+	~ subset_is_set(singleton(x), power(x))
 }
 
 /*rule infinity() {

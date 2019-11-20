@@ -378,6 +378,12 @@ existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 
 		},
 		eq_symmetric: {
 			description: '[$=]는 대칭적(symmetric)이다.'
+		},
+		power_is_set: {
+			description: '멱집합은 집합이다.'
+		},
+		singleton_is_set: {
+			description: '싱글턴은 집합이다.'
 		}
 	},
 	rulesets: {
