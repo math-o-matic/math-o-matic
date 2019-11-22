@@ -463,16 +463,32 @@ st transitive([(class, class) -> st] f) {
 ######## SET THEORY ########
 ############################
 
-st in(class a, class b);
+st in(class x, class y);
 
-st Nin(class a, class b) {
-	N(in(a, b))
+st Nin(class x, class y) {
+	N(in(x, y))
 }
 
-st set(class a) {
-	X((class b) =>
-		in(a, b)
+st set(class x) {
+	X((class y) =>
+		in(x, y)
 	)
+}
+
+rule set_Xgen(class x, class y) {
+	Xgen((class y) => in(x, y), y)
+	~ id(set(x))
+}
+
+rule set_Xgen_A(class x, class y, class z) {
+	Ae1(in(z, x), in(z, y)) ~
+	set_Xgen(z, x)
+}
+
+rule set_Xgen_O(class x, class y, class z) {
+	cp[set_Xgen](z, x)
+	~ cp[set_Xgen](z, y)
+	~ Oe(in(z, x), in(z, y), set(z))
 }
 
 st subseteq(class x, class y) {
@@ -675,6 +691,48 @@ rule setbuilder_def([class -> st] f) {
 	)
 }
 
+rule setbuilder_def__([class -> st] f) {
+	|- V((class z) =>
+		E(
+			in(z, setbuilder(f)),
+			A(set(z), f(z))
+		)
+	)
+}
+
+rule ttf_IAEpAqrIrqEpr([class -> st] f, [class -> st] g, [class -> st] h, class x) {
+	tt.IAEpAqrIrqEpr(f(x), g(x), h(x))
+}
+
+rule setbuilder_def__set_1([class -> st] f, [class -> st] g, [class -> st] h) {
+	Ai(
+		V((class x) => E(f(x), A(g(x), h(x)))),
+		V((class x) => I(h(x), g(x)))
+	) ~
+	VAm2(
+		(class x) => E(f(x), A(g(x), h(x))),
+		(class x) => I(h(x), g(x))
+	) ~
+	Vi[ttf_IAEpAqrIrqEpr](f, g, h)
+	~ VIm(
+		(class x) => A(E(f(x), A(g(x), h(x))), I(h(x), g(x))),
+		(class x) => E(f(x), h(x))
+	)
+	~ mp(
+		V((class x) => A(E(f(x), A(g(x), h(x))), I(h(x), g(x)))),
+		V((class x) => E(f(x), h(x)))
+	)
+}
+
+rule setbuilder_def__set([class -> st] f) {
+	setbuilder_def__(f) ~
+	setbuilder_def__set_1(
+		(class z) => in(z, setbuilder(f)),
+		set,
+		f
+	)
+}
+
 class cap(class x, class y) {
 	setbuilder((class z) => A(
 		in(z, x), in(z, y)
@@ -682,7 +740,8 @@ class cap(class x, class y) {
 }
 
 rule cap_vi(class x, class y) {
-	setbuilder_def((class z) => A(
+	Vi[cp[set_Xgen_A]](x, y) ~
+	setbuilder_def__set((class z) => A(
 		in(z, x), in(z, y)
 	))
 	~ id(V((class z) => E(
@@ -731,7 +790,8 @@ class cup(class x, class y) {
 }
 
 rule cup_vi(class x, class y) {
-	setbuilder_def((class z) => O(
+	Vi[cp[set_Xgen_O]](x, y) ~
+	setbuilder_def__set((class z) => O(
 		in(z, x), in(z, y)
 	))
 	~ id(V((class z) => E(
@@ -756,10 +816,20 @@ rule emptyset_2() {
 	Vi[emptyset_1]()
 }
 
+rule emptyset_3(class x) {
+	tt.IApFF(set(x))
+}
+
 rule emptyset_vi() {
-	setbuilder_def((class z) => F)
+	setbuilder_def__((class z) => F)
 	~ Ee1V(
 		(class z) => in(z, emptyset()),
+		(class z) => A(set(z), F)
+	)
+	~ Vi[emptyset_3]()
+	~ syllV(
+		(class z) => in(z, emptyset()),
+		(class z) => A(set(z), F),
 		(class z) => F
 	)
 	~ emptyset_2()
@@ -773,13 +843,17 @@ rule emptyset(class z) {
 	Ve[emptyset_vi](z)
 }
 
+class universe() {
+	setbuilder((class z) => T)
+}
+
 rule setbuilder_is_setbuilder([class -> st] f, class x) {
 	eq_Ae1(x, setbuilder(f))
-	~ setbuilder_def(f)
+	~ setbuilder_def__(f)
 	~ syllVE(
 		(class z) => in(z, x),
 		(class z) => in(z, setbuilder(f)),
-		f
+		(class z) => A(set(z), f(z))
 	)
 }
 
@@ -808,27 +882,9 @@ rule power_def(class x) {
 	)))
 }
 
-rule self_in_power_1(class x) {
-	setbuilder_def((class z) => (
-		subseteq(z, x)
-	))
-	~ id(
-		V((class z) => (
-			E(
-				in(z, power(x)),
-				subseteq(z, x)
-			)
-		))
-	)
-}
-
-rule self_in_power_2(class x, class z) {
-	Ve[self_in_power_1](x, z)
-}
-
 rule self_in_power(class x, class z) {
 	eq_then_subseteq(z, x)
-	~ self_in_power_2(x, z)
+	~ Ve[power_def](x, z)
 	~ Ee2(
 		in(z, power(x)),
 		subseteq(z, x)
@@ -1062,6 +1118,19 @@ rule singleton_is_set(class x) {
 	singleton_subseteq_power(x)
 	~ power_is_set(x)
 	~ subset_is_set(singleton(x), power(x))
+}
+
+rule infinity() {
+	|- X((class x) => A(
+		set(x),
+		A(
+			in(emptyset(), x),
+			V((class z) => I(
+				in(z ,x),
+				in(cup(z, singleton(z)), x)
+			))
+		)
+	))
 }
 
 /*rule infinity() {

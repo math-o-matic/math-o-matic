@@ -204,6 +204,12 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 				return '\\href{#def-emptyset}{\\varnothing}';
 			}
 		},
+		universe: {
+			description: 'universal class. ZFC에 의하면 proper class이다.',
+			display() {
+				return '\\href{#def-universe}{\\mathcal U}';
+			}
+		},
 		reflexive: {
 			description: 'binary relation의 reflexivity.',
 			display: function (args) {
@@ -365,7 +371,12 @@ existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 
 			description: 'emptyset의 definition rule.'
 		},
 		setbuilder_def: {
-			description: 'setbuilder의 definition rule.'
+			description: `setbuilder의 definition rule.
+
+Deprecated: 이 정의는 {:T}가 스스로를 포함할 수 있게 하는데 이는 axiom of foundation에 모순된다. 그러므로 setbuilder_def__로 옮기셈.`
+		},
+		setbuilder_def__: {
+			description: `setbuilder의 새로운 definition rule. 근데 이걸로 singleton을 만들 경우 proper class의 singleton이 empty set이 되는 불상사가 발생하는데 어떻게 해야 할지 모르겠음.`
 		},
 		specify: {
 			description: 'axiom schema of specification. ZFC 공리계의 공리. 어떤 집합에서 임의 술어를 만족시키는 것의 class를 만들었을 때 이 class가 집합이라는 뜻이다.'
