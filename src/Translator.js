@@ -80,13 +80,21 @@ Translator.expand0FuncallOnce = function (expr) {
 	if (expr._type == 'funcall') {
 		var map = param => expr.args[expr.fun.params.indexOf(param)];
 
+		if (expr.fun._type == 'funcall') {
+			var fun = Translator.expand0FuncallOnce(expr.fun);
+			return new Funcall({
+				fun,
+				args: expr.args
+			});
+		}
+
 		if (!expr.fun.expr)
-			return expr;
+			throw Error('Could not expand');
 
 		return Translator.substitute0(expr.fun.expr, map);
-	} else {
-		return expr;
 	}
+
+	throw Error('Could not expand');
 }
 
 // 네임드는 안 푼다. 재귀적.
@@ -290,22 +298,48 @@ Translator.expr0Equals = function (a, b) {
 				);
 			}
 
+			if (a.fun._type == 'funcall') {
+				return cachedRecurse(
+					Translator.expand0FuncallOnce(a),
+					b,
+					depth+1
+				);
+			}
+
+			if (b.fun._type == 'funcall') {
+				return cachedRecurse(
+					a,
+					Translator.expand0FuncallOnce(b),
+					depth+1
+				);
+			}
+		
 			if (!a.fun.expr && !b.fun.expr) return false;
 
+			var expandA = true;
+
 			if (!a.fun.expr && b.fun.expr)
-				[a, b] = [b, a];
+				expandA = false;
 
 			if (b.fun.anonymous)
-				[a, b] = [b, a];
+				expandA = false;
 
 			if (b.fun.expr && b.fun.expr._type == 'funcall' && b.fun.expr.fun == a.fun)
-				[a, b] = [b, a];
+				expandA = false;
 
-			return cachedRecurse(
-				Translator.expand0FuncallOnce(a),
-				b,
-				depth+1
-			);
+			if (expandA) {
+				return cachedRecurse(
+					Translator.expand0FuncallOnce(a),
+					b,
+					depth+1
+				);
+			} else {
+				return cachedRecurse(
+					a,
+					Translator.expand0FuncallOnce(b),
+					depth+1
+				);
+			}
 		}
 
 		if (b._type == 'funcall')

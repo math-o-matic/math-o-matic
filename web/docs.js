@@ -92,6 +92,12 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 						+ `\\href{#def-Ef}{\\leftrightarrow} ${args[1].toTeXString()} \\right)`;
 			}
 		},
+		Nf: {
+			description: 'N의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다.',
+			display: function (args) {
+				return `\\left(\\href{#def-Nf}{\\neg}${args[0].toTeXString()}\\right)`;
+			}
+		},
 		V: {
 			description: '보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다.',
 			display: function (args) {

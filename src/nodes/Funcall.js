@@ -43,16 +43,15 @@ Funcall.prototype.toIndentedString = function (indent) {
 		args = args.join(', ');
 
 		return [
-			`${this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
+			`${this.fun._type != 'fun' || this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
 			args,
 			`)`
 		].join('')
-	}
-	else {
+	} else {
 		args = args.join(',\n' + '\t'.repeat(indent + 1));
 
 		return [
-			`${this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
+			`${this.fun._type != 'fun' || this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
 			'\t' + args,
 			`)`
 		].join('\n' + '\t'.repeat(indent));

@@ -20,29 +20,6 @@ st I(st p, st q);
 
 st E(st p, st q);
 
-// st N(st p) {
-// 	S(p, p)
-// }
-
-// st A(st p, st q) {
-// 	N(S(p, q))
-// }
-
-// st O(st p, st q) {
-// 	S(N(p), N(q))
-// }
-
-// st I(st p, st q) {
-// 	S(p, N(q))
-// }
-
-// st E(st p, st q) {
-// 	S(
-// 		S(p, q),
-// 		S(N(p), N(q))
-// 	)
-// }
-
 native ruleset tt;
 native link cp;
 
@@ -192,19 +169,23 @@ rule contradict(st p) {
 typedef class;
 
 [class -> st] Af([class -> st] f, [class -> st] g) {
-	(class x) => A(f(x), g(x))
+	(class z) => A(f(z), g(z))
 }
 
 [class -> st] Of([class -> st] f, [class -> st] g) {
-	(class x) => O(f(x), g(x))
+	(class z) => O(f(z), g(z))
 }
 
 [class -> st] If([class -> st] f, [class -> st] g) {
-	(class x) => I(f(x), g(x))
+	(class z) => I(f(z), g(z))
 }
 
 [class -> st] Ef([class -> st] f, [class -> st] g) {
-	(class x) => E(f(x), g(x))
+	(class z) => E(f(z), g(z))
+}
+
+[class -> st] Nf([class -> st] f) {
+	(class z) => N(f(z))
 }
 
 st V([class -> st] f);
@@ -393,6 +374,51 @@ rule syllVE([class -> st] f, [class -> st] g, [class -> st] h) {
 	~ mp(
 		V((class x) => A(E(f(x), g(x)), E(g(x), h(x)))),
 		V((class x) => E(f(x), h(x)))
+	)
+}
+
+rule ttf_ENOpqANpNq([class -> st] f, [class -> st] g, class x) {
+	tt.ENOpqANpNq(f(x), g(x))
+}
+
+rule XO([class -> st] f, [class -> st] g) {
+	VA(Nf(f), Nf(g)) ~
+	tt.IEpAqrENpONqNr(
+		V(Af(Nf(f), Nf(g))), V(Nf(f)), V(Nf(g))
+	)
+	~ mp(
+		E(
+			V(Af(Nf(f), Nf(g))),
+			A(V(Nf(f)), V(Nf(g)))
+		),
+		E(
+			N(V(Af(Nf(f), Nf(g)))),
+			O(N(V(Nf(f))), N(V(Nf(g))))
+		)
+	)
+	~ Vi[ttf_ENOpqANpNq](f, g)
+	~ VEm(
+		(class x) => N(O(f(x), g(x))),
+		(class x) => A(N(f(x)), N(g(x)))
+	)
+	~ tt.IEpqENpNq(
+		V((class x) => N(O(f(x), g(x)))),
+		V((class x) => A(N(f(x)), N(g(x))))
+	)
+	~ mp(
+		E(
+			V((class x) => N(O(f(x), g(x)))),
+			V((class x) => A(N(f(x)), N(g(x))))
+		),
+		E(
+			N(V((class x) => N(O(f(x), g(x))))),
+			N(V((class x) => A(N(f(x)), N(g(x)))))
+		)
+	)
+	~ syllE(
+		X(Of(f, g)),
+		N(V(Af(Nf(f), Nf(g)))),
+		O(X(f), X(g))
 	)
 }
 
