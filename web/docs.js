@@ -370,6 +370,16 @@ existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 
 		Ee2V: {
 			description: 'Ee2의 V형.'
 		},
+		XO: {
+			description: String.raw`
+[$\exists]과 [$\lor] 간의 분배법칙 같은 것. VA로부터 증명할 수 있다.
+`
+		},
+		XI: {
+			description: String.raw`
+[$\exists]과 [$\to] 간의 분배법칙 같은 것. 직관적으로 이해가 안 되지만 XO로부터 간단히 증명할 수 있는데 XI_로부터 증명하려고 하니 막막한 이유는 무엇인가...
+`
+		},
 		extensional: {
 			description: 'axiom of extensionality. ZFC 공리계의 공리.'
 		},

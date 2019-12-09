@@ -422,6 +422,20 @@ rule XO([class -> st] f, [class -> st] g) {
 	)
 }
 
+rule XI_([class -> st] f, [class -> st] g) {
+	XO(Nf(f), g)
+}
+
+rule XI([class -> st] f, [class -> st] g) {
+	|- E(
+		X(If(f, g)),
+		I(
+			V(f),
+			X(g)
+		)
+	)
+}
+
 rule mpV([class -> st] f, [class -> st] g) {
 	VIm(f, g)
 	~ mp(V(f), V(g))
