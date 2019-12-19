@@ -22,13 +22,10 @@
     "email": "ossia@korea.ac.kr"
   },
   "license": "MIT",
-  "dependencies": {
-    "katex": "^0.11.1",
-    "m42kup": "^0.1.1",
-    "pegjs": "^0.10.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "nodemon": "^1.19.4",
+    "pegjs": "^0.10.0",
     "webpack": "^4.41.4",
     "webpack-cli": "^3.3.10"
   }
