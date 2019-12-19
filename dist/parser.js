@@ -147,13 +147,15 @@ function peg$parse(input, options) {
       peg$c3 = function(type) {
       		return {
       			_type: 'typedef',
-      			type
+      			type,
+      			location: location()
       		}
       	},
       peg$c4 = function(typevar) {
       		return {
       			_type: 'defv',
-      			typevar
+      			typevar,
+      			location: location()
       		}
       	},
       peg$c5 = "(",
@@ -177,7 +179,8 @@ function peg$parse(input, options) {
       				rettype,
       				name,
       				params,
-      				expr
+      				expr,
+      				location: location()
       			}
       		},
       peg$c21 = "native",
@@ -188,7 +191,8 @@ function peg$parse(input, options) {
       			return {
       				_type: 'deflink',
       				name,
-      				native: true
+      				native: true,
+      				location: location()
       			}
       		},
       peg$c26 = "ruleset",
@@ -197,7 +201,8 @@ function peg$parse(input, options) {
       			return {
       				_type: 'defruleset',
       				name,
-      				native: true
+      				native: true,
+      				location: location()
       			}
       		},
       peg$c29 = "rule",
@@ -210,7 +215,8 @@ function peg$parse(input, options) {
       				_type: 'defrule',
       				name,
       				params,
-      				rules: expr.rules
+      				rules: expr.rules,
+      				location: location()
       			}
       		},
       peg$c35 = function(head, e) {return e},
@@ -222,7 +228,8 @@ function peg$parse(input, options) {
       			return {
       				_type: 'yield',
       				left,
-      				right
+      				right,
+      				location: location()
       			}
       		},
       peg$c41 = "[",
@@ -261,7 +268,8 @@ function peg$parse(input, options) {
       			return {
       				_type: 'rulecall',
       				rule,
-      				args
+      				args,
+      				location: location()
       			}
       		},
       peg$c54 = function(e) {return e},
@@ -272,7 +280,8 @@ function peg$parse(input, options) {
       			return {
       				_type: 'funcall',
       				fun,
-      				args
+      				args,
+      				location: location()
       			}
       		},
       peg$c59 = function(head, tv) {return tv},
@@ -283,7 +292,8 @@ function peg$parse(input, options) {
       			return {
       				_type: 'funexpr',
       				params,
-      				expr
+      				expr,
+      				location: location()
       			}
       		},
       peg$c64 = "~",
@@ -298,14 +308,16 @@ function peg$parse(input, options) {
       		return {
       			_type: 'typevar',
       			type,
-      			name
+      			name,
+      			location: location()
       		}
       	},
       peg$c68 = function(name) {
       		return {
       			_type: 'type',
       			ftype: false,
-      			name
+      			name,
+      			location: location()
       		}
       	},
       peg$c69 = function(type) {return [type]},
@@ -318,7 +330,8 @@ function peg$parse(input, options) {
       				_type: 'type',
       				ftype: true,
       				from,
-      				to
+      				to,
+      				location: location()
       			}
       		},
       peg$c75 = function(name) {

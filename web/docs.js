@@ -245,7 +245,28 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 			display: function (args) {
 				return `\\left(${args[0].toTeXString()}\\ \\href{#def-commutative}{\\text{is commutative}}\\right)`;
 			}
-		}
+		},
+		v2: {
+			description: 'ordered pair.',
+			display (args) {
+				return `\\left(${args[0].toTeXString()}`
+						+ `\\href{#def-v2}{,} ${args[1].toTeXString()} \\right)`;
+			}
+		},
+		cartesian: {
+			description: 'cartesian product.',
+			display (args) {
+				return `\\left(${args[0].toTeXString()}`
+						+ `\\href{#def-cartesian}{\\times} ${args[1].toTeXString()} \\right)`;
+			}
+		},
+		graph: {
+			description: '어떤 class가 graph다.',
+			display (args) {
+				return `\\left(${args[0].toTeXString()}`
+						+ `\\href{#def-graph}\\text{ is a graph}\\right)`;
+			}
+		},
 	},
 	rules: {
 		mp: {

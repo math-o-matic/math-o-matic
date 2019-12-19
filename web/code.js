@@ -233,6 +233,13 @@ rule VI([class -> st] f, [class -> st] g) {
 	)
 }
 
+rule VO([class -> st] f, [class -> st] g) {
+	|- I(
+		O(V(f), V(g)),
+		V(Of(f, g))
+	)
+}
+
 rule VV([(class, class) -> st] f) {
 	|- I(
 		V2((class x, class y) => f(x, y)),
@@ -433,6 +440,33 @@ rule XI([class -> st] f, [class -> st] g) {
 			V(f),
 			X(g)
 		)
+	)
+}
+
+rule XA([class -> st] f, [class -> st] g) {
+	|- I(
+		X(Af(f, g)),
+		A(X(f), X(g))
+	)
+}
+
+rule AeX1([class -> st] f, [class -> st] g) {
+	tt.IApqp(X(f), X(g))
+	~ XA(f, g)
+	~ syll(
+		X(Af(f, g)),
+		A(X(f), X(g)),
+		X(f)
+	)
+}
+
+rule AeX2([class -> st] f, [class -> st] g) {
+	tt.IApqq(X(f), X(g))
+	~ XA(f, g)
+	~ syll(
+		X(Af(f, g)),
+		A(X(f), X(g)),
+		X(g)
 	)
 }
 
@@ -1184,5 +1218,70 @@ rule infinity() {
 		)
 	)
 }*/
+
+############################
+########## GRAPHS ##########
+############################
+
+class v2(class x, class y);
+
+rule v2_eq_def(class x, class y, class z, class w) {
+	|- E(
+		eq(v2(x, y), v2(z, w)),
+		A(eq(x, z), eq(y, w))
+	)
+}
+
+rule v2_set_def(class x, class y) {
+	|- E(
+		set(v2(x, y)),
+		A(set(x), set(y))
+	)
+}
+
+class cartesian(class x, class y) {
+	setbuilder((class z) => (
+		X2((class a, class b) => A(
+			eq(z, v2(a, b)),
+			A(in(a, x), in(b, y))
+		))
+	))
+}
+
+rule cartesian_def(class x, class y) {
+	setbuilder_def__((class z) => (
+		X2((class a, class b) => A(
+			eq(z, v2(a, b)),
+			A(in(a, x), in(b, y))
+		))
+	))
+	~ id(V((class z) => (
+		E(
+			in(z, cartesian(x, y)),
+			A(
+				set(z),
+				X2((class a, class b) => A(
+					eq(z, v2(a, b)),
+					A(in(a, x), in(b, y))
+				))
+			)
+		)
+	)))
+}
+
+st graph(class x) {
+	V((class z) => (
+		I(
+			in(z, x),
+			X2((class a, class b) => (
+				eq(z, v2(a, b))
+			))
+		)
+	))
+}
+
+rule cartesian_is_graph(class x, class y) {
+	|- graph(cartesian(x, y))
+}
 
 `;

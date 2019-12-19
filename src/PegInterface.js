@@ -33,19 +33,20 @@ function rulenameObjToString(obj) {
 	}
 }
 
-function getTrace(trace, type, name) {
+function getTrace(trace, type, name, location) {
+	if (!location) throw 'no';
 	var ret = trace.slice();
-	ret.unshift([type, name]);
+	ret.unshift([type, name, location]);
 	return ret;
 }
 
 function makeError(message, trace) {
 	return new Error(message + '\n\tat ' + trace
-		.map(e => e[0] + ' ' + e[1] + ' (code.js)').join('\n\tat '));
+		.map(e => `${e[0]} ${e[1]} (code.js:${e[2].start.line}:${e[2].start.column})`).join('\n\tat '));
 }
 
 PegInterface.type = function (obj, parentScope, trace) {
-	var trace = getTrace(trace, 'type', obj.name);
+	var trace = getTrace(trace, 'type', obj.name, obj.location);
 
 	return new Type({
 		functional: false,
@@ -56,7 +57,7 @@ PegInterface.type = function (obj, parentScope, trace) {
 PegInterface.typevar = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
-	var trace = getTrace(trace, 'typevar', obj.name);
+	var trace = getTrace(trace, 'typevar', obj.name, obj.location);
 
 	if (!scope.hasType(obj.type))
 		throw makeError(`Type ${obj.type} not found`, trace);
@@ -78,7 +79,7 @@ PegInterface.fun = function (obj, parentScope, trace) {
 	var expr = null;
 	var scope = parentScope.extend();
 
-	var trace = getTrace(trace, 'fun', obj.name || '<anonymous>');
+	var trace = getTrace(trace, 'fun', obj.name || '<anonymous>', obj.location);
 
 	switch (obj._type) {
 		case 'defun':
@@ -195,7 +196,7 @@ PegInterface.funcall = function (obj, parentScope, trace) {
 	var args = null;
 	var scope = parentScope.extend();
 
-	var trace = getTrace(trace, 'funcall', obj.fun.name || '<anonymous>');
+	var trace = getTrace(trace, 'funcall', obj.fun.name || '<anonymous>', obj.location);
 
 	switch (obj.fun._type) {
 		case 'funcall':
@@ -244,7 +245,7 @@ PegInterface.funcall = function (obj, parentScope, trace) {
 PegInterface.rule = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
-	var trace = getTrace(trace, 'rule', obj.name);
+	var trace = getTrace(trace, 'rule', obj.name, obj.location);
 
 	var name = obj.name;
 	var params = obj.params.map(tvo => {
@@ -276,7 +277,7 @@ PegInterface.rule = function (obj, parentScope, trace) {
 PegInterface.yield = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
-	var trace = getTrace(trace, 'yield', '<anonymous>');
+	var trace = getTrace(trace, 'yield', '<anonymous>', obj.location);
 
 	var foo = obj => {
 		switch (obj._type) {
@@ -312,7 +313,7 @@ PegInterface.yield = function (obj, parentScope, trace) {
 PegInterface.rulecall = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
-	var trace = getTrace(trace, 'rulecall', rulenameObjToString(obj.rule));
+	var trace = getTrace(trace, 'rulecall', rulenameObjToString(obj.rule), obj.location);
 
 	var rule = (function getRule(obj) {
 		switch (obj.type) {
@@ -386,7 +387,7 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
 	var scope = parentScope.extend();
 
-	var trace = getTrace(trace, 'ruleset', obj.name);
+	var trace = getTrace(trace, 'ruleset', obj.name, obj.location);
 
 	var name = obj.name;
 
@@ -404,7 +405,7 @@ PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
 PegInterface.link = function (obj, parentScope, trace, nativeMap) {
 	var scope = parentScope.extend();
 
-	var trace = getTrace(trace, 'link', obj.name);
+	var trace = getTrace(trace, 'link', obj.name, obj.location);
 
 	var name = obj.name;
 

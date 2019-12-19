@@ -170,7 +170,7 @@
 				parsed = math.parser.parse(code);
 			} catch (e) {
 				console.error(e);
-				console.error(`Error: ${e.message}\n\tat ${e.location.start.line}:${e.location.start.column}`);
+				console.error(`Error: ${e.message}\n\tat code.js:${e.location.start.line}:${e.location.start.column}`);
 				console.log('--- PARSE FAILED ---');
 				return;
 			}

@@ -14,7 +14,8 @@ typedef
 	{
 		return {
 			_type: 'typedef',
-			type
+			type,
+			location: location()
 		}
 	}
 
@@ -23,7 +24,8 @@ defv
 	{
 		return {
 			_type: 'defv',
-			typevar
+			typevar,
+			location: location()
 		}
 	}
 
@@ -54,7 +56,8 @@ defun
 				rettype,
 				name,
 				params,
-				expr
+				expr,
+				location: location()
 			}
 		}
 
@@ -68,7 +71,8 @@ deflink
 			return {
 				_type: 'deflink',
 				name,
-				native: true
+				native: true,
+				location: location()
 			}
 		}
 
@@ -82,7 +86,8 @@ defruleset
 			return {
 				_type: 'defruleset',
 				name,
-				native: true
+				native: true,
+				location: location()
 			}
 		}
 
@@ -108,7 +113,8 @@ defrule
 				_type: 'defrule',
 				name,
 				params,
-				rules: expr.rules
+				rules: expr.rules,
+				location: location()
 			}
 		}
 
@@ -128,7 +134,8 @@ yield
 			return {
 				_type: 'yield',
 				left,
-				right
+				right,
+				location: location()
 			}
 		}
 
@@ -188,7 +195,8 @@ rulecall
 			return {
 				_type: 'rulecall',
 				rule,
-				args
+				args,
+				location: location()
 			}
 		}
 
@@ -218,7 +226,8 @@ funcall
 			return {
 				_type: 'funcall',
 				fun,
-				args
+				args,
+				location: location()
 			}
 		}
 
@@ -241,7 +250,8 @@ funexpr
 			return {
 				_type: 'funexpr',
 				params,
-				expr
+				expr,
+				location: location()
 			}
 		}
 
@@ -276,7 +286,8 @@ typevar
 		return {
 			_type: 'typevar',
 			type,
-			name
+			name,
+			location: location()
 		}
 	}
 
@@ -290,7 +301,8 @@ stype
 		return {
 			_type: 'type',
 			ftype: false,
-			name
+			name,
+			location: location()
 		}
 	}
 
@@ -318,7 +330,8 @@ ftype
 				_type: 'type',
 				ftype: true,
 				from,
-				to
+				to,
+				location: location()
 			}
 		}
 
