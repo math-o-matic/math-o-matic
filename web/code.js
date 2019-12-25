@@ -913,7 +913,7 @@ rule emptyset_vi() {
 	)
 }
 
-rule emptyset(class z) {
+rule emptyset_def(class z) {
 	Ve[emptyset_vi](z)
 }
 
@@ -942,6 +942,13 @@ class subsetbuilder(class x, [class -> st] f) {
 
 class power(class x) {
 	setbuilder((class z) => (
+		subseteq(z, x)
+	))
+}
+
+rule power_def__(class x) {
+	set(x) |- V((class z) => E(
+		in(z, power(x)),
 		subseteq(z, x)
 	))
 }

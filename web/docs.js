@@ -99,7 +99,7 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 			}
 		},
 		V: {
-			description: '보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다.',
+			description: '보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다].',
 			display: function (args) {
 				return `\\left(\\href{#def-V}{\\forall}${args[0].toTeXString()}\\right)`;
 			}
@@ -117,7 +117,7 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 			}
 		},
 		X: {
-			description: '존재 양화(existential quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받으며 V에 의존한다.',
+			description: '존재 양화(existential quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받으며 V에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다].',
 			display: function (args) {
 				return `\\left(\\href{#def-X}{\\exists}${args[0].toTeXString()}\\right)`;
 			}
@@ -205,13 +205,13 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 			}
 		},
 		emptyset: {
-			description: 'empty class. ZFC에 의하면 set이다.',
+			description: 'empty class.',
 			display() {
 				return '\\href{#def-emptyset}{\\varnothing}';
 			}
 		},
 		universe: {
-			description: 'universal class. ZFC에 의하면 proper class이다.',
+			description: 'universal class.',
 			display() {
 				return '\\href{#def-universe}{\\mathcal U}';
 			}
@@ -402,7 +402,7 @@ existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 
 `
 		},
 		extensional: {
-			description: 'axiom of extensionality. ZFC 공리계의 공리.'
+			description: 'axiom of extensionality.'
 		},
 		emptyset_def: {
 			description: 'emptyset의 definition rule.'
@@ -416,7 +416,7 @@ Deprecated: 이 정의는 {:T}가 스스로를 포함할 수 있게 하는데 �
 			description: `setbuilder의 새로운 definition rule. 근데 이걸로 singleton을 만들 경우 proper class의 singleton이 empty set이 되는 불상사가 발생하는데 어떻게 해야 할지 모르겠음.`
 		},
 		specify: {
-			description: 'axiom schema of specification. ZFC 공리계의 공리. 어떤 집합에서 임의 술어를 만족시키는 것의 class를 만들었을 때 이 class가 집합이라는 뜻이다.'
+			description: 'axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 것의 class를 만들었을 때 이 class가 집합이라는 뜻이다.'
 		},
 		ax_power: {
 			description: 'axiom of power set.'

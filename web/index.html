@@ -78,7 +78,7 @@
 		<h1>M42/math</h1>
 		<p><a href="https://github.com/logico-philosophical/m42-math">GitHub repo</a></p>
 		<h2>꿀팁</h2>
-		<script>document.write(m42kup.render(String.raw`
+		<script type="text/m42kup">
 이름을 정할 때 몇 가지 작명 방식을 따르고 있습니다.
 [ul
 	[*] T: verum. true의 T.
@@ -99,24 +99,24 @@
 ]
 
 이 페이지의 많은 부분은 m42kup([~github.com/logico-philosophical/m42kup])으로 쓰였습니다.
-`));</script>
+		</script>
 		<h2>몇 가지 동형에 관하여</h2>
-		<script>document.write(m42kup.render(String.raw`
+		<script type="text/m42kup">
 어떤 공리계에서 두 개의 규칙이 동형이라는 것은 그거나 그거나라는 겁니다. 현재 다음과 같은 종류가 있습니다.
 
 [ul
 	[*] mp[&ndash]cp 동형: 규칙 mp 및 링크 cp에 의해
 
-[$$${'`'}\vdash p \to q \xrightleftharpoons[\mathsf{cp}]\mathsf{mp} p \vdash q${'`'}.]
+[$$`\vdash p \to q \xrightleftharpoons[\mathsf{cp}]\mathsf{mp} p \vdash q`.]
 
 	[*] Ai[&ndash]Ae 동형: 규칙 Ai 및 규칙 Ae1, Ae2에 의해
 
-[$$${'`'}p \land q \vdash r \xrightleftharpoons[\mathsf{Ae}]\mathsf{Ai} p, q \vdash r${'`'}.]
+[$$`p \land q \vdash r \xrightleftharpoons[\mathsf{Ae}]\mathsf{Ai} p, q \vdash r`.]
 
 왼쪽에 적용하기 때문에 Ai에 의해 없어지고 Ae에 의해 생깁니다.
 	[*] Vi[&ndash]Ve 동형: 링크 Vi 및 링크 Ve에 의해
 
-[$$${'`'}(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y) \xrightleftharpoons[\mathsf{Ve}]\mathsf{Vi} (x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))${'`'}]
+[$$`(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y) \xrightleftharpoons[\mathsf{Ve}]\mathsf{Vi} (x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))`]
 
 ]
 
@@ -130,14 +130,14 @@
 
 와 Ai[&ndash]Ae 동형이고 이거는
 
-[$$${'`'}(x, y):\ \vdash [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y)${'`'}]
+[$$`(x, y):\ \vdash [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y)`]
 
 와 mp[&ndash]cp 동형이고 이거는
 
-[$$${'`'}():\ \vdash \forall((x, y) \mapsto [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y))${'`'}]
+[$$`():\ \vdash \forall((x, y) \mapsto [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y))`]
 
 와 Vi[&ndash]Ve 동형인데 이 중에 무엇을 택해야 할지 모르겠군요. 동형 규칙 간에 간단히 변환할 수 있는 수단과 동형 규칙 간의 이름 규칙이 있어야 하겠습니다.
-`));</script>
+		</script>
 		<h2>목록</h2>
 		<p>이하의 내용은
 			<a href="./code.js">code.js</a> 및
@@ -147,6 +147,12 @@
 		<script>
 			$ = (q, n) => (n || document).querySelector(q);
 			$$ = (q, n) => (n || document).querySelectorAll(q);
+
+			[].forEach.call($$('script[type="text/m42kup"]'), $script => {
+				var $div = document.createElement('div');
+				$div.innerHTML = m42kup.render($script.text);
+				$script.parentNode.insertBefore($div, $script);
+			});
 
 			(() => {
 
@@ -163,8 +169,10 @@
 			    '"': '&quot;', "'": '&#39;'
 			})[m]);
 
+			var start, end;
+
 			console.log('--- PARSE START ---');
-			var parseStartTime = new Date() * 1;
+			start = new Date();
 			var parsed;
 			try {
 				parsed = math.parser.parse(code);
@@ -175,24 +183,22 @@
 				return;
 			}
 
-			var parseEndTime = new Date() * 1;
+			end = new Date();
 			console.log(parsed);
 			console.log('--- PARSE END ---');
-			console.log(`Parse ended in ${parseEndTime - parseStartTime} ms`);
-
+			console.log(`Parse ended in ${end - start} ms`);
 			console.log('--- PROCESS START --');
-			var processStartTime = new Date() * 1;
+			start = new Date();
 
 			var program = new math.Program();
 			program.feed(parsed, native);
 
-			var processEndTime = new Date() * 1;
+			end = new Date();
 			console.log(program);
 			console.log('--- PROCESS END ---');
-			console.log(`Process ended in ${processEndTime - processStartTime} ms`);
-
-			console.log('--- HTML RENDER START ---');
-			var renderStartTime = new Date() * 1;
+			console.log(`Process ended in ${end - start} ms`);
+			console.log('--- HTML GENERATION START ---');
+			start = new Date();
 
 			if (docs.defs) {
 				for (k in docs.defs) {
@@ -296,6 +302,12 @@
 				arr[v._id] = r;
 			}
 
+			end = new Date();
+			console.log('--- HTML GENERATION END ---');
+			console.log(`HTML generation ended in ${end - start} ms`);
+			console.log('--- HTML RENDER START ---');
+			start = new Date();
+
 			$('#all').innerHTML +=
 				Object.keys(arr).sort((l, r) => l._id - r._id).map(k => arr[k]).join('');
 
@@ -303,9 +315,9 @@
 				a.title = a.getAttribute('href');
 			});
 
-			var renderEndTime = new Date() * 1;
+			end = new Date();
 			console.log('--- HTML RENDER END ---');
-			console.log(`HTML render ended in ${renderEndTime - renderStartTime} ms`);
+			console.log(`HTML render ended in ${end - start} ms`);
 
 			})();
 		</script>
