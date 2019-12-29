@@ -279,6 +279,14 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 				return `\\left(${args[0].toTeXString()}: ${args[1].toTeXString()} \\to ${args[2].toTeXString()}`
 						+ `\\href{#def-function}\\text{ is a function}\\right)`;
 			}
+		},
+		fcalleq: {
+			description: String.raw`y = f(x)의 관계.
+
+[**주의]: 이 def는 f가 function임을 확인하지 않음. function에 대해서만 사용하세요.`,
+			display (args) {
+				return `\\left(${args[0].toTeXString()}(${args[1].toTeXString()}) \\href{#def-fcalleq}= ${args[2].toTeXString()} \\right)`;
+			}
 		}
 	},
 	rules: {

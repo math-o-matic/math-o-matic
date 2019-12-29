@@ -1304,4 +1304,14 @@ st function(class f, class a, class b) {
 	)
 }
 
+st fcalleq(class f, class x, class y) {
+	in(v2(x, y), f)
+}
+
+rule fcalleqQ(class f, class a, class b) {
+	function(f, a, b) |- V((class x) => (
+		I(in(x, a), Q((class y) => fcalleq(f, x, y)))
+	))
+}
+
 `;
