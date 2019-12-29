@@ -155,6 +155,12 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 					+ `\\href{#def-subseteq}{\\subseteq}${args[1].toTeXString()} \\right)`;
 			}
 		},
+		Q: {
+			description: 'uniqueness quantification.',
+			display: function (args) {
+				return `\\left(\\href{#def-Q}{\\exists!}${args[0].toTeXString()}\\right)`
+			}
+		},
 		cap: {
 			description: String.raw`[$\cap].`,
 			display(args) {
@@ -267,6 +273,13 @@ nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유�
 						+ `\\href{#def-graph}\\text{ is a graph}\\right)`;
 			}
 		},
+		function: {
+			description: '어떤 class가 function이다.',
+			display (args) {
+				return `\\left(${args[0].toTeXString()}: ${args[1].toTeXString()} \\to ${args[2].toTeXString()}`
+						+ `\\href{#def-function}\\text{ is a function}\\right)`;
+			}
+		}
 	},
 	rules: {
 		mp: {

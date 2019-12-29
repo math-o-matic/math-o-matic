@@ -649,6 +649,12 @@ rule eq_symmetric() {
 	~ id(symmetric(eq))
 }
 
+st Q([class -> st] f) {
+	X((class x) => V((class y) => (
+		E(f(y), eq(y, x))
+	)))
+}
+
 st associative([(class, class) -> class] f) {
 	V3((class x, class y, class z) =>
 		eq(
@@ -1289,6 +1295,13 @@ st graph(class x) {
 
 rule cartesian_is_graph(class x, class y) {
 	|- graph(cartesian(x, y))
+}
+
+st function(class f, class a, class b) {
+	A(
+		subseteq(f, cartesian(a, b)),
+		V((class x) => Q((class y) => in(v2(x, y), f)))
+	)
 }
 
 `;
