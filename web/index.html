@@ -97,8 +97,6 @@
 	[*] f: functional. functional의 f. Af나 Of처럼 함수 작용소 버전을 만들 때 붙입니다.
 	[*] _def: 어떤 def의 정의로서 사용되는 rule의 이름의 경우 해당 def의 이름에 _def를 붙입니다. def emptyset과 rule emptyset_def의 관계를 참조하세요.
 ]
-
-이 페이지의 많은 부분은 m42kup([~github.com/logico-philosophical/m42kup])으로 쓰였습니다.
 		</script>
 		<h2>몇 가지 동형에 관하여</h2>
 		<script type="text/m42kup">
@@ -137,6 +135,10 @@
 [$$`():\ \vdash \forall((x, y) \mapsto [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y))`]
 
 와 Vi[&ndash]Ve 동형인데 이 중에 무엇을 택해야 할지 모르겠군요. 동형 규칙 간에 간단히 변환할 수 있는 수단과 동형 규칙 간의 이름 규칙이 있어야 하겠습니다.
+		</script>
+		<h2>함수에 관하여</h2>
+		<script type="text/m42kup">
+코드에서 [;`[class -> st]`], [;`[(st, st) -> st]`] 등의 타입이 함수와 같은 형태로 표현되고 있으나 이들은 메타-함수이며, 공리계 내에서 사용되는 함수의 타입은 [;class]이고 Def function을 만족합니다.
 		</script>
 		<h2>목록</h2>
 		<p>이하의 내용은
