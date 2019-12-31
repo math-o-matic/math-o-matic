@@ -20,7 +20,7 @@ docs = {
 				return `\\href{#def-F}{\\bot}`
 			}
 		},
-		S: {
+		NA: {
 			description: String.raw`
 nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유도할 수 있는 것이 증명된 것 같다. nor(FFFT) 역시 같은 성질을 갖고 있다(그러나 업계에서는 NAND 게이트를 NOR 게이트보다 선호하는 것 같다).
 
@@ -473,7 +473,7 @@ Metamath처럼 Łukasiewicz의 공리계로 어떻게 해보려 했으나 예전
 		]
 	[*] 일항 연산자
 		[ul
-			[*] N: I ([$\neg]).
+			[*] N: not ([$\neg]).
 		]
 	[*] 이항 연산자
 		[ul
@@ -481,7 +481,6 @@ Metamath처럼 Łukasiewicz의 공리계로 어떻게 해보려 했으나 예전
 			[*] O: or ([$\lor]).
 			[*] I: implies ([$\to]).
 			[*] E: iff ([$\leftrightarrow]). equivalent의 E인 것으로 하자.
-			[*] S: nand ([$\barwedge]). Sheffer stroke의 S. 그렇지만 생김새는 스트로크가 아니다.
 		]
 ]
 

@@ -8,7 +8,7 @@ native = {
 				var args = ['p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 				var nullary = ['T', 'F'].concat(args);
 				var unary = ['N'];
-				var binary = ['A', 'O', 'I', 'E', 'S'];
+				var binary = ['A', 'O', 'I', 'E'];
 
 				var arityMap = {};
 				nullary.forEach(e => arityMap[e] = 0);
@@ -79,8 +79,7 @@ native = {
 					'A': (p, q) => p && q,
 					'O': (p, q) => p || q,
 					'I': (p, q) => !p || q,
-					'E': (p, q) => p == q,
-					'S': (p, q) => !(p && q)
+					'E': (p, q) => p == q
 				};
 
 				var tableMap = {};
@@ -137,8 +136,7 @@ native = {
 					'A': 'A',
 					'O': 'O',
 					'I': 'I',
-					'E': 'E',
-					'S': 'S'
+					'E': 'E'
 				};
 
 				Object.keys(typevarMap).forEach(k => {

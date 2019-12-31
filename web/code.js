@@ -8,7 +8,7 @@ typedef st;
 st T;
 st F;
 
-st S(st p, st q);
+st NA(st p, st q);
 
 st N(st p);
 
