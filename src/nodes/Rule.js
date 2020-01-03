@@ -8,9 +8,11 @@ var Rulecall = require('./Rulecall');
 
 var Translator = require('../Translator');
 
-function Rule({name, params, rules}) {
+function Rule({name, params, rules, doc}) {
 	Node.call(this);
 	this._type = 'rule';
+
+	this.doc = doc;
 
 	if (typeof name != 'string')
 		throw Error(`Assertion failed`);

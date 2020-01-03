@@ -10,9 +10,11 @@ var Ruleset = require('./Ruleset');
 
 var Translator = require('../Translator');
 
-function Link({name, native, code}) {
+function Link({name, native, code, doc}) {
 	Node.call(this);
 	this._type = 'link';
+
+	this.doc = doc;
 
 	if (typeof name != 'string')
 		throw Error(`Assertion failed`);

@@ -10,8 +10,10 @@ line
 	/ deflink
 
 typedef
-	= "typedef" __ type:stype _ SEM _
+	= doc:(documentation __)? "typedef" __ type:stype _ SEM _
 	{
+		type.doc = doc && doc[0];
+
 		return {
 			_type: 'typedef',
 			type,
@@ -20,8 +22,11 @@ typedef
 	}
 
 defv
-	= typevar:typevar _ SEM _
+	= doc:(documentation __)? tex:(tex __)? typevar:typevar _ SEM _
 	{
+		typevar.doc = doc && doc[0];
+		typevar.tex = tex && tex[0];
+
 		return {
 			_type: 'defv',
 			typevar,
@@ -31,6 +36,8 @@ defv
 
 defun
 	=
+		doc:(documentation __)?
+		tex:(tex __)?
 		rettype:type __
 		name:IDENT _
 		params:(
@@ -53,6 +60,8 @@ defun
 		{
 			return {
 				_type: 'defun',
+				doc: doc && doc[0],
+				tex: tex && tex[0],
 				rettype,
 				name,
 				params,
@@ -63,6 +72,7 @@ defun
 
 deflink
 	=
+		doc:(documentation __)?
 		"native" __
 		"link" __
 		name:IDENT _
@@ -70,6 +80,7 @@ deflink
 		{
 			return {
 				_type: 'deflink',
+				doc: doc && doc[0],
 				name,
 				native: true,
 				location: location()
@@ -78,6 +89,7 @@ deflink
 
 defruleset
 	=
+		doc:(documentation __)?
 		"native" __
 		"ruleset" __
 		name:IDENT _
@@ -85,6 +97,7 @@ defruleset
 		{
 			return {
 				_type: 'defruleset',
+				doc: doc && doc[0],
 				name,
 				native: true,
 				location: location()
@@ -93,6 +106,7 @@ defruleset
 
 defrule
 	=
+		doc:(documentation __)?
 		"rule" __
 		name:IDENT _
 		params:(
@@ -111,6 +125,7 @@ defrule
 		{
 			return {
 				_type: 'defrule',
+				doc: doc && doc[0],
 				name,
 				params,
 				rules: expr.rules,
@@ -352,6 +367,16 @@ keyword
 
 IDENT
 	= !keyword id:[a-zA-Z0-9_]+ {return id.join('')}
+
+documentation
+	= '"' b:(!'"' a:. {return a})* '"' {
+		return b.join('')
+	}
+
+tex
+	= '$' b:(!'$' a:. {return a})* '$' {
+		return b.join('')
+	}
 
 comment
 	= "#" (!newline .)* _

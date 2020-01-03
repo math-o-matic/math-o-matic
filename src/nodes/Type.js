@@ -9,6 +9,8 @@ function Type(o) {
 	this.isFunctional = o.functional;
 	this.isSimple = !o.functional;
 
+	this.doc = o.doc;
+
 	if (!o.functional) {
 		if (typeof o.name != 'string')
 			throw Error(`typeof o.name != 'string'`);

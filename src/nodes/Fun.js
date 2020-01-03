@@ -2,9 +2,12 @@ var Node = require('./Node');
 var Type = require('./Type');
 var Typevar = require('./Typevar');
 
-function Fun({anonymous, name, type, atomic, params, expr}) {
+function Fun({anonymous, name, type, atomic, params, expr, doc, tex}) {
 	Node.call(this);
 	this._type = 'fun';
+
+	this.doc = doc;
+	this.tex = tex;
 
 	if (typeof anonymous != 'boolean')
 		throw Error(`Assertion failed`);
@@ -80,11 +83,15 @@ Fun.prototype.funcallToTeXString = function (args) {
 		return arg.toTeXString();
 	});
 
+	if (this.tex) {
+		return this.makeTeX('def-' + this.name, args);
+	}
+
 	var n = this.escapeTeX(this.name);
 
 	return `${this.anonymous
 			? this.toTeXString()
-			: `${this.name.length == 1 ? n : `\\mathrm{${n}}`}`}`
+			: `\\href{#def-${this.name}}{${this.name.length == 1 ? n : `\\mathrm{${n}}`}`}}`
 		+ `(${args.join(', ')})`;
 }
 

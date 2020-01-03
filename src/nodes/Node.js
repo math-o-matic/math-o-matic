@@ -12,4 +12,18 @@ Node.prototype.escapeTeX = function (s) {
 			.replace(/\$/g, '\\$');
 }
 
+Node.prototype.makeTeX = function (id, args) {
+	args = args || [];
+	
+	var ret = this.tex.replace(/<<(.+?)>>/, (_, s) => {
+		return `\\href{#${id}}{${s}}`;
+	});
+
+	args.forEach((arg, i) => {
+		ret = ret.replace(new RegExp('#' + (i + 1), 'g'), arg);
+	});
+
+	return ret;
+}
+
 module.exports = Node;

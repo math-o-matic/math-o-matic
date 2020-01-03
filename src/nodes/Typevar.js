@@ -1,9 +1,12 @@
 var Node = require('./Node');
 var Type = require('./Type');
 
-function Typevar({type, name}) {
+function Typevar({type, name, doc, tex}) {
 	Node.call(this);
 	this._type = 'typevar';
+
+	this.doc = doc;
+	this.tex = tex;
 
 	if (type._type != 'type')
 		throw Error(`Assertion failed`);
@@ -27,6 +30,10 @@ Typevar.prototype.toIndentedString = function () {
 }
 
 Typevar.prototype.toTeXString = function (root) {
+	if (this.tex) {
+		return this.makeTeX(this.name);
+	}
+
 	if (this.name.length == 1) {
 		return `\\textcolor{#F57C00}{${this.name}}_{\\scriptscriptstyle ${this._id}}`;
 	}

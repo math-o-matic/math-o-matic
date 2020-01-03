@@ -6,7 +6,6 @@
 		<title>M42/math</title>
 		<script src="../dist/math.js"></script>
 		<script src="./code.js"></script>
-		<script src="./docs.js"></script>
 		<script src="./native.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/m42kup@0.1.1/dist/m42kup.js"></script>
@@ -142,8 +141,7 @@
 		<h2>목록</h2>
 		<p>이하의 내용은
 			<a href="./code.js">code.js</a> 및
-			<a href="./native.js">native.js</a>에 있는 코드와
-			<a href="./docs.js">docs.js</a>에 있는 설명을 렌더링 한 것입니다.</p>
+			<a href="./native.js">native.js</a>에 있는 코드를 렌더링 한 것입니다.</p>
 		<div id="all"></div>
 		<script>
 			$ = (q, n) => (n || document).querySelector(q);
@@ -201,21 +199,6 @@
 			console.log('--- HTML GENERATION START ---');
 			start = new Date();
 
-			if (docs.defs) {
-				for (k in docs.defs) {
-					var def = docs.defs[k];
-
-					if (def.display) {
-						if (program.scope.defMap[k]) {
-							if (program.scope.defMap[k]._type == 'fun')
-								program.scope.defMap[k].funcallToTeXString = def.display;
-							else
-								program.scope.defMap[k].toTeXString = def.display;
-						}
-					}
-				}
-			}
-
 			var arr = {}, r;
 
 			for (var k in program.scope.simpleTypeMap) {
@@ -225,8 +208,8 @@
 					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>Type</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
 					+ (
-						docs.simpleTypes && docs.simpleTypes[k] && docs.simpleTypes[k].description
-						? `<p class="description">${m42kup.render(docs.simpleTypes[k].description)}</p>`
+						v.doc
+						? `<p class="description">${m42kup.render(v.doc)}</p>`
 						: '<p class="description"><i>No description provided.</i></p>'
 					)
 					// + `<pre>${escapeHtml(v)}</pre>`
@@ -242,8 +225,8 @@
 					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>Def</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(true), katexOpts)}</div>`
 					+ (
-						docs.defs && docs.defs[k] && docs.defs[k].description
-						? `<p class="description">${m42kup.render(docs.defs[k].description)}</p>`
+						v.doc
+						? `<p class="description">${m42kup.render(v.doc)}</p>`
 						: '<p class="description"><i>No description provided.</i></p>'
 					)
 					// + `<pre>${escapeHtml(v)}</pre>`
@@ -259,8 +242,8 @@
 					+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>Rule</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
 					+ (
-						docs.rules && docs.rules[k] && docs.rules[k].description
-						? `<p class="description">${m42kup.render(docs.rules[k].description)}</p>`
+						v.doc
+						? `<p class="description">${m42kup.render(v.doc)}</p>`
 						: '<p class="description"><i>No description provided.</i></p>'
 					)
 					// + `<pre>${escapeHtml(v)}</pre>`
@@ -276,8 +259,8 @@
 					+ `<p class="label"><a id="link-${k}" href="#link-${k}"><b>Link</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
 					+ (
-						docs.links && docs.links[k] && docs.links[k].description
-						? `<p class="description">${m42kup.render(docs.links[k].description)}</p>`
+						v.doc
+						? `<p class="description">${m42kup.render(v.doc)}</p>`
 						: '<p class="description"><i>No description provided.</i></p>'
 					)
 					// + `<pre>${escapeHtml(v)}</pre>`
@@ -293,8 +276,8 @@
 					+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>Ruleset</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
 					+ (
-						docs.rulesets && docs.rulesets[k] && docs.rulesets[k].description
-						? `<p class="description">${m42kup.render(docs.rulesets[k].description)}</p>`
+						v.doc
+						? `<p class="description">${m42kup.render(v.doc)}</p>`
 						: '<p class="description"><i>No description provided.</i></p>'
 					)
 					// + `<pre>${escapeHtml(v)}</pre>`

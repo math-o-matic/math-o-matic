@@ -50,7 +50,8 @@ PegInterface.type = function (obj, parentScope, trace) {
 
 	return new Type({
 		functional: false,
-		name: obj.name
+		name: obj.name,
+		doc: obj.doc
 	});
 };
 
@@ -66,7 +67,9 @@ PegInterface.typevar = function (obj, parentScope, trace) {
 
 	return new Typevar({
 		type,
-		name: obj.name
+		name: obj.name,
+		doc: obj.doc,
+		tex: obj.tex
 	});
 }
 
@@ -80,6 +83,9 @@ PegInterface.fun = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
 	var trace = getTrace(trace, 'fun', obj.name || '<anonymous>', obj.location);
+
+	var doc = obj.doc || null;
+	var tex = obj.tex || null;
 
 	switch (obj._type) {
 		case 'defun':
@@ -185,10 +191,9 @@ PegInterface.fun = function (obj, parentScope, trace) {
 			break;
 		default:
 			throw makeError(`Unknown type ${obj._type}`, trace);
-			break;
 	}
 
-	return new Fun({anonymous, name, type, atomic, params, expr});
+	return new Fun({anonymous, name, type, atomic, params, expr, doc, tex});
 };
 
 PegInterface.funcall = function (obj, parentScope, trace) {
@@ -271,7 +276,7 @@ PegInterface.rule = function (obj, parentScope, trace) {
 
 	var rules = obj.rules.map(foo);
 
-	return new Rule({name, params, rules});
+	return new Rule({name, params, rules, doc: obj.doc});
 };
 
 PegInterface.yield = function (obj, parentScope, trace) {
@@ -399,7 +404,7 @@ PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
 
 	var nativeCode = nativeMap.ruleset[name];
 
-	return new Ruleset({name, native: true, code: nativeCode});
+	return new Ruleset({name, native: true, code: nativeCode, doc: obj.doc});
 }
 
 PegInterface.link = function (obj, parentScope, trace, nativeMap) {
@@ -417,7 +422,7 @@ PegInterface.link = function (obj, parentScope, trace, nativeMap) {
 
 	var nativeCode = nativeMap.link[name];
 
-	return new Link({name, native: true, code: nativeCode});
+	return new Link({name, native: true, code: nativeCode, doc: obj.doc});
 }
 
 module.exports = PegInterface;
