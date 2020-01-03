@@ -10,7 +10,7 @@ var Ruleset = require('./Ruleset');
 
 var Translator = require('../Translator');
 
-function Link({name, native, code, doc}) {
+function Link({name, native, doc}) {
 	Node.call(this);
 	this._type = 'link';
 
@@ -19,15 +19,11 @@ function Link({name, native, code, doc}) {
 	if (typeof name != 'string')
 		throw Error(`Assertion failed`);
 
-	if (typeof native != 'boolean' || !native)
-		throw Error(`Assertion failed`);
-
-	if (!code)
+	if (!native)
 		throw Error(`Assertion failed`);
 	
 	this.name = name;
-	this.native = native;
-	this.code = code;
+	this.native = native || false;
 }
 
 Link.prototype = Object.create(Node.prototype);
@@ -39,12 +35,12 @@ Link.prototype.toString = function () {
 
 Link.prototype.toIndentedString = function (indent) {
 	return `L ${this.name}`
-		+ (this.native ? ' <native>' : '');
+		+ (this.native ? ' <native>' : ' <error>');
 }
 
 Link.prototype.toTeXString = function (root) {
 	return `\\href{#link-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
-		+ (this.native ? '\\ (\\mathrm{native})' : '');
+		+ (this.native ? '\\ (\\textrm{native})' : '\\ (\\textit{error})');
 }
 
 module.exports = Link;

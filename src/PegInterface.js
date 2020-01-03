@@ -330,7 +330,10 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 
 				var rule_ = getRule(obj.rule);
 
-				var rule = link.code.get([rule_], scope);
+				if (!link.native)
+					throw Error('Behavior undefined for non-native links');
+
+				var rule = link.native.get([rule_], scope);
 
 				if (!rule)
 					throw makeError(`Rule ${rulenameObjToString(obj)} not found`, trace);
@@ -342,7 +345,10 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 
 				var ruleset = scope.getRuleset(obj.rulesetName);
 
-				var rule = ruleset.code.get(obj.name, scope);
+				if (!ruleset.native)
+					throw Error('Behavior undefined for non-native rulesets');
+
+				var rule = ruleset.native.get(obj.name, scope);
 
 				if (!rule)
 					throw makeError(`Rule ${rulenameObjToString(obj)} not found`, trace);
@@ -402,9 +408,9 @@ PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
 	if (!nativeMap.ruleset[name])
 		throw makeError(`Native code for native ruleset ${name} not found`, trace);
 
-	var nativeCode = nativeMap.ruleset[name];
+	var native = nativeMap.ruleset[name];
 
-	return new Ruleset({name, native: true, code: nativeCode, doc: obj.doc});
+	return new Ruleset({name, native, doc: obj.doc});
 }
 
 PegInterface.link = function (obj, parentScope, trace, nativeMap) {
@@ -420,9 +426,9 @@ PegInterface.link = function (obj, parentScope, trace, nativeMap) {
 	if (!nativeMap.link[name])
 		throw makeError(`Native code for native link ${name} not found`, trace);
 
-	var nativeCode = nativeMap.link[name];
+	var native = nativeMap.link[name];
 
-	return new Link({name, native: true, code: nativeCode, doc: obj.doc});
+	return new Link({name, native, doc: obj.doc});
 }
 
 module.exports = PegInterface;
