@@ -10,7 +10,6 @@ var Translator = require('../Translator');
 
 function Rule({name, params, rules, doc}) {
 	Node.call(this);
-	this._type = 'rule';
 
 	this.doc = doc;
 
@@ -29,12 +28,29 @@ function Rule({name, params, rules, doc}) {
 	this.params = params;
 	this.rules = rules;
 
-	var expands = this.rules.map(Translator.expand1);
+	var expands = rules.map(Translator.expand1);
 
 	if (expands.map(e => e._type == 'yield').some(e => !e))
 		throw Error(`Assertion failed`);
 
-	this.expr = Translator.expand1Funcalls(expands.reduceRight((r, l) => {
+	this.expands = expands;
+
+	this.expr = this.chain();
+}
+
+Rule.prototype = Object.create(Node.prototype);
+Rule.prototype.constructor = Rule;
+Rule.prototype._type = 'rule';
+
+// indices both inclusive & zero-based
+// indices invertible
+Rule.prototype.chain = function (i, j) {
+	if (typeof i == 'undefined') i = 0;
+	if (typeof j == 'undefined') j = this.expands.length - 1;
+
+	[i, j] = i <= j ? [i, j] : [j, i];
+
+	return Translator.expand1Funcalls(this.expands.slice(i, j + 1).reduceRight((r, l) => {
 		for (var i = 0; i < r.left.length; i++) {
 			if (Translator.expr0Equals(l.right, r.left[i])) {
 				var newleft = r.left.slice(0, i)
@@ -48,12 +64,9 @@ function Rule({name, params, rules, doc}) {
 			}
 		}
 
-		throw Error(`Link ${name} failed:\n\n${l},\n\n${r}\n`);
+		throw Error(`Link ${this.name} failed:\n\n${l},\n\n${r}\n`);
 	}));
 }
-
-Rule.prototype = Object.create(Node.prototype);
-Rule.prototype.constructor = Rule;
 
 Rule.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -73,14 +86,7 @@ Rule.prototype.toIndentedString = function (indent) {
 Rule.prototype.toTeXString = function (root) {
 	return `\\href{#rule-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
 		+ `(${this.params.map(e => e.toTeXString()).join(', ')}):`
-		+ (
-			this.rules.length > 1 || true
-			? '\\\\\\ \\ \\ \\ '
-				+ this.rules.map(e => e.toTeXString()).join('\\\\\\ \\ \\ \\ \\sim ')
-				+ '\\\\\\ \\ \\ \\ = '
-			: '\\\\\\ \\ \\ \\ '
-		)
-		+ this.expr.toTeXString();
+		+ '\\\\\\quad' + this.expr.toTeXString();
 }
 
 module.exports = Rule;

@@ -2,7 +2,6 @@ var Node = require('./Node');
 
 function Type(o) {
 	Node.call(this);
-	this._type = 'type';
 	
 	if (typeof o.functional != 'boolean')
 		throw Error(`typeof o.functional != 'boolean'`);
@@ -28,6 +27,7 @@ function Type(o) {
 
 Type.prototype = Object.create(Node.prototype);
 Type.prototype.constructor = Type;
+Type.prototype._type = 'type';
 
 Type.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -40,7 +40,7 @@ Type.prototype.toIndentedString = function (indent) {
 }
 
 Type.prototype.toTeXString = function (root) {
-	if (this.isSimple) return `\\mathsf{${this.name}}`;
+	if (this.isSimple) return `\\href{#type-${this.name}}\\mathsf{${this.name}}`;
 
 	return `\\left[${this.from.map(e => e.toTeXString()).join(' \\times ')}`
 		+ ` \\to ${this.to.toTeXString()} \\right]`;

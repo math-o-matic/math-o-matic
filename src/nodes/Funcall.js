@@ -5,7 +5,6 @@ var Fun = require('./Fun');
 
 function Funcall({fun, args}) {
 	Node.call(this);
-	this._type = 'funcall';
 
 	if (!(fun instanceof Node))
 		throw Error(`Assertion failed`);
@@ -23,6 +22,7 @@ function Funcall({fun, args}) {
 
 Funcall.prototype = Object.create(Node.prototype);
 Funcall.prototype.constructor = Funcall;
+Funcall.prototype._type = 'funcall';
 
 Funcall.prototype.toString = function () {
 	return this.toIndentedString(0);

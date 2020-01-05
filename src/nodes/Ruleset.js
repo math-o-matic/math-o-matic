@@ -11,7 +11,6 @@ var Translator = require('../Translator');
 
 function Ruleset({name, native, doc}) {
 	Node.call(this);
-	this._type = 'ruleset';
 
 	this.doc = doc;
 
@@ -27,6 +26,7 @@ function Ruleset({name, native, doc}) {
 
 Ruleset.prototype = Object.create(Node.prototype);
 Ruleset.prototype.constructor = Ruleset;
+Ruleset.prototype._type = 'ruleset';
 
 Ruleset.prototype.toString = function () {
 	return this.toIndentedString(0);

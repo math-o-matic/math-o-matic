@@ -12,7 +12,6 @@ var Translator = require('../Translator');
 
 function Link({name, native, doc}) {
 	Node.call(this);
-	this._type = 'link';
 
 	this.doc = doc;
 
@@ -28,6 +27,7 @@ function Link({name, native, doc}) {
 
 Link.prototype = Object.create(Node.prototype);
 Link.prototype.constructor = Link;
+Link.prototype._type = 'link';
 
 Link.prototype.toString = function () {
 	return this.toIndentedString(0);

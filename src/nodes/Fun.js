@@ -4,7 +4,6 @@ var Typevar = require('./Typevar');
 
 function Fun({anonymous, name, type, atomic, params, expr, doc, tex}) {
 	Node.call(this);
-	this._type = 'fun';
 
 	this.doc = doc;
 	this.tex = tex;
@@ -40,6 +39,7 @@ function Fun({anonymous, name, type, atomic, params, expr, doc, tex}) {
 
 Fun.prototype = Object.create(Node.prototype);
 Fun.prototype.constructor = Fun;
+Fun.prototype._type = 'fun';
 
 Fun.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -91,7 +91,7 @@ Fun.prototype.funcallToTeXString = function (args) {
 
 	return `${this.anonymous
 			? this.toTeXString()
-			: `\\href{#def-${this.name}}{${this.name.length == 1 ? n : `\\mathrm{${n}}`}`}}`
+			: `\\href{#def-${this.name}}{${this.name.length == 1 ? n : `\\mathrm{${n}}`}}`}`
 		+ `(${args.join(', ')})`;
 }
 

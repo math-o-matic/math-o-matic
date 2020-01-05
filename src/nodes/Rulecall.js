@@ -6,7 +6,6 @@ var Funcall = require('./Funcall');
 
 function Rulecall({rule, args}) {
 	Node.call(this);
-	this._type = 'rulecall';
 
 	if (!(rule instanceof Node))
 		throw Error(`Assertion failed`);
@@ -21,6 +20,7 @@ function Rulecall({rule, args}) {
 
 Rulecall.prototype = Object.create(Node.prototype);
 Rulecall.prototype.constructor = Rulecall;
+Rulecall.prototype._type = 'rulecall';
 
 Rulecall.prototype.toString = function () {
 	return this.toIndentedString(0);

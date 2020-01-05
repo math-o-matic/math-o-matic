@@ -3,7 +3,6 @@ var Type = require('./Type');
 
 function Typevar({type, name, doc, tex}) {
 	Node.call(this);
-	this._type = 'typevar';
 
 	this.doc = doc;
 	this.tex = tex;
@@ -20,6 +19,7 @@ function Typevar({type, name, doc, tex}) {
 
 Typevar.prototype = Object.create(Node.prototype);
 Typevar.prototype.constructor = Typevar;
+Typevar.prototype._type = 'typevar';
 
 Typevar.prototype.toString = function () {
 	return this.toIndentedString(0);

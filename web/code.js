@@ -698,7 +698,7 @@ st Nin(class x, class y) {
 }
 
 "어떤 class가 집합이라는 것. 어떤 class의 원소면 된다."
-$\left(<<\mathop\mathsf{set}>> #1\right)$
+$\left(<<\mathop\mathrm{set}>> #1\right)$
 st set(class x) {
 	X((class y) =>
 		in(x, y)
@@ -1173,7 +1173,7 @@ rule self_in_power(class x, class z) {
 }
 
 "singleton class."
-$\left\{#1\right\}$
+$<<\{>>#1\}$
 class singleton(class x) {
 	setbuilder((class z) => (
 		eq(z, x)
@@ -1470,7 +1470,7 @@ rule cartesian_def(class x, class y) {
 }
 
 "어떤 class가 graph다."
-$\left(<<\mathop\mathsf{graph}>> #1\right)$
+$\left(<<\mathop\mathrm{graph}>> #1\right)$
 st graph(class x) {
 	V((class z) => (
 		I(
@@ -1487,7 +1487,7 @@ rule cartesian_is_graph(class x, class y) {
 }
 
 "어떤 class가 function이다."
-$\left(<<\mathop\mathsf{function}>> #1\right)$
+$\left(<<\mathop\mathrm{function}>> #1\right)$
 st function(class f, class a, class b) {
 	A(
 		subseteq(f, cartesian(a, b)),

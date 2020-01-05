@@ -9,7 +9,6 @@ var Translator = require('../Translator');
 
 function Yield({left, right}) {
 	Node.call(this);
-	this._type = 'yield';
 
 	if (!(left instanceof Array)
 			|| left.map(e => e instanceof Node).some(e => !e))
@@ -31,6 +30,7 @@ function Yield({left, right}) {
 
 Yield.prototype = Object.create(Node.prototype);
 Yield.prototype.constructor = Yield;
+Yield.prototype._type = 'yield';
 
 Yield.prototype.toString = function () {
 	return this.toIndentedString(0);

@@ -41,6 +41,17 @@
 				color: inherit;
 			}
 
+			table {
+				border: 1px #ccc solid;
+				border-collapse: collapse;
+				margin: 1em 0;
+			}
+
+			table tr td, table tr th {
+				padding: .2em .5em;
+				border: 1px #ccc solid;
+			}
+
 			.block {
 				padding: 1em;
 				background-color: #f8f8f8;
@@ -60,6 +71,7 @@
 
 			.math {
 				font-size: 1.2em;
+				margin: 1em 0;
 			}
 
 			.katex a {
@@ -76,8 +88,17 @@
 	<body>
 		<h1>M42/math</h1>
 		<p><a href="https://github.com/logico-philosophical/math">GitHub repo</a></p>
-		<h2>꿀팁</h2>
 		<script type="text/m42kup">
+[==소개]
+
+M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
+
+[===무슨 공리계의 모형인가]
+
+일단 set과 분리된 class라는 개념이 있으므로 ZFC는 아니고 NBG 내지 MK일 겁니다.
+
+[==꿀팁]
+
 이름을 정할 때 몇 가지 작명 방식을 따르고 있습니다.
 [ul
 	[*] T: verum. true의 T.
@@ -95,9 +116,9 @@
 	[*] f: functional. functional의 f. Af나 Of처럼 함수 작용소 버전을 만들 때 붙입니다.
 	[*] _def: 어떤 def의 정의로서 사용되는 rule의 이름의 경우 해당 def의 이름에 _def를 붙입니다. def emptyset과 rule emptyset_def의 관계를 참조하세요.
 ]
-		</script>
-		<h2>몇 가지 동형에 관하여</h2>
-		<script type="text/m42kup">
+
+[==몇 가지 동형에 관하여]
+
 어떤 공리계에서 두 개의 규칙이 동형이라는 것은 그거나 그거나라는 겁니다. 현재 다음과 같은 종류가 있습니다.
 
 [ul
@@ -133,9 +154,9 @@
 [$$`():\ \vdash \forall((x, y) \mapsto [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y))`]
 
 와 Vi[&ndash]Ve 동형인데 이 중에 무엇을 택해야 할지 모르겠군요. 동형 규칙 간에 간단히 변환할 수 있는 수단과 동형 규칙 간의 이름 규칙이 있어야 하겠습니다.
-		</script>
-		<h2>함수에 관하여</h2>
-		<script type="text/m42kup">
+
+[==함수에 관하여]
+
 코드에서 [;`[class -> st]`], [;`[(st, st) -> st]`] 등의 타입이 함수와 같은 형태로 표현되고 있으나 이들은 메타-함수이며, 공리계 내에서 사용되는 함수의 타입은 [;class]이고 Def function을 만족합니다.
 		</script>
 		<h2>목록</h2>
@@ -146,14 +167,6 @@
 		<script>
 			$ = (q, n) => (n || document).querySelector(q);
 			$$ = (q, n) => (n || document).querySelectorAll(q);
-
-			[].forEach.call($$('script[type="text/m42kup"]'), $script => {
-				var $div = document.createElement('div');
-				$div.innerHTML = m42kup.render($script.text);
-				$script.parentNode.insertBefore($div, $script);
-			});
-
-			(() => {
 
 			var katexOpts = {
 				trust: context => {
@@ -167,6 +180,34 @@
 			    '&': '&amp;', '<': '&lt;', '>': '&gt;',
 			    '"': '&quot;', "'": '&#39;'
 			})[m]);
+
+			[].forEach.call($$('script[type="text/m42kup"]'), $script => {
+				var $div = document.createElement('div');
+				$div.innerHTML = m42kup.render($script.text);
+				$script.parentNode.insertBefore($div, $script);
+			});
+
+			function onRadioClick(rulename) {
+				var $f = $(`#form-rule-${rulename}`);
+				var fd = new FormData($f);
+				
+				var [from, to] = [fd.get('from'), fd.get('to')];
+
+				var $result = $('.result', $f);
+
+				try {
+					var chain = program.scope.ruleMap[rulename].chain(from * 1, to * 1);
+					$result.innerHTML = katex.renderToString(chain.toTeXString(), katexOpts);
+
+					[].forEach.call($$('.katex a', $result), a => {
+						a.title = a.getAttribute('href');
+					});
+				} catch (e) {
+					$result.innerHTML = '<i>Chaining failed!</i>';
+				}
+			}
+
+			(() => {
 
 			var start, end;
 
@@ -189,7 +230,7 @@
 			console.log('--- PROCESS START --');
 			start = new Date();
 
-			var program = new math.Program();
+			program = new math.Program();
 			program.feed(parsed, native);
 
 			end = new Date();
@@ -207,6 +248,8 @@
 				r = `<div class="block">`
 					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>Type</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+
+					+ '<p><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
@@ -224,6 +267,8 @@
 				r = `<div class="block">`
 					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>Def</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(true), katexOpts)}</div>`
+
+					+ '<p><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
@@ -241,12 +286,35 @@
 				r = `<div class="block">`
 					+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>Rule</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+					
+
+					// + `<pre>${escapeHtml(v)}</pre>`
+
+					+ '<p><b>proof explorer</b></p>'
+					+ `<form id="form-rule-${v.name}"><table>
+					<tr>
+						<th colspan="2">range</th>
+						<th>expression</th>
+					</tr>`
+					+ v.rules.map(y => {
+						return katex.renderToString(y.toTeXString(), katexOpts);
+					}).map((e, i) => `
+						<tr>
+							<td><input type="radio" name="from" data-rulename="${v.name}" value="${i}" ${i == 0 ? 'checked' : ''} onclick="onRadioClick(this.dataset.rulename)"></td>
+							<td><input type="radio" name="to" data-rulename="${v.name}" value="${i}" ${i == v.rules.length - 1 ? 'checked' : ''} onclick="onRadioClick(this.dataset.rulename)"></td>
+							<td>${e}</td>
+						</td>`).join('')
+					+ `<tr><th colspan="2">result</th><td class="result">${katex.renderToString(v.expr.toTeXString(), katexOpts)}</td></tr>`
+					+ '</table>'
+					+ '</form>'
+
+					+ '<p><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
 						: '<p class="description"><i>No description provided.</i></p>'
 					)
-					// + `<pre>${escapeHtml(v)}</pre>`
+
 					+ `</div>`;
 
 				arr[v._id] = r;
@@ -258,6 +326,8 @@
 				r = `<div class="block">`
 					+ `<p class="label"><a id="link-${k}" href="#link-${k}"><b>Link</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+
+					+ '<p><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
@@ -275,6 +345,8 @@
 				r = `<div class="block">`
 					+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>Ruleset</b> ${k}</a></p>`
 					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+
+					+ '<p><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
