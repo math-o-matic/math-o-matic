@@ -4,10 +4,10 @@
   "description": "Yet another proof checker in JavaScript",
   "repository": {
     "type": "git",
-    "url": "http://github.com/logico-philosophical/m42-math.git"
+    "url": "http://github.com/logico-philosophical/math.git"
   },
   "bugs": {
-    "url": "http://github.com/logico-philosophical/m42-math/issues"
+    "url": "http://github.com/logico-philosophical/math/issues"
   },
   "main": "src/entry.js",
   "scripts": {
