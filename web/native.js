@@ -187,12 +187,12 @@ native = {
 
 				var st = scope.getTypeByName('st');
 				
-				if (!scope.hasTypeByName('class'))
-					throw Error(`Type class not found`);
+				if (!scope.hasTypeByName('cls'))
+					throw Error(`Type cls not found`);
 
-				var class_ = scope.getTypeByName('class');
+				var cls = scope.getTypeByName('cls');
 
-				if (!rule.params[rule.params.length - 1].type.equals(class_))
+				if (!rule.params[rule.params.length - 1].type.equals(cls))
 					return false;
 
 				var last = rule.params[rule.params.length - 1];
@@ -214,7 +214,7 @@ native = {
 					functional: true,
 					from: [new scope.Type({
 						functional: true,
-						from: [class_],
+						from: [cls],
 						to: st
 					})],
 					to: st
@@ -234,7 +234,7 @@ native = {
 										anonymous: true,
 										type: new scope.Type({
 											functional: true,
-											from: [class_],
+											from: [cls],
 											to: st
 										}),
 										atomic: false,
@@ -258,10 +258,10 @@ native = {
 
 				var st = scope.getTypeByName('st');
 				
-				if (!scope.hasTypeByName('class'))
-					throw Error(`Type class not found`);
+				if (!scope.hasTypeByName('cls'))
+					throw Error(`Type cls not found`);
 
-				var class_ = scope.getTypeByName('class');
+				var cls = scope.getTypeByName('cls');
 
 				var yield_ = rule.expr;
 
@@ -280,7 +280,7 @@ native = {
 					functional: true,
 					from: [new scope.Type({
 						functional: true,
-						from: [class_],
+						from: [cls],
 						to: st
 					})],
 					to: st
@@ -292,7 +292,7 @@ native = {
 					return false;
 
 				var newvar = new scope.Typevar({
-					type: class_,
+					type: cls,
 					name: '$'
 				});
 
