@@ -13,7 +13,7 @@ var Translator = require('./Translator');
 var PegInterface = require('./PegInterface');
 
 function Scope(parent) {
-	this.simpleTypeMap = {};
+	this.typedefMap = {};
 	this.defMap = {};
 	this.ruleMap = {};
 	this.rulesetMap = {};
@@ -40,7 +40,12 @@ Scope.prototype.extend = function () {
 };
 
 Scope.prototype.hasOwnTypeByName = function (name) {
-	return !!this.simpleTypeMap[name];
+	return !!this.typedefMap[name];
+};
+
+Scope.prototype.hasTypeByName = function (name) {
+	return this.hasOwnTypeByName(name)
+		|| (!!this.parent && this.parent.hasTypeByName(name));
 };
 
 Scope.prototype.hasOwnType = function (typeobj) {
@@ -49,24 +54,31 @@ Scope.prototype.hasOwnType = function (typeobj) {
 			&& this.hasOwnType(typeobj.to);
 };
 
-Scope.prototype.hasTypeByName = function (name) {
-	return this.hasOwnTypeByName(name)
-		|| (!!this.parent && this.parent.hasTypeByName(name));
-};
-
 Scope.prototype.hasType = function (typeobj) {
 	if (!typeobj.ftype) return this.hasTypeByName(typeobj.name);
 	return typeobj.from.map(e => this.hasType(e)).every(e => e)
 			&& this.hasType(typeobj.to);
 };
 
-Scope.prototype.addType = function (obj) {
-	var type = PegInterface.type(obj, this, []);
+Scope.prototype.addType = function (typedefobj) {
+	if (this.hasOwnTypeByName(typedefobj.name))
+		throw Error(`Type with name ${typedefobj.name} already is there`);
 
-	if (this.hasOwnTypeByName(type.name))
-		throw Error(`Type with name ${type.name} already is there`);
+	var origin = typedefobj.origin ? this.getType(typedefobj.origin) : null;
 
-	return this.simpleTypeMap[type.name] = type;
+	if (origin) {
+		origin.name = typedefobj.name;
+		origin.doc = typedefobj.doc;
+		return this.typedefMap[typedefobj.name] = origin;
+	}
+
+	console.log(typedefobj.doc);
+
+	return this.typedefMap[typedefobj.name] = new Type({
+		functional: false,
+		name: typedefobj.name,
+		doc: typedefobj.doc
+	});
 };
 
 Scope.prototype.getType = function (typeobj) {
@@ -82,7 +94,7 @@ Scope.prototype.getTypeByName = function (name) {
 	if (!this.hasTypeByName(name))
 		throw Error(`Type with name ${name} not found`);
 
-	return this.simpleTypeMap[name] ||
+	return this.typedefMap[name] ||
 		(!!this.parent && this.parent.getTypeByName(name));
 };
 

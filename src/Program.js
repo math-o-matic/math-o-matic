@@ -20,7 +20,7 @@ Program.prototype.feed = function (lines, nativeMap) {
 	lines.forEach(line => {
 		switch (line._type) {
 			case 'typedef':
-				this.scope.addType(line.type);
+				this.scope.addType(line);
 				break;
 			case 'defv':
 				this.scope.addTypevar(line.typevar);

@@ -242,12 +242,12 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 
 			var arr = {}, r;
 
-			for (var k in program.scope.simpleTypeMap) {
-				var v = program.scope.simpleTypeMap[k];
+			for (var k in program.scope.typedefMap) {
+				var v = program.scope.typedefMap[k];
 
 				r = `<div class="block">`
 					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>Type</b> ${k}</a></p>`
-					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+					+ `<div class="math">${katex.renderToString(v.toTeXString(true), katexOpts)}</div>`
 
 					+ '<p><b>description</b></p>'
 					+ (

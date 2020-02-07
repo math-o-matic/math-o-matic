@@ -15,6 +15,8 @@ function Type(o) {
 			throw Error('typeof o.name != \'string\'');
 		this.name = o.name;
 	} else {
+		if (o.name && typeof o.name != 'string')
+			throw Error('name should be string, if given');
 		if (o.from.map(f => f instanceof Type).some(e => !e))
 			throw Error('o.from.map(f => f instanceof Type).some(e => !e)');
 		if (!(o.to instanceof Type))
@@ -36,13 +38,18 @@ Type.prototype.toString = function () {
 Type.prototype.toIndentedString = function (indent) {
 	if (this.isSimple) return this.name;
 
-	return '[' + this.from.join(', ') + ' -> ' + this.to + ']';
+	return `${this.name ? this.name + ': ' : ''}[${this.from.join(', ')} -> ${this.to}]`;
 };
 
 Type.prototype.toTeXString = function (root) {
 	if (this.isSimple) return `\\href{#type-${this.name}}\\mathsf{${this.name}}`;
 
-	return `\\left[${this.from.map(e => e.toTeXString()).join(' \\times ')}`
+	if (!root && this.name) {
+		return `\\href{#type-${this.name}}\\mathsf{${this.name}}`;
+	}
+
+	return `${this.name ? `\\href{#type-${this.name}}\\mathsf{${this.name}}: ` : ''}`
+		+ `\\left[${this.from.map(e => e.toTeXString()).join(' \\times ')}`
 		+ ` \\to ${this.to.toTeXString()} \\right]`;
 };
 

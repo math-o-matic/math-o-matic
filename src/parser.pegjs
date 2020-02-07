@@ -10,13 +10,15 @@ line
 	/ deflink
 
 typedef
-	= doc:(documentation __)? "typedef" __ type:stype _ SEM _
+	= doc:(documentation __)? "typedef" __ origin:(o:ftype __ {return o})? name:IDENT _ SEM _
 	{
-		type.doc = doc && doc[0];
-
+		doc = doc && doc[0];
+		
 		return {
 			_type: 'typedef',
-			type,
+			doc,
+			origin,
+			name,
 			location: location()
 		}
 	}

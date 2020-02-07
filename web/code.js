@@ -252,39 +252,48 @@ rule contradict(st p) {
 "클래스 타입. 술어 논리에서 쓰인다."
 typedef cls;
 
+"class 하나를 받는 술어 타입."
+typedef [cls -> st] pr;
+
+"class 두 개를 받는 술어 타입."
+typedef [(cls, cls) -> st] pr2;
+
+"class 세 개를 받는 술어 타입."
+typedef [(cls, cls, cls) -> st] pr3;
+
 "A의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(#1<<\land>>#2\right)$
-[cls -> st] Af([cls -> st] f, [cls -> st] g) {
+pr Af(pr f, pr g) {
 	(cls z) => A(f(z), g(z))
 }
 
 "O의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(#1<<\lor>>#2\right)$
-[cls -> st] Of([cls -> st] f, [cls -> st] g) {
+pr Of(pr f, pr g) {
 	(cls z) => O(f(z), g(z))
 }
 
 "I의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(#1<<\to>>#2\right)$
-[cls -> st] If([cls -> st] f, [cls -> st] g) {
+pr If(pr f, pr g) {
 	(cls z) => I(f(z), g(z))
 }
 
 "E의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(#1<<\leftrightarrow>>#2\right)$
-[cls -> st] Ef([cls -> st] f, [cls -> st] g) {
+pr Ef(pr f, pr g) {
 	(cls z) => E(f(z), g(z))
 }
 
 "N의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(<<\neg>>#1\right)$
-[cls -> st] Nf([cls -> st] f) {
+pr Nf(pr f) {
 	(cls z) => N(f(z))
 }
 
 "보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다]."
 $\left(<<\forall>>#1\right)$
-st V([cls -> st] f);
+st V(pr f);
 
 "universal quantification introduction. 어떤 규칙
 [$$(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y)]
@@ -314,7 +323,7 @@ native link Ve;
 
 "입력항이 두 개인 함수를 위한 보편 양화. V에 의존한다."
 $\left(<<\forall>>#1\right)$
-st V2([(cls, cls) -> st] f) {
+st V2(pr2 f) {
 	V((cls x) =>
 		V((cls y) =>
 			f(x, y)
@@ -324,7 +333,7 @@ st V2([(cls, cls) -> st] f) {
 
 "입력항이 세 개인 함수를 위한 보편 양화. V에 의존한다."
 $\left(<<\forall>>#1\right)$
-st V3([(cls, cls, cls) -> st] f) {
+st V3(pr3 f) {
 	V((cls x) =>
 		V((cls y) =>
 			V((cls z) =>
@@ -336,18 +345,18 @@ st V3([(cls, cls, cls) -> st] f) {
 
 "존재 양화(existential quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받으며 V에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다]."
 $\left(<<\exists>>#1\right)$
-st X([cls -> st] f) {
+st X(pr f) {
 	N(V((cls x) => N(f(x))))
 }
 
 "입력항이 두 개인 함수를 위한 존재 양화. V2에 의존한다."
 $\left(<<\exists>>#1\right)$
-st X2([(cls, cls) -> st] f) {
+st X2(pr2 f) {
 	N(V2((cls x, cls y) => N(f(x, y))))
 }
 
 "[$\forall]과 [$\land] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VI만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
-rule VA([cls -> st] f, [cls -> st] g) {
+rule VA(pr f, pr g) {
 	|- E(
 		V(Af(f, g)),
 		A(V(f), V(g))
@@ -355,14 +364,14 @@ rule VA([cls -> st] f, [cls -> st] g) {
 }
 
 "[$\forall]과 [$\to] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VA만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
-rule VI([cls -> st] f, [cls -> st] g) {
+rule VI(pr f, pr g) {
 	|- I(
 		V(If(f, g)),
 		I(V(f), V(g))
 	)
 }
 
-rule VO([cls -> st] f, [cls -> st] g) {
+rule VO(pr f, pr g) {
 	|- I(
 		O(V(f), V(g)),
 		V(Of(f, g))
@@ -370,7 +379,7 @@ rule VO([cls -> st] f, [cls -> st] g) {
 }
 
 "[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것. 특이하게도 Vi 및 Ve로부터 유도할 수 있는 것으로 보이나 아직 표현할 방식이 없다."
-rule VV([(cls, cls) -> st] f) {
+rule VV(pr2 f) {
 	|- I(
 		V2((cls x, cls y) => f(x, y)),
 		V2((cls y, cls x) => f(x, y))
@@ -378,7 +387,7 @@ rule VV([(cls, cls) -> st] f) {
 }
 
 "VA의 m1형."
-rule VAm1([cls -> st] f, [cls -> st] g) {
+rule VAm1(pr f, pr g) {
 	VA(f, g)
 	~ Ee1(
 		V(Af(f, g)),
@@ -391,7 +400,7 @@ rule VAm1([cls -> st] f, [cls -> st] g) {
 }
 
 "VA의 m2형."
-rule VAm2([cls -> st] f, [cls -> st] g) {
+rule VAm2(pr f, pr g) {
 	VA(f, g)
 	~ Ee2(
 		V(Af(f, g)),
@@ -404,7 +413,7 @@ rule VAm2([cls -> st] f, [cls -> st] g) {
 }
 
 "VI의 m형."
-rule VIm([cls -> st] f, [cls -> st] g) {
+rule VIm(pr f, pr g) {
 	VI(f, g)
 	~ mp(
 		V((cls x) => I(f(x), g(x))),
@@ -413,7 +422,7 @@ rule VIm([cls -> st] f, [cls -> st] g) {
 }
 
 "VV의 m형."
-rule VVm([(cls, cls) -> st] f) {
+rule VVm(pr2 f) {
 	VV(f)
 	~ mp(
 		V2((cls x, cls y) => f(x, y)),
@@ -421,12 +430,12 @@ rule VVm([(cls, cls) -> st] f) {
 	)
 }
 
-rule ttf_IEpqEqp([cls -> st] f, [cls -> st] g, cls x) {
+rule ttf_IEpqEqp(pr f, pr g, cls x) {
 	tt.IEpqEqp(f(x), g(x))
 }
 
 "IEpqEqpm의 V형."
-rule IVEpqVEqpfm([cls -> st] f, [cls -> st] g) {
+rule IVEpqVEqpfm(pr f, pr g) {
 	id(V(Ef(f, g))) ~
 	Vi[ttf_IEpqEqp](f, g)
 	~ VIm(
@@ -438,12 +447,12 @@ rule IVEpqVEqpfm([cls -> st] f, [cls -> st] g) {
 	)
 }
 
-rule ttf_IEpqIpq([cls -> st] f, [cls -> st] g, cls x) {
+rule ttf_IEpqIpq(pr f, pr g, cls x) {
 	tt.IEpqIpq(f(x), g(x))
 }
 
 "Ee1의 V형."
-rule Ee1V([cls -> st] f, [cls -> st] g) {
+rule Ee1V(pr f, pr g) {
 	id(V(Ef(f, g))) ~
 	Vi[ttf_IEpqIpq](f, g)
 	~ VIm(
@@ -456,12 +465,12 @@ rule Ee1V([cls -> st] f, [cls -> st] g) {
 }
 
 "Ee2의 V형."
-rule Ee2V([cls -> st] f, [cls -> st] g) {
+rule Ee2V(pr f, pr g) {
 	IVEpqVEqpfm(f, g)
 	~ Ee1V(g, f)
 }
 
-rule VEm([cls -> st] f, [cls -> st] g) {
+rule VEm(pr f, pr g) {
 	Ee1V(f, g)
 	~ VIm(f, g)
 	~ Ee2V(f, g)
@@ -469,15 +478,15 @@ rule VEm([cls -> st] f, [cls -> st] g) {
 	~ Ei(V(f), V(g))
 }
 
-rule VE([cls -> st] f, [cls -> st] g) {
+rule VE(pr f, pr g) {
 	cp[VEm](f, g)
 }
 
-rule ttf_IAIpqIqrIpr([cls -> st] f, [cls -> st] g, [cls -> st] h, cls x) {
+rule ttf_IAIpqIqrIpr(pr f, pr g, pr h, cls x) {
 	tt.IAIpqIqrIpr(f(x), g(x), h(x))
 }
 
-rule syllV([cls -> st] f, [cls -> st] g, [cls -> st] h) {
+rule syllV(pr f, pr g, pr h) {
 	Ai(
 		V(If(f, g)),
 		V(If(g, h))
@@ -497,11 +506,11 @@ rule syllV([cls -> st] f, [cls -> st] g, [cls -> st] h) {
 	)
 }
 
-rule ttf_IAEpqEqrEpr([cls -> st] f, [cls -> st] g, [cls -> st] h, cls x) {
+rule ttf_IAEpqEqrEpr(pr f, pr g, pr h, cls x) {
 	tt.IAEpqEqrEpr(f(x), g(x), h(x))
 }
 
-rule syllVE([cls -> st] f, [cls -> st] g, [cls -> st] h) {
+rule syllVE(pr f, pr g, pr h) {
 	Ai(
 		V((cls x) => E(f(x), g(x))),
 		V((cls x) => E(g(x), h(x)))
@@ -521,12 +530,12 @@ rule syllVE([cls -> st] f, [cls -> st] g, [cls -> st] h) {
 	)
 }
 
-rule ttf_ENOpqANpNq([cls -> st] f, [cls -> st] g, cls x) {
+rule ttf_ENOpqANpNq(pr f, pr g, cls x) {
 	tt.ENOpqANpNq(f(x), g(x))
 }
 
 "[$\exists]과 [$\lor] 간의 분배법칙 같은 것. VA로부터 증명할 수 있다."
-rule XO([cls -> st] f, [cls -> st] g) {
+rule XO(pr f, pr g) {
 	VA(Nf(f), Nf(g)) ~
 	tt.IEpAqrENpONqNr(
 		V(Af(Nf(f), Nf(g))), V(Nf(f)), V(Nf(g))
@@ -567,12 +576,12 @@ rule XO([cls -> st] f, [cls -> st] g) {
 	)
 }
 
-rule XI_([cls -> st] f, [cls -> st] g) {
+rule XI_(pr f, pr g) {
 	XO(Nf(f), g)
 }
 
 "[$\exists]과 [$\to] 간의 분배법칙 같은 것. 직관적으로 이해가 안 되지만 XO로부터 간단히 증명할 수 있는데 XI_로부터 증명하려고 하니 막막한 이유는 무엇인가..."
-rule XI([cls -> st] f, [cls -> st] g) {
+rule XI(pr f, pr g) {
 	|- E(
 		X(If(f, g)),
 		I(
@@ -582,14 +591,14 @@ rule XI([cls -> st] f, [cls -> st] g) {
 	)
 }
 
-rule XA([cls -> st] f, [cls -> st] g) {
+rule XA(pr f, pr g) {
 	|- I(
 		X(Af(f, g)),
 		A(X(f), X(g))
 	)
 }
 
-rule AeX1([cls -> st] f, [cls -> st] g) {
+rule AeX1(pr f, pr g) {
 	tt.IApqp(X(f), X(g))
 	~ XA(f, g)
 	~ syll(
@@ -599,7 +608,7 @@ rule AeX1([cls -> st] f, [cls -> st] g) {
 	)
 }
 
-rule AeX2([cls -> st] f, [cls -> st] g) {
+rule AeX2(pr f, pr g) {
 	tt.IApqq(X(f), X(g))
 	~ XA(f, g)
 	~ syll(
@@ -609,12 +618,12 @@ rule AeX2([cls -> st] f, [cls -> st] g) {
 	)
 }
 
-rule mpV([cls -> st] f, [cls -> st] g) {
+rule mpV(pr f, pr g) {
 	VIm(f, g)
 	~ mp(V(f), V(g))
 }
 
-rule mpVE([cls -> st] f, [cls -> st] g) {
+rule mpVE(pr f, pr g) {
 	Ee1V(f, g) ~ mpV(f, g)
 }
 
@@ -624,21 +633,21 @@ rule Vgen(st p) {
 }
 
 "existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
-rule Xgen([cls -> st] f, cls x) {
+rule Xgen(pr f, cls x) {
 	f(x) |- X(f)
 }
 
 "universal instantiation."
-rule Vinst([cls -> st] f, cls x) {
+rule Vinst(pr f, cls x) {
 	V(f) |- f(x)
 }
 
 "existential instantiation 같은 것 1. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정."
-rule Xinst1([cls -> st] f, [cls -> st] g) {
+rule Xinst1(pr f, pr g) {
 	X(f), V(If(f, g)) |- X(g)
 }
 
-rule Xinst1E([cls -> st] f, [cls -> st] g) {
+rule Xinst1E(pr f, pr g) {
 	Ee1V(f, g) ~ Xinst1(f, g)
 }
 
@@ -651,14 +660,14 @@ rule Xinst2(st p) {
 	~ mp(X((cls x) => p), p)
 }
 
-rule Xinst3([cls -> st] f, st p) {
+rule Xinst3(pr f, st p) {
 	Xinst1(f, (cls x) => p)
 	~ Xinst2(p)
 }
 
 "binary relation의 reflexivity."
 $\left(#1\ <<\text{is reflexive}>>\right)$
-st reflexive([(cls, cls) -> st] f) {
+st reflexive(pr2 f) {
 	V((cls x) =>
 		f(x, x)
 	)
@@ -666,7 +675,7 @@ st reflexive([(cls, cls) -> st] f) {
 
 "binary relation의 symmetry."
 $\left(#1\ <<\text{is symmetric}>>\right)$
-st symmetric([(cls, cls) -> st] f) {
+st symmetric(pr2 f) {
 	V2((cls x, cls y) =>
 		I(f(x, y), f(y, x))
 	)
@@ -674,7 +683,7 @@ st symmetric([(cls, cls) -> st] f) {
 
 "binary relation의 transitivity."
 $\left(#1\ <<\text{is transitive}>>\right)$
-st transitive([(cls, cls) -> st] f) {
+st transitive(pr2 f) {
 	V3((cls x, cls y, cls z) =>
 		I(
 			A(f(x, y), f(y, z)),
@@ -813,7 +822,7 @@ rule eq_symmetric() {
 
 "uniqueness quantification."
 $\left(<<\exists!>>#1\right)$
-st Q([cls -> st] f) {
+st Q(pr f) {
 	X((cls x) => V((cls y) => (
 		E(f(y), eq(y, x))
 	)))
@@ -931,12 +940,12 @@ rule subseteq_eq(cls x, cls y, cls z) {
 
 "술어를 만족하는 set들의 class를 만든다. 일반적으로는 [$\{z: f(z)\}]라고 쓰는 것."
 $\left\{<<:>>#1\right\}$
-cls setbuilder([cls -> st] f);
+cls setbuilder(pr f);
 
 "setbuilder의 definition rule.
 
 [**Deprecated]: 이 정의는 {:T}가 스스로를 포함할 수 있게 하는데 이는 axiom of foundation에 모순된다. 그러므로 setbuilder_def__로 옮기셈."
-rule setbuilder_def([cls -> st] f) {
+rule setbuilder_def(pr f) {
 	|- V((cls z) =>
 		E(
 			in(z, setbuilder(f)),
@@ -946,7 +955,7 @@ rule setbuilder_def([cls -> st] f) {
 }
 
 "setbuilder의 새로운 definition rule. 변경 작업 미완료."
-rule setbuilder_def__([cls -> st] f) {
+rule setbuilder_def__(pr f) {
 	|- V((cls z) =>
 		E(
 			in(z, setbuilder(f)),
@@ -955,11 +964,11 @@ rule setbuilder_def__([cls -> st] f) {
 	)
 }
 
-rule ttf_IAEpAqrIrqEpr([cls -> st] f, [cls -> st] g, [cls -> st] h, cls x) {
+rule ttf_IAEpAqrIrqEpr(pr f, pr g, pr h, cls x) {
 	tt.IAEpAqrIrqEpr(f(x), g(x), h(x))
 }
 
-rule setbuilder_def__set_1([cls -> st] f, [cls -> st] g, [cls -> st] h) {
+rule setbuilder_def__set_1(pr f, pr g, pr h) {
 	Ai(
 		V((cls x) => E(f(x), A(g(x), h(x)))),
 		V((cls x) => I(h(x), g(x)))
@@ -979,7 +988,7 @@ rule setbuilder_def__set_1([cls -> st] f, [cls -> st] g, [cls -> st] h) {
 	)
 }
 
-rule setbuilder_def__set([cls -> st] f) {
+rule setbuilder_def__set(pr f) {
 	setbuilder_def__(f) ~
 	setbuilder_def__set_1(
 		(cls z) => in(z, setbuilder(f)),
@@ -1111,7 +1120,7 @@ cls universe() {
 	setbuilder((cls z) => T)
 }
 
-rule setbuilder_is_setbuilder([cls -> st] f, cls x) {
+rule setbuilder_is_setbuilder(pr f, cls x) {
 	eq_Ae1(x, setbuilder(f))
 	~ setbuilder_def__(f)
 	~ syllVE(
@@ -1124,7 +1133,7 @@ rule setbuilder_is_setbuilder([cls -> st] f, cls x) {
 "술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
 일반적으로는 [$\{z \in x: f(z)\}]라고 쓰는 것인데 더미 변수를 없애버렸다."
 $\left\{#1<<:>>#2\right\}$
-cls subsetbuilder(cls x, [cls -> st] f) {
+cls subsetbuilder(cls x, pr f) {
 	setbuilder((cls y) => (
 		A(
 			in(y, x),
@@ -1214,7 +1223,7 @@ rule singleton_subseteq_power(cls x) {
 }
 
 "axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
-rule specify([cls -> st] f) {
+rule specify(pr f) {
 	|-
 	V((cls x) =>
 		I(
@@ -1224,7 +1233,7 @@ rule specify([cls -> st] f) {
 	)
 }
 
-rule specify_vem([cls -> st] f, cls x) {
+rule specify_vem(pr f, cls x) {
 	Ve[specify](f, x)
 	~ mp(set(x), set(subsetbuilder(x, f)))
 }

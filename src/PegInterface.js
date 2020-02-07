@@ -45,16 +45,6 @@ function makeError(message, trace) {
 		.map(e => `${e[0]} ${e[1]} (code.js:${e[2].start.line}:${e[2].start.column})`).join('\n\tat '));
 }
 
-PegInterface.type = function (obj, parentScope, trace) {
-	trace = getTrace(trace, 'type', obj.name, obj.location);
-
-	return new Type({
-		functional: false,
-		name: obj.name,
-		doc: obj.doc
-	});
-};
-
 PegInterface.typevar = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
