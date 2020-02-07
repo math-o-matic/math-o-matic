@@ -11,7 +11,7 @@ Translator.init = function (o) {
 	Yield = o.Yield;
 	Rulecall = o.Rulecall;
 	Ruleset = o.Ruleset;
-}
+};
 
 Translator.isfree0 = function (expr, map) {
 	if (expr._type == 'funcall') {
@@ -25,7 +25,7 @@ Translator.isfree0 = function (expr, map) {
 	} else {
 		throw Error(`Unknown type ${expr._type}`);
 	}
-}
+};
 
 Translator.substitute0 = function (expr, map) {
 	if (Translator.isfree0(expr, map)) return expr;
@@ -54,7 +54,7 @@ Translator.substitute0 = function (expr, map) {
 	} else {
 		throw Error(`Unknown type ${expr._type}`);
 	}
-}
+};
 
 Translator.substitute1 = function (expr, map) {
 	if (expr._type == 'rulecall') {
@@ -73,7 +73,7 @@ Translator.substitute1 = function (expr, map) {
 	} else {
 		throw Error(`Unknown type ${expr._type}`);
 	}
-}
+};
 
 // 네임드도 푼다. 한 번만.
 Translator.expand0FuncallOnce = function (expr) {
@@ -95,7 +95,7 @@ Translator.expand0FuncallOnce = function (expr) {
 	}
 
 	throw Error('Could not expand');
-}
+};
 
 // 네임드는 안 푼다. 재귀적.
 Translator.expand0Funcalls = function (expr) {
@@ -121,7 +121,7 @@ Translator.expand0Funcalls = function (expr) {
 	} else {
 		return expr;
 	}
-}
+};
 
 Translator.expand0 = function (expr) {
 	if (expr._type == 'funcall') {
@@ -146,7 +146,7 @@ Translator.expand0 = function (expr) {
 	} else {
 		return expr;
 	}
-}
+};
 
 // expand0은 하지 않음. rule 단계에서만 풀음.
 Translator.expand1 = function (expr) {
@@ -165,9 +165,9 @@ Translator.expand1 = function (expr) {
 			name: '<anonymous>',
 			params: expr.params,
 			expr: expr2
-		})
-	} else throw Error(`Unknown expr1`);
-}
+		});
+	} else throw Error('Unknown expr1');
+};
 
 // expr0의 funcall까지 풀음.
 Translator.expand1Funcalls = function (expr) {
@@ -188,9 +188,9 @@ Translator.expand1Funcalls = function (expr) {
 			name: '<anonymous>',
 			params: expr.params,
 			expr: expr2
-		})
-	} else throw Error(`Unknown expr1`);
-}
+		});
+	} else throw Error('Unknown expr1');
+};
 
 // expr0까지 최대로 풀음.
 Translator.expand1Full = function (expr) {
@@ -211,9 +211,9 @@ Translator.expand1Full = function (expr) {
 			name: '<anonymous>',
 			params: expr.params,
 			expr: expr2
-		})
-	} else throw Error(`Unknown expr1`);
-}
+		});
+	} else throw Error('Unknown expr1');
+};
 
 Translator.expr0Equals = function (a, b) {
 
@@ -273,14 +273,14 @@ Translator.expr0Equals = function (a, b) {
 		if (a._type == 'funcall' && b._type == 'funcall') {
 			if (a.fun == b.fun) {
 				if (!a.fun.expr) {
-					for (var i = 0; i < a.args.length; i++)
+					for (let i = 0; i < a.args.length; i++)
 						if (!cachedRecurse(a.args[i], b.args[i], depth+1)) return false;
 					return true;
 				}
 
 				var foo = true;
 
-				for (var i = 0; i < a.args.length; i++) {
+				for (let i = 0; i < a.args.length; i++) {
 					if (!cachedRecurse(
 						a.args[i], b.args[i],depth+1
 					)) {
@@ -394,6 +394,6 @@ Translator.expr0Equals = function (a, b) {
 	var ret = cachedRecurse(a, b, 0);
 	// console.error(`result: ${ret}\ncache length: ${cache.length}`);
 	return ret;
-}
+};
 
 module.exports = Translator;

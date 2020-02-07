@@ -41,6 +41,6 @@ Program.prototype.feed = function (lines, nativeMap) {
 				throw Error(`Unknown line type ${line._type}`);
 		}
 	});
-}
+};
 
 module.exports = Program;

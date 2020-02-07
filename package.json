@@ -13,7 +13,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "nodemon": "nodemon -e * --watch src/ --exec \"npm run build\"",
-    "build": "pegjs -o dist/parser.js src/parser.pegjs && webpack"
+    "build": "pegjs -o dist/parser.js src/parser.pegjs && webpack",
+    "lint": "eslint src/**/*.js"
   },
   "keywords": [],
   "author": {
@@ -24,6 +25,7 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
+    "eslint": "^6.8.0",
     "nodemon": "^1.19.4",
     "pegjs": "^0.10.0",
     "webpack": "^4.41.5",

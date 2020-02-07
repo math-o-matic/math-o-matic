@@ -4,7 +4,7 @@ function Type(o) {
 	Node.call(this);
 	
 	if (typeof o.functional != 'boolean')
-		throw Error(`typeof o.functional != 'boolean'`);
+		throw Error('typeof o.functional != \'boolean\'');
 	this.isFunctional = o.functional;
 	this.isSimple = !o.functional;
 
@@ -12,13 +12,13 @@ function Type(o) {
 
 	if (!o.functional) {
 		if (typeof o.name != 'string')
-			throw Error(`typeof o.name != 'string'`);
+			throw Error('typeof o.name != \'string\'');
 		this.name = o.name;
 	} else {
 		if (o.from.map(f => f instanceof Type).some(e => !e))
-			throw Error(`o.from.map(f => f instanceof Type).some(e => !e)`);
+			throw Error('o.from.map(f => f instanceof Type).some(e => !e)');
 		if (!(o.to instanceof Type))
-			throw Error(`!(o.to instanceof Type)`);
+			throw Error('!(o.to instanceof Type)');
 
 		this.from = o.from;
 		this.to = o.to;
@@ -31,20 +31,20 @@ Type.prototype._type = 'type';
 
 Type.prototype.toString = function () {
 	return this.toIndentedString(0);
-}
+};
 
 Type.prototype.toIndentedString = function (indent) {
 	if (this.isSimple) return this.name;
 
 	return '[' + this.from.join(', ') + ' -> ' + this.to + ']';
-}
+};
 
 Type.prototype.toTeXString = function (root) {
 	if (this.isSimple) return `\\href{#type-${this.name}}\\mathsf{${this.name}}`;
 
 	return `\\left[${this.from.map(e => e.toTeXString()).join(' \\times ')}`
 		+ ` \\to ${this.to.toTeXString()} \\right]`;
-}
+};
 
 Type.prototype.equals = function (t) {
 	if (!(t instanceof Type)) return false;
@@ -59,6 +59,6 @@ Type.prototype.equals = function (t) {
 		if (!this.from[i].equals(t.from[i])) return false;
 
 	return this.to.equals(t.to);
-}
+};
 
 module.exports = Type;

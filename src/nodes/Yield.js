@@ -1,9 +1,5 @@
 var Node = require('./Node');
-var Type = require('./Type');
 var Typevar = require('./Typevar');
-var Fun = require('./Fun');
-var Funcall = require('./Funcall');
-var Rule = require('./Rule');
 
 var Translator = require('../Translator');
 
@@ -12,10 +8,10 @@ function Yield({left, right}) {
 
 	if (!(left instanceof Array)
 			|| left.map(e => e instanceof Node).some(e => !e))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (!(right instanceof Node))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	// remove duplicates
 	this.left = left.reduce((l, r) => {
@@ -34,7 +30,7 @@ Yield.prototype._type = 'yield';
 
 Yield.prototype.toString = function () {
 	return this.toIndentedString(0);
-}
+};
 
 Yield.prototype.toIndentedString = function (indent) {
 	if (!this.left.length) {
@@ -58,13 +54,13 @@ Yield.prototype.toIndentedString = function (indent) {
 			: this.right.toIndentedString(indent + 1)
 		)
 	].join('\n' + '\t'.repeat(indent));
-}
+};
 
 Yield.prototype.toTeXString = function (root) {
 	if (!this.left.length)
 		return `\\ \\vdash ${this.right.toTeXString()}`;
 	
 	return `${this.left.map(e => e.toTeXString()).join(', ')} \\vdash ${this.right.toTeXString()}`;
-}
+};
 
 module.exports = Yield;

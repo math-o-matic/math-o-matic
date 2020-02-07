@@ -1,5 +1,4 @@
 var Node = require('./Node');
-var Type = require('./Type');
 var Typevar = require('./Typevar');
 var Fun = require('./Fun');
 
@@ -7,13 +6,13 @@ function Funcall({fun, args}) {
 	Node.call(this);
 
 	if (!(fun instanceof Node))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (!['typevar', 'fun', 'funcall'].includes(fun._type))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (!(args instanceof Array) || args.map(e => e instanceof Node).some(e => !e))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 	
 	this.fun = fun;
 	this.type = fun.type.to;
@@ -26,7 +25,7 @@ Funcall.prototype._type = 'funcall';
 
 Funcall.prototype.toString = function () {
 	return this.toIndentedString(0);
-}
+};
 
 Funcall.prototype.toIndentedString = function (indent) {
 	var args = this.args.map(arg => {
@@ -35,7 +34,7 @@ Funcall.prototype.toIndentedString = function (indent) {
 	});
 
 	if (args.join('').length <= 50) {
-		var args = this.args.map(arg => {
+		args = this.args.map(arg => {
 			if (arg instanceof Typevar) return `${arg.name}<${arg._id}>`;
 			return arg.toIndentedString(indent);
 		});
@@ -45,18 +44,18 @@ Funcall.prototype.toIndentedString = function (indent) {
 		return [
 			`${this.fun._type != 'fun' || this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
 			args,
-			`)`
-		].join('')
+			')'
+		].join('');
 	} else {
 		args = args.join(',\n' + '\t'.repeat(indent + 1));
 
 		return [
 			`${this.fun._type != 'fun' || this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
 			'\t' + args,
-			`)`
+			')'
 		].join('\n' + '\t'.repeat(indent));
 	}
-}
+};
 
 Funcall.prototype.toTeXString = function (root) {
 	if (this.fun instanceof Fun)
@@ -74,7 +73,7 @@ Funcall.prototype.toTeXString = function (root) {
 					? this.escapeTeX(this.fun.name)
 					: `\\mathrm{${this.escapeTeX(this.fun.name)}}`}`
 		+ `(${args.join(', ')})`;
-}
+};
 
 
 module.exports = Funcall;

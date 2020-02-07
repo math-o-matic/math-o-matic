@@ -1,18 +1,15 @@
 var Node = require('./Node');
-var Type = require('./Type');
 var Typevar = require('./Typevar');
-var Fun = require('./Fun');
-var Funcall = require('./Funcall');
 
 function Rulecall({rule, args}) {
 	Node.call(this);
 
 	if (!(rule instanceof Node))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (!(args instanceof Array)
 			|| args.map(e => e instanceof Node).some(e => !e))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 	
 	this.rule = rule;
 	this.args = args;
@@ -24,7 +21,7 @@ Rulecall.prototype._type = 'rulecall';
 
 Rulecall.prototype.toString = function () {
 	return this.toIndentedString(0);
-}
+};
 
 Rulecall.prototype.toIndentedString = function (indent) {
 	var args = this.args.map(arg => {
@@ -33,7 +30,7 @@ Rulecall.prototype.toIndentedString = function (indent) {
 	});
 
 	if (args.join('').length <= 50) {
-		var args = this.args.map(arg => {
+		args = this.args.map(arg => {
 			if (arg instanceof Typevar) return arg.name;
 			return arg.toIndentedString(indent);
 		});
@@ -43,8 +40,8 @@ Rulecall.prototype.toIndentedString = function (indent) {
 		return [
 			`${this.rule.name}(`,
 			args,
-			`)`
-		].join('')
+			')'
+		].join('');
 	}
 	else {
 		args = args.join(',\n' + '\t'.repeat(indent + 1));
@@ -52,14 +49,14 @@ Rulecall.prototype.toIndentedString = function (indent) {
 		return [
 			`${this.rule.name}(`,
 			'\t' + args,
-			`)`
+			')'
 		].join('\n' + '\t'.repeat(indent));
 	}
-}
+};
 
 Rulecall.prototype.toTeXString = function (root) {
 	return `\\href{#rule-${this.rule.name}}{\\textsf{${this.escapeTeX(this.rule.name)}}}`
-		+ `(${this.args.map(e => e.toTeXString()).join(', ')})`
-}
+		+ `(${this.args.map(e => e.toTeXString()).join(', ')})`;
+};
 
 module.exports = Rulecall;

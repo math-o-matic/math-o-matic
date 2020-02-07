@@ -1,6 +1,4 @@
 var Node = require('./Node');
-var Type = require('./Type');
-var Typevar = require('./Typevar');
 
 function Fun({anonymous, name, type, atomic, params, expr, doc, tex}) {
 	Node.call(this);
@@ -9,24 +7,24 @@ function Fun({anonymous, name, type, atomic, params, expr, doc, tex}) {
 	this.tex = tex;
 
 	if (typeof anonymous != 'boolean')
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (!anonymous && typeof name != 'string')
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (type._type != 'type')
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (typeof atomic != 'boolean')
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (!atomic) {
 		if (!(params instanceof Array)
 				|| params.map(e => e instanceof Node).some(e => !e))
-			throw Error(`Assertion failed`);
+			throw Error('Assertion failed');
 
 		if (!(expr instanceof Node))
-			throw Error(`Assertion failed`);
+			throw Error('Assertion failed');
 	}
 
 	this.anonymous = anonymous;
@@ -56,11 +54,11 @@ Fun.prototype.toIndentedString = function (indent) {
 		`\t${this.expr.toIndentedString(indent + 1)}`,
 		')'
 	].join('\n' + '\t'.repeat(indent));
-}
+};
 
 Fun.prototype.toTeXString = function (root) {
 	if (this.anonymous)
-		return `\\left(`
+		return '\\left('
 			+ (
 				this.params.length == 1
 				? this.params[0].toTeXString()
@@ -76,10 +74,10 @@ Fun.prototype.toTeXString = function (root) {
 
 	return this.funcallToTeXString(this.params)
 			+ `:= ${this.expr.toTeXString()}`;
-}
+};
 
 Fun.prototype.funcallToTeXString = function (args) {
-	var args = args.map(arg => {
+	args = args.map(arg => {
 		return arg.toTeXString();
 	});
 
@@ -93,6 +91,6 @@ Fun.prototype.funcallToTeXString = function (args) {
 			? this.toTeXString()
 			: `\\href{#def-${this.name}}{${this.name.length == 1 ? n : `\\mathrm{${n}}`}}`}`
 		+ `(${args.join(', ')})`;
-}
+};
 
 module.exports = Fun;

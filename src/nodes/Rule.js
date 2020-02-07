@@ -1,10 +1,5 @@
 var Node = require('./Node');
-var Type = require('./Type');
-var Typevar = require('./Typevar');
-var Fun = require('./Fun');
-var Funcall = require('./Funcall');
 var Yield = require('./Yield');
-var Rulecall = require('./Rulecall');
 
 var Translator = require('../Translator');
 
@@ -14,15 +9,15 @@ function Rule({name, params, rules, doc}) {
 	this.doc = doc;
 
 	if (typeof name != 'string')
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (!(params instanceof Array)
 			|| params.map(e => e._type == 'typevar').some(e => !e))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	if (!(rules instanceof Array)
 			|| rules.map(e => e instanceof Node).some(e => !e))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 	
 	this.name = name;
 	this.params = params;
@@ -31,7 +26,7 @@ function Rule({name, params, rules, doc}) {
 	var expands = rules.map(Translator.expand1);
 
 	if (expands.map(e => e._type == 'yield').some(e => !e))
-		throw Error(`Assertion failed`);
+		throw Error('Assertion failed');
 
 	this.expands = expands;
 
@@ -66,11 +61,11 @@ Rule.prototype.chain = function (i, j) {
 
 		throw Error(`Link ${this.name} failed:\n\n${l},\n\n${r}\n`);
 	}));
-}
+};
 
 Rule.prototype.toString = function () {
 	return this.toIndentedString(0);
-}
+};
 
 Rule.prototype.toIndentedString = function (indent) {
 	return [
@@ -78,15 +73,15 @@ Rule.prototype.toIndentedString = function (indent) {
 		'\t\t' + this.rules
 			.map(e => e.toIndentedString(indent + 2))
 			.join('\n' + '\t'.repeat(indent + 1) + '~' + '\n' + '\t'.repeat(indent + 2)),
-		`\t=`,
+		'\t=',
 		'\t\t' + this.expr.toIndentedString(indent + 2)
 	].join('\n' + '\t'.repeat(indent));
-}
+};
 
 Rule.prototype.toTeXString = function (root) {
 	return `\\href{#rule-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
 		+ `(${this.params.map(e => e.toTeXString()).join(', ')}):`
 		+ '\\\\\\quad' + this.expr.toTeXString();
-}
+};
 
 module.exports = Rule;

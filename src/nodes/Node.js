@@ -10,7 +10,7 @@ function Node() {
 Node.prototype.escapeTeX = function (s) {
 	return s.replace(/_/g, '\\_')
 			.replace(/\$/g, '\\$');
-}
+};
 
 Node.prototype.makeTeX = function (id, args) {
 	args = args || [];
@@ -24,6 +24,6 @@ Node.prototype.makeTeX = function (id, args) {
 	});
 
 	return ret;
-}
+};
 
 module.exports = Node;

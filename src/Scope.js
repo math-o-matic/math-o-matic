@@ -37,28 +37,28 @@ function Scope(parent) {
 
 Scope.prototype.extend = function () {
 	return new Scope(this);
-}
+};
 
 Scope.prototype.hasOwnTypeByName = function (name) {
 	return !!this.simpleTypeMap[name];
-}
+};
 
 Scope.prototype.hasOwnType = function (typeobj) {
 	if (!typeobj.ftype) return this.hasOwnTypeByName(typeobj.name);
 	return typeobj.from.map(e => this.hasOwnType(e)).every(e => e)
 			&& this.hasOwnType(typeobj.to);
-}
+};
 
 Scope.prototype.hasTypeByName = function (name) {
 	return this.hasOwnTypeByName(name)
 		|| (!!this.parent && this.parent.hasTypeByName(name));
-}
+};
 
 Scope.prototype.hasType = function (typeobj) {
 	if (!typeobj.ftype) return this.hasTypeByName(typeobj.name);
 	return typeobj.from.map(e => this.hasType(e)).every(e => e)
 			&& this.hasType(typeobj.to);
-}
+};
 
 Scope.prototype.addType = function (obj) {
 	var type = PegInterface.type(obj, this, []);
@@ -67,7 +67,7 @@ Scope.prototype.addType = function (obj) {
 		throw Error(`Type with name ${type.name} already is there`);
 
 	return this.simpleTypeMap[type.name] = type;
-}
+};
 
 Scope.prototype.getType = function (typeobj) {
 	if (!typeobj.ftype) return this.getTypeByName(typeobj.name);
@@ -76,7 +76,7 @@ Scope.prototype.getType = function (typeobj) {
 		from: typeobj.from.map(e => this.getType(e)),
 		to: this.getType(typeobj.to)
 	});
-}
+};
 
 Scope.prototype.getTypeByName = function (name) {
 	if (!this.hasTypeByName(name))
@@ -84,16 +84,16 @@ Scope.prototype.getTypeByName = function (name) {
 
 	return this.simpleTypeMap[name] ||
 		(!!this.parent && this.parent.getTypeByName(name));
-}
+};
 
 Scope.prototype.hasOwnTypevarByName = function (name) {
 	return !!this.defMap[name];
-}
+};
 
 Scope.prototype.hasTypevarByName = function (name) {
 	return this.hasOwnTypevarByName(name) ||
 		(!!this.parent && this.parent.hasTypevarByName(name));
-}
+};
 
 Scope.prototype.addTypevar = function (obj) {
 	var typevar = PegInterface.typevar(obj, this, []);
@@ -102,7 +102,7 @@ Scope.prototype.addTypevar = function (obj) {
 		throw Error(`Def with name ${obj.name} already is there`);
 
 	return this.defMap[obj.name] = typevar;
-}
+};
 
 Scope.prototype.getTypevarByName = function (name) {
 	if (!this.hasTypevarByName(name))
@@ -110,7 +110,7 @@ Scope.prototype.getTypevarByName = function (name) {
 
 	return this.defMap[name] ||
 		(!!this.parent && this.parent.getTypevarByName(name));
-}
+};
 
 Scope.prototype.addFun = function (obj) {
 	var fun = PegInterface.fun(obj, this, []);
@@ -119,16 +119,16 @@ Scope.prototype.addFun = function (obj) {
 		throw Error(`Def with name ${fun.name} already is there`);
 
 	return this.defMap[fun.name] = fun;
-}
+};
 
 Scope.prototype.hasOwnRuleByName = function (name) {
 	return !!this.ruleMap[name];
-}
+};
 
 Scope.prototype.hasRuleByName = function (name) {
 	return this.hasOwnRuleByName(name)
 		|| (!!this.parent && this.parent.hasRuleByName(name));
-}
+};
 
 Scope.prototype.addRule = function (defruleobj) {
 	var rule = PegInterface.rule(defruleobj, this, []);
@@ -137,7 +137,7 @@ Scope.prototype.addRule = function (defruleobj) {
 		throw Error(`Rule with name ${rule.name} already is there`);
 
 	return this.ruleMap[rule.name] = rule;
-}
+};
 
 Scope.prototype.getRule = function (name) {
 	if (!this.hasRuleByName(name))
@@ -145,16 +145,16 @@ Scope.prototype.getRule = function (name) {
 
 	return this.ruleMap[name] ||
 		(!!this.parent && this.parent.getRule(name));
-}
+};
 
 Scope.prototype.hasOwnRulesetByName = function (name) {
 	return !!this.rulesetMap[name];
-}
+};
 
 Scope.prototype.hasRulesetByName = function (name) {
 	return this.hasOwnRulesetByName(name)
 		|| (!!this.parent && this.parent.hasRulesetByName(name));
-}
+};
 
 Scope.prototype.addRuleset = function (defrulesetobj, nativeMap) {
 	var ruleset = PegInterface.ruleset(defrulesetobj, this, [], nativeMap);
@@ -163,7 +163,7 @@ Scope.prototype.addRuleset = function (defrulesetobj, nativeMap) {
 		throw Error(`Ruleset with name ${ruleset.name} already is there`);
 
 	return this.rulesetMap[ruleset.name] = ruleset;
-}
+};
 
 Scope.prototype.getRuleset = function (name) {
 	if (!this.hasRulesetByName(name))
@@ -171,16 +171,16 @@ Scope.prototype.getRuleset = function (name) {
 
 	return this.rulesetMap[name] ||
 		(!!this.parent && this.parent.getRuleset(name));
-}
+};
 
 Scope.prototype.hasOwnLinkByName = function (name) {
 	return !!this.linkMap[name];
-}
+};
 
 Scope.prototype.hasLinkByName = function (name) {
 	return this.hasOwnLinkByName(name)
 		|| (!!this.parent && this.parent.hasLinkByName(name));
-}
+};
 
 Scope.prototype.addLink = function (deflinkobj, nativeMap) {
 	var link = PegInterface.link(deflinkobj, this, [], nativeMap);
@@ -189,7 +189,7 @@ Scope.prototype.addLink = function (deflinkobj, nativeMap) {
 		throw Error(`Link with name ${link.name} already is there`);
 
 	return this.linkMap[link.name] = link;
-}
+};
 
 Scope.prototype.getLink = function (name) {
 	if (!this.hasLinkByName(name))
@@ -197,6 +197,6 @@ Scope.prototype.getLink = function (name) {
 
 	return this.linkMap[name] ||
 		(!!this.parent && this.parent.getLink(name));
-}
+};
 
 module.exports = Scope;
