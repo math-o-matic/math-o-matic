@@ -70,9 +70,9 @@ Metamath처럼 Łukasiewicz의 공리계로 어떻게 해보려 했으나 예전
 
 [> 예를 들어 [$\vdash p \land q]는 Apq, [$\vdash \neg (p \land q) \leftrightarrow (\neg p \lor \neg q)]는 ENApqONpNq가 된다.]
 
-틀린 식은 없다고 나오므로 주의하기 바란다.
+tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없으므로, 뭔가를 좌변에 넣으려면 modus ponens를 적용해야 한다.
 
-tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없으므로, 뭔가를 좌변에 넣으려면 modus ponens를 적용해야 한다."
+[~(href=./tt.html)인터랙티브 페이지]"
 native ruleset tt;
 
 "conditional proof. deduction theorem이라고도 한다. 어떤 규칙

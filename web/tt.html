@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="tt.js"></script>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				padding: 0; 
+				margin: 0;
+				font: 16px 'Roboto Mono', monospace, monospace;
+				font-weight: 400;
+				-webkit-font-smoothing: antialiased;
+				color: #5f6368;
+				line-height: 1.5;
+				word-break: normal;
+				overflow-wrap: break-word;
+			}
+
+			h1, h2, h3, h4, h5, h6 {
+				font-weight: 400;
+				line-height: 1.2;
+			}
+
+			h1, h2, h3, h4, h5, h6, a, b, strong, input, textarea, th, .katex {
+				color: #202124;
+			}
+
+			img {
+				max-width: 100%;
+			}
+
+			pre, code {
+				font-family: 'Roboto Mono', monospace, monospace;
+				background-color: rgba(0,0,0,.05);
+				white-space: pre-wrap;
+				word-break: break-all;
+				tab-size: 4;
+			}
+
+			pre {
+				padding: 6px;
+			}
+
+			code {
+				font-size: .85em;
+			}
+
+			pre code {
+				background-color: unset;
+			}
+
+			ul, ol {
+				margin: .5em 0;
+			}
+
+			table {
+				margin: 1em 0;
+				border-collapse: collapse;
+			}
+
+			table tr td, table tr th {
+				border: 1px #ccc solid;
+				padding: .5em .5em;
+			}
+
+			blockquote {
+				margin: 1em 0;
+				padding: .5em 20px;
+				border-left: 5px #202124 solid;
+				background-color: #f7f7f7;
+			}
+
+			input, textarea {
+				font: .85em 'Roboto Mono', sans-serif;
+				tab-size: 4;
+			}
+
+			button {
+				font: .85em 'Roboto Mono', sans-serif;
+			}
+
+			input:disabled, textarea:disabled {
+				background-color: #f3f3f3;
+			}
+
+			input[type=text], input[type=password], textarea {
+				padding: 1ex .5em;
+				border: 1px #5f6368 solid;
+			}
+
+			textarea {
+				padding: 1em;
+				border: 1px #5f6368 solid;
+				resize: vertical;
+			}
+
+			input[type=button], input[type=submit], button {
+				background: none;
+				border: none;
+				border-radius: 3px;
+				padding: 1ex 1em;
+				cursor: pointer;
+			}
+
+			ul.horizontal {
+				padding: 0;
+			}
+
+			ul.horizontal li {
+				display: inline-block;
+				list-style: none;
+			}
+
+			.container {
+				margin: 30px auto;
+				padding: 1em;
+				max-width: 720px;
+			}
+
+			col.vars {
+				background-color: #E0F2F1;
+			}
+
+			col.result {
+				border: 3px #455A64 solid;
+			}
+
+			.true {
+				background-color: #81C784;
+				color: white;
+			}
+
+			#display table {
+				border: 3px #455A64 solid;
+			}
+
+			#display table tr td.true::before {
+				content: 'T';
+			}
+
+			.false {
+				background-color: #E57373;
+				color: white;
+			}
+
+			#display table tr td.false::before {
+				content: 'F';
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>truth-table</h1>
+			<p>M42/math의 tt에서처럼 Polish notation으로 된 명제논리 식을 입력해 보세요.</p>
+			<p>예시: EIpIqrIApqr</p>
+			<input id="input" type="text" style="width:100%" placeholder="Type something">
+			<div id="display"></div>
+			<script>
+				$ = q => document.querySelector(q);
+
+				$('#input').addEventListener('input', _ => {
+					var v = $('#input').value;
+
+					try {
+						var table = tt(v, 'table');
+						var result = tt(v);
+						$('#display').innerHTML = `<table>
+	<colgroup>
+		<col class="vars" span="${table.left.length}">
+		<col class="result" span="1">
+	</colgroup>
+	<tr>${table.left.map(({name}) => `<th>${name}</th>`).join('')}
+		${table.right.map(({name}) => `<th>${name}</th>`).join('')}</tr>
+	${Array(2 ** table.left.length).fill().map((_, i) => {
+		return `<tr>${table.left.map(({column}) => column[i]).map(e => `<td class="${e}"></td>`).join('')}
+		${table.right.map(({column}) => column[i]).map(e => `<td class="${e}"></td>`).join('')}</tr>`;
+	}).join('')}
+	</table>
+	<p>결과: <span class="${result}">${result}</span></p>`;
+					} catch (err) {
+						$('#display').innerHTML = '<p></p>';
+						$('#display p').innerText = err;
+					}
+				});
+			</script>
+		</div>
+	</body>
+</html>
