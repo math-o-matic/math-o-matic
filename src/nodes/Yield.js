@@ -16,7 +16,7 @@ function Yield({left, right}) {
 	// remove duplicates
 	this.left = left.reduce((l, r) => {
 		for (var i = 0; i < l.length; i++)
-			if (ExpressionResolver.expr0Equals(l[i], r)) return l;
+			if (ExpressionResolver.equals0(l[i], r)) return l;
 
 		return l.push(r), l;
 	}, []);
@@ -34,25 +34,13 @@ Yield.prototype.toString = function () {
 
 Yield.prototype.toIndentedString = function (indent) {
 	if (!this.left.length) {
-		return '|- ' + (
-			this.right instanceof Typevar
-			? this.right.name
-			: this.right.toIndentedString(indent)
-		);
+		return '|- ' + this.right.toIndentedString(indent);
 	}
 
 	return [
-		this.left.map(e => (
-			e instanceof Typevar
-			? e.name
-			: e.toIndentedString(indent)
-		)).join(',\n' + '\t'.repeat(indent)),
+		this.left.map(e => e.toIndentedString(indent)).join(',\n' + '\t'.repeat(indent)),
 		'|-',
-		'\t' + (
-			this.right instanceof Typevar
-			? this.right.name
-			: this.right.toIndentedString(indent + 1)
-		)
+		'\t' + this.right.toIndentedString(indent + 1)
 	].join('\n' + '\t'.repeat(indent));
 };
 

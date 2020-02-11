@@ -79,9 +79,13 @@
 				color: inherit;
 			}
 
-			.katex a > :not(.mspace) {
+			.katex a[data-blue] > :not(.mspace) {
 				background-color: #E3F2FD;
 				color: #303F9F;
+			}
+
+			.katex a[data-orange] {
+				color: #E65100;
 			}
 		</style>
 	</head>
@@ -372,7 +376,17 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 				Object.keys(arr).sort((l, r) => l._id - r._id).map(k => arr[k]).join('');
 
 			[].forEach.call($$('.katex a'), a => {
-				a.title = a.getAttribute('href');
+				var href = a.getAttribute('href');
+
+				var idMatch = href.match(/^#id-([0-9]+)$/);
+
+				if (idMatch) {
+					a.dataset.orange = true;
+					a.title = 'id: ' + idMatch[1];
+				} else {
+					a.dataset.blue = true;
+					a.title = a.getAttribute('href');
+				}
 			});
 
 			end = new Date();

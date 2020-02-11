@@ -24,8 +24,8 @@ Typevar.prototype.toString = function () {
 	return this.toIndentedString(0);
 };
 
-Typevar.prototype.toIndentedString = function () {
-	return `${this.type} ${this.name}<${this._id}>`;
+Typevar.prototype.toIndentedString = function (indent, root) {
+	return `${root ? this.type + ' ' : ''}${this.name}<${this._id}>`;
 };
 
 Typevar.prototype.toTeXString = function (root) {
@@ -34,7 +34,7 @@ Typevar.prototype.toTeXString = function (root) {
 	}
 
 	if (this.name.length == 1) {
-		return `\\textcolor{#F57C00}{${this.name}}_{\\scriptscriptstyle ${this._id}}`;
+		return `\\href{#id-${this._id}}{${this.name}}`;
 	}
 
 	return `\\textcolor{#F57C00}{\\mathrm{${this.escapeTeX(this.name)}}}_{\\scriptscriptstyle ${this._id}}`;

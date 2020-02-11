@@ -219,8 +219,7 @@ ER.expand1Full = function (expr) {
 	} else throw Error('Unknown expr1');
 };
 
-ER.expr0Equals = function (a, b) {
-
+ER.equals0 = function (a, b) {
 	var cache = [];
 
 	// https://stackoverflow.com/a/29018745
@@ -398,6 +397,25 @@ ER.expr0Equals = function (a, b) {
 	var ret = cachedRecurse(a, b, 0);
 	// console.error(`result: ${ret}\ncache length: ${cache.length}`);
 	return ret;
+};
+
+ER.chain = function (yields) {
+	return ER.expand1Funcalls(yields.reduceRight((r, l) => {
+		for (var i = 0; i < r.left.length; i++) {
+			if (ER.equals0(l.right, r.left[i])) {
+				var newleft = r.left.slice(0, i)
+					.concat(l.left)
+					.concat(r.left.slice(i + 1));
+
+				return new Yield({
+					left: newleft,
+					right: r.right
+				});
+			}
+		}
+
+		throw Error(`Link failed:\n\n${l},\n\n${r}\n`);
+	}));
 };
 
 module.exports = ER;

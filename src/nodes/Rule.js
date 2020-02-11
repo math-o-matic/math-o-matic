@@ -45,22 +45,11 @@ Rule.prototype.chain = function (i, j) {
 
 	[i, j] = i <= j ? [i, j] : [j, i];
 
-	return ExpressionResolver.expand1Funcalls(this.expands.slice(i, j + 1).reduceRight((r, l) => {
-		for (var i = 0; i < r.left.length; i++) {
-			if (ExpressionResolver.expr0Equals(l.right, r.left[i])) {
-				var newleft = r.left.slice(0, i)
-					.concat(l.left)
-					.concat(r.left.slice(i + 1));
-
-				return new Yield({
-					left: newleft,
-					right: r.right
-				});
-			}
-		}
-
-		throw Error(`Link ${this.name} failed:\n\n${l},\n\n${r}\n`);
-	}));
+	try {
+		return ExpressionResolver.chain(this.expands.slice(i, j + 1));
+	} catch (err) {
+		throw Error(`Chaining failed for rule ${this.name}: ` + err.message);
+	}
 };
 
 Rule.prototype.toString = function () {
