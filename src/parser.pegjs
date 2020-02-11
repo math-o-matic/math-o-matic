@@ -1,5 +1,5 @@
 start
-	= _ lines:line* _ {return lines}
+	= _ lines:(a:line _ {return a})* {return lines}
 
 line
 	= typedef
@@ -10,7 +10,7 @@ line
 	/ deflink
 
 typedef
-	= doc:(documentation __)? "typedef" __ origin:(o:ftype __ {return o})? name:IDENT _ SEM _
+	= doc:(documentation __)? "typedef" __ origin:(o:ftype __ {return o})? name:IDENT _ SEM
 	{
 		doc = doc && doc[0];
 		
@@ -24,7 +24,7 @@ typedef
 	}
 
 defv
-	= doc:(documentation __)? tex:(tex __)? typevar:typevar _ SEM _
+	= doc:(documentation __)? tex:(tex __)? typevar:typevar _ SEM
 	{
 		typevar.doc = doc && doc[0];
 		typevar.tex = tex && tex[0];
@@ -55,9 +55,9 @@ defun
 		expr:(
 			"{" _
 			expr:expr0 _
-			"}" _
+			"}"
 			{return expr}
-			/ SEM _ {return null}
+			/ SEM {return null}
 		)
 		{
 			return {
@@ -78,7 +78,7 @@ deflink
 		"native" __
 		"link" __
 		name:IDENT _
-		SEM _
+		SEM
 		{
 			return {
 				_type: 'deflink',
@@ -95,7 +95,7 @@ defruleset
 		"native" __
 		"ruleset" __
 		name:IDENT _
-		SEM _
+		SEM
 		{
 			return {
 				_type: 'defruleset',
@@ -123,7 +123,7 @@ defrule
 		)
 		"{" _
 		expr:expr2 _
-		"}" _
+		"}"
 		{
 			return {
 				_type: 'defrule',
@@ -158,40 +158,38 @@ yield
 
 rulename
 	=
-		name:(
-			(
-				linkName:IDENT _
-				"[" _
-				rule:rulename _
-				"]" _
-				{
-					return {
+		(
+			linkName:IDENT _
+			"[" _
+			rule:rulename _
+			"]"
+			{
+				return {
+					_type: 'rulename',
+					type: 'link',
+					linkName,
+					rule
+				}
+			}
+		)
+		/
+		(
+			rulesetName:(id:IDENT _ "." _ {return id})?
+			name:IDENT
+			{
+				return rulesetName
+					? {
 						_type: 'rulename',
-						type: 'link',
-						linkName,
-						rule
+						type: 'ruleset',
+						rulesetName,
+						name
 					}
-				}
-			)
-			/
-			(
-				rulesetName:(id:IDENT _ "." _ {return id})?
-				name:IDENT _
-				{
-					return rulesetName
-						? {
-							_type: 'rulename',
-							type: 'ruleset',
-							rulesetName,
-							name
-						}
-						: {
-							_type: 'rulename',
-							type: 'normal',
-							name
-						}
-				}
-			)
+					: {
+						_type: 'rulename',
+						type: 'normal',
+						name
+					}
+			}
 		)
 
 // rule(...)
@@ -205,7 +203,7 @@ rulecall
 				tail:("," _ e:expr0 _ {return e})*
 				{return [head].concat(tail)}
 			)?
-			")" _
+			")"
 			{return a || []}
 		)
 		{
@@ -236,7 +234,7 @@ funcall
 				tail:("," _ e:expr0 _ {return e})*
 				{return [head].concat(tail)}
 			)?
-			")" _
+			")"
 			{return a || []}
 		)
 		{
@@ -248,7 +246,7 @@ funcall
 			}
 		}
 
-// (T t) => f(t)
+// (T t) => { f(t) }
 funexpr
 	=
 		params:(
@@ -277,7 +275,7 @@ expr2
 	=
 		rules:(
 			head:expr1 _
-			tail:("~" _ e:expr1 _ {return e})*
+			tail:(_ "~" _ e:expr1 {return e})*
 			{return [head].concat(tail)}
 		)
 		{
@@ -331,9 +329,9 @@ ftype
 			/ (
 				tt:(
 					"(" _
-					head: type _
-					tail:("," _ t:type _ {return t})*
-					")"
+					head: type
+					tail:(_ "," _ t:type {return t})*
+					_ ")"
 					{return [head].concat(tail)}
 				)
 				{return tt}
