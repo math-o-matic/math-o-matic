@@ -260,7 +260,7 @@ funexpr
 			{return p || []}
 		)
 		"=>" _
-		expr:expr0
+		"{" _ expr:expr0 _ "}"
 		{
 			return {
 				_type: 'funexpr',

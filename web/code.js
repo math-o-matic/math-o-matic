@@ -264,31 +264,31 @@ typedef [(cls, cls, cls) -> st] pr3;
 "A의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(#1<<\land>>#2\right)$
 pr Af(pr f, pr g) {
-	(cls z) => A(f(z), g(z))
+	(cls z) => { A(f(z), g(z)) }
 }
 
 "O의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(#1<<\lor>>#2\right)$
 pr Of(pr f, pr g) {
-	(cls z) => O(f(z), g(z))
+	(cls z) => { O(f(z), g(z)) }
 }
 
 "I의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(#1<<\to>>#2\right)$
 pr If(pr f, pr g) {
-	(cls z) => I(f(z), g(z))
+	(cls z) => { I(f(z), g(z)) }
 }
 
 "E의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(#1<<\leftrightarrow>>#2\right)$
 pr Ef(pr f, pr g) {
-	(cls z) => E(f(z), g(z))
+	(cls z) => { E(f(z), g(z)) }
 }
 
 "N의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(<<\neg>>#1\right)$
 pr Nf(pr f) {
-	(cls z) => N(f(z))
+	(cls z) => { N(f(z)) }
 }
 
 "보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다]."
@@ -324,35 +324,35 @@ native link Ve;
 "입력항이 두 개인 함수를 위한 보편 양화. V에 의존한다."
 $\left(<<\forall>>#1\right)$
 st V2(pr2 f) {
-	V((cls x) =>
-		V((cls y) =>
+	V((cls x) => {
+		V((cls y) => {
 			f(x, y)
-		)
-	)
+		})
+	})
 }
 
 "입력항이 세 개인 함수를 위한 보편 양화. V에 의존한다."
 $\left(<<\forall>>#1\right)$
 st V3(pr3 f) {
-	V((cls x) =>
-		V((cls y) =>
-			V((cls z) =>
+	V((cls x) => {
+		V((cls y) => {
+			V((cls z) => {
 				f(x, y, z)
-			)
-		)
-	)
+			})
+		})
+	})
 }
 
 "존재 양화(existential quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받으며 V에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다]."
 $\left(<<\exists>>#1\right)$
 st X(pr f) {
-	N(V((cls x) => N(f(x))))
+	N(V((cls x) => { N(f(x)) }))
 }
 
 "입력항이 두 개인 함수를 위한 존재 양화. V2에 의존한다."
 $\left(<<\exists>>#1\right)$
 st X2(pr2 f) {
-	N(V2((cls x, cls y) => N(f(x, y))))
+	N(V2((cls x, cls y) => { N(f(x, y)) }))
 }
 
 "[$\forall]과 [$\land] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VI만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
@@ -381,8 +381,8 @@ rule VO(pr f, pr g) {
 "[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것. 특이하게도 Vi 및 Ve로부터 유도할 수 있는 것으로 보이나 아직 표현할 방식이 없다."
 rule VV(pr2 f) {
 	|- I(
-		V2((cls x, cls y) => f(x, y)),
-		V2((cls y, cls x) => f(x, y))
+		V2((cls x, cls y) => { f(x, y) }),
+		V2((cls y, cls x) => { f(x, y) })
 	)
 }
 
@@ -416,7 +416,7 @@ rule VAm2(pr f, pr g) {
 rule VIm(pr f, pr g) {
 	VI(f, g)
 	~ mp(
-		V((cls x) => I(f(x), g(x))),
+		V((cls x) => { I(f(x), g(x)) }),
 		I(V(f), V(g))
 	)
 }
@@ -425,8 +425,8 @@ rule VIm(pr f, pr g) {
 rule VVm(pr2 f) {
 	VV(f)
 	~ mp(
-		V2((cls x, cls y) => f(x, y)),
-		V2((cls y, cls x) => f(x, y))
+		V2((cls x, cls y) => { f(x, y) }),
+		V2((cls y, cls x) => { f(x, y) })
 	)
 }
 
@@ -439,11 +439,11 @@ rule IVEpqVEqpfm(pr f, pr g) {
 	id(V(Ef(f, g))) ~
 	Vi[ttf_IEpqEqp](f, g)
 	~ VIm(
-		(cls x) => E(f(x), g(x)),
-		(cls x) => E(g(x), f(x))
+		(cls x) => { E(f(x), g(x)) },
+		(cls x) => { E(g(x), f(x)) }
 	) ~ mp(
-		V((cls x) => E(f(x), g(x))),
-		V((cls x) => E(g(x), f(x)))
+		V((cls x) => { E(f(x), g(x)) }),
+		V((cls x) => { E(g(x), f(x)) })
 	)
 }
 
@@ -456,11 +456,11 @@ rule Ee1V(pr f, pr g) {
 	id(V(Ef(f, g))) ~
 	Vi[ttf_IEpqIpq](f, g)
 	~ VIm(
-		(cls x) => (E(f(x), g(x))),
-		(cls x) => (I(f(x), g(x)))
+		(cls x) => { E(f(x), g(x)) },
+		(cls x) => { I(f(x), g(x)) }
 	) ~ mp(
-		V((cls x) => E(f(x), g(x))),
-		V((cls x) => I(f(x), g(x)))
+		V((cls x) => { E(f(x), g(x)) }),
+		V((cls x) => { I(f(x), g(x)) })
 	)
 }
 
@@ -492,16 +492,16 @@ rule syllV(pr f, pr g, pr h) {
 		V(If(g, h))
 	)
 	~ VAm2(
-		(cls x) => I(f(x), g(x)),
-		(cls x) => I(g(x), h(x))
+		(cls x) => { I(f(x), g(x)) },
+		(cls x) => { I(g(x), h(x)) }
 	)
 	~ Vi[ttf_IAIpqIqrIpr](f, g, h)
 	~ VIm(
-		(cls x) => A(I(f(x), g(x)), I(g(x), h(x))),
-		(cls x) => I(f(x), h(x))
+		(cls x) => { A(I(f(x), g(x)), I(g(x), h(x))) },
+		(cls x) => { I(f(x), h(x)) }
 	)
 	~ mp(
-		V((cls x) => A(I(f(x), g(x)), I(g(x), h(x)))),
+		V((cls x) => { A(I(f(x), g(x)), I(g(x), h(x))) }),
 		V(If(f, h))
 	)
 }
@@ -512,21 +512,21 @@ rule ttf_IAEpqEqrEpr(pr f, pr g, pr h, cls x) {
 
 rule syllVE(pr f, pr g, pr h) {
 	Ai(
-		V((cls x) => E(f(x), g(x))),
-		V((cls x) => E(g(x), h(x)))
+		V((cls x) => { E(f(x), g(x)) }),
+		V((cls x) => { E(g(x), h(x)) })
 	)
 	~ VAm2(
-		(cls x) => E(f(x), g(x)),
-		(cls x) => E(g(x), h(x))
+		(cls x) => { E(f(x), g(x)) },
+		(cls x) => { E(g(x), h(x)) }
 	)
 	~ Vi[ttf_IAEpqEqrEpr](f, g, h)
 	~ VIm(
-		(cls x) => A(E(f(x), g(x)), E(g(x), h(x))),
-		(cls x) => E(f(x), h(x))
+		(cls x) => { A(E(f(x), g(x)), E(g(x), h(x))) },
+		(cls x) => { E(f(x), h(x)) }
 	)
 	~ mp(
-		V((cls x) => A(E(f(x), g(x)), E(g(x), h(x)))),
-		V((cls x) => E(f(x), h(x)))
+		V((cls x) => { A(E(f(x), g(x)), E(g(x), h(x))) }),
+		V((cls x) => { E(f(x), h(x)) })
 	)
 }
 
@@ -552,21 +552,21 @@ rule XO(pr f, pr g) {
 	)
 	~ Vi[ttf_ENOpqANpNq](f, g)
 	~ VEm(
-		(cls x) => N(O(f(x), g(x))),
-		(cls x) => A(N(f(x)), N(g(x)))
+		(cls x) => { N(O(f(x), g(x))) },
+		(cls x) => { A(N(f(x)), N(g(x))) }
 	)
 	~ tt.IEpqENpNq(
-		V((cls x) => N(O(f(x), g(x)))),
-		V((cls x) => A(N(f(x)), N(g(x))))
+		V((cls x) => { N(O(f(x), g(x))) }),
+		V((cls x) => { A(N(f(x)), N(g(x))) })
 	)
 	~ mp(
 		E(
-			V((cls x) => N(O(f(x), g(x)))),
-			V((cls x) => A(N(f(x)), N(g(x))))
+			V((cls x) => { N(O(f(x), g(x))) }),
+			V((cls x) => { A(N(f(x)), N(g(x))) })
 		),
 		E(
-			N(V((cls x) => N(O(f(x), g(x))))),
-			N(V((cls x) => A(N(f(x)), N(g(x)))))
+			N(V((cls x) => { N(O(f(x), g(x))) })),
+			N(V((cls x) => { A(N(f(x)), N(g(x))) }))
 		)
 	)
 	~ syllE(
@@ -629,7 +629,7 @@ rule mpVE(pr f, pr g) {
 
 "universal generalization."
 rule Vgen(st p) {
-	p |- V((cls x) => p)
+	p |- V((cls x) => { p })
 }
 
 "existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
@@ -654,42 +654,42 @@ rule Xinst1E(pr f, pr g) {
 "existential instantiation 같은 것 2. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정. Vgen으로부터 증명할 수 있다."
 rule Xinst2(st p) {
 	cp[Vgen](N(p))
-	~ tt.IINpqINqp(p, V((cls x) => N(p)))
-	~ mp(I(N(p), V((cls x) => N(p))), I(N(V((cls x) => N(p))), p))
-	~ id(I(X((cls x) => p), p))
-	~ mp(X((cls x) => p), p)
+	~ tt.IINpqINqp(p, V((cls x) => { N(p) }))
+	~ mp(I(N(p), V((cls x) => { N(p) })), I(N(V((cls x) => { N(p) })), p))
+	~ id(I(X((cls x) => { p }), p))
+	~ mp(X((cls x) => { p }), p)
 }
 
 rule Xinst3(pr f, st p) {
-	Xinst1(f, (cls x) => p)
+	Xinst1(f, (cls x) => { p })
 	~ Xinst2(p)
 }
 
 "binary relation의 reflexivity."
 $\left(#1\ <<\text{is reflexive}>>\right)$
 st reflexive(pr2 f) {
-	V((cls x) =>
+	V((cls x) => {
 		f(x, x)
-	)
+	})
 }
 
 "binary relation의 symmetry."
 $\left(#1\ <<\text{is symmetric}>>\right)$
 st symmetric(pr2 f) {
-	V2((cls x, cls y) =>
+	V2((cls x, cls y) => {
 		I(f(x, y), f(y, x))
-	)
+	})
 }
 
 "binary relation의 transitivity."
 $\left(#1\ <<\text{is transitive}>>\right)$
 st transitive(pr2 f) {
-	V3((cls x, cls y, cls z) =>
+	V3((cls x, cls y, cls z) => {
 		I(
 			A(f(x, y), f(y, z)),
 			f(x, z)
 		)
-	)
+	})
 }
 
 ############################
@@ -709,13 +709,13 @@ st Nin(cls x, cls y) {
 "어떤 class가 집합이라는 것. 어떤 class의 원소면 된다."
 $\left(<<\mathop\mathrm{set}>> #1\right)$
 st set(cls x) {
-	X((cls y) =>
+	X((cls y) => {
 		in(x, y)
-	)
+	})
 }
 
 rule set_Xgen(cls x, cls y) {
-	Xgen((cls y) => in(x, y), y)
+	Xgen((cls y) => { in(x, y) }, y)
 	~ id(set(x))
 }
 
@@ -733,40 +733,40 @@ rule set_Xgen_O(cls x, cls y, cls z) {
 "[$\subseteq]."
 $\left(#1<<\subseteq>>#2\right)$
 st subseteq(cls x, cls y) {
-	V((cls z) => (
+	V((cls z) => {
 		I(
 			in(z, x),
 			in(z, y)
 		)
-	))
+	})
 }
 
 "[$=] 연산자. [$\in]에 의존한다."
 $\left(#1<<=>>#2\right)$
 st eq(cls x, cls y) {
 	A(
-		V((cls z) =>
+		V((cls z) => {
 			E(in(z, x), in(z, y))
-		),
-		V((cls w) =>
+		}),
+		V((cls w) => {
 			E(in(x, w), in(y, w))
-		)
+		})
 	)
 }
 
 rule eq_Ae1(cls x, cls y) {
 	id(eq(x, y))
 	~ Ae1(
-		V((cls z) => E(in(z, x), in(z, y))),
-		V((cls w) => E(in(x, w), in(y, w)))
+		V((cls z) => { E(in(z, x), in(z, y)) }),
+		V((cls w) => { E(in(x, w), in(y, w)) })
 	)
 }
 
 rule eq_Ae2(cls x, cls y) {
 	id(eq(x, y)) ~
 	Ae2(
-		V((cls z) => E(in(z, x), in(z, y))),
-		V((cls w) => E(in(x, w), in(y, w)))
+		V((cls z) => { E(in(z, x), in(z, y)) }),
+		V((cls w) => { E(in(x, w), in(y, w)) })
 	)
 }
 
@@ -782,8 +782,8 @@ rule eq_reflexive_tmp3(cls x) {
 	Vi[eq_reflexive_tmp1](x)
 	~ Vi[eq_reflexive_tmp2](x)
 	~ Ai(
-		V((cls z) => E(in(z, x), in(z, x))),
-		V((cls w) => E(in(x, w), in(x, w)))
+		V((cls z) => { E(in(z, x), in(z, x)) }),
+		V((cls w) => { E(in(x, w), in(x, w)) })
 	)
 }
 
@@ -796,20 +796,20 @@ rule eq_reflexive() {
 rule eq_symmetric_tmp(cls x, cls y) {
 	id(eq(x, y)) ~
 	Ae1(
-		V((cls z) => E(in(z, x), in(z, y))),
-		V((cls w) => E(in(x, w), in(y, w)))
+		V((cls z) => { E(in(z, x), in(z, y)) }),
+		V((cls w) => { E(in(x, w), in(y, w)) })
 	) ~ IVEpqVEqpfm(
-		(cls z) => in(z, x),
-		(cls z) => in(z, y)
+		(cls z) => { in(z, x) },
+		(cls z) => { in(z, y) }
 	) ~ Ae2(
-		V((cls z) => E(in(z, x), in(z, y))),
-		V((cls w) => E(in(x, w), in(y, w)))
+		V((cls z) => { E(in(z, x), in(z, y)) }),
+		V((cls w) => { E(in(x, w), in(y, w)) })
 	) ~ IVEpqVEqpfm(
-		(cls w) => in(x, w),
-		(cls w) => in(y, w)
+		(cls w) => { in(x, w) },
+		(cls w) => { in(y, w) }
 	) ~ Ai(
-		V((cls z) => E(in(z, y), in(z, x))),
-		V((cls w) => E(in(y, w), in(x, w)))
+		V((cls z) => { E(in(z, y), in(z, x)) }),
+		V((cls w) => { E(in(y, w), in(x, w)) })
 	)
 	~ id(eq(y, x))
 }
@@ -823,39 +823,41 @@ rule eq_symmetric() {
 "uniqueness quantification."
 $\left(<<\exists!>>#1\right)$
 st Q(pr f) {
-	X((cls x) => V((cls y) => (
-		E(f(y), eq(y, x))
-	)))
+	X((cls x) => {
+		V((cls y) => {
+			E(f(y), eq(y, x))
+		})
+	})
 }
 
 "binary operation의 associativity."
 $\left(#1\ <<\text{is associative}>>\right)$
 st associative([(cls, cls) -> cls] f) {
-	V3((cls x, cls y, cls z) =>
+	V3((cls x, cls y, cls z) => {
 		eq(
 			f(f(x, y), z),
 			f(x, f(y, z))
 		)
-	)
+	})
 }
 
 "binary operation의 commutativity."
 $\left(#1\ <<\text{is commutative}>>\right)$
 st commutative([(cls, cls) -> cls] f) {
-	V2((cls x, cls y) =>
+	V2((cls x, cls y) => {
 		eq(
 			f(x, y),
 			f(y, x)
 		)
-	)
+	})
 }
 
 rule set_is_set_1(cls x, cls y) {
 	id(set(x)) ~
 	eq_Ae2(x, y)
 	~ Xinst1E(
-		(cls w) => in(x, w),
-		(cls w) => in(y, w)
+		(cls w) => { in(x, w) },
+		(cls w) => { in(y, w) }
 	)
 	~ id(set(y))
 }
@@ -869,9 +871,9 @@ rule subseteq_subseteq(cls x, cls y, cls z) {
 	id(subseteq(x, y)) ~
 	id(subseteq(y, z)) ~
 	syllV(
-		(cls w) => in(w, x),
-		(cls w) => in(w, y),
-		(cls w) => in(w, z)
+		(cls w) => { in(w, x) },
+		(cls w) => { in(w, y) },
+		(cls w) => { in(w, z) }
 	)
 	~ id(subseteq(x, z))
 }
@@ -879,12 +881,12 @@ rule subseteq_subseteq(cls x, cls y, cls z) {
 "axiom of extensionality."
 rule extensional(cls x, cls y) {
 	|- I(
-		V((cls z) =>
+		V((cls z) => {
 			E(
 				in(z, x),
 				in(z, y)
 			)
-		),
+		}),
 		eq(x, y)
 	)
 }
@@ -892,12 +894,12 @@ rule extensional(cls x, cls y) {
 rule extensional_m(cls x, cls y) {
 	extensional(x, y)
 	~ mp(
-		V((cls z) =>
+		V((cls z) => {
 			E(
 				in(z, x),
 				in(z, y)
 			)
-		),
+		}),
 		eq(x, y)
 	)
 }
@@ -907,7 +909,7 @@ rule eq_simple(cls x, cls y) {
 	~ extensional(x, y)
 	~ Ei(
 		eq(x, y),
-		V((cls z) => E(in(z, x), in(z, y)))
+		V((cls z) => { E(in(z, x), in(z, y)) })
 	)
 }
 
@@ -915,11 +917,11 @@ rule eq_then_subseteq_m(cls x, cls y) {
 	eq_simple(x, y)
 	~ mpE(
 		eq(x, y),
-		V((cls z) => E(in(z, x), in(z, y)))
+		V((cls z) => { E(in(z, x), in(z, y)) })
 	)
 	~ Ee1V(
-		(cls z) => in(z, x),
-		(cls z) => in(z, y)
+		(cls z) => { in(z, x) },
+		(cls z) => { in(z, y) }
 	)
 	~ id(subseteq(x, y))
 }
@@ -946,22 +948,22 @@ cls setbuilder(pr f);
 
 [**Deprecated]: 이 정의는 {:T}가 스스로를 포함할 수 있게 하는데 이는 axiom of foundation에 모순된다. 그러므로 setbuilder_def__로 옮기셈."
 rule setbuilder_def(pr f) {
-	|- V((cls z) =>
+	|- V((cls z) => {
 		E(
 			in(z, setbuilder(f)),
 			f(z)
 		)
-	)
+	})
 }
 
 "setbuilder의 새로운 definition rule. 변경 작업 미완료."
 rule setbuilder_def__(pr f) {
-	|- V((cls z) =>
+	|- V((cls z) => {
 		E(
 			in(z, setbuilder(f)),
 			A(set(z), f(z))
 		)
-	)
+	})
 }
 
 rule ttf_IAEpAqrIrqEpr(pr f, pr g, pr h, cls x) {
@@ -970,28 +972,28 @@ rule ttf_IAEpAqrIrqEpr(pr f, pr g, pr h, cls x) {
 
 rule setbuilder_def__set_1(pr f, pr g, pr h) {
 	Ai(
-		V((cls x) => E(f(x), A(g(x), h(x)))),
-		V((cls x) => I(h(x), g(x)))
+		V((cls x) => { E(f(x), A(g(x), h(x))) }),
+		V((cls x) => { I(h(x), g(x)) })
 	) ~
 	VAm2(
-		(cls x) => E(f(x), A(g(x), h(x))),
-		(cls x) => I(h(x), g(x))
+		(cls x) => { E(f(x), A(g(x), h(x))) },
+		(cls x) => { I(h(x), g(x)) }
 	) ~
 	Vi[ttf_IAEpAqrIrqEpr](f, g, h)
 	~ VIm(
-		(cls x) => A(E(f(x), A(g(x), h(x))), I(h(x), g(x))),
-		(cls x) => E(f(x), h(x))
+		(cls x) => { A(E(f(x), A(g(x), h(x))), I(h(x), g(x))) },
+		(cls x) => { E(f(x), h(x)) }
 	)
 	~ mp(
-		V((cls x) => A(E(f(x), A(g(x), h(x))), I(h(x), g(x)))),
-		V((cls x) => E(f(x), h(x)))
+		V((cls x) => { A(E(f(x), A(g(x), h(x))), I(h(x), g(x))) }),
+		V((cls x) => { E(f(x), h(x)) })
 	)
 }
 
 rule setbuilder_def__set(pr f) {
 	setbuilder_def__(f) ~
 	setbuilder_def__set_1(
-		(cls z) => in(z, setbuilder(f)),
+		(cls z) => { in(z, setbuilder(f)) },
 		set,
 		f
 	)
@@ -1000,20 +1002,22 @@ rule setbuilder_def__set(pr f) {
 "[$\cap]."
 $\left(#1<<\cap>>#2\right)$
 cls cap(cls x, cls y) {
-	setbuilder((cls z) => A(
-		in(z, x), in(z, y)
-	))
+	setbuilder((cls z) => {
+		A(in(z, x), in(z, y))
+	})
 }
 
 rule cap_vi(cls x, cls y) {
 	Vi[cp[set_Xgen_A]](x, y) ~
-	setbuilder_def__set((cls z) => A(
-		in(z, x), in(z, y)
-	))
-	~ id(V((cls z) => E(
-		in(z, cap(x, y)),
+	setbuilder_def__set((cls z) => {
 		A(in(z, x), in(z, y))
-	)))
+	})
+	~ id(V((cls z) => {
+		E(
+			in(z, cap(x, y)),
+			A(in(z, x), in(z, y))
+		)
+	}))
 }
 
 rule cap(cls x, cls y, cls z) {
@@ -1052,20 +1056,22 @@ rule cap_commutative() {
 "[$\cup]."
 $\left(#1<<\cup>>#2\right)$
 cls cup(cls x, cls y) {
-	setbuilder((cls z) => O(
-		in(z, x), in(z, y)
-	))
+	setbuilder((cls z) => {
+		O(in(z, x), in(z, y))
+	})
 }
 
 rule cup_vi(cls x, cls y) {
 	Vi[cp[set_Xgen_O]](x, y) ~
-	setbuilder_def__set((cls z) => O(
-		in(z, x), in(z, y)
-	))
-	~ id(V((cls z) => E(
-		in(z, cup(x, y)),
+	setbuilder_def__set((cls z) => {
 		O(in(z, x), in(z, y))
-	)))
+	})
+	~ id(V((cls z) => {
+		E(
+			in(z, cup(x, y)),
+			O(in(z, x), in(z, y))
+		)
+	}))
 }
 
 rule cup(cls x, cls y, cls z) {
@@ -1075,7 +1081,7 @@ rule cup(cls x, cls y, cls z) {
 "empty class."
 $<<\varnothing>>$
 cls emptyset() {
-	setbuilder((cls z) => F)
+	setbuilder((cls z) => { F })
 }
 
 rule emptyset_1(cls z) {
@@ -1091,21 +1097,21 @@ rule emptyset_3(cls x) {
 }
 
 rule emptyset_vi() {
-	setbuilder_def__((cls z) => F)
+	setbuilder_def__((cls z) => { F })
 	~ Ee1V(
-		(cls z) => in(z, emptyset()),
-		(cls z) => A(set(z), F)
+		(cls z) => { in(z, emptyset()) },
+		(cls z) => { A(set(z), F) }
 	)
 	~ Vi[emptyset_3]()
 	~ syllV(
-		(cls z) => in(z, emptyset()),
-		(cls z) => A(set(z), F),
-		(cls z) => F
+		(cls z) => { in(z, emptyset()) },
+		(cls z) => { A(set(z), F) },
+		(cls z) => { F }
 	)
 	~ emptyset_2()
 	~ mpV(
-		(cls z) => I(in(z, emptyset()), F),
-		(cls z) => Nin(z, emptyset())
+		(cls z) => { I(in(z, emptyset()), F) },
+		(cls z) => { Nin(z, emptyset()) }
 	)
 }
 
@@ -1117,16 +1123,16 @@ rule emptyset_def(cls z) {
 "universal class."
 $<<V>>$
 cls universe() {
-	setbuilder((cls z) => T)
+	setbuilder((cls z) => { T })
 }
 
 rule setbuilder_is_setbuilder(pr f, cls x) {
 	eq_Ae1(x, setbuilder(f))
 	~ setbuilder_def__(f)
 	~ syllVE(
-		(cls z) => in(z, x),
-		(cls z) => in(z, setbuilder(f)),
-		(cls z) => A(set(z), f(z))
+		(cls z) => { in(z, x) },
+		(cls z) => { in(z, setbuilder(f)) },
+		(cls z) => { A(set(z), f(z)) }
 	)
 }
 
@@ -1134,37 +1140,41 @@ rule setbuilder_is_setbuilder(pr f, cls x) {
 일반적으로는 [$\{z \in x: f(z)\}]라고 쓰는 것인데 더미 변수를 없애버렸다."
 $\left\{#1<<:>>#2\right\}$
 cls subsetbuilder(cls x, pr f) {
-	setbuilder((cls y) => (
+	setbuilder((cls y) => {
 		A(
 			in(y, x),
 			f(y)
 		)
-	))
+	})
 }
 
 "power class."
 $<<\mathcal P>>(#1)$
 cls power(cls x) {
-	setbuilder((cls z) => (
+	setbuilder((cls z) => {
 		subseteq(z, x)
-	))
+	})
 }
 
 rule power_def__(cls x) {
-	set(x) |- V((cls z) => E(
-		in(z, power(x)),
-		subseteq(z, x)
-	))
+	set(x) |- V((cls z) => {
+		E(
+			in(z, power(x)),
+			subseteq(z, x)
+		)
+	})
 }
 
 rule power_def(cls x) {
-	setbuilder_def((cls z) => (
+	setbuilder_def((cls z) => {
 		subseteq(z, x)
-	))
-	~ id(V((cls z) => E(
-		in(z, power(x)),
-		subseteq(z, x)
-	)))
+	})
+	~ id(V((cls z) => {
+		E(
+			in(z, power(x)),
+			subseteq(z, x)
+		)
+	}))
 }
 
 rule self_in_power(cls x, cls z) {
@@ -1184,20 +1194,20 @@ rule self_in_power(cls x, cls z) {
 "singleton class."
 $<<\{>>#1\}$
 cls singleton(cls x) {
-	setbuilder((cls z) => (
+	setbuilder((cls z) => {
 		eq(z, x)
-	))
+	})
 }
 
 rule singleton_subseteq_power_1(cls x) {
-	setbuilder_def((cls z) => eq(z, x))
+	setbuilder_def((cls z) => { eq(z, x) })
 	~ id(
-		V((cls z) => (
+		V((cls z) => {
 			E(
 				in(z, singleton(x)),
 				eq(z, x)
 			)
-		))
+		})
 	)
 }
 
@@ -1225,12 +1235,12 @@ rule singleton_subseteq_power(cls x) {
 "axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
 rule specify(pr f) {
 	|-
-	V((cls x) =>
+	V((cls x) => {
 		I(
 			set(x),
 			set(subsetbuilder(x, f))
 		)
-	)
+	})
 }
 
 rule specify_vem(pr f, cls x) {
@@ -1239,12 +1249,12 @@ rule specify_vem(pr f, cls x) {
 }
 
 rule cap_is_set_1(cls x, cls y) {
-	specify_vem((cls z) => in(z, y), x)
+	specify_vem((cls z) => { in(z, y) }, x)
 	~ id(set(cap(x, y)))
 }
 
 rule cap_is_set_2(cls x, cls y) {
-	specify_vem((cls z) => in(z, x), y)
+	specify_vem((cls z) => { in(z, x) }, y)
 	~ cap_commutative_2(y, x)
 	~ set_is_set_1(cap(y, x), cap(x, y))
 }
@@ -1257,27 +1267,31 @@ rule subset_cap_is_subset(cls x, cls y) {
 	id(subseteq(x, y)) ~
 	Vi[subset_cap_is_subset_1](x, y)
 	~VIm(
-		(cls z) => I(in(z, x), in(z, y)),
-		(cls z) => E(
-			in(z, x),
-			A(in(z, x), in(z, y))
-		)
+		(cls z) => { I(in(z, x), in(z, y)) },
+		(cls z) => {
+			E(
+				in(z, x),
+				A(in(z, x), in(z, y))
+			)
+		}
 	)
 	~ mp(
-		V((cls z) => I(in(z, x), in(z, y))),
-		V((cls z) => E(
-			in(z, x),
-			A(in(z, x), in(z, y))
-		))
+		V((cls z) => { I(in(z, x), in(z, y)) }),
+		V((cls z) => {
+			E(
+				in(z, x),
+				A(in(z, x), in(z, y))
+			)
+		})
 	) ~
 	cap_vi(x, y) ~ IVEpqVEqpfm(
-		(cls z) => in(z, cap(x, y)),
-		(cls z) => A(in(z, x), in(z, y))
+		(cls z) => { in(z, cap(x, y)) },
+		(cls z) => { A(in(z, x), in(z, y)) }
 	) ~
 	syllVE(
-		(cls z) => in(z, x),
-		(cls z) => A(in(z, x), in(z, y)),
-		(cls z) => in(z, cap(x, y))
+		(cls z) => { in(z, x) },
+		(cls z) => { A(in(z, x), in(z, y)) },
+		(cls z) => { in(z, cap(x, y)) }
 	)
 	~ extensional_m(x, cap(x, y))
 }
@@ -1300,45 +1314,49 @@ rule subset_is_set_ae_cvi(cls x) {
 
 "axiom of power set."
 rule ax_power() {
-	|- V((cls x) => (
+	|- V((cls x) => {
 		I(
 			set(x),
-			X((cls y) => (
+			X((cls y) => {
 				A(
 					set(y),
-					V((cls z) => (
+					V((cls z) => {
 						I(subseteq(z, x), in(z, y))
-					))
+					})
 				)
-			))
+			})
 		)
-	))
+	})
 }
 
 rule ax_power_vem(cls x) {
 	Ve[ax_power](x)
 	~ mp(
 		set(x),
-		X((cls y) => A(
-			set(y),
-			V((cls z) => I(
-				subseteq(z, x),
-				in(z, y)
-			))
-		))
+		X((cls y) => {
+			A(
+				set(y),
+				V((cls z) => {
+					I(
+						subseteq(z, x),
+						in(z, y)
+					)
+				})
+			)
+		})
 	)
 }
 
 rule power_is_set_1(cls x, cls y) {
 	power_def(x)
 	~ Ee1V(
-		(cls z) => in(z, power(x)),
-		(cls z) => subseteq(z, x)
+		(cls z) => { in(z, power(x)) },
+		(cls z) => { subseteq(z, x) }
 	)
 	~ syllV(
-		(cls z) => in(z, power(x)),
-		(cls z) => subseteq(z, x),
-		(cls z) => in(z, y)
+		(cls z) => { in(z, power(x)) },
+		(cls z) => { subseteq(z, x) },
+		(cls z) => { in(z, y) }
 	)
 	~ id(subseteq(power(x), y))
 }
@@ -1346,28 +1364,34 @@ rule power_is_set_1(cls x, cls y) {
 rule power_is_set_2(cls x, cls y) {
 	cp[power_is_set_1](x, y)
 	~ tt.IIpqIArpArq(
-		V((cls z) => I(
-			subseteq(z, x),
-			in(z, y)
-		)),
+		V((cls z) => {
+			I(
+				subseteq(z, x),
+				in(z, y)
+			)
+		}),
 		subseteq(power(x), y),
 		set(y)
 	)
 	~ mp(
 		I(
-			V((cls z) => I(
-				subseteq(z, x),
-				in(z, y)
-			)),
+			V((cls z) => {
+				I(
+					subseteq(z, x),
+					in(z, y)
+				)
+			}),
 			subseteq(power(x), y)
 		),
 		I(
 			A(
 				set(y),
-				V((cls z) => I(
-					subseteq(z, x),
-					in(z, y)
-				))
+				V((cls z) => {
+					I(
+						subseteq(z, x),
+						in(z, y)
+					)
+				})
 			),
 			A(
 				set(y),
@@ -1381,14 +1405,17 @@ rule power_is_set_3(cls x) {
 	ax_power_vem(x)
 	~ Vi[power_is_set_2](x)
 	~ Xinst1(
-		(cls y) => A(
-			set(y), V((cls z) => I(
-				subseteq(z, x), in(z, y)
-			))
-		),
-		(cls y) => A(
-			set(y), subseteq(power(x), y)
-		)
+		(cls y) => {
+			A(
+				set(y),
+				V((cls z) => {
+					I(subseteq(z, x), in(z, y))
+				})
+			)
+		},
+		(cls y) => {
+			A(set(y), subseteq(power(x), y))
+		}
 	)
 }
 
@@ -1397,9 +1424,9 @@ rule power_is_set(cls x) {
 	power_is_set_3(x)
 	~ subset_is_set_ae_cvi(power(x))
 	~ Xinst3(
-		(cls y) => A(
-			set(y), subseteq(power(x), y)
-		),
+		(cls y) => {
+			A(set(y), subseteq(power(x), y))
+		},
 		set(power(x))
 	)
 }
@@ -1412,16 +1439,20 @@ rule singleton_is_set(cls x) {
 }
 
 rule infinity() {
-	|- X((cls x) => A(
-		set(x),
+	|- X((cls x) => {
 		A(
-			in(emptyset(), x),
-			V((cls z) => I(
-				in(z ,x),
-				in(cup(z, singleton(z)), x)
-			))
+			set(x),
+			A(
+				in(emptyset(), x),
+				V((cls z) => {
+					I(
+						in(z ,x),
+						in(cup(z, singleton(z)), x)
+					)
+				})
+			)
 		)
-	))
+	})
 }
 
 ############################
@@ -1449,46 +1480,52 @@ rule v2_set_def(cls x, cls y) {
 "cartesian product."
 $\left(#1<<\times>>#2\right)$
 cls cartesian(cls x, cls y) {
-	setbuilder((cls z) => (
-		X2((cls a, cls b) => A(
-			eq(z, v2(a, b)),
-			A(in(a, x), in(b, y))
-		))
-	))
+	setbuilder((cls z) => {
+		X2((cls a, cls b) => {
+			A(
+				eq(z, v2(a, b)),
+				A(in(a, x), in(b, y))
+			)
+		})
+	})
 }
 
 rule cartesian_def(cls x, cls y) {
-	setbuilder_def__((cls z) => (
-		X2((cls a, cls b) => A(
-			eq(z, v2(a, b)),
-			A(in(a, x), in(b, y))
-		))
-	))
-	~ id(V((cls z) => (
+	setbuilder_def__((cls z) => {
+		X2((cls a, cls b) => {
+			A(
+				eq(z, v2(a, b)),
+				A(in(a, x), in(b, y))
+			)
+		})
+	})
+	~ id(V((cls z) => {
 		E(
 			in(z, cartesian(x, y)),
 			A(
 				set(z),
-				X2((cls a, cls b) => A(
-					eq(z, v2(a, b)),
-					A(in(a, x), in(b, y))
-				))
+				X2((cls a, cls b) => {
+					A(
+						eq(z, v2(a, b)),
+						A(in(a, x), in(b, y))
+					)
+				})
 			)
 		)
-	)))
+	}))
 }
 
 "어떤 class가 graph다."
 $\left(<<\mathop\mathrm{graph}>> #1\right)$
 st graph(cls x) {
-	V((cls z) => (
+	V((cls z) => {
 		I(
 			in(z, x),
-			X2((cls a, cls b) => (
+			X2((cls a, cls b) => {
 				eq(z, v2(a, b))
-			))
+			})
 		)
-	))
+	})
 }
 
 rule cartesian_is_graph(cls x, cls y) {
@@ -1496,11 +1533,15 @@ rule cartesian_is_graph(cls x, cls y) {
 }
 
 "어떤 class가 function이다."
-$\left(<<\mathop\mathrm{function}>> #1\right)$
+$\left(<<\mathop\mathrm{function}>> #1: #2 \to #3\right)$
 st function(cls f, cls a, cls b) {
 	A(
 		subseteq(f, cartesian(a, b)),
-		V((cls x) => Q((cls y) => in(v2(x, y), f)))
+		V((cls x) => {
+			Q((cls y) => {
+				in(v2(x, y), f)
+			})
+		})
 	)
 }
 
@@ -1513,9 +1554,11 @@ st fcalleq(cls f, cls x, cls y) {
 }
 
 rule fcalleqQ(cls f, cls a, cls b) {
-	function(f, a, b) |- V((cls x) => (
-		I(in(x, a), Q((cls y) => fcalleq(f, x, y)))
-	))
+	function(f, a, b) |- V((cls x) => {
+		I(in(x, a), Q((cls y) => {
+			fcalleq(f, x, y)
+		}))
+	})
 }
 
 `;
