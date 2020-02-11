@@ -203,8 +203,19 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 					var chain = program.scope.ruleMap[rulename].chain(from * 1, to * 1);
 					$result.innerHTML = katex.renderToString(chain.toTeXString(), katexOpts);
 
+
+
 					[].forEach.call($$('.katex a', $result), a => {
-						a.title = a.getAttribute('href');
+						var href = a.getAttribute('href');
+						var idMatch = href.match(/^#id-([0-9]+)$/);
+
+						if (idMatch) {
+							a.dataset.orange = true;
+							a.title = 'id: ' + idMatch[1];
+						} else {
+							a.dataset.blue = true;
+							a.title = a.getAttribute('href');
+						}
 					});
 				} catch (e) {
 					$result.innerHTML = '<i>Chaining failed!</i>';
@@ -377,7 +388,6 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 
 			[].forEach.call($$('.katex a'), a => {
 				var href = a.getAttribute('href');
-
 				var idMatch = href.match(/^#id-([0-9]+)$/);
 
 				if (idMatch) {
