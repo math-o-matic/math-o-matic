@@ -1,7 +1,7 @@
 var Node = require('./Node');
 var Yield = require('./Yield');
 
-var Translator = require('../Translator');
+var ExpressionResolver = require('../ExpressionResolver');
 
 function Rule({name, params, rules, doc}) {
 	Node.call(this);
@@ -23,7 +23,7 @@ function Rule({name, params, rules, doc}) {
 	this.params = params;
 	this.rules = rules;
 
-	var expands = rules.map(Translator.expand1);
+	var expands = rules.map(ExpressionResolver.expand1);
 
 	if (expands.map(e => e._type == 'yield').some(e => !e))
 		throw Error('Assertion failed');
@@ -45,9 +45,9 @@ Rule.prototype.chain = function (i, j) {
 
 	[i, j] = i <= j ? [i, j] : [j, i];
 
-	return Translator.expand1Funcalls(this.expands.slice(i, j + 1).reduceRight((r, l) => {
+	return ExpressionResolver.expand1Funcalls(this.expands.slice(i, j + 1).reduceRight((r, l) => {
 		for (var i = 0; i < r.left.length; i++) {
-			if (Translator.expr0Equals(l.right, r.left[i])) {
+			if (ExpressionResolver.expr0Equals(l.right, r.left[i])) {
 				var newleft = r.left.slice(0, i)
 					.concat(l.left)
 					.concat(r.left.slice(i + 1));

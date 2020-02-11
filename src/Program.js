@@ -9,8 +9,8 @@ var Yield = require('./nodes/Yield');
 var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
 
-var Translator = require('./Translator');
-Translator.init({Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall, Ruleset});
+var ExpressionResolver = require('./ExpressionResolver');
+ExpressionResolver.init({Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall, Ruleset});
 
 function Program() {
 	this.scope = new Scope(null);

@@ -1,7 +1,7 @@
 var Node = require('./Node');
 var Typevar = require('./Typevar');
 
-var Translator = require('../Translator');
+var ExpressionResolver = require('../ExpressionResolver');
 
 function Yield({left, right}) {
 	Node.call(this);
@@ -16,7 +16,7 @@ function Yield({left, right}) {
 	// remove duplicates
 	this.left = left.reduce((l, r) => {
 		for (var i = 0; i < l.length; i++)
-			if (Translator.expr0Equals(l[i], r)) return l;
+			if (ExpressionResolver.expr0Equals(l[i], r)) return l;
 
 		return l.push(r), l;
 	}, []);

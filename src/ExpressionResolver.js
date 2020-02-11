@@ -1,8 +1,12 @@
+var ER = {};
+
 var Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall, Ruleset;
-
-var Translator = {};
-
-Translator.init = function (o) {
+/*
+ * 몇몇 노드가 이 모듈을 require 하므로 이 모듈이 노드들을 require 할 수 없다.
+ * 그러므로 공통 조상이 이 모듈에 노드들을 넣어 주는 것으로 한다.
+ * require 동작 방식의 한계라고 할 수 있다.
+ */
+ER.init = function (o) {
 	Type = o.Type;
 	Typevar = o.Typevar;
 	Fun = o.Fun;
@@ -13,13 +17,13 @@ Translator.init = function (o) {
 	Ruleset = o.Ruleset;
 };
 
-Translator.isfree0 = function (expr, map) {
+ER.isfree0 = function (expr, map) {
 	if (expr._type == 'funcall') {
-		return Translator.isfree0(expr.fun, map)
-			&& expr.args.map(arg => Translator.isfree0(arg, map)).every(e => e);
+		return ER.isfree0(expr.fun, map)
+			&& expr.args.map(arg => ER.isfree0(arg, map)).every(e => e);
 	} else if (expr._type == 'fun') {
 		if (expr.atomic || !expr.anonymous) return !map(expr);
-		return Translator.isfree0(expr.expr, map);
+		return ER.isfree0(expr.expr, map);
 	} else if (expr._type == 'typevar') {
 		return !map(expr);
 	} else {
@@ -27,12 +31,12 @@ Translator.isfree0 = function (expr, map) {
 	}
 };
 
-Translator.substitute0 = function (expr, map) {
-	if (Translator.isfree0(expr, map)) return expr;
+ER.substitute0 = function (expr, map) {
+	if (ER.isfree0(expr, map)) return expr;
 
 	if (expr._type == 'funcall') {
-		var fun2 = Translator.substitute0(expr.fun, map);
-		var args2 = expr.args.map(arg => Translator.substitute0(arg, map));
+		var fun2 = ER.substitute0(expr.fun, map);
+		var args2 = expr.args.map(arg => ER.substitute0(arg, map));
 		return new Funcall({
 			fun: fun2,
 			args: args2
@@ -40,7 +44,7 @@ Translator.substitute0 = function (expr, map) {
 	} else if (expr._type == 'fun') {
 		if (expr.atomic) return map(expr) || expr;
 
-		var expr2 = Translator.substitute0(expr.expr, map);
+		var expr2 = ER.substitute0(expr.expr, map);
 
 		return new Fun({
 			anonymous: true,
@@ -56,16 +60,16 @@ Translator.substitute0 = function (expr, map) {
 	}
 };
 
-Translator.substitute1 = function (expr, map) {
+ER.substitute1 = function (expr, map) {
 	if (expr._type == 'rulecall') {
 		var rule = expr.rule;
-		var args = expr.args.map(arg => Translator.substitute0(arg, map));
+		var args = expr.args.map(arg => ER.substitute0(arg, map));
 		return new Rulecall({
 			rule, args
 		});
 	} else if (expr._type == 'yield') {
-		var left = expr.left.map(e => Translator.substitute0(e, map));
-		var right = Translator.substitute0(expr.right, map);
+		var left = expr.left.map(e => ER.substitute0(e, map));
+		var right = ER.substitute0(expr.right, map);
 
 		return new Yield({
 			left, right
@@ -76,12 +80,12 @@ Translator.substitute1 = function (expr, map) {
 };
 
 // 네임드도 푼다. 한 번만.
-Translator.expand0FuncallOnce = function (expr) {
+ER.expand0FuncallOnce = function (expr) {
 	if (expr._type == 'funcall') {
 		var map = param => expr.args[expr.fun.params.indexOf(param)];
 
 		if (expr.fun._type == 'funcall') {
-			var fun = Translator.expand0FuncallOnce(expr.fun);
+			var fun = ER.expand0FuncallOnce(expr.fun);
 			return new Funcall({
 				fun,
 				args: expr.args
@@ -91,26 +95,26 @@ Translator.expand0FuncallOnce = function (expr) {
 		if (!expr.fun.expr)
 			throw Error('Could not expand');
 
-		return Translator.substitute0(expr.fun.expr, map);
+		return ER.substitute0(expr.fun.expr, map);
 	}
 
 	throw Error('Could not expand');
 };
 
 // 네임드는 안 푼다. 재귀적.
-Translator.expand0Funcalls = function (expr) {
+ER.expand0Funcalls = function (expr) {
 	if (expr._type == 'funcall') {
-		var fun = Translator.expand0Funcalls(expr.fun);
-		var args = expr.args.map(Translator.expand0Funcalls);
+		var fun = ER.expand0Funcalls(expr.fun);
+		var args = expr.args.map(ER.expand0Funcalls);
 
 		if (!fun.anonymous)
 			return new Funcall({fun, args});
 
 		var map = param => args[fun.params.indexOf(param)];
 
-		return Translator.expand0Funcalls(Translator.substitute0(fun.expr, map));
+		return ER.expand0Funcalls(ER.substitute0(fun.expr, map));
 	} else if (expr._type == 'fun' && expr.anonymous) {
-		var expr2 = Translator.expand0Funcalls(expr.expr);
+		var expr2 = ER.expand0Funcalls(expr.expr);
 		return new Fun({
 			anonymous: true,
 			type: expr.type,
@@ -123,19 +127,19 @@ Translator.expand0Funcalls = function (expr) {
 	}
 };
 
-Translator.expand0 = function (expr) {
+ER.expand0 = function (expr) {
 	if (expr._type == 'funcall') {
-		var fun = Translator.expand0(expr.fun);
-		var args = expr.args.map(Translator.expand0);
+		var fun = ER.expand0(expr.fun);
+		var args = expr.args.map(ER.expand0);
 
 		if (fun._type != 'fun' || fun.atomic)
 			return new Funcall({fun, args});
 
 		var map = param => args[fun.params.indexOf(param)];
 
-		return Translator.expand0(Translator.substitute0(fun.expr, map));
+		return ER.expand0(ER.substitute0(fun.expr, map));
 	} else if (expr._type == 'fun' && !expr.atomic) {
-		var expr2 = Translator.expand0(expr.expr);
+		var expr2 = ER.expand0(expr.expr);
 		return new Fun({
 			anonymous: true,
 			type: expr.type,
@@ -149,18 +153,18 @@ Translator.expand0 = function (expr) {
 };
 
 // expand0은 하지 않음. rule 단계에서만 풀음.
-Translator.expand1 = function (expr) {
+ER.expand1 = function (expr) {
 	if (expr._type == 'rulecall') {
 		var rule = expr.rule;
 		var args = expr.args;
 
 		var map = param => args[rule.params.indexOf(param)];
 
-		return Translator.expand1(Translator.substitute1(rule.expr, map));
+		return ER.expand1(ER.substitute1(rule.expr, map));
 	} else if (expr._type == 'yield') {
 		return expr;
 	} else if (expr._type == 'rule') {
-		var expr2 = Translator.expand1(expr.expr);
+		var expr2 = ER.expand1(expr.expr);
 		return new Rule({
 			name: '<anonymous>',
 			params: expr.params,
@@ -170,20 +174,20 @@ Translator.expand1 = function (expr) {
 };
 
 // expr0의 funcall까지 풀음.
-Translator.expand1Funcalls = function (expr) {
+ER.expand1Funcalls = function (expr) {
 	if (expr._type == 'rulecall') {
 		var rule = expr.rule;
-		var args = expr.args.map(Translator.expand0Funcalls);
+		var args = expr.args.map(ER.expand0Funcalls);
 
 		var map = param => args[rule.params.indexOf(param)];
 
-		return Translator.expand1Funcalls(Translator.substitute1(rule.expr, map));
+		return ER.expand1Funcalls(ER.substitute1(rule.expr, map));
 	} else if (expr._type == 'yield') {
-		var left = expr.left.map(Translator.expand0Funcalls);
-		var right = Translator.expand0Funcalls(expr.right);
+		var left = expr.left.map(ER.expand0Funcalls);
+		var right = ER.expand0Funcalls(expr.right);
 		return new Yield({left, right});
 	} else if (expr._type == 'rule') {
-		var expr2 = Translator.expand1Funcalls(expr.expr);
+		var expr2 = ER.expand1Funcalls(expr.expr);
 		return new Rule({
 			name: '<anonymous>',
 			params: expr.params,
@@ -193,20 +197,20 @@ Translator.expand1Funcalls = function (expr) {
 };
 
 // expr0까지 최대로 풀음.
-Translator.expand1Full = function (expr) {
+ER.expand1Full = function (expr) {
 	if (expr._type == 'rulecall') {
 		var rule = expr.rule;
-		var args = expr.args.map(Translator.expand0);
+		var args = expr.args.map(ER.expand0);
 
 		var map = param => args[rule.params.indexOf(param)];
 
-		return Translator.expand1Full(Translator.substitute1(rule.expr, map));
+		return ER.expand1Full(ER.substitute1(rule.expr, map));
 	} else if (expr._type == 'yield') {
-		var left = expr.left.map(Translator.expand0);
-		var right = Translator.expand0(expr.right);
+		var left = expr.left.map(ER.expand0);
+		var right = ER.expand0(expr.right);
 		return new Yield({left, right});
 	} else if (expr._type == 'rule') {
-		var expr2 = Translator.expand1Full(expr.expr);
+		var expr2 = ER.expand1Full(expr.expr);
 		return new Rule({
 			name: '<anonymous>',
 			params: expr.params,
@@ -215,7 +219,7 @@ Translator.expand1Full = function (expr) {
 	} else throw Error('Unknown expr1');
 };
 
-Translator.expr0Equals = function (a, b) {
+ER.expr0Equals = function (a, b) {
 
 	var cache = [];
 
@@ -292,15 +296,15 @@ Translator.expr0Equals = function (a, b) {
 				if (foo) return true;
 
 				return cachedRecurse(
-					Translator.expand0FuncallOnce(a),
-					Translator.expand0FuncallOnce(b),
+					ER.expand0FuncallOnce(a),
+					ER.expand0FuncallOnce(b),
 					depth+1
 				);
 			}
 
 			if (a.fun._type == 'funcall') {
 				return cachedRecurse(
-					Translator.expand0FuncallOnce(a),
+					ER.expand0FuncallOnce(a),
 					b,
 					depth+1
 				);
@@ -309,7 +313,7 @@ Translator.expr0Equals = function (a, b) {
 			if (b.fun._type == 'funcall') {
 				return cachedRecurse(
 					a,
-					Translator.expand0FuncallOnce(b),
+					ER.expand0FuncallOnce(b),
 					depth+1
 				);
 			}
@@ -329,14 +333,14 @@ Translator.expr0Equals = function (a, b) {
 
 			if (expandA) {
 				return cachedRecurse(
-					Translator.expand0FuncallOnce(a),
+					ER.expand0FuncallOnce(a),
 					b,
 					depth+1
 				);
 			} else {
 				return cachedRecurse(
 					a,
-					Translator.expand0FuncallOnce(b),
+					ER.expand0FuncallOnce(b),
 					depth+1
 				);
 			}
@@ -347,7 +351,7 @@ Translator.expr0Equals = function (a, b) {
 
 		while (a._type == 'funcall') {
 			if (!a.fun.expr) return false;
-			a = Translator.expand0FuncallOnce(a);
+			a = ER.expand0FuncallOnce(a);
 		}
 
 		if (a._type == 'typevar' || b._type == 'typevar')
@@ -363,11 +367,11 @@ Translator.expr0Equals = function (a, b) {
 		);
 
 		return cachedRecurse(
-			Translator.expand0FuncallOnce(new Funcall({
+			ER.expand0FuncallOnce(new Funcall({
 				fun: a,
 				args: placeholders
 			})),
-			Translator.expand0FuncallOnce(new Funcall({
+			ER.expand0FuncallOnce(new Funcall({
 				fun: b,
 				args: placeholders
 			})),
@@ -396,4 +400,4 @@ Translator.expr0Equals = function (a, b) {
 	return ret;
 };
 
-module.exports = Translator;
+module.exports = ER;

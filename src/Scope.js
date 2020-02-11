@@ -8,7 +8,7 @@ var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
 var Link = require('./nodes/Link');
 
-var Translator = require('./Translator');
+var ExpressionResolver = require('./ExpressionResolver');
 
 var PegInterface = require('./PegInterface');
 
@@ -29,7 +29,7 @@ function Scope(parent) {
 	this.Ruleset = Ruleset;
 	this.Link = Link;
 
-	this.Translator = Translator;
+	this.ExpressionResolver = ExpressionResolver;
 
 	this.parent = parent;
 	this.root = parent ? parent.root : this;
@@ -71,8 +71,6 @@ Scope.prototype.addType = function (typedefobj) {
 		origin.doc = typedefobj.doc;
 		return this.typedefMap[typedefobj.name] = origin;
 	}
-
-	console.log(typedefobj.doc);
 
 	return this.typedefMap[typedefobj.name] = new Type({
 		functional: false,
