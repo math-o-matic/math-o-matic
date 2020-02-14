@@ -13,7 +13,9 @@ function Yield({left, right}) {
 	if (!(right instanceof Node))
 		throw Error('Assertion failed');
 
-	// remove duplicates
+	// antecedant의 contraction
+	// 현재 antecedant를 집합처럼 생각하므로 contraction을 자동으로 한다.
+	// antecedant가 집합인지 시퀀스인지는 #14 참조.
 	this.left = left.reduce((l, r) => {
 		for (var i = 0; i < l.length; i++)
 			if (ExpressionResolver.equals0(l[i], r)) return l;
