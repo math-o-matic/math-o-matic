@@ -5,7 +5,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>M42/math/tt</title>
 		<script src="tt.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
 		<style>
 			* {
 				box-sizing: border-box;
@@ -28,7 +30,7 @@
 				line-height: 1.2;
 			}
 
-			h1, h2, h3, h4, h5, h6, a, b, strong, input, textarea, th, .katex {
+			h1, h2, h3, h4, h5, h6, a, b, strong, input, textarea, th {
 				color: #202124;
 			}
 
@@ -132,11 +134,6 @@
 				border: 3px #455A64 solid;
 			}
 
-			.true {
-				background-color: #81C784;
-				color: white;
-			}
-
 			#display table {
 				border: 3px #455A64 solid;
 			}
@@ -145,9 +142,26 @@
 				content: 'T';
 			}
 
+			.tex {
+				margin: 1em 0;
+			}
+
+			.true {
+				background-color: #81C784;
+				color: white;
+			}
+
 			.false {
 				background-color: #E57373;
 				color: white;
+			}
+
+			.result-true {
+				color: #388E3C;
+			}
+
+			.result-false {
+				color: #D32F2F;
 			}
 
 			#display table tr td.false::before {
@@ -169,9 +183,12 @@
 					var v = $('#input').value;
 
 					try {
-						var table = tt(v, 'table');
+						var {table, tex} = tt(v, 'verbose');
 						var result = tt(v);
-						$('#display').innerHTML = `<table>
+						
+						$('#display').innerHTML = `
+	<p class="tex result-${result}">${katex.renderToString(tex, {displayMode: true})}</p>
+	<table>
 	<colgroup>
 		<col class="vars" span="${table.left.length}">
 		<col class="result" span="1">
@@ -183,7 +200,7 @@
 		${table.right.map(({column}) => column[i]).map(e => `<td class="${e}"></td>`).join('')}</tr>`;
 	}).join('')}
 	</table>
-	<p>결과: <span class="${result}">${result}</span></p>`;
+	<p>결과: <span class="result-${result}">${result}</span></p>`;
 					} catch (err) {
 						$('#display').innerHTML = '<p></p>';
 						$('#display p').innerText = err;

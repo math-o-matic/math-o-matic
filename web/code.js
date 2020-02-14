@@ -312,7 +312,7 @@ native link Vi;
 [$$(x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))]
 를 주면 규칙
 [$$(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y)]
-를 뱉는다. Vi의 역연산이라고 볼 수 있다.
+를 뱉는다. Vi의 역연산이라고 볼 수 있다. rule Vinst로부터 유도할 수 있을 것으로 추정된다.
 
 제약사항
 [ul

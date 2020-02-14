@@ -45,6 +45,8 @@ function makeError(message, trace) {
 		.map(e => `${e[0]} ${e[1]} (code.js:${e[2].start.line}:${e[2].start.column})`).join('\n\tat '));
 }
 
+// type은 Scope에서 알아서 한다.
+
 PegInterface.typevar = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 

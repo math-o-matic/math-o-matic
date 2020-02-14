@@ -1,3 +1,43 @@
+function toTeX(parsed) {
+	return (function recurse(tree) {
+		if (typeof tree == 'string') return tree;
+
+		if (['T', 'F'].includes(tree[0])) {
+			return ({
+				T: '\\top',
+				F: '\\bot'
+			})[tree[0]];
+		}
+
+		if (['N'].includes(tree[0])) {
+			return ({
+				N: function (args) {
+					return `(\\neg ${recurse(args[0])})`;
+				}
+			})[tree[0]](tree.slice(1));
+		}
+
+		if (['A', 'O', 'I', 'E'].includes(tree[0])) {
+			return ({
+				A: function (args) {
+					return `(${recurse(args[0])} \\land ${recurse(args[1])})`;
+				},
+				O: function (args) {
+					return `(${recurse(args[0])} \\lor ${recurse(args[1])})`;
+				},
+				I: function (args) {
+					return `(${recurse(args[0])} \\to ${recurse(args[1])})`;
+				},
+				E: function (args) {
+					return `(${recurse(args[0])} \\leftrightarrow ${recurse(args[1])})`;
+				},
+			})[tree[0]](tree.slice(1));
+		}
+
+		throw Error();
+	})(parsed);
+}
+
 function tt(name, type) {
 	if (typeof name != 'string')
 		throw Error('Assertion failed');
@@ -129,20 +169,25 @@ function tt(name, type) {
 	}
 
 	switch (type) {
-		case 'table':
-			var ret = {
+		case 'verbose':
+			var table = {
 				left: Object.keys(varTable).sort().map(e => ({name: e, column: varTable[e]})),
 				right: [makeTable(parsed)].flat(Infinity)
 			};
 
-			var a1 = ret.right[0].column,
+			var a1 = table.right[0].column,
 				a2 = getColumn(parsed);
 
 			if (a1.length != a2.length || !a1.every((e, i) => e === a2[i])) {
 				throw Error('Assertion failed!');
 			}
 
-			return ret;
+			var tex = toTeX(parsed);
+
+			return {
+				table,
+				tex
+			};
 		default:
 			return getColumn(parsed).every(e => e);
 	}
