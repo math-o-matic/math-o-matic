@@ -48,7 +48,8 @@ Rule.prototype.chain = function (i, j) {
 	try {
 		return ExpressionResolver.chain(this.expands.slice(i, j + 1));
 	} catch (err) {
-		throw Error(`Chaining failed for rule ${this.name}: ` + err.message);
+		err.message = `Chaining failed for rule ${this.name}: ` + err.message;
+		throw err;
 	}
 };
 

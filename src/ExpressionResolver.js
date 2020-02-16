@@ -219,10 +219,27 @@ ER.expand1Full = function (expr) {
 	} else throw Error('Unknown expr1');
 };
 
+/*
+ * 두 개의 expr0의 구조가 같은지를 판단한다.
+ */
 ER.equals0 = function (a, b) {
+	/*
+	 * 표현식 a, b 및 그 equals0 값 v에 대해
+	 * [a._id, b._id, v]를 저장해 놓은 캐시.
+	 * a._id <= b._id를 만족하며 (a._id, b._id)에 의해
+	 * 작은 것 먼저로 lexicographical order 되어 있다.
+	 * 이는 캐시에 대한 이진 탐색을 가능케 하기 위함이다.
+	 */
 	var cache = [];
 
-	// https://stackoverflow.com/a/29018745
+	/*
+	 * cache에서 아아디 [a, b]를 이진 탐색한다.
+	 * 찾았을 경우 그 인덱스(>= 0)를 반환하며 못 찾았을 경우
+	 * lexicographical order에 의해 [a, b]가 삽입될 자리 i에 대해
+	 * ~i(< 0)를 반환한다.
+	 *
+	 * https://stackoverflow.com/a/29018745
+	 */
 	function search(a, b) {
 		var m = 0;
 		var n = cache.length - 1;
@@ -353,10 +370,11 @@ ER.equals0 = function (a, b) {
 			a = ER.expand0FuncallOnce(a);
 		}
 
-		if (a._type == 'typevar' || b._type == 'typevar')
-			return a == b;
+		// a, b: fun/typevar
 
-		// a, b: fun
+		if (!a.expr || !b.expr) {
+			return a == b;
+		}
 
 		var placeholders = Array(a.type.from.length).fill().map((_, i) =>
 			new Typevar({
