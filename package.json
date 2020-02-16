@@ -1,7 +1,7 @@
 {
   "name": "m42-math",
   "version": "0.1.0",
-  "description": "Yet another proof checker in JavaScript",
+  "description": "Computerized axiomatic system in JavaScript",
   "repository": {
     "type": "git",
     "url": "http://github.com/logico-philosophical/math.git"
