@@ -1,5 +1,5 @@
 <h1 align="center"><code>M42/math</code></h1>
-<p align="center">Yet another proof checker in JavaScript</p>
+<p align="center"><a href="https://logico-philosophical.github.io/math/docs/build/index.html">docs</a></p>
 
 [/web/index.html](https://logico-philosophical.github.io/math/web/index.html)을 보세요.
 
