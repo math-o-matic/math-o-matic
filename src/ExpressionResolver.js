@@ -219,202 +219,90 @@ ER.expand1Full = function (expr) {
 	} else throw Error('Unknown expr1');
 };
 
-/*
- * 두 개의 expr0의 구조가 같은지를 판단한다.
- */
 ER.equals0 = function (a, b) {
-	/*
-	 * 표현식 a, b 및 그 equals0 값 v에 대해
-	 * [a._id, b._id, v]를 저장해 놓은 캐시.
-	 * a._id <= b._id를 만족하며 (a._id, b._id)에 의해
-	 * 작은 것 먼저로 lexicographical order 되어 있다.
-	 * 이는 캐시에 대한 이진 탐색을 가능케 하기 위함이다.
-	 */
-	var cache = [];
+	function recurse(a, b, depth) {
+		if (a._type == 'funcall' && b._type == 'funcall') {
+			if (a.fun._type == 'funcall') return recurseWrap(
+				ER.expand0FuncallOnce(a), b, depth + 1
+			);
 
-	/*
-	 * cache에서 아아디 [a, b]를 이진 탐색한다.
-	 * 찾았을 경우 그 인덱스(>= 0)를 반환하며 못 찾았을 경우
-	 * lexicographical order에 의해 [a, b]가 삽입될 자리 i에 대해
-	 * ~i(< 0)를 반환한다.
-	 *
-	 * https://stackoverflow.com/a/29018745
-	 */
-	function search(a, b) {
-		var m = 0;
-		var n = cache.length - 1;
-		while (m <= n) {
-			var k = (n + m) >> 1;
-			var c = cache[k][0], d = cache[k][1];
+			if (b.fun._type == 'funcall') return recurseWrap(
+				a, ER.expand0FuncallOnce(b), depth + 1
+			);
 
-			if (a > c || (a == c && b > d)) {
-				m = k + 1;
-			} else if (a < c || (a == c && b < d)) {
-				n = k - 1;
-			} else {
-				return k;
+			if (!a.fun.expr && !b.fun.expr) {
+				if (a.fun != b.fun) return false;
+				for (var i = 0; i < a.args.length; i++) {
+					if (!recurseWrap(a.args[i], b.args[i], depth + 1)) return false;
+				}
+				return true;
 			}
+
+			if (a.fun.expr) return recurseWrap(
+				ER.expand0FuncallOnce(a), b, depth + 1
+			);
+
+			return recurseWrap(
+				a, ER.expand0FuncallOnce(b), depth + 1
+			);
 		}
 
-		return ~m; // -m - 1
-	}
+		if (a._type == 'funcall') {
+			if (a.fun._type == 'funcall') return recurseWrap(
+				ER.expand0FuncallOnce(a), b, depth + 1
+			);
 
-	function addCache(a, b, v) {
-		var aid = a._id, bid = b._id;
+			if (!a.fun.expr) return false;
+			return recurseWrap(
+				ER.expand0FuncallOnce(a), b, depth + 1
+			);
+		}
 
-		if (aid > bid)
-			[aid, bid] = [bid, aid];
+		if (b._type == 'funcall') {
+			if (b.fun._type == 'funcall') return recurseWrap(
+				a, ER.expand0FuncallOnce(b), depth + 1
+			);
 
-		var i = search(aid, bid);
+			if (!b.fun.expr) return false;
+			return recurseWrap(
+				a, ER.expand0FuncallOnce(b), depth + 1
+			);
+		}
 
-		if (i < 0)
-			cache.splice(~i, 0, [aid, bid, v]);
-	}
-
-	function getCache(a, b) {
-		var aid = a._id, bid = b._id;
-
-		if (aid > bid)
-			[aid, bid] = [bid, aid];
-
-		var i = search(aid, bid);
-
-		if (i < 0) return;
-
-		return cache[i][2];
-	}
-
-	function recurse(a, b, depth) {
-		// console.log(`${depth}\n${a}\n\n${b}`);
-
-		if (a == b) return true;
 		if (!a.type.equals(b.type)) return false;
 
-		if (a._type == 'funcall' && b._type == 'funcall') {
-			if (a.fun == b.fun) {
-				if (!a.fun.expr) {
-					for (let i = 0; i < a.args.length; i++)
-						if (!cachedRecurse(a.args[i], b.args[i], depth+1)) return false;
-					return true;
-				}
+		if (a.type.isFunctional) {
+			var placeholders = Array(a.type.from.length).fill().map((_, i) =>
+				new Typevar({
+					type: a.type.from[i],
+					name: '$' + i
+				})
+			);
 
-				var foo = true;
-
-				for (let i = 0; i < a.args.length; i++) {
-					if (!cachedRecurse(
-						a.args[i], b.args[i],depth+1
-					)) {
-						foo = false;
-						break;
-					}
-				}
-
-				if (foo) return true;
-
-				return cachedRecurse(
-					ER.expand0FuncallOnce(a),
-					ER.expand0FuncallOnce(b),
-					depth+1
-				);
-			}
-
-			if (a.fun._type == 'funcall') {
-				return cachedRecurse(
-					ER.expand0FuncallOnce(a),
-					b,
-					depth+1
-				);
-			}
-
-			if (b.fun._type == 'funcall') {
-				return cachedRecurse(
-					a,
-					ER.expand0FuncallOnce(b),
-					depth+1
-				);
-			}
-		
-			if (!a.fun.expr && !b.fun.expr) return false;
-
-			var expandA = true;
-
-			if (!a.fun.expr && b.fun.expr)
-				expandA = false;
-
-			if (b.fun.anonymous)
-				expandA = false;
-
-			if (b.fun.expr && b.fun.expr._type == 'funcall' && b.fun.expr.fun == a.fun)
-				expandA = false;
-
-			if (expandA) {
-				return cachedRecurse(
-					ER.expand0FuncallOnce(a),
-					b,
-					depth+1
-				);
-			} else {
-				return cachedRecurse(
-					a,
-					ER.expand0FuncallOnce(b),
-					depth+1
-				);
-			}
+			return recurseWrap(
+				new Funcall({
+					fun: a,
+					args: placeholders
+				}),
+				new Funcall({
+					fun: b,
+					args: placeholders
+				}),
+				depth + 1
+			);
 		}
 
-		if (b._type == 'funcall')
-			[a, b] = [b, a];
-
-		while (a._type == 'funcall') {
-			if (!a.fun.expr) return false;
-			a = ER.expand0FuncallOnce(a);
-		}
-
-		// a, b: fun/typevar
-
-		if (!a.expr || !b.expr) {
-			return a == b;
-		}
-
-		var placeholders = Array(a.type.from.length).fill().map((_, i) =>
-			new Typevar({
-				type: a.type.from[i],
-				name: '$' + i
-			})
-		);
-
-		return cachedRecurse(
-			ER.expand0FuncallOnce(new Funcall({
-				fun: a,
-				args: placeholders
-			})),
-			ER.expand0FuncallOnce(new Funcall({
-				fun: b,
-				args: placeholders
-			})),
-			depth+1
-		);
+		return a == b;
 	}
 
-	function cachedRecurse(a, b, depth) {
-		var cached = getCache(a, b);
-		if (typeof cached == 'boolean') {
-			// console.warn(`${depth} (cache: ${cached})\n${a}\n\n${b}`);
-			return cached;
-		}
-
-		var v = recurse(a, b, depth);
-
-		// typevar는 캐싱 하지 않는다.
-		if (!(a._type == 'typevar'))
-			addCache(a, b, v);
-
-		return v;
+	function recurseWrap(a, b, depth) {
+		// console.log(`${depth}\n${a}\n\n${b}`);
+		var ret = recurse(a, b, depth);
+		// console.log(`${depth}\n${a}\n\n${b}\n${ret}`);
+		return ret;
 	}
 
-	var ret = cachedRecurse(a, b, 0);
-	// console.error(`result: ${ret}\ncache length: ${cache.length}`);
-	return ret;
+	return recurseWrap(a, b, 0);
 };
 
 ER.chain = function (yields) {

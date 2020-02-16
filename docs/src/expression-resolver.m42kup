@@ -1,0 +1,55 @@
+[=[;ExpressionResolver]의 동작방식]
+
+[==[;expand0FuncallOnce(expr0)]]
+
+funcall을 한 단계만 푼다. fun이 funcall이면 그것을 [;expand0FuncallOnce] 한다. fun이 funcall이고 fun의 fun이 funcall이면 그것을 [;expand0FuncallOnce] 한다. 등등.
+
+[$(x \mapsto f(x))(y) \to f(y)]
+
+[$(x \mapsto y \mapsto f(x, y))(z) \to y \mapsto f(z, y)]
+
+[$(x \mapsto y \mapsto f(x, y))(z)(w) \to (y \mapsto f(z, y))(w)]
+
+[$`(x \mapsto y \mapsto z \mapsto f(x, y, z))(w)(v)(u) \to (y \mapsto z \mapsto f(w, y, z))(v)(u)`]
+
+[ol
+	[*] expr0이 funcall이 아닌 경우 에러.
+	[*] expr0.fun이 funcall일 경우 expr0.fun을 expand0FuncallOnce 한 expr0 반환.
+	[*] expr0.fun이 본체가 없을 경우 에러.
+	[*] expr0.fun의 본체에서 expr0.fun의 매개변수를 expr0의 인자로 substitute0한 것을 반환.
+]
+
+[==[;equals0(a, b)]]
+
+두 expr0(funcall / fun / typevar) 표현식 a, b의 구조가 같은지를 판단한다.
+
+[ol
+	[*] a, b가 funcall인 경우
+	[ol
+		[*] a.fun이 funcall일 경우 [;equals0(expand0FuncallOnce(a), b)] 반환.
+		[*] b.fun이 funcall일 경우 [;equals0(a, expand0FuncallOnce(b))] 반환.
+		[*] a.fun 및 b.fun이 본체가 없을 경우
+		[ol
+			[*] [;a.fun != b.fun]일 경우 false.
+			[*] 어떤 n번째 인자 간의 equals0가 false일 경우 false.
+			[*] true.
+		]
+		[*] a.fun의 본체가 있을 경우 [;equals0(expand0FuncallOnce(a), b)] 반환.
+		[*] [;equals0(a, expand0FuncallOnce(b))] 반환.
+	]
+	[*] a가 funcall인 경우
+	[ol
+		[*] a.fun이 funcall일 경우 [;equals0(expand0FuncallOnce(a), b)] 반환.
+		[*] a.fun의 본체가 없을 경우 false.
+		[*] [;equals0(expand0FuncallOnce(a), b)] 반환.
+	]
+	[*] b가 funcall인 경우
+	[ol
+		[*] b.fun이 funcall일 경우 [;equals0(a, expand0FuncallOnce(b))] 반환.
+		[*] b.fun의 본체가 없을 경우 false.
+		[*] [;equals0(a, expand0FuncallOnce(b))] 반환.
+	]
+	[*] 타입이 다르면 false.
+	[*] a, b가 callable 한 타입인 경우 같은 placeholder들을 인자로 한 funcall을 만들어 이것들의 equals0을 반환.
+	[*] [;a == b] 반환.
+]
