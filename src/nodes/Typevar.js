@@ -34,10 +34,10 @@ Typevar.prototype.toTeXString = function (root) {
 	}
 
 	if (this.name.length == 1) {
-		return `\\href{#id-${this._id}}{${this.name}}`;
+		return `\\href{#id-${this._id}}{${this.escapeTeX(this.name)}}`;
 	}
 
-	return `\\textcolor{#F57C00}{\\mathrm{${this.escapeTeX(this.name)}}}_{\\scriptscriptstyle ${this._id}}`;
+	return `\\href{#id-${this._id}}{\\mathrm{${this.escapeTeX(this.name)}}}`;
 };
 
 module.exports = Typevar;

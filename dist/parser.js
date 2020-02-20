@@ -240,7 +240,7 @@ function peg$parse(input, options) {
       peg$c41 = peg$literalExpectation("|-", false),
       peg$c42 = function(left, right) {
       			return {
-      				_type: 'yield',
+      				_type: 'tee',
       				left,
       				right,
       				location: location()
@@ -1485,7 +1485,7 @@ function peg$parse(input, options) {
     return s0;
   }
 
-  function peg$parseyield() {
+  function peg$parsetee() {
     var s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10;
 
     s0 = peg$currPos;
@@ -2440,7 +2440,7 @@ function peg$parse(input, options) {
   function peg$parseexpr1() {
     var s0;
 
-    s0 = peg$parseyield();
+    s0 = peg$parsetee();
     if (s0 === peg$FAILED) {
       s0 = peg$parserulecall();
     }

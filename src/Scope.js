@@ -3,7 +3,7 @@ var Typevar = require('./nodes/Typevar');
 var Fun = require('./nodes/Fun');
 var Funcall = require('./nodes/Funcall');
 var Rule = require('./nodes/Rule');
-var Yield = require('./nodes/Yield');
+var Tee = require('./nodes/Tee');
 var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
 var Link = require('./nodes/Link');
@@ -24,7 +24,7 @@ function Scope(parent) {
 	this.Fun = Fun;
 	this.Funcall = Funcall;
 	this.Rule = Rule;
-	this.Yield = Yield;
+	this.Tee = Tee;
 	this.Rulecall = Rulecall;
 	this.Ruleset = Ruleset;
 	this.Link = Link;

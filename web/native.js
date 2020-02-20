@@ -151,7 +151,7 @@ native = {
 
 				var funcall = recurse(parsed);
 
-				var yield_ = new scope.Yield({
+				var tee = new scope.Tee({
 					left: [],
 					right: funcall
 				});
@@ -159,7 +159,7 @@ native = {
 				var rule = new scope.Rule({
 					name: 'tt.' + name,
 					params: typevars,
-					rules: [yield_]
+					rules: [tee]
 				});
 
 				return rule;
@@ -187,12 +187,12 @@ native = {
 
 				var last = rule.params[rule.params.length - 1];
 
-				var yield_ = rule.expr;
+				var tee = rule.expr;
 
-				if (yield_._type != 'yield')
+				if (tee._type != 'tee')
 					return false;
 
-				if (yield_.left.length)
+				if (tee.left.length)
 					return false;
 
 				if (!scope.hasTypevarByName('V'))
@@ -215,7 +215,7 @@ native = {
 					name: `Vi[${rule.name}]`,
 					params: rule.params.slice(0, rule.params.length - 1),
 					rules: [
-						new scope.Yield({
+						new scope.Tee({
 							left: [],
 							right: new scope.Funcall({
 								fun: V,
@@ -229,7 +229,7 @@ native = {
 										}),
 										atomic: false,
 										params: [last],
-										expr: yield_.right
+										expr: tee.right
 									})
 								]
 							})
@@ -253,12 +253,12 @@ native = {
 
 				var cls = scope.getTypeByName('cls');
 
-				var yield_ = rule.expr;
+				var tee = rule.expr;
 
-				if (yield_._type != 'yield')
+				if (tee._type != 'tee')
 					return false;
 
-				if (yield_.left.length)
+				if (tee.left.length)
 					return false;
 
 				if (!scope.hasTypevarByName('V'))
@@ -277,8 +277,8 @@ native = {
 				})))
 					throw Error(`Wrong type for V`);
 
-				if (yield_.right._type != 'funcall'
-						|| yield_.right.fun != V)
+				if (tee.right._type != 'funcall'
+						|| tee.right.fun != V)
 					return false;
 
 				var newvar = new scope.Typevar({
@@ -290,10 +290,10 @@ native = {
 					name: `Ve[${rule.name}]`,
 					params: rule.params.concat([newvar]),
 					rules: [
-						new scope.Yield({
+						new scope.Tee({
 							left: [],
 							right: new scope.Funcall({
-								fun: yield_.right.args[0],
+								fun: tee.right.args[0],
 								args: [newvar]
 							})
 						})
@@ -311,12 +311,12 @@ native = {
 
 				var st = scope.getTypeByName('st');
 
-				var yield_ = rule.expr;
+				var tee = rule.expr;
 
-				if (yield_._type != 'yield')
+				if (tee._type != 'tee')
 					return false;
 
-				if (!yield_.left.length)
+				if (!tee.left.length)
 					return false;
 
 				if (!scope.hasTypevarByName('I'))
@@ -335,13 +335,13 @@ native = {
 					name: `cp[${rule.name}]`,
 					params: rule.params,
 					rules: [
-						new scope.Yield({
-							left: yield_.left.slice(0, yield_.left.length - 1),
+						new scope.Tee({
+							left: tee.left.slice(0, tee.left.length - 1),
 							right: new scope.Funcall({
 								fun: I,
 								args: [
-									yield_.left[yield_.left.length - 1],
-									yield_.right
+									tee.left[tee.left.length - 1],
+									tee.right
 								]
 							})
 						})

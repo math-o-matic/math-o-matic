@@ -1,5 +1,5 @@
 var Node = require('./Node');
-var Yield = require('./Yield');
+var Tee = require('./Tee');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
@@ -25,7 +25,7 @@ function Rule({name, params, rules, doc}) {
 
 	var expands = rules.map(ExpressionResolver.expand1);
 
-	if (expands.map(e => e._type == 'yield').some(e => !e))
+	if (expands.map(e => e._type == 'tee').some(e => !e))
 		throw Error('Assertion failed');
 
 	this.expands = expands;

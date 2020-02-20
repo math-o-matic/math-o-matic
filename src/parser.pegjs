@@ -136,7 +136,7 @@ defrule
 		}
 
 // expr0... |- expr0
-yield
+tee
 	=
 		left:(
 			l:(
@@ -149,7 +149,7 @@ yield
 		right:expr0
 		{
 			return {
-				_type: 'yield',
+				_type: 'tee',
 				left,
 				right,
 				location: location()
@@ -286,7 +286,7 @@ expr2
 		}
 
 expr1
-	= yield
+	= tee
 	/ rulecall
 
 expr0

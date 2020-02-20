@@ -7,7 +7,7 @@ var Typevar = require('./nodes/Typevar');
 var Fun = require('./nodes/Fun');
 var Funcall = require('./nodes/Funcall');
 var Rule = require('./nodes/Rule');
-var Yield = require('./nodes/Yield');
+var Tee = require('./nodes/Tee');
 var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
 var Link = require('./nodes/Link');
@@ -257,8 +257,8 @@ PegInterface.rule = function (obj, parentScope, trace) {
 
 	var foo = obj => {
 		switch (obj._type) {
-			case 'yield':
-				return PegInterface.yield(obj, scope, trace);
+			case 'tee':
+				return PegInterface.tee(obj, scope, trace);
 			case 'rulecall':
 				return PegInterface.rulecall(obj, scope, trace);
 			default:
@@ -271,10 +271,10 @@ PegInterface.rule = function (obj, parentScope, trace) {
 	return new Rule({name, params, rules, doc: obj.doc});
 };
 
-PegInterface.yield = function (obj, parentScope, trace) {
+PegInterface.tee = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
-	trace = getTrace(trace, 'yield', '<anonymous>', obj.location);
+	trace = getTrace(trace, 'tee', '<anonymous>', obj.location);
 
 	var foo = obj => {
 		switch (obj._type) {
@@ -304,7 +304,7 @@ PegInterface.yield = function (obj, parentScope, trace) {
 	var left = obj.left.map(foo);
 	var right = foo(obj.right);
 
-	return new Yield({left, right});
+	return new Tee({left, right});
 };
 
 PegInterface.rulecall = function (obj, parentScope, trace) {

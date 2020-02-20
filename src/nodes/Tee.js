@@ -3,7 +3,7 @@ var Typevar = require('./Typevar');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Yield({left, right}) {
+function Tee({left, right}) {
 	Node.call(this);
 
 	if (!(left instanceof Array)
@@ -26,15 +26,15 @@ function Yield({left, right}) {
 	this.right = right;
 }
 
-Yield.prototype = Object.create(Node.prototype);
-Yield.prototype.constructor = Yield;
-Yield.prototype._type = 'yield';
+Tee.prototype = Object.create(Node.prototype);
+Tee.prototype.constructor = Tee;
+Tee.prototype._type = 'tee';
 
-Yield.prototype.toString = function () {
+Tee.prototype.toString = function () {
 	return this.toIndentedString(0);
 };
 
-Yield.prototype.toIndentedString = function (indent) {
+Tee.prototype.toIndentedString = function (indent) {
 	if (!this.left.length) {
 		return '|- ' + this.right.toIndentedString(indent);
 	}
@@ -46,11 +46,11 @@ Yield.prototype.toIndentedString = function (indent) {
 	].join('\n' + '\t'.repeat(indent));
 };
 
-Yield.prototype.toTeXString = function (root) {
+Tee.prototype.toTeXString = function (root) {
 	if (!this.left.length)
 		return `\\ \\vdash ${this.right.toTeXString()}`;
 	
 	return `${this.left.map(e => e.toTeXString()).join(', ')} \\vdash ${this.right.toTeXString()}`;
 };
 
-module.exports = Yield;
+module.exports = Tee;

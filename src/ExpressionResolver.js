@@ -1,6 +1,6 @@
 var ER = {};
 
-var Type, Typevar, Fun, Funcall, Rule, Yield, Rulecall, Ruleset;
+var Type, Typevar, Fun, Funcall, Rule, Tee, Rulecall, Ruleset;
 /*
  * 몇몇 노드가 이 모듈을 require 하므로 이 모듈이 노드들을 require 할 수 없다.
  * 그러므로 공통 조상이 이 모듈에 노드들을 넣어 주는 것으로 한다.
@@ -12,7 +12,7 @@ ER.init = function (o) {
 	Fun = o.Fun;
 	Funcall = o.Funcall;
 	Rule = o.Rule;
-	Yield = o.Yield;
+	Tee = o.Tee;
 	Rulecall = o.Rulecall;
 	Ruleset = o.Ruleset;
 };
@@ -67,11 +67,11 @@ ER.substitute1 = function (expr, map) {
 		return new Rulecall({
 			rule, args
 		});
-	} else if (expr._type == 'yield') {
+	} else if (expr._type == 'tee') {
 		var left = expr.left.map(e => ER.substitute0(e, map));
 		var right = ER.substitute0(expr.right, map);
 
-		return new Yield({
+		return new Tee({
 			left, right
 		});
 	} else {
@@ -161,7 +161,7 @@ ER.expand1 = function (expr) {
 		var map = param => args[rule.params.indexOf(param)];
 
 		return ER.expand1(ER.substitute1(rule.expr, map));
-	} else if (expr._type == 'yield') {
+	} else if (expr._type == 'tee') {
 		return expr;
 	} else if (expr._type == 'rule') {
 		var expr2 = ER.expand1(expr.expr);
@@ -182,10 +182,10 @@ ER.expand1Funcalls = function (expr) {
 		var map = param => args[rule.params.indexOf(param)];
 
 		return ER.expand1Funcalls(ER.substitute1(rule.expr, map));
-	} else if (expr._type == 'yield') {
+	} else if (expr._type == 'tee') {
 		var left = expr.left.map(ER.expand0Funcalls);
 		var right = ER.expand0Funcalls(expr.right);
-		return new Yield({left, right});
+		return new Tee({left, right});
 	} else if (expr._type == 'rule') {
 		var expr2 = ER.expand1Funcalls(expr.expr);
 		return new Rule({
@@ -205,10 +205,10 @@ ER.expand1Full = function (expr) {
 		var map = param => args[rule.params.indexOf(param)];
 
 		return ER.expand1Full(ER.substitute1(rule.expr, map));
-	} else if (expr._type == 'yield') {
+	} else if (expr._type == 'tee') {
 		var left = expr.left.map(ER.expand0);
 		var right = ER.expand0(expr.right);
-		return new Yield({left, right});
+		return new Tee({left, right});
 	} else if (expr._type == 'rule') {
 		var expr2 = ER.expand1Full(expr.expr);
 		return new Rule({
@@ -305,15 +305,15 @@ ER.equals0 = function (a, b) {
 	return recurseWrap(a, b, 0);
 };
 
-ER.chain = function (yields) {
-	return ER.expand1Funcalls(yields.reduceRight((r, l) => {
+ER.chain = function (tees) {
+	return ER.expand1Funcalls(tees.reduceRight((r, l) => {
 		for (var i = 0; i < r.left.length; i++) {
 			if (ER.equals0(l.right, r.left[i])) {
 				var newleft = r.left.slice(0, i)
 					.concat(l.left)
 					.concat(r.left.slice(i + 1));
 
-				return new Yield({
+				return new Tee({
 					left: newleft,
 					right: r.right
 				});
