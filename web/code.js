@@ -1148,90 +1148,6 @@ cls subsetbuilder(cls x, pr f) {
 	})
 }
 
-"power class."
-$<<\mathcal P>>(#1)$
-cls power(cls x) {
-	setbuilder((cls z) => {
-		subseteq(z, x)
-	})
-}
-
-rule power_def__(cls x) {
-	set(x) |- V((cls z) => {
-		E(
-			in(z, power(x)),
-			subseteq(z, x)
-		)
-	})
-}
-
-rule power_def(cls x) {
-	setbuilder_def((cls z) => {
-		subseteq(z, x)
-	})
-	~ id(V((cls z) => {
-		E(
-			in(z, power(x)),
-			subseteq(z, x)
-		)
-	}))
-}
-
-rule self_in_power(cls x, cls z) {
-	eq_then_subseteq(z, x)
-	~ Ve[power_def](x, z)
-	~ Ee2(
-		in(z, power(x)),
-		subseteq(z, x)
-	)
-	~ syll(
-		eq(z, x),
-		subseteq(z, x),
-		in(z, power(x))
-	)
-}
-
-"singleton class."
-$<<\{>>#1\}$
-cls singleton(cls x) {
-	setbuilder((cls z) => {
-		eq(z, x)
-	})
-}
-
-rule singleton_subseteq_power_1(cls x) {
-	setbuilder_def((cls z) => { eq(z, x) })
-	~ id(
-		V((cls z) => {
-			E(
-				in(z, singleton(x)),
-				eq(z, x)
-			)
-		})
-	)
-}
-
-rule singleton_subseteq_power_2(cls x, cls z) {
-	Ve[singleton_subseteq_power_1](x, z)
-	~ Ee1(
-		in(z, singleton(x)),
-		eq(z, x)
-	)
-	~ self_in_power(x, z)
-	~ syll(
-		in(z, singleton(x)),
-		eq(z, x),
-		in(z, power(x))
-	)
-}
-
-rule singleton_subseteq_power(cls x) {
-	Vi[singleton_subseteq_power_2](x)
-	~ id(
-		subseteq(singleton(x), power(x))
-	)
-}
-
 "axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
 rule specify(pr f) {
 	|-
@@ -1308,8 +1224,143 @@ rule subset_is_set_ae(cls x, cls y) {
 	~ subset_is_set(x, y)
 }
 
+rule subset_is_set_ae_c(cls x, cls y) {
+	cp[subset_is_set_ae](x, y)
+}
+
 rule subset_is_set_ae_cvi(cls x) {
-	Vi[cp[subset_is_set_ae]](x)
+	Vi[subset_is_set_ae_c](x)
+}
+
+"power class."
+$<<\mathcal P>>(#1)$
+cls power(cls x) {
+	setbuilder((cls z) => {
+		subseteq(z, x)
+	})
+}
+
+rule IAEpAqrIAsrqIsEprmAi(st p, st q, st r, st s) {
+	Ai(
+		E(p, A(q, r)),
+		I(A(s, r), q)
+	) ~
+	tt.IAEpAqrIAsrqIsEpr(p, q, r, s)
+	~ mp(
+		A(E(p, A(q, r)), I(A(s, r), q)),
+		I(s, E(p, r))
+	)
+}
+
+rule power_def__1(cls x) {
+	setbuilder_def__((cls y) => {
+		subseteq(y, x)
+	})
+}
+
+rule power_def__2(cls x, cls y) {
+	Ve[power_def__1](x, y)
+}
+
+rule power_def__3(cls x, cls y) {
+	subset_is_set_ae_c(y, x)
+	~ power_def__2(x, y)
+	~ IAEpAqrIAsrqIsEprmAi(
+		in(y, power(x)),
+		set(y),
+		subseteq(y, x),
+		set(x)
+	)
+}
+
+rule power_def__(cls x) {
+	Vgen(set(x)) ~
+	Vi[power_def__3](x)
+	~ VIm(
+		(cls z) => { set(x) },
+		(cls z) => {
+			E(
+				in(z, power(x)),
+				subseteq(z, x)
+			)
+		}
+	)
+	~ mp(
+		V((cls z) => { set(x) }),
+		V((cls z) => {
+			E(
+				in(z, power(x)),
+				subseteq(z, x)
+			)
+		})
+	)
+}
+
+rule power_def(cls x) {
+	setbuilder_def((cls z) => {
+		subseteq(z, x)
+	})
+	~ id(V((cls z) => {
+		E(
+			in(z, power(x)),
+			subseteq(z, x)
+		)
+	}))
+}
+
+rule self_in_power(cls x, cls z) {
+	eq_then_subseteq(z, x)
+	~ Ve[power_def](x, z)
+	~ Ee2(
+		in(z, power(x)),
+		subseteq(z, x)
+	)
+	~ syll(
+		eq(z, x),
+		subseteq(z, x),
+		in(z, power(x))
+	)
+}
+
+"singleton class."
+$\{<<=>>#1\}$
+cls singleton(cls x) {
+	setbuilder((cls z) => {
+		eq(z, x)
+	})
+}
+
+rule singleton_subseteq_power_1(cls x) {
+	setbuilder_def((cls z) => { eq(z, x) })
+	~ id(
+		V((cls z) => {
+			E(
+				in(z, singleton(x)),
+				eq(z, x)
+			)
+		})
+	)
+}
+
+rule singleton_subseteq_power_2(cls x, cls z) {
+	Ve[singleton_subseteq_power_1](x, z)
+	~ Ee1(
+		in(z, singleton(x)),
+		eq(z, x)
+	)
+	~ self_in_power(x, z)
+	~ syll(
+		in(z, singleton(x)),
+		eq(z, x),
+		in(z, power(x))
+	)
+}
+
+rule singleton_subseteq_power(cls x) {
+	Vi[singleton_subseteq_power_2](x)
+	~ id(
+		subseteq(singleton(x), power(x))
+	)
 }
 
 "axiom of power set."
