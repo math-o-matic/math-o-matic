@@ -12,6 +12,8 @@ funcall을 한 단계만 푼다. fun이 funcall이면 그것을 [;expand0Funcall
 
 [$`(x \mapsto y \mapsto z \mapsto f(x, y, z))(w)(v)(u) \to (y \mapsto z \mapsto f(w, y, z))(v)(u)`]
 
+[===알고리즘]
+
 [ol
 	[*] expr0이 funcall이 아닌 경우 에러.
 	[*] expr0.fun이 funcall일 경우 expr0.fun을 expand0FuncallOnce 한 expr0 반환.
@@ -22,6 +24,8 @@ funcall을 한 단계만 푼다. fun이 funcall이면 그것을 [;expand0Funcall
 [==[;equals0(a, b)]]
 
 두 expr0(funcall / fun / typevar) 표현식 a, b의 구조가 같은지를 판단한다.
+
+[===알고리즘]
 
 [ol
 	[*] a, b가 funcall인 경우
@@ -50,6 +54,77 @@ funcall을 한 단계만 푼다. fun이 funcall이면 그것을 [;expand0Funcall
 		[*] [;equals0(a, expand0FuncallOnce(b))] 반환.
 	]
 	[*] 타입이 다르면 false.
-	[*] a, b가 callable 한 타입인 경우 같은 placeholder들을 인자로 한 funcall을 만들어 이것들의 equals0을 반환.
+	[*] a, b가 callable 한 타입인 경우 같은 임시 변수들을 인자로 한 funcall을 만들어 이것들의 equals0을 반환.
 	[*] [;a == b] 반환.
+]
+
+[==[;resolve0_(a, b, pv, iv)]]
+
+어떤 expr0 패턴 a와 expr0 표현식 b에 대해 b로부터 a에 있는 패턴 변수들을 추정한다. b는 패턴 변수를 포함하지 않음이 가정된다. 무엇이 패턴 변수이며 무엇이 임시 변수인지에 관한 정보는 각각 pv 및 iv를 통해 제공된다.
+
+이때 패턴 변수는 임시 변수 또는 함수 매개변수 등 내부 변수로부터 독립적이어야 한다. [;expand0FuncallOnce] 시 패턴 변수는 함수 매개변수로부터 독립적임이 가정된다. 그러므로 iv에는 임시 변수만 전달하기로 한다.
+
+내부적으로 사용되는 함수이므로 resolve0을 통해 호출되어야 한다.
+
+반환 값은 각각의 패턴 변수에 대하여,
+[ol
+	[*] 패턴 매칭이 불가능한 경우: 에러.
+	[*] 패턴 매칭이 가능하나 패턴 변수를 특정할 수 없는 경우: falsy한 값.
+	[*] 패턴 매칭이 가능하며 패턴 변수가 하나 또는 유한 개로 특정될 경우: 배열. 길이가 0일 수 없음.
+]
+
+[===알고리즘]
+
+[ol
+	[*] 타입이 다르면 false.
+	[*] a, b가 funcall인 경우
+	[ol
+		[*] a.fun이 funcall일 경우 [;resolve0_(expand0FuncallOnce(a), b, pv, iv)] 반환.
+		[*] b.fun이 funcall일 경우 [;resolve0_(a, expand0FuncallOnce(b), pv, iv)] 반환.
+		[*] a.fun이 패턴 변수일 경우
+		[ol
+			[*] a의 인자가 모두 내부 변수이며 서로 다를 경우
+			[ol
+				[*] b가 a의 인자에 없는 임시 변수를 포함할 경우 a.fun이 내부 변수와 독립적이어야 하므로 에러.
+				[*] [;;f(x, ..., z) = b]에 대해, f를 [;;`(x', ..., z') => b[x'/x, ..., z'/z]`]에 매칭. [;`b[...]`]는 x를 x'으로 치환하고 ... z를 z'으로 치환한 것이다.
+			]
+			[*] false.
+		]
+		[*] a.fun 및 b.fun이 본체가 없을 경우
+		[ol
+			[*] [;a.fun != b.fun]일 경우 에러.
+			[*] 같은 pv, iv에 대해 n번째 인자 간의 resolve0_을 하여 그 교집합을 반환. 단 공집합이 된 경우 에러.
+		]
+		[*] a.fun의 본체가 있을 경우 [;resolve0_(expand0FuncallOnce(a), b, pv, iv)] 반환.
+		[*] [;resolve0_(a, expand0FuncallOnce(b), pv, iv)] 반환.
+	]
+	[*] a가 funcall인 경우
+	[ol
+		[*] a.fun이 funcall일 경우 [;resolve0_(expand0FuncallOnce(a), b, pv, iv)] 반환.
+		[*] a.fun이 패턴 변수일 경우
+		[ol
+			[*] a의 인자가 모두 내부 변수이며 서로 다를 경우
+			[ol
+				[*] b가 a의 인자에 없는 임시 변수를 포함할 경우 a.fun이 내부 변수와 독립적이어야 하므로 에러.
+				[*] [;;f(x, ..., z) = b]에 대해, f를 [;;`(x', ..., z') => b[x'/x, ..., z'/z]`]에 매칭. [;`b[...]`]는 x를 x'으로 치환하고 ... z를 z'으로 치환한 것이다.
+			]
+			[*] false.
+		]
+		[*] a.fun의 본체가 없을 경우 에러.
+		[*] [;resolve0_(expand0FuncallOnce(a), b, pv, iv)] 반환.
+	]
+	[*] a가 패턴 변수인 경우
+	[ol
+		[*] b가 a에 없는 임시 변수를 포함할 경우 a가 내부 변수와 독립적이어야 하므로 에러.
+		[*] a를 b에 매칭.
+	]
+	[*] b가 funcall인 경우
+	[ol
+		[*] b.fun이 funcall일 경우 [;resolve0_(a, expand0FuncallOnce(b), pv, iv)] 반환.
+		[*] b.fun의 본체가 없을 경우 에러.
+		[*] [;resolve0_(a, expand0FuncallOnce(b), pv, iv)] 반환.
+	]
+	[*] a, b가 callable 한 타입인 경우 같은 임시 변수들을 인자로 한 funcall을 만들어 이것들의 resolve0_을 반환하는데, iv에 이 임시 변수들을 추가하여 호출함.
+	[*] [;a != b]이면 에러.
+	[*] false.
 ]
