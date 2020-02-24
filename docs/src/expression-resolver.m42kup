@@ -64,7 +64,7 @@ funcall을 한 단계만 푼다. fun이 funcall이면 그것을 [;expand0Funcall
 
 이때 패턴 변수는 임시 변수 또는 함수 매개변수 등 내부 변수로부터 독립적이어야 한다. [;expand0FuncallOnce] 시 패턴 변수는 함수 매개변수로부터 독립적임이 가정된다. 그러므로 iv에는 임시 변수만 전달하기로 한다.
 
-내부적으로 사용되는 함수이므로 resolve0을 통해 호출되어야 한다.
+pv는 어떤 것이 패턴 변수인지와 각각이 특정되었는지 여부 및 특정되었을 경우 특정된 표현식에 관한 정보를 포함한다.
 
 반환 값은 각각의 패턴 변수에 대하여,
 [ol
@@ -76,19 +76,20 @@ funcall을 한 단계만 푼다. fun이 funcall이면 그것을 [;expand0Funcall
 [===알고리즘]
 
 [ol
-	[*] 타입이 다르면 false.
+	[*] 타입이 다르면 {}.
 	[*] a, b가 funcall인 경우
 	[ol
 		[*] a.fun이 funcall일 경우 [;resolve0_(expand0FuncallOnce(a), b, pv, iv)] 반환.
 		[*] b.fun이 funcall일 경우 [;resolve0_(a, expand0FuncallOnce(b), pv, iv)] 반환.
 		[*] a.fun이 패턴 변수일 경우
 		[ol
+			[*] 패턴 변수가 특정되었을 경우 a.fun을 특정된 표현식으로 바꾼 것의 resolve0_을 반환.
 			[*] a의 인자가 모두 내부 변수이며 서로 다를 경우
 			[ol
 				[*] b가 a의 인자에 없는 임시 변수를 포함할 경우 a.fun이 내부 변수와 독립적이어야 하므로 에러.
 				[*] [;;f(x, ..., z) = b]에 대해, f를 [;;`(x', ..., z') => b[x'/x, ..., z'/z]`]에 매칭. [;`b[...]`]는 x를 x'으로 치환하고 ... z를 z'으로 치환한 것이다.
 			]
-			[*] false.
+			[*] {}.
 		]
 		[*] a.fun 및 b.fun이 본체가 없을 경우
 		[ol
@@ -103,18 +104,20 @@ funcall을 한 단계만 푼다. fun이 funcall이면 그것을 [;expand0Funcall
 		[*] a.fun이 funcall일 경우 [;resolve0_(expand0FuncallOnce(a), b, pv, iv)] 반환.
 		[*] a.fun이 패턴 변수일 경우
 		[ol
+			[*] 패턴 변수가 특정되었을 경우 a.fun을 특정된 표현식으로 바꾼 것의 resolve0_을 반환.
 			[*] a의 인자가 모두 내부 변수이며 서로 다를 경우
 			[ol
 				[*] b가 a의 인자에 없는 임시 변수를 포함할 경우 a.fun이 내부 변수와 독립적이어야 하므로 에러.
 				[*] [;;f(x, ..., z) = b]에 대해, f를 [;;`(x', ..., z') => b[x'/x, ..., z'/z]`]에 매칭. [;`b[...]`]는 x를 x'으로 치환하고 ... z를 z'으로 치환한 것이다.
 			]
-			[*] false.
+			[*] {}.
 		]
 		[*] a.fun의 본체가 없을 경우 에러.
 		[*] [;resolve0_(expand0FuncallOnce(a), b, pv, iv)] 반환.
 	]
 	[*] a가 패턴 변수인 경우
 	[ol
+		[*] 패턴 변수가 특정되었을 경우 특정된 표현식과 b의 resolve0_을 반환.
 		[*] b가 a에 없는 임시 변수를 포함할 경우 a가 내부 변수와 독립적이어야 하므로 에러.
 		[*] a를 b에 매칭.
 	]
@@ -126,5 +129,5 @@ funcall을 한 단계만 푼다. fun이 funcall이면 그것을 [;expand0Funcall
 	]
 	[*] a, b가 callable 한 타입인 경우 같은 임시 변수들을 인자로 한 funcall을 만들어 이것들의 resolve0_을 반환하는데, iv에 이 임시 변수들을 추가하여 호출함.
 	[*] [;a != b]이면 에러.
-	[*] false.
+	[*] {}.
 ]
