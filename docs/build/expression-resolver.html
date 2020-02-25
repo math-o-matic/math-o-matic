@@ -301,27 +301,27 @@
 	</p></li><li><p> 타입이 다르면 false.
 	</p></li><li><p> a, b가 callable 한 타입인 경우 같은 임시 변수들을 인자로 한 funcall을 만들어 이것들의 equals0을 반환.
 	</p></li><li><p> <code>a == b</code> 반환.
-</p></li></ol><h2><code>resolve0_(a, b, pv, iv)</code></h2><p>어떤 expr0 패턴 a와 expr0 표현식 b에 대해 b로부터 a에 있는 패턴 변수들을 추정한다. b는 패턴 변수를 포함하지 않음이 가정된다. 무엇이 패턴 변수이며 무엇이 임시 변수인지에 관한 정보는 각각 pv 및 iv를 통해 제공된다.</p><p>이때 패턴 변수는 임시 변수 또는 함수 매개변수 등 내부 변수로부터 독립적이어야 한다. <code>expand0FuncallOnce</code> 시 패턴 변수는 함수 매개변수로부터 독립적임이 가정된다. 그러므로 iv에는 임시 변수만 전달하기로 한다.</p><p>pv는 어떤 것이 패턴 변수인지와 각각이 특정되었는지 여부 및 특정되었을 경우 특정된 표현식에 관한 정보를 포함한다.</p><p>반환 값은 각각의 패턴 변수에 대하여,
-</p><ol><li><p> 패턴 매칭이 불가능한 경우: 에러.
-	</p></li><li><p> 패턴 매칭이 가능하나 패턴 변수를 특정할 수 없는 경우: falsy한 값.
-	</p></li><li><p> 패턴 매칭이 가능하며 패턴 변수가 하나 또는 유한 개로 특정될 경우: 배열. 길이가 0일 수 없음.
-</p></li></ol><h3>알고리즘</h3><ol><li><p> 타입이 다르면 {}.
+</p></li></ol><h2><code>resolve0_(a, b, pv, iv)</code></h2><p>어떤 expr0 패턴 a와 expr0 표현식 b에 대해 b로부터 a에 있는 패턴 변수들을 추정한다. b는 패턴 변수를 포함하지 않음이 가정된다. 무엇이 패턴 변수이며 무엇이 임시 변수인지에 관한 정보는 각각 pv 및 iv를 통해 제공된다.</p><p>이때 패턴 변수는 임시 변수 또는 함수 매개변수 등 내부 변수로부터 독립적이어야 한다. <code>expand0FuncallOnce</code> 시 패턴 변수는 함수 매개변수로부터 독립적임이 가정된다. 그러므로 iv에는 임시 변수만 전달하기로 한다.</p><p>pv는 어떤 것이 패턴 변수인지와 각각이 특정되었는지 여부 및 특정되었을 경우 특정된 가능성에 관한 정보를 포함한다.</p><p>반환 값은 각각의 패턴 변수에 대하여,
+</p><ol><li><p> 패턴 매칭이 불가능함이 유도된 경우: 에러.
+	</p></li><li><p> 패턴 변수를 특정하지 못한 경우: falsy한 값. 불가능함을 유도할 수 없었다는 뜻이며 아무 값이나 가능하다는 뜻이 아님.
+	</p></li><li><p> 패턴 변수가 하나 또는 유한 개로 특정될 경우: 배열. 길이가 0일 수 없음. 배열 중에 없으면 매칭이 불가능하다는 뜻이며 배열에 있는 아무 값이나 가능하다는 뜻이 아님. 패턴 변수 간의 종속성도 고려되지 않음.
+</p></li></ol><p>resolve0_의 결과로서 패턴의 가능성을 얻은 경우, 이 가능성을 resolve0_에 다시 전달하면 가능성이 더 줄 수도 있다. 또한 가능성이 하나인 경우 이게 가능하다는 보증이 없으므로 확인해야 됨. 그러므로 가능성이 줄어들지 않을 때까지 resolve0_을 호출하고, 가능성이 하나가 되지 않았으면 오류를 던지고, 되었으면 그것을 반환하는 과정이 필요함.</p><h3>알고리즘</h3><ol><li><p> 타입이 다르면 에러.
 	</p></li><li><p> a, b가 funcall인 경우
 	</p><ol><li><p> a.fun이 funcall일 경우 <code>resolve0_(expand0FuncallOnce(a), b, pv, iv)</code> 반환.
 		</p></li><li><p> b.fun이 funcall일 경우 <code>resolve0_(a, expand0FuncallOnce(b), pv, iv)</code> 반환.
 		</p></li><li><p> a.fun이 패턴 변수일 경우
-		</p><ol><li><p> 패턴 변수가 특정되었을 경우 a.fun을 특정된 표현식으로 바꾼 것의 resolve0_을 반환.
+		</p><ol><li><p> 패턴 변수가 하나로 특정되었을 경우 a.fun을 특정된 표현식으로 바꾼 것의 resolve0_을 반환.
 			</p></li><li><p> a의 인자가 모두 내부 변수이며 서로 다를 경우
 			</p><ol><li><p> b가 a의 인자에 없는 임시 변수를 포함할 경우 a.fun이 내부 변수와 독립적이어야 하므로 에러.
 				</p></li><li><p> </p><pre><code>f(x, ..., z) = b
 </code></pre><p>에 대해, f를 </p><pre><code>(x&#39;, ..., z&#39;) =&gt; b[x&#39;/x, ..., z&#39;/z]
-</code></pre><p>에 매칭. <code>b[...]</code>는 x를 x&#39;으로 치환하고 ... z를 z&#39;으로 치환한 것이다.
+</code></pre><p>에 매칭하고 주어진 가능성과 교집합. 공집합이 발생하였으면 에러. <code>b[...]</code>는 x를 x&#39;으로 치환하고 ... z를 z&#39;으로 치환한 것이다.
 			</p></li></ol><p>
-			</p></li><li><p> {}.
+			</p></li><li><p> 주어진 가능성.
 		</p></li></ol><p>
 		</p></li><li><p> a.fun 및 b.fun이 본체가 없을 경우
 		</p><ol><li><p> <code>a.fun != b.fun</code>일 경우 에러.
-			</p></li><li><p> 같은 pv, iv에 대해 n번째 인자 간의 resolve0_을 하여 그 교집합을 반환. 단 공집합이 된 경우 에러.
+			</p></li><li><p> 같은 pv, iv에 대해 n번째 인자 간의 resolve0_을 하여 그 교집합을 주어진 가능성과 교집합 한 것을 반환. 단 공집합이 된 경우 에러.
 		</p></li></ol><p>
 		</p></li><li><p> a.fun의 본체가 있을 경우 <code>resolve0_(expand0FuncallOnce(a), b, pv, iv)</code> 반환.
 		</p></li><li><p> <code>resolve0_(a, expand0FuncallOnce(b), pv, iv)</code> 반환.
@@ -329,22 +329,22 @@
 	</p></li><li><p> a가 funcall인 경우
 	</p><ol><li><p> a.fun이 funcall일 경우 <code>resolve0_(expand0FuncallOnce(a), b, pv, iv)</code> 반환.
 		</p></li><li><p> a.fun이 패턴 변수일 경우
-		</p><ol><li><p> 패턴 변수가 특정되었을 경우 a.fun을 특정된 표현식으로 바꾼 것의 resolve0_을 반환.
+		</p><ol><li><p> 패턴 변수가 하나로 특정되었을 경우 a.fun을 특정된 표현식으로 바꾼 것의 resolve0_을 반환.
 			</p></li><li><p> a의 인자가 모두 내부 변수이며 서로 다를 경우
 			</p><ol><li><p> b가 a의 인자에 없는 임시 변수를 포함할 경우 a.fun이 내부 변수와 독립적이어야 하므로 에러.
 				</p></li><li><p> </p><pre><code>f(x, ..., z) = b
 </code></pre><p>에 대해, f를 </p><pre><code>(x&#39;, ..., z&#39;) =&gt; b[x&#39;/x, ..., z&#39;/z]
-</code></pre><p>에 매칭. <code>b[...]</code>는 x를 x&#39;으로 치환하고 ... z를 z&#39;으로 치환한 것이다.
+</code></pre><p>에 매칭하고 주어진 가능성과 교집합. 공집합이 발생하였으면 에러. <code>b[...]</code>는 x를 x&#39;으로 치환하고 ... z를 z&#39;으로 치환한 것이다.
 			</p></li></ol><p>
-			</p></li><li><p> {}.
+			</p></li><li><p> 주어진 가능성.
 		</p></li></ol><p>
 		</p></li><li><p> a.fun의 본체가 없을 경우 에러.
 		</p></li><li><p> <code>resolve0_(expand0FuncallOnce(a), b, pv, iv)</code> 반환.
 	</p></li></ol><p>
 	</p></li><li><p> a가 패턴 변수인 경우
-	</p><ol><li><p> 패턴 변수가 특정되었을 경우 특정된 표현식과 b의 resolve0_을 반환.
+	</p><ol><li><p> 패턴 변수가 하나로 특정되었을 경우 특정된 표현식과 b의 resolve0_을 반환.
 		</p></li><li><p> b가 a에 없는 임시 변수를 포함할 경우 a가 내부 변수와 독립적이어야 하므로 에러.
-		</p></li><li><p> a를 b에 매칭.
+		</p></li><li><p> a를 b에 매칭하고 주어진 가능성과 교집합. 단 공집합이 발생하였으면 에러.
 	</p></li></ol><p>
 	</p></li><li><p> b가 funcall인 경우
 	</p><ol><li><p> b.fun이 funcall일 경우 <code>resolve0_(a, expand0FuncallOnce(b), pv, iv)</code> 반환.
@@ -353,7 +353,30 @@
 	</p></li></ol><p>
 	</p></li><li><p> a, b가 callable 한 타입인 경우 같은 임시 변수들을 인자로 한 funcall을 만들어 이것들의 resolve0_을 반환하는데, iv에 이 임시 변수들을 추가하여 호출함.
 	</p></li><li><p> <code>a != b</code>이면 에러.
-	</p></li><li><p> {}.
+	</p></li><li><p> 주어진 가능성.
+</p></li></ol><h2><code>resolve1_(a, b, pv, iv)</code></h2><p>resolve0_과 비슷하나 expr1을 비교한다. a는 ... 구문이나 @|- 구문 등을 사용할 수 있다. a 및 b는 rule 또는 tee여야 한다.</p><p>...의 가능성에 관한 정보도 반환해야 하겠다.</p><h3>알고리즘</h3><ol><li><p> rule인지 tee인지 여부가 다르면 에러.
+	</p></li><li><p> a 및 b가 rule인 경우
+	</p><ol><li><p> 입력항 타입이 다르면 에러.
+		</p></li><li><p> 같은 임시 변수들을 인자로 한 rulecall을 만들어 이것들을 expr1 레벨에서 expand 한 것의 resolve1_을 반환하는데, iv에 이 임시 변수들을 추가하여 호출함.
+	</p></li></ol><p>
+	</p></li><li><p> a 및 b가 tee인 경우
+	</p><ol><li><p> a가 permutation을 허용하지 않을 경우
+		</p><ol><li><p> antecedent의 개수를 일치시킬 수 없을 경우, 즉 ...이 없고 개수가 다르거나 ...이 있고 b의 개수가 작을 경우 에러.
+			</p></li><li><p> antecedent를 순서대로 resolve0_ 하고 consequent도 해서 교집합 반환. 단 공집합이 발생하였으면 에러.
+		</p></li></ol><p>
+		</p></li><li><p> a가 permutation을 허용할 경우
+		</p><ol><li><p> antecedent의 개수를 일치시킬 수 없을 경우, 즉 ...이 없고 개수가 다르거나 ...이 있고 b의 개수가 작을 경우 에러.
+			</p></li><li><p> 가능한 모든 antecedent의 조합에 대하여(a, b의 ...을 제외한 antecedent의 개수 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex">a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span></span></span></span>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi></mrow><annotation encoding="application/x-tex">b</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">b</span></span></span></span>에 대하여 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mi>b</mi></msub><msub><mi mathvariant="normal">P</mi><mi>a</mi></msub></mrow><annotation encoding="application/x-tex">{}_b\mathrm P_a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord"></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">b</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathrm">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>개가 있다)
+			</p><ul><li><p> antecedent를 순서대로 resolve0_ 하고 consequent도 해서 교집합 반환. 단 공집합이 발생하였으면 에러.
+			</p></li></ul><p>
+			하되, 에러가 발생하였으면 catch 후 무시하고, 에러가 발생하지 않은 것들을 합집합. 단 전부 에러거나 공집합일 경우 에러.
+		</p></li></ol><p>
+	</p></li></ol><p>
+</p></li></ol><h2><code>resolve1s_(a, b, pv, iv)</code></h2><p>resolve1_과 비슷하나 expr1 여러 개를 비교한다.</p><p>...1, ...2 등의 가능성에 관한 정보도 반환해야 하겠다.</p><h3>알고리즘</h3><ol><li><p> 개수가 다르면 에러.
+	</p></li><li><p> 각각에 대해 resolve1_ 하고 교집합 반환. 단 공집합이면 에러.
+</p></li></ol><h2><code>resolve1s(a, b, pv, iv)</code></h2><h3>알고리즘</h3><ol><li><p> 결과가 줄지 않을 때까지 resolve1s_의 결과를 pv에 넣어서 resolve1s_ 호출.
+	</p></li><li><p> 가능성이 하나가 아니면 에러.
+	</p></li><li><p> 매치된 값 반환.
 </p></li></ol>
 			
 		</div>
