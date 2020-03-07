@@ -362,21 +362,21 @@
 	</p></li><li><p> a 및 b가 tee인 경우
 	</p><ol><li><p> a가 permutation을 허용하지 않을 경우
 		</p><ol><li><p> antecedent의 개수를 일치시킬 수 없을 경우, 즉 ...이 없고 개수가 다르거나 ...이 있고 b의 개수가 작을 경우 에러.
-			</p></li><li><p> antecedent를 순서대로 resolve0_ 하고 consequent도 해서 교집합 반환. 단 공집합이 발생하였으면 에러.
+			</p></li><li><p> antecedent를 순서대로 resolve0_ 하고(단 ...의 경우 b 측에 임시 변수가 있으면 에러. 아니면 주어진 가능성) consequent도 해서 교집합 반환. 단 공집합이 발생하였으면 에러.
 		</p></li></ol><p>
 		</p></li><li><p> a가 permutation을 허용할 경우
 		</p><ol><li><p> antecedent의 개수를 일치시킬 수 없을 경우, 즉 ...이 없고 개수가 다르거나 ...이 있고 b의 개수가 작을 경우 에러.
 			</p></li><li><p> 가능한 모든 antecedent의 조합에 대하여(a, b의 ...을 제외한 antecedent의 개수 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex">a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span></span></span></span>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi></mrow><annotation encoding="application/x-tex">b</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">b</span></span></span></span>에 대하여 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mi>b</mi></msub><msub><mi mathvariant="normal">P</mi><mi>a</mi></msub></mrow><annotation encoding="application/x-tex">{}_b\mathrm P_a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord"></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">b</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathrm">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>개가 있다)
-			</p><ul><li><p> antecedent를 순서대로 resolve0_ 하고 consequent도 해서 교집합 반환. 단 공집합이 발생하였으면 에러.
+			</p><ul><li><p> antecedent를 순서대로 resolve0_ 하고(단 ...의 경우 b 측에 임시 변수가 있으면 에러. 아니면 주어진 가능성) consequent도 해서 교집합 반환. 단 공집합이 발생하였으면 에러.
 			</p></li></ul><p>
 			하되, 에러가 발생하였으면 catch 후 무시하고, 에러가 발생하지 않은 것들을 합집합. 단 전부 에러거나 공집합일 경우 에러.
 		</p></li></ol><p>
 	</p></li></ol><p>
 </p></li></ol><h2><code>resolve1s_(a, b, pv, iv)</code></h2><p>resolve1_과 비슷하나 expr1 여러 개를 비교한다.</p><p>...1, ...2 등의 가능성에 관한 정보도 반환해야 하겠다.</p><h3>알고리즘</h3><ol><li><p> 개수가 다르면 에러.
 	</p></li><li><p> 각각에 대해 resolve1_ 하고 교집합 반환. 단 공집합이면 에러.
-</p></li></ol><h2><code>resolve1s(a, b, pv, iv)</code></h2><h3>알고리즘</h3><ol><li><p> 결과가 줄지 않을 때까지 resolve1s_의 결과를 pv에 넣어서 resolve1s_ 호출.
+</p></li></ol><h2><code>resolve1s(a, b, pv, iv)</code></h2><h3>알고리즘</h3><ol><li><p> 결과가 변하지 않음이 확인될 때까지 resolve1s_의 결과를 pv에 넣어서 resolve1s_ 호출.
 	</p></li><li><p> 가능성이 하나가 아니면 에러.
-	</p></li><li><p> 매치된 값 반환.
+	</p></li><li><p> 가능성이 작동함은 이미 검증되었으므로 매치된 값 반환.
 </p></li></ol>
 			
 		</div>
