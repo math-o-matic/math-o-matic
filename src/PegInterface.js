@@ -33,7 +33,7 @@ function rulenameObjToString(obj) {
 	}
 }
 
-function getTrace(trace, type, name, location) {
+function extendTrace(trace, type, name, location) {
 	if (!location) throw 'no';
 	var ret = trace.slice();
 	ret.unshift([type, name, location]);
@@ -46,11 +46,12 @@ function makeError(message, trace) {
 }
 
 // type은 Scope에서 알아서 한다.
+PegInterface.type = null;
 
 PegInterface.typevar = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
-	trace = getTrace(trace, 'typevar', obj.name, obj.location);
+	trace = extendTrace(trace, 'typevar', obj.name, obj.location);
 
 	if (!scope.hasType(obj.type))
 		throw makeError(`Type ${obj.type} not found`, trace);
@@ -74,7 +75,7 @@ PegInterface.fun = function (obj, parentScope, trace) {
 	var expr = null;
 	var scope = parentScope.extend();
 
-	trace = getTrace(trace, 'fun', obj.name || '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'fun', obj.name || '<anonymous>', obj.location);
 
 	var doc = obj.doc || null;
 	var tex = obj.tex || null;
@@ -193,7 +194,7 @@ PegInterface.funcall = function (obj, parentScope, trace) {
 	var args = null;
 	var scope = parentScope.extend();
 
-	trace = getTrace(trace, 'funcall', obj.fun.name || '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'funcall', obj.fun.name || '<anonymous>', obj.location);
 
 	switch (obj.fun._type) {
 		case 'funcall':
@@ -242,7 +243,7 @@ PegInterface.funcall = function (obj, parentScope, trace) {
 PegInterface.rule = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
-	trace = getTrace(trace, 'rule', obj.name, obj.location);
+	trace = extendTrace(trace, 'rule', obj.name, obj.location);
 
 	var name = obj.name;
 	var params = obj.params.map(tvo => {
@@ -274,7 +275,7 @@ PegInterface.rule = function (obj, parentScope, trace) {
 PegInterface.tee = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
-	trace = getTrace(trace, 'tee', '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'tee', '<anonymous>', obj.location);
 
 	var foo = obj => {
 		switch (obj._type) {
@@ -310,7 +311,7 @@ PegInterface.tee = function (obj, parentScope, trace) {
 PegInterface.rulecall = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();
 
-	trace = getTrace(trace, 'rulecall', rulenameObjToString(obj.rule), obj.location);
+	trace = extendTrace(trace, 'rulecall', rulenameObjToString(obj.rule), obj.location);
 
 	var rule = (function getRule(obj) {
 		switch (obj.type) {
@@ -390,7 +391,7 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
 	var scope = parentScope.extend();
 
-	trace = getTrace(trace, 'ruleset', obj.name, obj.location);
+	trace = extendTrace(trace, 'ruleset', obj.name, obj.location);
 
 	var name = obj.name;
 
@@ -408,7 +409,7 @@ PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
 PegInterface.link = function (obj, parentScope, trace, nativeMap) {
 	var scope = parentScope.extend();
 
-	trace = getTrace(trace, 'link', obj.name, obj.location);
+	trace = extendTrace(trace, 'link', obj.name, obj.location);
 
 	var name = obj.name;
 

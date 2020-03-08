@@ -60,22 +60,25 @@ Scope.prototype.hasType = function (typeobj) {
 			&& this.hasType(typeobj.to);
 };
 
-Scope.prototype.addType = function (typedefobj) {
-	if (this.hasOwnTypeByName(typedefobj.name))
-		throw Error(`Type with name ${typedefobj.name} already is there`);
+Scope.prototype.addType = function (obj) {
+	if (obj._type != 'typedef')
+		throw Error(`obj._type != 'typedef'`);
 
-	var origin = typedefobj.origin ? this.getType(typedefobj.origin) : null;
+	if (this.hasOwnTypeByName(obj.name))
+		throw Error(`Type with name ${obj.name} already is there`);
+
+	var origin = obj.origin ? this.getType(obj.origin) : null;
 
 	if (origin) {
-		origin.name = typedefobj.name;
-		origin.doc = typedefobj.doc;
-		return this.typedefMap[typedefobj.name] = origin;
+		origin.name = obj.name;
+		origin.doc = obj.doc;
+		return this.typedefMap[obj.name] = origin;
 	}
 
-	return this.typedefMap[typedefobj.name] = new Type({
+	return this.typedefMap[obj.name] = new Type({
 		functional: false,
-		name: typedefobj.name,
-		doc: typedefobj.doc
+		name: obj.name,
+		doc: obj.doc
 	});
 };
 
