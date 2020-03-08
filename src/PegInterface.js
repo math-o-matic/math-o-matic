@@ -45,8 +45,25 @@ function makeError(message, trace) {
 		.map(e => `${e[0]} ${e[1]} (code.js:${e[2].start.line}:${e[2].start.column})`).join('\n\tat '));
 }
 
-// type은 Scope에서 알아서 한다.
-PegInterface.type = null;
+PegInterface.type = function (obj, parentScope, trace) {
+	var scope = parentScope.extend();
+
+	trace = extendTrace(trace, 'type', obj.name, obj.location);
+
+	var origin = obj.origin ? scope.getType(obj.origin) : null;
+
+	if (origin) {
+		origin.name = obj.name;
+		origin.doc = obj.doc;
+		return origin;
+	}
+
+	return new Type({
+		functional: false,
+		name: obj.name,
+		doc: obj.doc
+	});
+}
 
 PegInterface.typevar = function (obj, parentScope, trace) {
 	var scope = parentScope.extend();

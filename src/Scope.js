@@ -61,25 +61,12 @@ Scope.prototype.hasType = function (typeobj) {
 };
 
 Scope.prototype.addType = function (obj) {
-	if (obj._type != 'typedef')
-		throw Error(`obj._type != 'typedef'`);
+	var type = PegInterface.type(obj, this, []);
 
 	if (this.hasOwnTypeByName(obj.name))
 		throw Error(`Type with name ${obj.name} already is there`);
 
-	var origin = obj.origin ? this.getType(obj.origin) : null;
-
-	if (origin) {
-		origin.name = obj.name;
-		origin.doc = obj.doc;
-		return this.typedefMap[obj.name] = origin;
-	}
-
-	return this.typedefMap[obj.name] = new Type({
-		functional: false,
-		name: obj.name,
-		doc: obj.doc
-	});
+	return this.typedefMap[obj.name] = type;
 };
 
 Scope.prototype.getType = function (typeobj) {
