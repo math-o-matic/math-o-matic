@@ -272,9 +272,9 @@ ER.equals0 = function (a, b) {
 		if (!a.type.equals(b.type)) return false;
 
 		if (a.type.isFunctional) {
-			var placeholders = Array(a.type.from.length).fill().map((_, i) =>
+			var placeholders = Array(a.type.resolve().from.length).fill().map((_, i) =>
 				new Typevar({
-					type: a.type.from[i],
+					type: a.type.resolve().from[i],
 					name: '$' + i
 				})
 			);

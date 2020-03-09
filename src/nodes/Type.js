@@ -2,28 +2,39 @@ var Node = require('./Node');
 
 function Type(o) {
 	Node.call(this);
-	
-	if (typeof o.functional != 'boolean')
-		throw Error('typeof o.functional != \'boolean\'');
-	this.isFunctional = o.functional;
-	this.isSimple = !o.functional;
 
 	this.doc = o.doc;
 
-	if (!o.functional) {
+	if (o.origin) {
 		if (typeof o.name != 'string')
 			throw Error('typeof o.name != \'string\'');
 		this.name = o.name;
-	} else {
-		if (o.name && typeof o.name != 'string')
-			throw Error('name should be string, if given');
-		if (o.from.map(f => f instanceof Type).some(e => !e))
-			throw Error('o.from.map(f => f instanceof Type).some(e => !e)');
-		if (!(o.to instanceof Type))
-			throw Error('!(o.to instanceof Type)');
 
-		this.from = o.from;
-		this.to = o.to;
+		if (!(o.origin instanceof Type))
+			throw Error('!(o.origin instanceof Type)');
+
+		this.isFunctional = o.origin.isFunctional;
+		this.isSimple = o.origin.isSimple;
+		this.origin = o.origin;
+	} else {
+		if (typeof o.functional != 'boolean')
+			throw Error('typeof o.functional != \'boolean\'');
+		this.isFunctional = o.functional;
+		this.isSimple = !o.functional;
+
+		if (!o.functional) {
+			if (typeof o.name != 'string')
+				throw Error('typeof o.name != \'string\'');
+			this.name = o.name;
+		} else {
+			if (o.from.map(f => f instanceof Type).some(e => !e))
+				throw Error('o.from.map(f => f instanceof Type).some(e => !e)');
+			if (!(o.to instanceof Type))
+				throw Error('!(o.to instanceof Type)');
+
+			this.from = o.from;
+			this.to = o.to;
+		}
 	}
 }
 
@@ -38,7 +49,7 @@ Type.prototype.toString = function () {
 Type.prototype.toIndentedString = function (indent) {
 	if (this.isSimple) return this.name;
 
-	return `${this.name ? this.name + ': ' : ''}[${this.from.join(', ')} -> ${this.to}]`;
+	return `${this.name ? this.name + ': ' : ''}[${this.resolve().from.join(', ')} -> ${this.resolve().to}]`;
 };
 
 Type.prototype.toTeXString = function (root) {
@@ -49,12 +60,19 @@ Type.prototype.toTeXString = function (root) {
 	}
 
 	return `${this.name ? `\\href{#type-${this.name}}\\mathsf{${this.name}}: ` : ''}`
-		+ `\\left[${this.from.map(e => e.toTeXString()).join(' \\times ')}`
-		+ ` \\to ${this.to.toTeXString()} \\right]`;
+		+ `\\left[${this.resolve().from.map(e => e.toTeXString()).join(' \\times ')}`
+		+ ` \\to ${this.resolve().to.toTeXString()} \\right]`;
 };
+
+Type.prototype.resolve = function () {
+	return this.origin ? this.origin.resolve() : this;
+}
 
 Type.prototype.equals = function (t) {
 	if (!(t instanceof Type)) return false;
+
+	if (this.origin) return this.origin.equals(t);
+	if (t.origin) return this.equals(t.origin);
 
 	if (this.isSimple != t.isSimple) return false;
 

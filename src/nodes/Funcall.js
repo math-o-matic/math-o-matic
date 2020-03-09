@@ -15,7 +15,7 @@ function Funcall({fun, args}) {
 		throw Error('Assertion failed');
 	
 	this.fun = fun;
-	this.type = fun.type.to;
+	this.type = fun.type.resolve().to;
 	this.args = args;
 }
 

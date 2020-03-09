@@ -53,9 +53,11 @@ PegInterface.type = function (obj, parentScope, trace) {
 	var origin = obj.origin ? scope.getType(obj.origin) : null;
 
 	if (origin) {
-		origin.name = obj.name;
-		origin.doc = obj.doc;
-		return origin;
+		return new Type({
+			name: obj.name,
+			doc: obj.doc,
+			origin
+		});
 	}
 
 	return new Type({
@@ -247,12 +249,14 @@ PegInterface.funcall = function (obj, parentScope, trace) {
 		}
 	});
 
-	if (args.length != fun.type.from.length)
+	var funtype = fun.type.resolve();
+
+	if (args.length != funtype.from.length)
 		throw makeError(`Invalid number of arguments: ${obj.args.length}`, trace);
 
 	for (var i = 0; i < args.length; i++)
-		if (!args[i].type.equals(fun.type.from[i]))
-			throw makeError(`Argument type mismatch: ${args[i].type}, ${fun.type.from[i]}`, trace);
+		if (!args[i].type.equals(funtype.from[i]))
+			throw makeError(`Argument type mismatch: ${args[i].type}, ${funtype.from[i]}`, trace);
 
 	return new Funcall({fun, args});
 };
