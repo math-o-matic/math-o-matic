@@ -15,9 +15,38 @@ var Link = require('./nodes/Link');
 var PegInterface = {};
 
 function typeObjToString(obj) {
+	if (obj._type != 'type')
+		throw Error('Assertion failed');
+
 	if (!obj.ftype) return obj.name;
 	return '[' + obj.from.map(typeObjToString).join(', ') + ' -> '
 			+ typeObjToString(obj.to) + ']';
+}
+
+/*
+ * Scope.prototype.getType이나 Scope.prototype.hasType 등의 입력 형태로 바꾼다.
+ * st						-> 'st'
+ * [cls -> st]				-> ['cls', 'st']
+ * [(cls, cls) -> st]		-> ['cls', 'cls', 'st']
+ * [[cls -> st] -> st]		-> [['cls', 'st'], 'st']
+ */
+function typeObjToNestedArr(obj) {
+	if (obj._type != 'type')
+		throw Error('Assertion failed');
+
+	if (!obj.ftype) {
+		if (!obj.name)
+			throw Error('Assertion failed');
+
+		return obj.name;
+	} else {
+		if (!obj.from || !obj.to)
+			throw Error('Assertion failed');
+
+		return obj.from.map(typeObjToNestedArr).concat(
+			[typeObjToNestedArr(obj.to)]
+		);
+	}
 }
 
 function rulenameObjToString(obj) {
@@ -50,7 +79,7 @@ PegInterface.type = function (obj, parentScope, trace) {
 
 	trace = extendTrace(trace, 'type', obj.name, obj.location);
 
-	var origin = obj.origin ? scope.getType(obj.origin) : null;
+	var origin = obj.origin ? scope.getType(typeObjToNestedArr(obj.origin)) : null;
 
 	if (origin) {
 		return new Type({
@@ -72,10 +101,10 @@ PegInterface.typevar = function (obj, parentScope, trace) {
 
 	trace = extendTrace(trace, 'typevar', obj.name, obj.location);
 
-	if (!scope.hasType(obj.type))
+	if (!scope.hasType(typeObjToNestedArr(obj.type)))
 		throw makeError(`Type ${obj.type} not found`, trace);
 
-	var type = scope.getType(obj.type);
+	var type = scope.getType(typeObjToNestedArr(obj.type));
 
 	return new Typevar({
 		type,
@@ -104,16 +133,16 @@ PegInterface.fun = function (obj, parentScope, trace) {
 			anonymous = false;
 			name = obj.name;
 
-			if (!scope.hasType(obj.rettype))
+			if (!scope.hasType(typeObjToNestedArr(obj.rettype)))
 				throw makeError(`Rettype ${typeObjToString(obj.rettype)} not found`, trace);
 
-			var rettype = scope.getType(obj.rettype);
+			var rettype = scope.getType(typeObjToNestedArr(obj.rettype));
 
 			params = obj.params.map(tvo => {
-				if (!scope.hasType(tvo.type))
+				if (!scope.hasType(typeObjToNestedArr(tvo.type)))
 					throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
 
-				if (scope.hasOwnTypevarByName(tvo.name))
+				if (scope.hasOwnTypevar(tvo.name))
 					throw makeError(`Param name ${tvo.name} already is there`, trace);
 
 				return scope.addTypevar(tvo);
@@ -142,9 +171,9 @@ PegInterface.fun = function (obj, parentScope, trace) {
 						expr = fun;
 						break;
 					case 'var':
-						if (!scope.hasTypevarByName(obj.expr.name))
+						if (!scope.hasTypevar(obj.expr.name))
 							throw makeError(`Undefined identifier ${obj.expr.name}`, trace);
-						var typevar = scope.getTypevarByName(obj.expr.name);
+						var typevar = scope.getTypevar(obj.expr.name);
 						if (!rettype.equals(typevar.type)) {
 							throw makeError(`Wrong return type ${rettype}`, trace);
 						}
@@ -159,10 +188,10 @@ PegInterface.fun = function (obj, parentScope, trace) {
 			anonymous = true;
 
 			params = obj.params.map(tvo => {
-				if (!scope.hasType(tvo.type))
+				if (!scope.hasType(typeObjToNestedArr(tvo.type)))
 					throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
 
-				if (scope.hasOwnTypevarByName(tvo.name))
+				if (scope.hasOwnTypevar(tvo.name))
 					throw makeError(`Param name ${tvo.name} already is there`, trace);
 
 				return scope.addTypevar(tvo);
@@ -184,9 +213,9 @@ PegInterface.fun = function (obj, parentScope, trace) {
 					expr = fun;
 					break;
 				case 'var':
-					if (!scope.hasTypevarByName(obj.expr.name))
+					if (!scope.hasTypevar(obj.expr.name))
 						throw makeError(`Undefined identifier ${obj.expr.name}`, trace);
-					var typevar = scope.getTypevarByName(obj.expr.name);
+					var typevar = scope.getTypevar(obj.expr.name);
 					rettype = typevar.type;
 					expr = typevar;
 					break;
@@ -224,9 +253,9 @@ PegInterface.funcall = function (obj, parentScope, trace) {
 			fun = PegInterface.fun(obj.fun, scope, trace);
 			break;
 		case 'var':
-			if (!scope.hasTypevarByName(obj.fun.name))
+			if (!scope.hasTypevar(obj.fun.name))
 				throw makeError(`Undefined identifier ${obj.fun.name}`, trace);
-			fun = scope.getTypevarByName(obj.fun.name);
+			fun = scope.getTypevar(obj.fun.name);
 			if (fun.type.isSimple)
 				throw makeError(`${fun.name} is not callable`, trace);
 			break;
@@ -241,9 +270,9 @@ PegInterface.funcall = function (obj, parentScope, trace) {
 			case 'funexpr':
 				return PegInterface.fun(arg, scope, trace);
 			case 'var':
-				if (!scope.hasTypevarByName(arg.name))
+				if (!scope.hasTypevar(arg.name))
 					throw makeError(`Undefined identifier ${arg.name}`, trace);
-				return scope.getTypevarByName(arg.name);
+				return scope.getTypevar(arg.name);
 			default:
 				throw makeError(`Unknown type ${obj.expr._type}`, trace);
 		}
@@ -268,10 +297,10 @@ PegInterface.rule = function (obj, parentScope, trace) {
 
 	var name = obj.name;
 	var params = obj.params.map(tvo => {
-		if (!scope.hasType(tvo.type))
+		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
 			throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
 
-		if (scope.hasOwnTypevarByName(tvo.name))
+		if (scope.hasOwnTypevar(tvo.name))
 			throw makeError(`Param name ${tvo.name} already is there`, trace);
 
 		return scope.addTypevar(tvo);
@@ -302,19 +331,19 @@ PegInterface.tee = function (obj, parentScope, trace) {
 		switch (obj._type) {
 			case 'funcall':
 				var funcall = PegInterface.funcall(obj, scope, trace);
-				if (!scope.root.getTypeByName('st').equals(funcall.type))
+				if (!scope.root.getType('st').equals(funcall.type))
 					throw makeError(`Return type is not st: ${funcall.type}`, trace);
 				return funcall;
 			case 'funexpr':
 				var fun = PegInterface.fun(obj, scope, trace);
-				if (!scope.root.getTypeByName('st').equals(fun.type))
+				if (!scope.root.getType('st').equals(fun.type))
 					throw makeError(`Return type is not st: ${fun.type}`, trace);
 				return fun;
 			case 'var':
-				if (!scope.hasTypevarByName(obj.name))
+				if (!scope.hasTypevar(obj.name))
 					throw makeError(`Undefined identifier ${obj.name}`, trace);
-				var typevar = scope.getTypevarByName(obj.name);
-				if (!scope.root.getTypeByName('st').equals(typevar.type)) {
+				var typevar = scope.getTypevar(obj.name);
+				if (!scope.root.getType('st').equals(typevar.type)) {
 					throw makeError(`Return type is not st: ${typevar.type}`, trace);
 				}
 				return typevar;
@@ -337,7 +366,7 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 	var rule = (function getRule(obj) {
 		switch (obj.type) {
 			case 'link':
-				if (!scope.hasLinkByName(obj.linkName))
+				if (!scope.hasLink(obj.linkName))
 					throw makeError(`Link ${obj.linkName} is not defined`, trace);
 
 				var link = scope.getLink(obj.linkName);
@@ -354,7 +383,7 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 
 				return rule;
 			case 'ruleset':
-				if (!scope.hasRulesetByName(obj.rulesetName))
+				if (!scope.hasRuleset(obj.rulesetName))
 					throw makeError(`Ruleset ${obj.rulesetName} is not defined`, trace);
 
 				var ruleset = scope.getRuleset(obj.rulesetName);
@@ -369,7 +398,7 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 				
 				return rule;
 			case 'normal':
-				if (!scope.hasRuleByName(obj.name))
+				if (!scope.hasRule(obj.name))
 					throw makeError(`Rule ${obj.name} is not defined`, trace);
 
 				return scope.getRule(obj.name);
@@ -387,9 +416,9 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 				var fun = PegInterface.fun(obj, scope, trace);
 				return fun;
 			case 'var':
-				if (!scope.hasTypevarByName(obj.name))
+				if (!scope.hasTypevar(obj.name))
 					throw makeError(`Undefined identifier ${obj.name}`, trace);
-				var typevar = scope.getTypevarByName(obj.name);
+				var typevar = scope.getTypevar(obj.name);
 				return typevar;
 			default:
 				throw makeError(`Unknown type ${obj._type}`, trace);

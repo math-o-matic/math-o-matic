@@ -107,10 +107,10 @@ native = {
 					throw Error('Validation failed');
 
 				// 3: 노드 트리 만들기
-				if (!scope.root.hasTypeByName('st'))
+				if (!scope.root.hasType('st'))
 					throw Error(`Type st not found`);
 
-				var st = scope.root.getTypeByName('st');
+				var st = scope.root.getType('st');
 
 				var typevars = Array(usedVars.length).fill().map((_, i) => {
 					return new scope.Typevar({
@@ -132,9 +132,9 @@ native = {
 				Object.keys(typevarMap).forEach(k => {
 					var v = typevarMap[k];
 
-					if (!scope.root.hasTypevarByName(v))
+					if (!scope.root.hasTypevar(v))
 						throw Error(`Typevar ${v} not found`);
-					typevarMap[k] = scope.root.getTypevarByName(v);
+					typevarMap[k] = scope.root.getTypevar(v);
 				});
 
 				function recurse(t) {
@@ -172,15 +172,15 @@ native = {
 				if (rules.length != 1) return false;
 				var rule = rules[0];
 
-				if (!scope.hasTypeByName('st'))
+				if (!scope.hasType('st'))
 					throw Error(`Type st not found`);
 
-				var st = scope.getTypeByName('st');
+				var st = scope.getType('st');
 				
-				if (!scope.hasTypeByName('cls'))
+				if (!scope.hasType('cls'))
 					throw Error(`Type cls not found`);
 
-				var cls = scope.getTypeByName('cls');
+				var cls = scope.getType('cls');
 
 				if (!rule.params[rule.params.length - 1].type.equals(cls))
 					return false;
@@ -195,10 +195,10 @@ native = {
 				if (tee.left.length)
 					return false;
 
-				if (!scope.hasTypevarByName('V'))
+				if (!scope.hasTypevar('V'))
 					throw Error(`Typevar V not found`);
 
-				var V = scope.getTypevarByName('V');
+				var V = scope.getTypevar('V');
 
 				if (!V.type.equals(new scope.Type({
 					functional: true,
@@ -243,15 +243,15 @@ native = {
 				if (rules.length != 1) return false;
 				var rule = rules[0];
 
-				if (!scope.hasTypeByName('st'))
+				if (!scope.hasType('st'))
 					throw Error(`Type st not found`);
 
-				var st = scope.getTypeByName('st');
+				var st = scope.getType('st');
 				
-				if (!scope.hasTypeByName('cls'))
+				if (!scope.hasType('cls'))
 					throw Error(`Type cls not found`);
 
-				var cls = scope.getTypeByName('cls');
+				var cls = scope.getType('cls');
 
 				var tee = rule.expr;
 
@@ -261,10 +261,10 @@ native = {
 				if (tee.left.length)
 					return false;
 
-				if (!scope.hasTypevarByName('V'))
+				if (!scope.hasTypevar('V'))
 					throw Error(`Typevar V not found`);
 
-				var V = scope.getTypevarByName('V');
+				var V = scope.getTypevar('V');
 
 				if (!V.type.equals(new scope.Type({
 					functional: true,
@@ -306,10 +306,10 @@ native = {
 				if (rules.length != 1) return false;
 				var rule = rules[0];
 
-				if (!scope.hasTypeByName('st'))
+				if (!scope.hasType('st'))
 					throw Error(`Type st not found`);
 
-				var st = scope.getTypeByName('st');
+				var st = scope.getType('st');
 
 				var tee = rule.expr;
 
@@ -319,10 +319,10 @@ native = {
 				if (!tee.left.length)
 					return false;
 
-				if (!scope.hasTypevarByName('I'))
+				if (!scope.hasTypevar('I'))
 					throw Error(`Typevar I not found`);
 
-				var I = scope.getTypevarByName('I');
+				var I = scope.getTypevar('I');
 
 				if (!I.type.equals(new scope.Type({
 					functional: true,
