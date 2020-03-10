@@ -145,7 +145,8 @@ PegInterface.fun = function (obj, parentScope, trace) {
 				if (scope.hasOwnTypevar(tvo.name))
 					throw makeError(`Param name ${tvo.name} already is there`, trace);
 
-				return scope.addTypevar(tvo);
+				var tv = PegInterface.typevar(tvo, scope, trace);
+				return scope.addTypevar(tv);
 			});
 
 			type = new Type({
@@ -194,7 +195,8 @@ PegInterface.fun = function (obj, parentScope, trace) {
 				if (scope.hasOwnTypevar(tvo.name))
 					throw makeError(`Param name ${tvo.name} already is there`, trace);
 
-				return scope.addTypevar(tvo);
+				var tv = PegInterface.typevar(tvo, scope, trace);
+				return scope.addTypevar(tv);
 			});
 
 			atomic = false;
@@ -303,7 +305,8 @@ PegInterface.rule = function (obj, parentScope, trace) {
 		if (scope.hasOwnTypevar(tvo.name))
 			throw makeError(`Param name ${tvo.name} already is there`, trace);
 
-		return scope.addTypevar(tvo);
+		var tv = PegInterface.typevar(tvo, scope, trace);
+		return scope.addTypevar(tv);
 	});
 
 	var foo = obj => {

@@ -88,13 +88,17 @@ Scope.prototype.hasType = function (name) {
 	}).every(e => e);
 }
 
-Scope.prototype.addType = function (obj) {
-	var type = PegInterface.type(obj, this, []);
+Scope.prototype.addType = function (type) {
+	if (!(type instanceof Type))
+		throw Error('Illegal argument type');
 
-	if (this.hasOwnType(obj.name))
-		throw Error(`Type with name ${obj.name} already is there`);
+	if (!type.name)
+		throw Error(`Something's wrong`);
 
-	return this.typedefMap[obj.name] = type;
+	if (this.hasOwnType(type.name))
+		throw Error(`Type with name ${type.name} already is there`);
+
+	return this.typedefMap[type.name] = type;
 };
 
 /*
@@ -141,23 +145,28 @@ Scope.prototype.hasTypevar = function (name) {
 		(!!this.parent && this.parent.hasTypevar(name));
 };
 
-Scope.prototype.addTypevar = function (obj) {
-	var typevar = PegInterface.typevar(obj, this, []);
+Scope.prototype.addTypevar = function (typevar) {
+	if (!(typevar instanceof Typevar))
+		throw Error('Illegal argument type');
 
-	if (this.hasOwnTypevar(obj.name))
-		throw Error(`Def with name ${obj.name} already is there`);
+	if (this.hasOwnTypevar(typevar.name))
+		throw Error(`Def with name ${typevar.name} already is there`);
 
-	return this.defMap[obj.name] = typevar;
+	return this.defMap[typevar.name] = typevar;
 };
 
-Scope.prototype.addFun = function (obj) {
-	var fun = PegInterface.fun(obj, this, []);
+Scope.prototype.addFun = function (fun) {
+	if (!(fun instanceof Fun))
+		throw Error('Illegal argument type');
 
-	if (!fun.anonymous && this.hasOwnTypevar(fun.name))
+	if (fun.anonymous)
+		throw Error(`Cannot add anonymous fun to scope`);
+
+	if (this.hasOwnTypevar(fun.name))
 		throw Error(`Def with name ${fun.name} already is there`);
 
 	return this.defMap[fun.name] = fun;
-};
+}
 
 Scope.prototype.getTypevar = function (name) {
 	if (!this.hasTypevar(name))
@@ -176,8 +185,9 @@ Scope.prototype.hasRule = function (name) {
 		|| (!!this.parent && this.parent.hasRule(name));
 };
 
-Scope.prototype.addRule = function (defruleobj) {
-	var rule = PegInterface.rule(defruleobj, this, []);
+Scope.prototype.addRule = function (rule) {
+	if (!(rule instanceof Rule))
+		throw Error('Illegal argument type');
 
 	if (this.hasOwnRule(rule.name))
 		throw Error(`Rule with name ${rule.name} already is there`);
@@ -202,8 +212,9 @@ Scope.prototype.hasRuleset = function (name) {
 		|| (!!this.parent && this.parent.hasRuleset(name));
 };
 
-Scope.prototype.addRuleset = function (defrulesetobj, nativeMap) {
-	var ruleset = PegInterface.ruleset(defrulesetobj, this, [], nativeMap);
+Scope.prototype.addRuleset = function (ruleset) {
+	if (!(ruleset instanceof Ruleset))
+		throw Error('Illegal argument type');
 
 	if (this.hasOwnRuleset(ruleset.name))
 		throw Error(`Ruleset with name ${ruleset.name} already is there`);
@@ -228,8 +239,9 @@ Scope.prototype.hasLink = function (name) {
 		|| (!!this.parent && this.parent.hasLink(name));
 };
 
-Scope.prototype.addLink = function (deflinkobj, nativeMap) {
-	var link = PegInterface.link(deflinkobj, this, [], nativeMap);
+Scope.prototype.addLink = function (link) {
+	if (!(link instanceof Link))
+		throw Error('Illegal argument type');
 
 	if (this.hasOwnLink(link.name))
 		throw Error(`Link with name ${link.name} already is there`);

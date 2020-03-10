@@ -9,6 +9,8 @@ var Tee = require('./nodes/Tee');
 var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
 
+var PegInterface = require('./PegInterface');
+
 var ExpressionResolver = require('./ExpressionResolver');
 ExpressionResolver.init({Type, Typevar, Fun, Funcall, Rule, Tee, Rulecall, Ruleset});
 
@@ -20,22 +22,28 @@ Program.prototype.feed = function (lines, nativeMap) {
 	lines.forEach(line => {
 		switch (line._type) {
 			case 'typedef':
-				this.scope.addType(line);
+				var type = PegInterface.type(line, this.scope, []);
+				this.scope.addType(type);
 				break;
 			case 'defv':
-				this.scope.addTypevar(line.typevar);
+				var typevar = PegInterface.typevar(line.typevar, this.scope, []);
+				this.scope.addTypevar(typevar);
 				break;
 			case 'defun':
-				this.scope.addFun(line);
+				var fun = PegInterface.fun(line, this.scope, []);
+				this.scope.addFun(fun);
 				break;
 			case 'defrule':
-				this.scope.addRule(line);
+				var rule = PegInterface.rule(line, this.scope, []);
+				this.scope.addRule(rule);
 				break;
 			case 'defruleset':
-				this.scope.addRuleset(line, nativeMap);
+				var ruleset = PegInterface.ruleset(line, this.scope, [], nativeMap);
+				this.scope.addRuleset(ruleset);
 				break;
 			case 'deflink':
-				this.scope.addLink(line, nativeMap);
+				var link = PegInterface.link(line, this.scope, [], nativeMap);
+				this.scope.addLink(link);
 				break;
 			default:
 				throw Error(`Unknown line type ${line._type}`);
