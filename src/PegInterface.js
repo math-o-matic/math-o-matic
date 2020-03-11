@@ -75,6 +75,9 @@ function makeError(message, trace) {
 }
 
 PegInterface.type = function (obj, parentScope, trace) {
+	if (obj._type != 'typedef')
+		throw Error('Assertion failed');
+
 	var scope = parentScope.extend();
 
 	trace = extendTrace(trace, 'type', obj.name, obj.location);
@@ -97,6 +100,9 @@ PegInterface.type = function (obj, parentScope, trace) {
 }
 
 PegInterface.typevar = function (obj, parentScope, trace) {
+	if (obj._type != 'defv')
+		throw Error('Assertion failed');
+
 	var scope = parentScope.extend();
 
 	trace = extendTrace(trace, 'typevar', obj.name, obj.location);
@@ -115,6 +121,9 @@ PegInterface.typevar = function (obj, parentScope, trace) {
 };
 
 PegInterface.fun = function (obj, parentScope, trace) {
+	if (obj._type != 'defun' && obj._type != 'funexpr')
+		throw Error('Assertion failed');
+
 	var anonymous = null;
 	var name = null;
 	var type = null;
@@ -233,13 +242,16 @@ PegInterface.fun = function (obj, parentScope, trace) {
 
 			break;
 		default:
-			throw makeError(`Unknown type ${obj._type}`, trace);
+			throw Error('wut');
 	}
 
 	return new Fun({anonymous, name, type, atomic, params, expr, doc, tex});
 };
 
 PegInterface.funcall = function (obj, parentScope, trace) {
+	if (obj._type != 'funcall')
+		throw Error('Assertion failed');
+
 	var fun = null;
 	var args = null;
 	var scope = parentScope.extend();
@@ -293,6 +305,9 @@ PegInterface.funcall = function (obj, parentScope, trace) {
 };
 
 PegInterface.rule = function (obj, parentScope, trace) {
+	if (obj._type != 'defrule')
+		throw Error('Assertion failed');
+
 	var scope = parentScope.extend();
 
 	trace = extendTrace(trace, 'rule', obj.name, obj.location);
@@ -326,6 +341,9 @@ PegInterface.rule = function (obj, parentScope, trace) {
 };
 
 PegInterface.tee = function (obj, parentScope, trace) {
+	if (obj._type != 'tee')
+		throw Error('Assertion failed');
+
 	var scope = parentScope.extend();
 
 	trace = extendTrace(trace, 'tee', '<anonymous>', obj.location);
@@ -362,6 +380,9 @@ PegInterface.tee = function (obj, parentScope, trace) {
 };
 
 PegInterface.rulecall = function (obj, parentScope, trace) {
+	if (obj._type != 'rulecall')
+		throw Error('Assertion failed');
+
 	var scope = parentScope.extend();
 
 	trace = extendTrace(trace, 'rulecall', rulenameObjToString(obj.rule), obj.location);
@@ -442,6 +463,9 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 };
 
 PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
+	if (obj._type != 'defruleset')
+		throw Error('Assertion failed');
+
 	var scope = parentScope.extend();
 
 	trace = extendTrace(trace, 'ruleset', obj.name, obj.location);
@@ -460,6 +484,9 @@ PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
 };
 
 PegInterface.link = function (obj, parentScope, trace, nativeMap) {
+	if (obj._type != 'deflink')
+		throw Error('Assertion failed');
+
 	var scope = parentScope.extend();
 
 	trace = extendTrace(trace, 'link', obj.name, obj.location);

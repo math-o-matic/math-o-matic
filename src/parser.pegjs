@@ -24,14 +24,25 @@ typedef
 	}
 
 defv
-	= doc:(documentation __)? tex:(tex __)? typevar:typevar _ SEM
+	= doc:(documentation __)? tex:(tex __)? type:type __ name:IDENT _ SEM
 	{
-		typevar.doc = doc && doc[0];
-		typevar.tex = tex && tex[0];
-
 		return {
 			_type: 'defv',
-			typevar,
+			doc: doc && doc[0],
+			tex: tex && tex[0],
+			type,
+			name,
+			location: location()
+		}
+	}
+
+defparam
+	= type:type __ name:IDENT
+	{
+		return {
+			_type: 'defv',
+			type,
+			name,
 			location: location()
 		}
 	}
@@ -45,8 +56,8 @@ defun
 		params:(
 			"(" _
 			p:(
-				head:typevar _
-				tail:("," _ tv:typevar _ {return tv})*
+				head:defparam _
+				tail:("," _ tv:defparam _ {return tv})*
 				{return [head].concat(tail)}
 			)?
 			")" _
@@ -114,8 +125,8 @@ defrule
 		params:(
 			"(" _
 			p:(
-				head:typevar _
-				tail:("," _ tv:typevar _ {return tv})*
+				head:defparam _
+				tail:("," _ tv:defparam _ {return tv})*
 				{return [head].concat(tail)}
 			)?
 			")" _
@@ -252,8 +263,8 @@ funexpr
 		params:(
 			"(" _
 			p:(
-				head:typevar _
-				tail:("," _ tv:typevar _ {return tv})*
+				head:defparam _
+				tail:("," _ tv:defparam _ {return tv})*
 				{return [head].concat(tail)}
 			)?
 			")" _
@@ -294,17 +305,6 @@ expr0
 	/ funexpr
 	/ var
 	/ "(" _ e:expr0 _ ")" {return e}
-
-typevar
-	= type:type __ name:IDENT
-	{
-		return {
-			_type: 'typevar',
-			type,
-			name,
-			location: location()
-		}
-	}
 
 type
 	= stype
@@ -363,6 +363,7 @@ keyword
 	= "typedef"
 	/ "rule"
 	/ "ruleset"
+	/ "link"
 	/ "native";
 
 IDENT

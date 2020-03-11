@@ -26,7 +26,7 @@ Program.prototype.feed = function (lines, nativeMap) {
 				this.scope.addType(type);
 				break;
 			case 'defv':
-				var typevar = PegInterface.typevar(line.typevar, this.scope, []);
+				var typevar = PegInterface.typevar(line, this.scope, []);
 				this.scope.addTypevar(typevar);
 				break;
 			case 'defun':
