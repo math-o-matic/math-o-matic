@@ -1,38 +1,31 @@
 var Node = require('./Node');
 
-function Fun({anonymous, name, type, atomic, params, expr, doc, tex}) {
+function Fun({name, type, params, expr, doc, tex}) {
 	Node.call(this);
 
 	this.doc = doc;
 	this.tex = tex;
 
-	if (typeof anonymous != 'boolean')
-		throw Error('Assertion failed');
-
-	if (!anonymous && typeof name != 'string')
+	if (name && typeof name != 'string')
 		throw Error('Assertion failed');
 
 	if (type._type != 'type')
 		throw Error('Assertion failed');
 
-	if (typeof atomic != 'boolean')
+	if (!(params instanceof Array)
+			|| params.map(e => e instanceof Node).some(e => !e))
 		throw Error('Assertion failed');
 
-	if (!atomic) {
-		if (!(params instanceof Array)
-				|| params.map(e => e instanceof Node).some(e => !e))
-			throw Error('Assertion failed');
+	if (expr && !(expr instanceof Node))
+		throw Error('Assertion failed');
 
-		if (!(expr instanceof Node))
-			throw Error('Assertion failed');
-	}
+	if (!name && !expr)
+		throw Error('Anonymous fun cannot be atomic');
 
-	this.anonymous = anonymous;
-	this.name = anonymous ? '<anonymous>' : name;
+	this.name = name;		// nullable
 	this.type = type;
-	this.atomic = atomic;
 	this.params = params;
-	this.expr = expr;
+	this.expr = expr;		// nullable
 }
 
 Fun.prototype = Object.create(Node.prototype);
@@ -45,11 +38,10 @@ Fun.prototype.toString = function () {
 
 Fun.prototype.toIndentedString = function (indent) {
 	if (!this.expr)
-		return `${this.anonymous ? '' : 'ƒ ' + this.type.to + ' ' + this.name}`
-			+ `(${this.params.join(', ')});`;
+		return `ƒ ${this.type.to} ${this.name}(${this.params.join(', ')});`;
 
 	return [
-		`${this.anonymous ? '' : 'ƒ ' + this.type.to + ' ' + this.name}`
+		(this.name ? 'ƒ ' + this.type.to + ' ' + this.name : '')
 			+ `(${this.params.join(', ')}) => (`,
 		`\t${this.expr.toIndentedString(indent + 1)}`,
 		')'
@@ -57,7 +49,7 @@ Fun.prototype.toIndentedString = function (indent) {
 };
 
 Fun.prototype.toTeXString = function (root) {
-	if (this.anonymous)
+	if (!this.name)
 		return '\\left('
 			+ (
 				this.params.length == 1
@@ -87,7 +79,7 @@ Fun.prototype.funcallToTeXString = function (args) {
 
 	var n = this.escapeTeX(this.name);
 
-	return `${this.anonymous
+	return `${!this.name
 			? this.toTeXString()
 			: `\\href{#def-${this.name}}{${this.name.length == 1 ? n : `\\mathrm{${n}}`}}`}`
 		+ `(${args.join(', ')})`;

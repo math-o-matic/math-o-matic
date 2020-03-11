@@ -42,7 +42,7 @@ Funcall.prototype.toIndentedString = function (indent) {
 		args = args.join(', ');
 
 		return [
-			`${this.fun._type != 'fun' || this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
+			`${this.fun._type != 'fun' || !this.fun.name ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
 			args,
 			')'
 		].join('');
@@ -50,7 +50,7 @@ Funcall.prototype.toIndentedString = function (indent) {
 		args = args.join(',\n' + '\t'.repeat(indent + 1));
 
 		return [
-			`${this.fun._type != 'fun' || this.fun.anonymous ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
+			`${this.fun._type != 'fun' || !this.fun.name ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
 			'\t' + args,
 			')'
 		].join('\n' + '\t'.repeat(indent));
@@ -65,7 +65,7 @@ Funcall.prototype.toTeXString = function (root) {
 		return arg.toTeXString();
 	});
 
-	return `${this.fun.anonymous
+	return `${!this.fun.name
 			? this.fun.toTeXString()
 			: this.fun._type == 'typevar'
 				? this.fun.toTeXString()

@@ -124,10 +124,8 @@ PegInterface.fun = function (obj, parentScope, trace) {
 	if (obj._type != 'defun' && obj._type != 'funexpr')
 		throw Error('Assertion failed');
 
-	var anonymous = null;
 	var name = null;
 	var type = null;
-	var atomic = null;
 	var params = null;
 	var expr = null;
 	var scope = parentScope.extend();
@@ -139,7 +137,6 @@ PegInterface.fun = function (obj, parentScope, trace) {
 
 	switch (obj._type) {
 		case 'defun':
-			anonymous = false;
 			name = obj.name;
 
 			if (!scope.hasType(typeObjToNestedArr(obj.rettype)))
@@ -163,9 +160,6 @@ PegInterface.fun = function (obj, parentScope, trace) {
 				from: params.map(typevar => typevar.type),
 				to: rettype
 			});
-
-			atomic = !obj.expr;
-
 			if (obj.expr) {
 				switch (obj.expr._type) {
 					case 'funcall':
@@ -195,8 +189,6 @@ PegInterface.fun = function (obj, parentScope, trace) {
 			}
 			break;
 		case 'funexpr':
-			anonymous = true;
-
 			params = obj.params.map(tvo => {
 				if (!scope.hasType(typeObjToNestedArr(tvo.type)))
 					throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
@@ -207,8 +199,6 @@ PegInterface.fun = function (obj, parentScope, trace) {
 				var tv = PegInterface.typevar(tvo, scope, trace);
 				return scope.addTypevar(tv);
 			});
-
-			atomic = false;
 
 			var rettype;
 
@@ -245,7 +235,7 @@ PegInterface.fun = function (obj, parentScope, trace) {
 			throw Error('wut');
 	}
 
-	return new Fun({anonymous, name, type, atomic, params, expr, doc, tex});
+	return new Fun({name, type, params, expr, doc, tex});
 };
 
 PegInterface.funcall = function (obj, parentScope, trace) {

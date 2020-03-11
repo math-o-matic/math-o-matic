@@ -159,7 +159,7 @@ Scope.prototype.addFun = function (fun) {
 	if (!(fun instanceof Fun))
 		throw Error('Illegal argument type');
 
-	if (fun.anonymous)
+	if (!fun.name)
 		throw Error(`Cannot add anonymous fun to scope`);
 
 	if (this.hasOwnTypevar(fun.name))

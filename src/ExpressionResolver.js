@@ -22,7 +22,12 @@ ER.isfree0 = function (expr, map) {
 		return ER.isfree0(expr.fun, map)
 			&& expr.args.map(arg => ER.isfree0(arg, map)).every(e => e);
 	} else if (expr._type == 'fun') {
-		if (expr.atomic || !expr.anonymous) return !map(expr);
+		if (!expr.expr || expr.name) return !map(expr);
+
+		// 위의 expr.name을 지우면 이게 발생한다.
+		if (expr.params.map(e => ER.isfree0(e, map)).some(e => !e))
+			throw Error('Parameter collision');
+
 		return ER.isfree0(expr.expr, map);
 	} else if (expr._type == 'typevar') {
 		return !map(expr);
@@ -42,14 +47,13 @@ ER.substitute0 = function (expr, map) {
 			args: args2
 		});
 	} else if (expr._type == 'fun') {
-		if (expr.atomic) return map(expr) || expr;
+		if (!expr.expr) return map(expr) || expr;
 
 		var expr2 = ER.substitute0(expr.expr, map);
 
 		return new Fun({
-			anonymous: true,
+			name: false,
 			type: expr.type,
-			atomic: false,
 			params: expr.params,
 			expr: expr2
 		});
@@ -107,18 +111,17 @@ ER.expand0Funcalls = function (expr) {
 		var fun = ER.expand0Funcalls(expr.fun);
 		var args = expr.args.map(ER.expand0Funcalls);
 
-		if (!fun.anonymous)
+		if (fun.name)
 			return new Funcall({fun, args});
 
 		var map = param => args[fun.params.indexOf(param)];
 
 		return ER.expand0Funcalls(ER.substitute0(fun.expr, map));
-	} else if (expr._type == 'fun' && expr.anonymous) {
+	} else if (expr._type == 'fun' && !expr.name) {
 		var expr2 = ER.expand0Funcalls(expr.expr);
 		return new Fun({
-			anonymous: true,
+			name: false,
 			type: expr.type,
-			atomic: false,
 			params: expr.params,
 			expr: expr2
 		});
@@ -132,18 +135,17 @@ ER.expand0 = function (expr) {
 		var fun = ER.expand0(expr.fun);
 		var args = expr.args.map(ER.expand0);
 
-		if (fun._type != 'fun' || fun.atomic)
+		if (fun._type != 'fun' || !fun.expr)
 			return new Funcall({fun, args});
 
 		var map = param => args[fun.params.indexOf(param)];
 
 		return ER.expand0(ER.substitute0(fun.expr, map));
-	} else if (expr._type == 'fun' && !expr.atomic) {
+	} else if (expr._type == 'fun' && expr.expr) {
 		var expr2 = ER.expand0(expr.expr);
 		return new Fun({
-			anonymous: true,
+			name: false,
 			type: expr.type,
-			atomic: false,
 			params: expr.params,
 			expr: expr2
 		});
