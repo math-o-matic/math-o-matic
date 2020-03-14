@@ -48,253 +48,243 @@ defparam
 	}
 
 defun
-	=
-		doc:(documentation __)?
-		tex:(tex __)?
-		rettype:type __
-		name:IDENT _
-		params:(
-			"(" _
-			p:(
-				head:defparam _
-				tail:("," _ tv:defparam _ {return tv})*
-				{return [head].concat(tail)}
-			)?
-			")" _
-			{return p || []}
-		)
-		expr:(
-			"{" _
-			expr:expr0 _
-			"}"
-			{return expr}
-			/ SEM {return null}
-		)
-		{
-			return {
-				_type: 'defun',
-				doc: doc && doc[0],
-				tex: tex && tex[0],
-				rettype,
-				name,
-				params,
-				expr,
-				location: location()
-			}
+	= doc:(documentation __)?
+	tex:(tex __)?
+	rettype:type __
+	name:IDENT _
+	params:(
+		"(" _
+		p:(
+			head:defparam _
+			tail:("," _ tv:defparam _ {return tv})*
+			{return [head].concat(tail)}
+		)?
+		")" _
+		{return p || []}
+	)
+	expr:(
+		"{" _
+		expr:expr0 _
+		"}"
+		{return expr}
+		/ SEM {return null}
+	)
+	{
+		return {
+			_type: 'defun',
+			doc: doc && doc[0],
+			tex: tex && tex[0],
+			rettype,
+			name,
+			params,
+			expr,
+			location: location()
 		}
+	}
 
 deflink
-	=
-		doc:(documentation __)?
-		"native" __
-		"link" __
-		name:IDENT _
-		SEM
-		{
-			return {
-				_type: 'deflink',
-				doc: doc && doc[0],
-				name,
-				native: true,
-				location: location()
-			}
+	= doc:(documentation __)?
+	"native" __
+	"link" __
+	name:IDENT _
+	SEM
+	{
+		return {
+			_type: 'deflink',
+			doc: doc && doc[0],
+			name,
+			native: true,
+			location: location()
 		}
+	}
 
 defruleset
-	=
-		doc:(documentation __)?
-		"native" __
-		"ruleset" __
-		name:IDENT _
-		SEM
-		{
-			return {
-				_type: 'defruleset',
-				doc: doc && doc[0],
-				name,
-				native: true,
-				location: location()
-			}
+	= doc:(documentation __)?
+	"native" __
+	"ruleset" __
+	name:IDENT _
+	SEM
+	{
+		return {
+			_type: 'defruleset',
+			doc: doc && doc[0],
+			name,
+			native: true,
+			location: location()
 		}
+	}
 
 defrule
-	=
-		doc:(documentation __)?
-		"rule" __
-		name:IDENT _
-		params:(
-			"(" _
-			p:(
-				head:defparam _
-				tail:("," _ tv:defparam _ {return tv})*
-				{return [head].concat(tail)}
-			)?
-			")" _
-			{return p || []}
-		)
-		"{" _
-		expr:expr2 _
-		"}"
-		{
-			return {
-				_type: 'defrule',
-				doc: doc && doc[0],
-				name,
-				params,
-				rules: expr.rules,
-				location: location()
-			}
+	= doc:(documentation __)?
+	"rule" __
+	name:IDENT _
+	params:(
+		"(" _
+		p:(
+			head:defparam _
+			tail:("," _ tv:defparam _ {return tv})*
+			{return [head].concat(tail)}
+		)?
+		")" _
+		{return p || []}
+	)
+	"{" _
+	expr:expr2 _
+	"}"
+	{
+		return {
+			_type: 'defrule',
+			doc: doc && doc[0],
+			name,
+			params,
+			rules: expr.rules,
+			location: location()
 		}
+	}
 
 // expr0... |- expr0
 tee
-	=
-		left:(
-			l:(
-				head:expr0 _
-				tail:("," _ e:expr0 _ {return e})*
-				{return [head].concat(tail)}
-			)? {return l || []}
-		)
-		"|-" _
-		right:expr0
-		{
-			return {
-				_type: 'tee',
-				left,
-				right,
-				location: location()
-			}
+	= left:(
+		l:(
+			head:expr0 _
+			tail:("," _ e:expr0 _ {return e})*
+			{return [head].concat(tail)}
+		)? {return l || []}
+	)
+	"|-" _
+	right:expr0
+	{
+		return {
+			_type: 'tee',
+			left,
+			right,
+			location: location()
 		}
+	}
 
 rulename
-	=
-		(
-			linkName:IDENT _
-			"[" _
-			rule:rulename _
-			"]"
-			{
-				return {
+	= (
+		linkName:IDENT _
+		"[" _
+		rule:rulename _
+		"]"
+		{
+			return {
+				_type: 'rulename',
+				type: 'link',
+				linkName,
+				rule
+			}
+		}
+	)
+	/
+	(
+		rulesetName:(id:IDENT _ "." _ {return id})?
+		name:IDENT
+		{
+			return rulesetName
+				? {
 					_type: 'rulename',
-					type: 'link',
-					linkName,
-					rule
+					type: 'ruleset',
+					rulesetName,
+					name
 				}
-			}
-		)
-		/
-		(
-			rulesetName:(id:IDENT _ "." _ {return id})?
-			name:IDENT
-			{
-				return rulesetName
-					? {
-						_type: 'rulename',
-						type: 'ruleset',
-						rulesetName,
-						name
-					}
-					: {
-						_type: 'rulename',
-						type: 'normal',
-						name
-					}
-			}
-		)
+				: {
+					_type: 'rulename',
+					type: 'normal',
+					name
+				}
+		}
+	)
 
 // rule(...)
 rulecall
-	=
-		rule:rulename
-		args:(
-			"(" _
-			a:(
-				head:expr0 _
-				tail:("," _ e:expr0 _ {return e})*
-				{return [head].concat(tail)}
-			)?
-			")"
-			{return a || []}
-		)
-		{
-			return {
-				_type: 'rulecall',
-				rule,
-				args,
-				location: location()
-			}
+	= rule:rulename
+	args:(
+		"(" _
+		a:(
+			head:expr0 _
+			tail:("," _ e:expr0 _ {return e})*
+			{return [head].concat(tail)}
+		)?
+		")"
+		{return a || []}
+	)
+	{
+		return {
+			_type: 'rulecall',
+			rule,
+			args,
+			location: location()
 		}
+	}
 
 // forall(f, g)
 // ((...) => ...)(f, g)
 funcall
-	=
-		fun:(
-			var
-			/
-			"(" _
-			e:expr0 _
-			")"
-			{return e}
-		) _
-		args:(
-			"(" _
-			a:(
-				head:expr0 _
-				tail:("," _ e:expr0 _ {return e})*
-				{return [head].concat(tail)}
-			)?
-			")"
-			{return a || []}
-		)
-		{
-			return {
-				_type: 'funcall',
-				fun,
-				args,
-				location: location()
-			}
+	= fun:(
+		var
+		/
+		"(" _
+		e:expr0 _
+		")"
+		{return e}
+	) _
+	args:(
+		"(" _
+		a:(
+			head:expr0 _
+			tail:("," _ e:expr0 _ {return e})*
+			{return [head].concat(tail)}
+		)?
+		")"
+		{return a || []}
+	)
+	{
+		return {
+			_type: 'funcall',
+			fun,
+			args,
+			location: location()
 		}
+	}
 
 // (T t) => { f(t) }
 funexpr
-	=
-		params:(
-			"(" _
-			p:(
-				head:defparam _
-				tail:("," _ tv:defparam _ {return tv})*
-				{return [head].concat(tail)}
-			)?
-			")" _
-			{return p || []}
-		)
-		"=>" _
-		"{" _ expr:expr0 _ "}"
-		{
-			return {
-				_type: 'funexpr',
-				params,
-				expr,
-				location: location()
-			}
+	= params:(
+		"(" _
+		p:(
+			head:defparam _
+			tail:("," _ tv:defparam _ {return tv})*
+			{return [head].concat(tail)}
+		)?
+		")" _
+		{return p || []}
+	)
+	"=>" _
+	"{" _ expr:expr0 _ "}"
+	{
+		return {
+			_type: 'funexpr',
+			params,
+			expr,
+			location: location()
 		}
+	}
 
 // expr1 ~ ... ~ expr1
 expr2
-	=
-		rules:(
-			head:expr1 _
-			tail:(_ "~" _ e:expr1 {return e})*
-			{return [head].concat(tail)}
-		)
-		{
-			return {
-				_type: 'chain',
-				rules
-			}
+	= rules:(
+		head:expr1 _
+		tail:(_ "~" _ e:expr1 {return e})*
+		{return [head].concat(tail)}
+	)
+	{
+		return {
+			_type: 'chain',
+			rules
 		}
+	}
 
 expr1
 	= tee
@@ -322,33 +312,32 @@ stype
 	}
 
 ftype
-	=
-		"[" _
-		from:(
-			type:type {return [type]}
-			/ (
-				tt:(
-					"(" _
-					head: type
-					tail:(_ "," _ t:type {return t})*
-					_ ")"
-					{return [head].concat(tail)}
-				)
-				{return tt}
+	= "[" _
+	from:(
+		type:type {return [type]}
+		/ (
+			tt:(
+				"(" _
+				head: type
+				tail:(_ "," _ t:type {return t})*
+				_ ")"
+				{return [head].concat(tail)}
 			)
-		) _
-		"->" _
-		to:type _
-		"]"
-		{
-			return {
-				_type: 'type',
-				ftype: true,
-				from,
-				to,
-				location: location()
-			}
+			{return tt}
+		)
+	) _
+	"->" _
+	to:type _
+	"]"
+	{
+		return {
+			_type: 'type',
+			ftype: true,
+			from,
+			to,
+			location: location()
 		}
+	}
 
 var
 	= name:IDENT
