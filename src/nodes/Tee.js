@@ -1,4 +1,5 @@
 var Node = require('./Node');
+var MetaType = require('./MetaType');
 var Typevar = require('./Typevar');
 
 var ExpressionResolver = require('../ExpressionResolver');
@@ -7,15 +8,15 @@ function Tee({left, right}) {
 	Node.call(this);
 
 	if (!(left instanceof Array)
-			|| left.map(e => e instanceof Node).some(e => !e))
+			|| left.map(e => e.type.order == 0).some(e => !e))
 		throw Error('Assertion failed');
 
-	if (!(right instanceof Node))
+	if (right.type.order != 0)
 		throw Error('Assertion failed');
 
-	// antecedant의 contraction
-	// 현재 antecedant를 집합처럼 생각하므로 contraction을 자동으로 한다.
-	// antecedant가 집합인지 시퀀스인지는 #14 참조.
+	// antecedent의 contraction
+	// 현재 antecedent를 집합처럼 생각하므로 contraction을 자동으로 한다.
+	// antecedent가 집합인지 시퀀스인지는 #14 참조.
 	this.left = left.reduce((l, r) => {
 		for (var i = 0; i < l.length; i++)
 			if (ExpressionResolver.equals0(l[i], r)) return l;
@@ -24,6 +25,13 @@ function Tee({left, right}) {
 	}, []);
 
 	this.right = right;
+
+	this.type = new MetaType({
+		functional: false,
+		order: 1,
+		left: left.map(e => e.type),
+		right: right.type
+	});
 }
 
 Tee.prototype = Object.create(Node.prototype);

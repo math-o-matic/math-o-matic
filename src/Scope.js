@@ -62,7 +62,7 @@ Scope.prototype.hasOwnType = function (name) {
 	return name.map(e => {
 		return this.hasOwnType(e);
 	}).every(e => e);
-}
+};
 
 /*
  * Possible input values:
@@ -86,14 +86,14 @@ Scope.prototype.hasType = function (name) {
 	return name.map(e => {
 		return this.hasType(e);
 	}).every(e => e);
-}
+};
 
 Scope.prototype.addType = function (type) {
 	if (!(type instanceof Type))
 		throw Error('Illegal argument type');
 
 	if (!type.name)
-		throw Error(`Something's wrong`);
+		throw Error('Something\'s wrong');
 
 	if (this.hasOwnType(type.name))
 		throw Error(`Type with name ${type.name} already is there`);
@@ -134,7 +134,7 @@ Scope.prototype.getType = function (name) {
 		from,
 		to
 	});
-}
+};
 
 Scope.prototype.hasOwnTypevar = function (name) {
 	return !!this.defMap[name];
@@ -160,13 +160,13 @@ Scope.prototype.addFun = function (fun) {
 		throw Error('Illegal argument type');
 
 	if (!fun.name)
-		throw Error(`Cannot add anonymous fun to scope`);
+		throw Error('Cannot add anonymous fun to scope');
 
 	if (this.hasOwnTypevar(fun.name))
 		throw Error(`Def with name ${fun.name} already is there`);
 
 	return this.defMap[fun.name] = fun;
-}
+};
 
 Scope.prototype.getTypevar = function (name) {
 	if (!this.hasTypevar(name))

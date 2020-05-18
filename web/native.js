@@ -159,7 +159,7 @@ native = {
 				var rule = new scope.Rule({
 					name: 'tt.' + name,
 					params: typevars,
-					rules: [tee]
+					expr: tee
 				});
 
 				return rule;
@@ -214,27 +214,25 @@ native = {
 				return new scope.Rule({
 					name: `Vi[${rule.name}]`,
 					params: rule.params.slice(0, rule.params.length - 1),
-					rules: [
-						new scope.Tee({
-							left: [],
-							right: new scope.Funcall({
-								fun: V,
-								args: [
-									new scope.Fun({
-										anonymous: true,
-										type: new scope.Type({
-											functional: true,
-											from: [cls],
-											to: st
-										}),
-										atomic: false,
-										params: [last],
-										expr: tee.right
-									})
-								]
-							})
+					expr: new scope.Tee({
+						left: [],
+						right: new scope.Funcall({
+							fun: V,
+							args: [
+								new scope.Fun({
+									anonymous: true,
+									type: new scope.Type({
+										functional: true,
+										from: [cls],
+										to: st
+									}),
+									atomic: false,
+									params: [last],
+									expr: tee.right
+								})
+							]
 						})
-					]
+					})
 				});
 			}
 		},
@@ -289,15 +287,13 @@ native = {
 				return new scope.Rule({
 					name: `Ve[${rule.name}]`,
 					params: rule.params.concat([newvar]),
-					rules: [
-						new scope.Tee({
-							left: [],
-							right: new scope.Funcall({
-								fun: tee.right.args[0],
-								args: [newvar]
-							})
+					expr: new scope.Tee({
+						left: [],
+						right: new scope.Funcall({
+							fun: tee.right.args[0],
+							args: [newvar]
 						})
-					]
+					})
 				});
 			}
 		},
@@ -305,6 +301,9 @@ native = {
 			get: (rules, scope) => {
 				if (rules.length != 1) return false;
 				var rule = rules[0];
+
+				if (!(rule instanceof scope.Rule))
+					throw Error('Wrong type');
 
 				if (!scope.hasType('st'))
 					throw Error(`Type st not found`);
@@ -334,18 +333,16 @@ native = {
 				return new scope.Rule({
 					name: `cp[${rule.name}]`,
 					params: rule.params,
-					rules: [
-						new scope.Tee({
-							left: tee.left.slice(0, tee.left.length - 1),
-							right: new scope.Funcall({
-								fun: I,
-								args: [
-									tee.left[tee.left.length - 1],
-									tee.right
-								]
-							})
+					expr: new scope.Tee({
+						left: tee.left.slice(0, tee.left.length - 1),
+						right: new scope.Funcall({
+							fun: I,
+							args: [
+								tee.left[tee.left.length - 1],
+								tee.right
+							]
 						})
-					]
+					})
 				});
 			}
 		}

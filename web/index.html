@@ -305,27 +305,28 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 
 					// + `<pre>${escapeHtml(v)}</pre>`
 
-					+ (
-						v.rules.length == 1 && v.rules[0]._type != 'rulecall'
-							? '<p><b>not proved</b></p>'
-							: '<p><b>proof explorer</b></p>'
-								+ `<form id="form-rule-${v.name}"><table>
-								<tr>
-									<th colspan="2">range</th>
-									<th>expression</th>
-								</tr>`
-								+ v.rules.map(y => {
-									return katex.renderToString(y.toTeXString(), katexOpts);
-								}).map((e, i) => `
-									<tr>
-										<td><input type="radio" name="from" data-rulename="${v.name}" value="${i}" ${i == 0 ? 'checked' : ''} onclick="onRadioClick(this.dataset.rulename)"></td>
-										<td><input type="radio" name="to" data-rulename="${v.name}" value="${i}" ${i == v.rules.length - 1 ? 'checked' : ''} onclick="onRadioClick(this.dataset.rulename)"></td>
-										<td>${e}</td>
-									</td>`).join('')
-								+ `<tr><th colspan="2">result</th><td class="result">${katex.renderToString(v.expr.toTeXString(), katexOpts)}</td></tr>`
-								+ '</table>'
-								+ '</form>'
-					)
+					+ `<td class="result">${katex.renderToString(v.expr.toTeXString(), katexOpts)}</td>`
+					// + (
+					// 	v.rules.length == 1 && v.rules[0]._type != 'rulecall'
+					// 		? '<p><b>not proved</b></p>'
+					// 		: '<p><b>proof explorer</b></p>'
+					// 			+ `<form id="form-rule-${v.name}"><table>
+					// 			<tr>
+					// 				<th colspan="2">range</th>
+					// 				<th>expression</th>
+					// 			</tr>`
+					// 			+ v.rules.map(y => {
+					// 				return katex.renderToString(y.toTeXString(), katexOpts);
+					// 			}).map((e, i) => `
+					// 				<tr>
+					// 					<td><input type="radio" name="from" data-rulename="${v.name}" value="${i}" ${i == 0 ? 'checked' : ''} onclick="onRadioClick(this.dataset.rulename)"></td>
+					// 					<td><input type="radio" name="to" data-rulename="${v.name}" value="${i}" ${i == v.rules.length - 1 ? 'checked' : ''} onclick="onRadioClick(this.dataset.rulename)"></td>
+					// 					<td>${e}</td>
+					// 				</td>`).join('')
+					// 			+ `<tr><th colspan="2">result</th><td class="result">${katex.renderToString(v.expr.toTeXString(), katexOpts)}</td></tr>`
+					// 			+ '</table>'
+					// 			+ '</form>'
+					// )
 
 					+ '<p><b>description</b></p>'
 					+ (

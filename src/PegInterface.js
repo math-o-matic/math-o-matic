@@ -8,11 +8,14 @@ var Fun = require('./nodes/Fun');
 var Funcall = require('./nodes/Funcall');
 var Rule = require('./nodes/Rule');
 var Tee = require('./nodes/Tee');
+var Tee2 = require('./nodes/Tee2');
 var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
 var Link = require('./nodes/Link');
+var Linkcall = require('./nodes/Linkcall');
+var Reduction2 = require('./nodes/Reduction2');
 
-var PegInterface = {};
+var PI = {};
 
 function typeObjToString(obj) {
 	if (obj._type != 'type')
@@ -51,8 +54,6 @@ function typeObjToNestedArr(obj) {
 
 function rulenameObjToString(obj) {
 	switch (obj.type) {
-		case 'link':
-			return `${obj.linkName}[${rulenameObjToString(obj.rule)}]`;
 		case 'ruleset':
 			return `${obj.rulesetName}.${obj.name}`;
 		case 'normal':
@@ -74,7 +75,7 @@ function makeError(message, trace) {
 		.map(e => `${e[0]} ${e[1]} (code.js:${e[2].start.line}:${e[2].start.column})`).join('\n\tat '));
 }
 
-PegInterface.type = function (obj, parentScope, trace) {
+PI.type = function (obj, parentScope, trace) {
 	if (obj._type != 'typedef')
 		throw Error('Assertion failed');
 
@@ -97,9 +98,9 @@ PegInterface.type = function (obj, parentScope, trace) {
 		name: obj.name,
 		doc: obj.doc
 	});
-}
+};
 
-PegInterface.typevar = function (obj, parentScope, trace) {
+PI.typevar = function (obj, parentScope, trace) {
 	if (obj._type != 'defv')
 		throw Error('Assertion failed');
 
@@ -120,7 +121,7 @@ PegInterface.typevar = function (obj, parentScope, trace) {
 	});
 };
 
-PegInterface.fun = function (obj, parentScope, trace) {
+PI.fun = function (obj, parentScope, trace) {
 	if (obj._type != 'defun' && obj._type != 'funexpr')
 		throw Error('Assertion failed');
 
@@ -151,7 +152,7 @@ PegInterface.fun = function (obj, parentScope, trace) {
 				if (scope.hasOwnTypevar(tvo.name))
 					throw makeError(`Param name ${tvo.name} already is there`, trace);
 
-				var tv = PegInterface.typevar(tvo, scope, trace);
+				var tv = PI.typevar(tvo, scope, trace);
 				return scope.addTypevar(tv);
 			});
 
@@ -160,32 +161,11 @@ PegInterface.fun = function (obj, parentScope, trace) {
 				from: params.map(typevar => typevar.type),
 				to: rettype
 			});
+
 			if (obj.expr) {
-				switch (obj.expr._type) {
-					case 'funcall':
-						var funcall = PegInterface.funcall(obj.expr, scope, trace);
-						if (!rettype.equals(funcall.type))
-							throw makeError(`Return type mismatch: ${rettype}, ${funcall.type}`, trace);
-						expr = funcall;
-						break;
-					case 'funexpr':
-						var fun = PegInterface.fun(obj.expr, scope, trace);
-						if (!rettype.equals(fun.type))
-							throw makeError(`Return type mismatch: ${rettype}, ${fun.type}`, trace);
-						expr = fun;
-						break;
-					case 'var':
-						if (!scope.hasTypevar(obj.expr.name))
-							throw makeError(`Undefined identifier ${obj.expr.name}`, trace);
-						var typevar = scope.getTypevar(obj.expr.name);
-						if (!rettype.equals(typevar.type)) {
-							throw makeError(`Wrong return type ${rettype}`, trace);
-						}
-						expr = typevar;
-						break;
-					default:
-						throw makeError(`Unknown type ${obj.expr._type}`, trace);
-				}
+				expr = PI.expr0(obj.expr, scope, trace);
+				if (!rettype.equals(expr.type))
+					throw makeError(`Expression type ${expr.type} failed to match the return type ${rettype} of fun ${name}`);
 			}
 			break;
 		case 'funexpr':
@@ -196,33 +176,14 @@ PegInterface.fun = function (obj, parentScope, trace) {
 				if (scope.hasOwnTypevar(tvo.name))
 					throw makeError(`Param name ${tvo.name} already is there`, trace);
 
-				var tv = PegInterface.typevar(tvo, scope, trace);
+				var tv = PI.typevar(tvo, scope, trace);
 				return scope.addTypevar(tv);
 			});
 
 			var rettype;
 
-			switch (obj.expr._type) {
-				case 'funcall':
-					var funcall = PegInterface.funcall(obj.expr, scope, trace);
-					rettype = funcall.type;
-					expr = funcall;
-					break;
-				case 'funexpr':
-					var fun = PegInterface.fun(obj.expr, scope, trace);
-					rettype = fun.type;
-					expr = fun;
-					break;
-				case 'var':
-					if (!scope.hasTypevar(obj.expr.name))
-						throw makeError(`Undefined identifier ${obj.expr.name}`, trace);
-					var typevar = scope.getTypevar(obj.expr.name);
-					rettype = typevar.type;
-					expr = typevar;
-					break;
-				default:
-					throw makeError(`Unknown type ${obj.expr._type}`, trace);
-			}
+			expr = PI.expr0(obj.expr, scope, trace);
+			rettype = expr.type;
 
 			type = new Type({
 				functional: true,
@@ -238,48 +199,20 @@ PegInterface.fun = function (obj, parentScope, trace) {
 	return new Fun({name, type, params, expr, doc, tex});
 };
 
-PegInterface.funcall = function (obj, parentScope, trace) {
+PI.funcall = function (obj, parentScope, trace) {
 	if (obj._type != 'funcall')
 		throw Error('Assertion failed');
-
-	var fun = null;
-	var args = null;
 	var scope = parentScope.extend();
 
 	trace = extendTrace(trace, 'funcall', obj.fun.name || '<anonymous>', obj.location);
 
-	switch (obj.fun._type) {
-		case 'funcall':
-			var funcall = PegInterface.funcall(obj.fun, scope, trace);
-			fun = funcall;
-			break;
-		case 'funexpr':
-			fun = PegInterface.fun(obj.fun, scope, trace);
-			break;
-		case 'var':
-			if (!scope.hasTypevar(obj.fun.name))
-				throw makeError(`Undefined identifier ${obj.fun.name}`, trace);
-			fun = scope.getTypevar(obj.fun.name);
-			if (fun.type.isSimple)
-				throw makeError(`${fun.name} is not callable`, trace);
-			break;
-		default:
-			throw makeError(`Unknown type ${fun._type}`, trace);
-	}
+	var fun = PI.expr0(obj.fun, scope, trace);
 
-	args = obj.args.map((arg, i) => {
-		switch (arg._type) {
-			case 'funcall':
-				return PegInterface.funcall(arg, scope, trace);
-			case 'funexpr':
-				return PegInterface.fun(arg, scope, trace);
-			case 'var':
-				if (!scope.hasTypevar(arg.name))
-					throw makeError(`Undefined identifier ${arg.name}`, trace);
-				return scope.getTypevar(arg.name);
-			default:
-				throw makeError(`Unknown type ${obj.expr._type}`, trace);
-		}
+	if (fun.type.isSimple)
+		throw makeError(`${fun.name} is not callable`, trace);
+
+	var args = obj.args.map(arg => {
+		return PI.expr0(arg, scope, trace);
 	});
 
 	var funtype = fun.type.resolve();
@@ -294,7 +227,114 @@ PegInterface.funcall = function (obj, parentScope, trace) {
 	return new Funcall({fun, args});
 };
 
-PegInterface.rule = function (obj, parentScope, trace) {
+PI.expr2 = function (obj, parentScope, trace) {
+	if (!['tee2', 'linkcall', 'linkname'].includes(obj._type))
+		throw Error('Assertion failed');
+
+	// don't extend scope/trace
+	var scope = parentScope;
+
+	switch (obj._type) {
+		case 'tee2':
+			return PI.tee2(obj, scope, trace);
+		case 'linkcall':
+			return PI.linkcall(obj, scope, trace);
+		case 'linkname':
+			return PI.linkname(obj, scope, trace);
+		default:
+			throw Error('wut');
+	}
+};
+
+PI.expr1 = function (obj, parentScope, trace) {
+	if (!['tee', 'rulecall', 'reduction2', 'rulename'].includes(obj._type))
+		throw Error('Assertion failed');
+
+	// don't extend scope/trace
+	var scope = parentScope;
+
+	switch (obj._type) {
+		case 'tee':
+			return PI.tee(obj, scope, trace);
+		case 'rulecall':
+			return PI.rulecall(obj, scope, trace);
+		case 'reduction2':
+			return PI.reduction2(obj, scope, trace);
+		case 'rulename':
+			return PI.rulename(obj, scope, trace);
+		default:
+			throw Error('wut');
+	}
+};
+
+PI.expr0 = function (obj, parentScope, trace) {
+	if (!['funcall', 'funexpr', 'var'].includes(obj._type))
+		throw Error('Assertion failed');
+
+	// don't extend scope/trace
+	var scope = parentScope;
+
+	switch (obj._type) {
+		case 'funcall':
+			return PI.funcall(obj, scope, trace);
+		case 'funexpr':
+			return PI.fun(obj, scope, trace);
+		case 'var':
+			if (!scope.hasTypevar(obj.name))
+				throw makeError(`Undefined identifier ${obj.name}`, trace);
+			return scope.getTypevar(obj.name);
+		default:
+			throw Error('wut');
+	}
+};
+
+PI.linkname = function (obj, parentScope, trace) {
+	if (obj._type != 'linkname')
+		throw Error('Assertion failed');
+
+	// don't extend scope/trace
+	var scope = parentScope;
+
+	if (!scope.hasLink(obj.name))
+		throw makeError(`Link ${obj.name} is not defined`, trace);
+
+	return scope.getLink(obj.name);
+};
+
+PI.rulename = function (obj, parentScope, trace) {
+	if (obj._type != 'rulename')
+		throw Error('Assertion failed');
+
+	// don't extend scope/trace
+	var scope = parentScope;
+
+	switch (obj.type) {
+		case 'ruleset':
+			if (!scope.hasRuleset(obj.rulesetName))
+				throw makeError(`Ruleset ${obj.rulesetName} is not defined`, trace);
+
+			var ruleset = scope.getRuleset(obj.rulesetName);
+
+			if (!ruleset.native)
+				throw Error('Behavior undefined for non-native rulesets');
+
+			var rule = ruleset.native.get(obj.name, scope);
+
+			if (!rule)
+				throw makeError(`Rule ${rulenameObjToString(obj)} not found`, trace);
+			
+			return rule;
+		case 'normal':
+			if (!scope.hasRule(obj.name))
+				throw makeError(`Rule ${obj.name} is not defined`, trace);
+
+			return scope.getRule(obj.name);
+		default:
+			throw makeError(`Unknown type ${obj.type}`, trace);
+	}
+};
+
+PI.rule = function (obj, parentScope, trace) {
 	if (obj._type != 'defrule')
 		throw Error('Assertion failed');
 
@@ -310,27 +350,36 @@ PegInterface.rule = function (obj, parentScope, trace) {
 		if (scope.hasOwnTypevar(tvo.name))
 			throw makeError(`Param name ${tvo.name} already is there`, trace);
 
-		var tv = PegInterface.typevar(tvo, scope, trace);
+		var tv = PI.typevar(tvo, scope, trace);
 		return scope.addTypevar(tv);
 	});
 
-	var foo = obj => {
-		switch (obj._type) {
-			case 'tee':
-				return PegInterface.tee(obj, scope, trace);
-			case 'rulecall':
-				return PegInterface.rulecall(obj, scope, trace);
-			default:
-				throw makeError(`Unknown type ${obj._type}`, trace);
-		}
-	};
+	var expr = PI.expr1(obj.expr, scope, trace);
 
-	var rules = obj.rules.map(foo);
+	if (!(expr.type._type == 'metatype'
+			&& expr.type.order == 1
+			&& expr.type.isSimple)) {
+		throw makeError('Expression should be a simple first-order type', trace);
+	}
 
-	return new Rule({name, params, rules, doc: obj.doc});
+	return new Rule({name, params, expr, doc: obj.doc});
 };
 
-PegInterface.tee = function (obj, parentScope, trace) {
+PI.tee2 = function (obj, parentScope, trace) {
+	if (obj._type != 'tee2')
+		throw Error('Assertion failed');
+
+	var scope = parentScope.extend();
+
+	trace = extendTrace(trace, 'tee2', '<anonymous>', obj.location);
+
+	var left = obj.left.map(e => PI.expr1(e, scope, trace));
+	var right = PI.expr1(obj.right, scope, trace);
+
+	return new Tee2({left, right});
+};
+
+PI.tee = function (obj, parentScope, trace) {
 	if (obj._type != 'tee')
 		throw Error('Assertion failed');
 
@@ -338,29 +387,18 @@ PegInterface.tee = function (obj, parentScope, trace) {
 
 	trace = extendTrace(trace, 'tee', '<anonymous>', obj.location);
 
+	if (!scope.root.hasType('st'))
+		throw makeError('Type st is not defined', trace);
+
+	var ST = scope.root.getType('st');
+
 	var foo = obj => {
-		switch (obj._type) {
-			case 'funcall':
-				var funcall = PegInterface.funcall(obj, scope, trace);
-				if (!scope.root.getType('st').equals(funcall.type))
-					throw makeError(`Return type is not st: ${funcall.type}`, trace);
-				return funcall;
-			case 'funexpr':
-				var fun = PegInterface.fun(obj, scope, trace);
-				if (!scope.root.getType('st').equals(fun.type))
-					throw makeError(`Return type is not st: ${fun.type}`, trace);
-				return fun;
-			case 'var':
-				if (!scope.hasTypevar(obj.name))
-					throw makeError(`Undefined identifier ${obj.name}`, trace);
-				var typevar = scope.getTypevar(obj.name);
-				if (!scope.root.getType('st').equals(typevar.type)) {
-					throw makeError(`Return type is not st: ${typevar.type}`, trace);
-				}
-				return typevar;
-			default:
-				throw makeError(`Unknown type ${obj._type}`, trace);
-		}
+		var ret = PI.expr0(obj, scope, trace);
+
+		if (!ST.equals(ret.type))
+			throw makeError(`Type failed to match st: ${ret.type}`, trace);
+
+		return ret;
 	};
 
 	var left = obj.left.map(foo);
@@ -369,82 +407,68 @@ PegInterface.tee = function (obj, parentScope, trace) {
 	return new Tee({left, right});
 };
 
-PegInterface.rulecall = function (obj, parentScope, trace) {
+PI.linkcall = function (obj, parentScope, trace) {
+	if (obj._type != 'linkcall')
+		throw Error('Assertion failed');
+
+	var scope = parentScope.extend();
+
+	trace = extendTrace(trace, 'linkcall', '<anonymous>', obj.location);
+
+	var link = PI.expr2(obj.link, scope, trace);
+
+	if (!(link.type._type == 'metatype'
+			&& link.type.isFunctional
+			&& link.type.order == 2)) {
+		throw makeError('Link should be a second-order functional type', trace);
+	}
+
+	var args = obj.args.map(obj => {
+		return PI.expr0(obj, scope, trace);
+	});
+
+	var paramTypes = link.type.from,
+		argTypes = args.map(e => e.type);
+
+	if (paramTypes.length != argTypes.length)
+		throw makeError(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`, trace);
+
+	for (var i = 0; i < paramTypes.length; i++) {
+		if (!paramTypes[i].equals(argTypes[i]))
+			throw makeError(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, trace);
+	}
+
+	return new Linkcall({
+		link,
+		args
+	});
+};
+
+PI.rulecall = function (obj, parentScope, trace) {
 	if (obj._type != 'rulecall')
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'rulecall', rulenameObjToString(obj.rule), obj.location);
+	trace = extendTrace(trace, 'rulecall', '<anonymous>', obj.location);
 
-	var rule = (function getRule(obj) {
-		switch (obj.type) {
-			case 'link':
-				if (!scope.hasLink(obj.linkName))
-					throw makeError(`Link ${obj.linkName} is not defined`, trace);
+	var rule = PI.expr1(obj.rule, scope, trace);
 
-				var link = scope.getLink(obj.linkName);
+	if (rule.type.isSimple)
+		throw makeError('Rule is not callable', trace);
 
-				var rule_ = getRule(obj.rule);
+	var args = obj.args.map(obj => {
+		return PI.expr0(obj, scope, trace);
+	});
 
-				if (!link.native)
-					throw Error('Behavior undefined for non-native links');
+	var argTypes = rule.type.from;
 
-				var rule = link.native.get([rule_], scope);
-
-				if (!rule)
-					throw makeError(`Rule ${rulenameObjToString(obj)} not found`, trace);
-
-				return rule;
-			case 'ruleset':
-				if (!scope.hasRuleset(obj.rulesetName))
-					throw makeError(`Ruleset ${obj.rulesetName} is not defined`, trace);
-
-				var ruleset = scope.getRuleset(obj.rulesetName);
-
-				if (!ruleset.native)
-					throw Error('Behavior undefined for non-native rulesets');
-
-				var rule = ruleset.native.get(obj.name, scope);
-
-				if (!rule)
-					throw makeError(`Rule ${rulenameObjToString(obj)} not found`, trace);
-				
-				return rule;
-			case 'normal':
-				if (!scope.hasRule(obj.name))
-					throw makeError(`Rule ${obj.name} is not defined`, trace);
-
-				return scope.getRule(obj.name);
-			default:
-				throw makeError(`Unknown type ${obj.type}`, trace);
-		}
-	})(obj.rule);
-
-	var args = obj.args.map((function foo(obj) {
-		switch (obj._type) {
-			case 'funcall':
-				var funcall = PegInterface.funcall(obj, scope, trace);
-				return funcall;
-			case 'funexpr':
-				var fun = PegInterface.fun(obj, scope, trace);
-				return fun;
-			case 'var':
-				if (!scope.hasTypevar(obj.name))
-					throw makeError(`Undefined identifier ${obj.name}`, trace);
-				var typevar = scope.getTypevar(obj.name);
-				return typevar;
-			default:
-				throw makeError(`Unknown type ${obj._type}`, trace);
-		}
-	}));
-
-	if (rule.params.length != args.length)
-		throw makeError(`Invalid number of arguments: ${args.length}`, trace);
+	if (argTypes.length != args.length)
+		throw makeError(`Invalid number of arguments (expected ${argTypes.length}): ${args.length}`, trace);
 
 	for (var i = 0; i < args.length; i++)
-		if (!args[i].type.equals(rule.params[i].type))
-			throw makeError(`Argument type mismatch: ${args[i].type}, ${rule.params[i].type}`, trace);
+		if (!args[i].type.equals(argTypes[i]))
+			throw makeError(`Illegal argument type (expected ${argTypes[i]}): ${args[i].type}`, trace);
 
 	return new Rulecall({
 		rule,
@@ -452,7 +476,7 @@ PegInterface.rulecall = function (obj, parentScope, trace) {
 	});
 };
 
-PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
+PI.ruleset = function (obj, parentScope, trace, nativeMap) {
 	if (obj._type != 'defruleset')
 		throw Error('Assertion failed');
 
@@ -473,7 +497,7 @@ PegInterface.ruleset = function (obj, parentScope, trace, nativeMap) {
 	return new Ruleset({name, native, doc: obj.doc});
 };
 
-PegInterface.link = function (obj, parentScope, trace, nativeMap) {
+PI.link = function (obj, parentScope, trace) {
 	if (obj._type != 'deflink')
 		throw Error('Assertion failed');
 
@@ -482,16 +506,63 @@ PegInterface.link = function (obj, parentScope, trace, nativeMap) {
 	trace = extendTrace(trace, 'link', obj.name, obj.location);
 
 	var name = obj.name;
+	var params = obj.params.map(tvo => {
+		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
+			throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
 
-	if (!obj.native)
-		throw makeError('Assertion failed', trace);
+		if (scope.hasOwnTypevar(tvo.name))
+			throw makeError(`Param name ${tvo.name} already is there`, trace);
 
-	if (!nativeMap.link[name])
-		throw makeError(`Native code for native link ${name} not found`, trace);
+		var tv = PI.typevar(tvo, scope, trace);
+		return scope.addTypevar(tv);
+	});
 
-	var native = nativeMap.link[name];
+	var expr = PI.expr2(obj.expr, scope, trace);
 
-	return new Link({name, native, doc: obj.doc});
+	if (!(expr.type._type == 'metatype'
+			&& expr.type.order == 2
+			&& expr.type.isSimple)) {
+		throw makeError('Link expression should be a simple second-order type', trace);
+	}
+
+	return new Link({name, params, expr, doc: obj.doc});
 };
 
-module.exports = PegInterface;
+PI.reduction2 = function (obj, parentScope, trace) {
+	if (obj._type != 'reduction2')
+		throw Error('Assertion failed');
+
+	var scope = parentScope.extend();
+
+	trace = extendTrace(trace, 'reduction2', obj.expr2.name || '<anonymous>', obj.location);
+
+	var expr2 = PI.expr2(obj.expr2, scope, trace);
+
+	if (!(expr2.type._type == 'metatype'
+			&& expr2.type.isSimple
+			&& expr2.type.order == 2)) {
+		throw makeError('expr2 is not reducible', trace);
+	}
+
+	var args = obj.args.map(obj => {
+		return PI.expr1(obj, scope, trace);
+	});
+
+	var paramTypes = expr2.type.left,
+		argTypes = args.map(e => e.type);
+
+	if (paramTypes.length != argTypes.length)
+		throw makeError(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`, trace);
+
+	for (var i = 0; i < paramTypes.length; i++) {
+		if (!paramTypes[i].equals(argTypes[i]))
+			throw makeError(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, trace);
+	}
+
+	return new Reduction2({
+		expr2,
+		args
+	});
+};
+
+module.exports = PI;

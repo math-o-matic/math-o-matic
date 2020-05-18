@@ -41,6 +41,7 @@ function Type(o) {
 Type.prototype = Object.create(Node.prototype);
 Type.prototype.constructor = Type;
 Type.prototype._type = 'type';
+Type.prototype.order = 0;
 
 Type.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -66,7 +67,7 @@ Type.prototype.toTeXString = function (root) {
 
 Type.prototype.resolve = function () {
 	return this.origin ? this.origin.resolve() : this;
-}
+};
 
 Type.prototype.equals = function (t) {
 	if (!(t instanceof Type)) return false;

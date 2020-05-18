@@ -1,27 +1,29 @@
 var Node = require('./Node');
 var MetaType = require('./MetaType');
 var Typevar = require('./Typevar');
-var Rule = require('./Rule');
+var Link = require('./Link');
 
-function Rulecall({rule, args}) {
+function Linkcall({link, args}) {
 	Node.call(this);
 
-	if (!(rule instanceof Rule))
+	if (!(link instanceof Link))
 		throw Error('Assertion failed');
 
-	if (!(args instanceof Array) || args.some(e => e.type.order != 0))
+	if (!(args instanceof Array) || args.some(e => e.type.order != 0)) {
+		console.error(args);
 		throw Error('Assertion failed');
+	}
 	
-	this.rule = rule;
+	this.link = link;
 	this.args = args;
 
-	if (!(rule.type._type == 'metatype'
-			&& rule.type.order == 1
-			&& rule.type.isFunctional)) {
-		throw Error('rule should be a first-order functional type');
+	if (!(link.type._type == 'metatype'
+			&& link.type.isFunctional
+			&& link.type.order == 2)) {
+		throw Error('Link should be a second-order functional type');
 	}
 
-	var paramTypes = rule.type.from,
+	var paramTypes = link.type.from,
 		argTypes = args.map(e => e.type);
 
 	if (paramTypes.length != argTypes.length)
@@ -32,18 +34,18 @@ function Rulecall({rule, args}) {
 			throw Error('Assertion failed');
 	}
 
-	this.type = rule.type.to;
+	this.type = link.type.to;
 }
 
-Rulecall.prototype = Object.create(Node.prototype);
-Rulecall.prototype.constructor = Rulecall;
-Rulecall.prototype._type = 'rulecall';
+Linkcall.prototype = Object.create(Node.prototype);
+Linkcall.prototype.constructor = Linkcall;
+Linkcall.prototype._type = 'linkcall';
 
-Rulecall.prototype.toString = function () {
+Linkcall.prototype.toString = function () {
 	return this.toIndentedString(0);
 };
 
-Rulecall.prototype.toIndentedString = function (indent) {
+Linkcall.prototype.toIndentedString = function (indent) {
 	var args = this.args.map(arg => {
 		if (arg instanceof Typevar) return arg.name;
 		return arg.toIndentedString(indent + 1);
@@ -58,7 +60,7 @@ Rulecall.prototype.toIndentedString = function (indent) {
 		args = args.join(', ');
 
 		return [
-			`${this.rule.name}(`,
+			`${this.link.name}(`,
 			args,
 			')'
 		].join('');
@@ -67,16 +69,16 @@ Rulecall.prototype.toIndentedString = function (indent) {
 		args = args.join(',\n' + '\t'.repeat(indent + 1));
 
 		return [
-			`${this.rule.name}(`,
+			`${this.link.name}(`,
 			'\t' + args,
 			')'
 		].join('\n' + '\t'.repeat(indent));
 	}
 };
 
-Rulecall.prototype.toTeXString = function (root) {
-	return `\\href{#rule-${this.rule.name}}{\\textsf{${this.escapeTeX(this.rule.name)}}}`
+Linkcall.prototype.toTeXString = function (root) {
+	return `\\href{#link-${this.link.name}}{\\textsf{${this.escapeTeX(this.link.name)}}}`
 		+ `(${this.args.map(e => e.toTeXString()).join(', ')})`;
 };
 
-module.exports = Rulecall;
+module.exports = Linkcall;
