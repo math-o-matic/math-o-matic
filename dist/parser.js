@@ -191,141 +191,141 @@ function peg$parse(input, options) {
       peg$c21 = function(doc, tex, rettype, name, params, expr) {return expr},
       peg$c22 = function(doc, tex, rettype, name, params) {return null},
       peg$c23 = function(doc, tex, rettype, name, params, expr) {
-      			return {
-      				_type: 'defun',
-      				doc: doc && doc[0],
-      				tex: tex && tex[0],
-      				rettype,
-      				name,
-      				params,
-      				expr,
-      				location: location()
-      			}
-      		},
+      		return {
+      			_type: 'defun',
+      			doc: doc && doc[0],
+      			tex: tex && tex[0],
+      			rettype,
+      			name,
+      			params,
+      			expr,
+      			location: location()
+      		}
+      	},
       peg$c24 = "native",
       peg$c25 = peg$literalExpectation("native", false),
       peg$c26 = "link",
       peg$c27 = peg$literalExpectation("link", false),
       peg$c28 = function(doc, name) {
-      			return {
-      				_type: 'deflink',
-      				doc: doc && doc[0],
-      				name,
-      				native: true,
-      				location: location()
-      			}
-      		},
+      		return {
+      			_type: 'deflink',
+      			doc: doc && doc[0],
+      			name,
+      			native: true,
+      			location: location()
+      		}
+      	},
       peg$c29 = "ruleset",
       peg$c30 = peg$literalExpectation("ruleset", false),
       peg$c31 = function(doc, name) {
-      			return {
-      				_type: 'defruleset',
-      				doc: doc && doc[0],
-      				name,
-      				native: true,
-      				location: location()
-      			}
-      		},
+      		return {
+      			_type: 'defruleset',
+      			doc: doc && doc[0],
+      			name,
+      			native: true,
+      			location: location()
+      		}
+      	},
       peg$c32 = "rule",
       peg$c33 = peg$literalExpectation("rule", false),
       peg$c34 = function(doc, name, head, tv) {return tv},
       peg$c35 = function(doc, name, head, tail) {return [head].concat(tail)},
       peg$c36 = function(doc, name, p) {return p || []},
       peg$c37 = function(doc, name, params, expr) {
-      			return {
-      				_type: 'defrule',
-      				doc: doc && doc[0],
-      				name,
-      				params,
-      				rules: expr.rules,
-      				location: location()
-      			}
-      		},
+      		return {
+      			_type: 'defrule',
+      			doc: doc && doc[0],
+      			name,
+      			params,
+      			rules: expr.rules,
+      			location: location()
+      		}
+      	},
       peg$c38 = function(head, e) {return e},
       peg$c39 = function(head, tail) {return [head].concat(tail)},
       peg$c40 = function(l) {return l || []},
       peg$c41 = "|-",
       peg$c42 = peg$literalExpectation("|-", false),
       peg$c43 = function(left, right) {
-      			return {
-      				_type: 'tee',
-      				left,
-      				right,
-      				location: location()
-      			}
-      		},
+      		return {
+      			_type: 'tee',
+      			left,
+      			right,
+      			location: location()
+      		}
+      	},
       peg$c44 = "[",
       peg$c45 = peg$literalExpectation("[", false),
       peg$c46 = "]",
       peg$c47 = peg$literalExpectation("]", false),
       peg$c48 = function(linkName, rule) {
-      				return {
-      					_type: 'rulename',
-      					type: 'link',
-      					linkName,
-      					rule
-      				}
-      			},
+      			return {
+      				_type: 'rulename',
+      				type: 'link',
+      				linkName,
+      				rule
+      			}
+      		},
       peg$c49 = ".",
       peg$c50 = peg$literalExpectation(".", false),
       peg$c51 = function(id) {return id},
       peg$c52 = function(rulesetName, name) {
-      				return rulesetName
-      					? {
-      						_type: 'rulename',
-      						type: 'ruleset',
-      						rulesetName,
-      						name
-      					}
-      					: {
-      						_type: 'rulename',
-      						type: 'normal',
-      						name
-      					}
-      			},
+      			return rulesetName
+      				? {
+      					_type: 'rulename',
+      					type: 'ruleset',
+      					rulesetName,
+      					name
+      				}
+      				: {
+      					_type: 'rulename',
+      					type: 'normal',
+      					name
+      				}
+      		},
       peg$c53 = function(rule, head, e) {return e},
       peg$c54 = function(rule, head, tail) {return [head].concat(tail)},
       peg$c55 = function(rule, a) {return a || []},
       peg$c56 = function(rule, args) {
-      			return {
-      				_type: 'rulecall',
-      				rule,
-      				args,
-      				location: location()
-      			}
-      		},
+      		return {
+      			_type: 'rulecall',
+      			rule,
+      			args,
+      			location: location()
+      		}
+      	},
       peg$c57 = function(e) {return e},
       peg$c58 = function(fun, head, e) {return e},
       peg$c59 = function(fun, head, tail) {return [head].concat(tail)},
       peg$c60 = function(fun, a) {return a || []},
       peg$c61 = function(fun, args) {
-      			return {
-      				_type: 'funcall',
-      				fun,
-      				args,
-      				location: location()
-      			}
-      		},
+      		return {
+      			_type: 'funcall',
+      			fun,
+      			args,
+      			location: location()
+      		}
+      	},
       peg$c62 = function(head, tv) {return tv},
       peg$c63 = function(p) {return p || []},
       peg$c64 = "=>",
       peg$c65 = peg$literalExpectation("=>", false),
       peg$c66 = function(params, expr) {
-      			return {
-      				_type: 'funexpr',
-      				params,
-      				expr,
-      				location: location()
-      			}
-      		},
+      		return {
+      			_type: 'funexpr',
+      			params,
+      			expr,
+      			location: location()
+      		}
+      	},
       peg$c67 = "~",
       peg$c68 = peg$literalExpectation("~", false),
       peg$c69 = function(rules) {
-      			return {
-      				_type: 'chain',
-      				rules
-      			}
-      		},
+      		return {
+      			_type: 'chain',
+      			rules
+      		}
+      	},
       peg$c70 = function(name) {
       		return {
       			_type: 'type',
@@ -340,14 +340,14 @@ function peg$parse(input, options) {
       peg$c74 = "->",
       peg$c75 = peg$literalExpectation("->", false),
       peg$c76 = function(from, to) {
-      			return {
-      				_type: 'type',
-      				ftype: true,
-      				from,
-      				to,
-      				location: location()
-      			}
-      		},
+      		return {
+      			_type: 'type',
+      			ftype: true,
+      			from,
+      			to,
+      			location: location()
+      		}
+      	},
       peg$c77 = function(name) {
       		return {
       			_type: 'var',

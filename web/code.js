@@ -231,12 +231,15 @@ rule id(st p) {
 	tt.Ipp(p) ~ mp(p, p)
 }
 
-"[$\bot]을 만들어 내는 방법. 계의 기본규칙으로부터 이걸 호출할 수 있다면 계를 파-괴할 수 있다.
+"푹발률(ex falso quodlibet)."
+rule explode(st p, st q) {
+	Ne(p, q)
+	~ mp(p, q)
+}
 
-비슷한 방법으로 [$p, \neg p \vdash q]를 유도할 수 있다. 이는 [$p \vdash \top] 또는 [$\vdash p \to \top]이라고 [$\vdash p]가 아님을 시사한다."
+"[$\bot]을 만들어 내는 방법. 계의 기본규칙으로부터 이걸 호출할 수 있다면 계를 파-괴할 수 있다. 계가 이것을 만들어내지 않음을 검증하는 것은 중요하다."
 rule destroy(st p) {
-	Ne(p, F)
-	~ mp(p, F)
+	explode(p, F)
 }
 
 "귀류법(reductio ad absurdum)."
@@ -1596,20 +1599,16 @@ st function(cls f, cls a, cls b) {
 	)
 }
 
-"y = f(x)의 관계.
+"함수 호출."
+$\left({#1}<<(>>#2)\right)$
+cls fcall(cls f, cls x);
 
-[**주의]: 이 def는 f가 function임을 확인하지 않음. function에 대해서만 사용하세요."
-$\left(#1(#2)<<=>>#3\right)$
-st fcalleq(cls f, cls x, cls y) {
-	in(v2(x, y), f)
-}
-
-rule fcalleqQ(cls f, cls a, cls b) {
-	function(f, a, b) |- V((cls x) => {
-		I(in(x, a), Q((cls y) => {
-			fcalleq(f, x, y)
-		}))
-	})
+"fcall의 defining property."
+rule fcall_def(cls f, cls a, cls b, cls x, cls y) {
+	function(f, a, b), in(x, a) |- E(
+		eq(fcall(f, x), y),
+		in(v2(x, y), f)
+	)
 }
 
 `;
