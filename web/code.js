@@ -1638,7 +1638,7 @@ rule v2_set_def(cls x, cls y) {
 
 "어떤 class가 graph다.
 
-[$z\in x]인 임의의 [$z]에 대하여, [$z = (a, b)]인 [$a, b]가 존재한다는 뜻이다.
+[$G]가 그래프라 함은, [$z\in G]인 임의의 [$z]에 대하여, [$z = (a, b)]인 [$a, b]가 존재한다는 뜻이다.
 
 graph 개념은 모 집합론 교재에 나오는 것인데 통용되는지는 모르겠다."
 $\left(<<\mathop\mathrm{graph}>> #1\right)$
@@ -1648,6 +1648,21 @@ st graph(cls x) {
 			eq(z, v2(a, b))
 		})
 	})
+}
+
+"graph를 위한 forall.
+
+[$G]가 그래프일 때, 임의의 [$(a, b)\in G]에 대해 [$f(a, b)]이면, 임의의 [$z\in G]에 대해 [$fz]이다."
+rule graph_forall(pr f, cls x) {
+	graph(x) |- I(
+		V2((cls a, cls b) => {
+			I(
+				in(v2(a, b), x),
+				f(v2(a, b))
+			)
+		}),
+		Vin(x, f)
+	)
 }
 
 "graph의 역(inverse)."
