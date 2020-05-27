@@ -459,11 +459,11 @@ rule Ee1V(pr f, pr g) {
 	id(V(Ef(f, g))) ~
 	Vi[ttf_IEpqIpq](f, g)
 	~ VIm(
-		(cls x) => { E(f(x), g(x)) },
-		(cls x) => { I(f(x), g(x)) }
+		(cls z) => { E(f(z), g(z)) },
+		(cls z) => { I(f(z), g(z)) }
 	) ~ mp(
-		V((cls x) => { E(f(x), g(x)) }),
-		V((cls x) => { I(f(x), g(x)) })
+		V((cls z) => { E(f(z), g(z)) }),
+		V((cls z) => { I(f(z), g(z)) })
 	)
 }
 
@@ -709,6 +709,28 @@ st Nin(cls x, cls y) {
 	N(in(x, y))
 }
 
+"어떤 class 내에서의 forall."
+$\left(<<\forall>>_{#1}#2\right)$
+st Vin(cls a, pr f) {
+	V((cls z) => {
+		I(
+			in(z, a),
+			f(z)
+		)
+	})
+}
+
+"어떤 class 내에서의 exists. Vin과 달리 and로 연결된다."
+$\left(<<\exists>>_{#1}#2\right)$
+st Xin(cls a, pr f) {
+	X((cls z) => {
+		A(
+			in(z, a),
+			f(z)
+		)
+	})
+}
+
 "어떤 class가 집합이라는 것. 어떤 class의 원소면 된다."
 $\left(<<\mathop\mathrm{set}>> #1\right)$
 st set(cls x) {
@@ -947,20 +969,8 @@ rule subseteq_eq(cls x, cls y, cls z) {
 $\left\{<<:>>#1\right\}$
 cls setbuilder(pr f);
 
-"setbuilder의 definition rule.
-
-[**Deprecated]: 이 정의는 {:T}가 스스로를 포함할 수 있게 하는데 이는 axiom of foundation에 모순된다. 그러므로 setbuilder_def__로 옮기셈."
+"setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다."
 rule setbuilder_def(pr f) {
-	|- V((cls z) => {
-		E(
-			in(z, setbuilder(f)),
-			f(z)
-		)
-	})
-}
-
-"setbuilder의 새로운 definition rule. 변경 작업 미완료."
-rule setbuilder_def__(pr f) {
 	|- V((cls z) => {
 		E(
 			in(z, setbuilder(f)),
@@ -969,11 +979,37 @@ rule setbuilder_def__(pr f) {
 	})
 }
 
+rule setbuilder_def_Ve(pr f, cls z) {
+	Ve[setbuilder_def](f, z)
+}
+
+rule setbuilder_def_Ve_Ee(pr f, cls z) {
+	setbuilder_def_Ve(f, z)
+	~ tt.IEpAqrIpr(
+		in(z, setbuilder(f)),
+		set(z),
+		f(z)
+	)
+	~ mp(
+		E(
+			in(z, setbuilder(f)),
+			A(
+				set(z),
+				f(z)
+			)
+		),
+		I(
+			in(z, setbuilder(f)),
+			f(z)
+		)
+	)
+}
+
 rule ttf_IAEpAqrIrqEpr(pr f, pr g, pr h, cls x) {
 	tt.IAEpAqrIrqEpr(f(x), g(x), h(x))
 }
 
-rule setbuilder_def__set_1(pr f, pr g, pr h) {
+rule setbuilder_def_set_1(pr f, pr g, pr h) {
 	Ai(
 		V((cls x) => { E(f(x), A(g(x), h(x))) }),
 		V((cls x) => { I(h(x), g(x)) })
@@ -993,9 +1029,9 @@ rule setbuilder_def__set_1(pr f, pr g, pr h) {
 	)
 }
 
-rule setbuilder_def__set(pr f) {
-	setbuilder_def__(f) ~
-	setbuilder_def__set_1(
+rule setbuilder_def_set(pr f) {
+	setbuilder_def(f) ~
+	setbuilder_def_set_1(
 		(cls z) => { in(z, setbuilder(f)) },
 		set,
 		f
@@ -1012,7 +1048,7 @@ cls cap(cls x, cls y) {
 
 rule cap_vi(cls x, cls y) {
 	Vi[cp[set_Xgen_A]](x, y) ~
-	setbuilder_def__set((cls z) => {
+	setbuilder_def_set((cls z) => {
 		A(in(z, x), in(z, y))
 	})
 	~ id(V((cls z) => {
@@ -1066,7 +1102,7 @@ cls cup(cls x, cls y) {
 
 rule cup_vi(cls x, cls y) {
 	Vi[cp[set_Xgen_O]](x, y) ~
-	setbuilder_def__set((cls z) => {
+	setbuilder_def_set((cls z) => {
 		O(in(z, x), in(z, y))
 	})
 	~ id(V((cls z) => {
@@ -1100,7 +1136,7 @@ rule emptyset_3(cls x) {
 }
 
 rule emptyset_vi() {
-	setbuilder_def__((cls z) => { F })
+	setbuilder_def((cls z) => { F })
 	~ Ee1V(
 		(cls z) => { in(z, emptyset()) },
 		(cls z) => { A(set(z), F) }
@@ -1118,7 +1154,7 @@ rule emptyset_vi() {
 	)
 }
 
-"emptyset의 definition rule."
+"emptyset의 defining property."
 rule emptyset_def(cls z) {
 	Ve[emptyset_vi](z)
 }
@@ -1131,7 +1167,7 @@ cls universe() {
 
 rule setbuilder_is_setbuilder(pr f, cls x) {
 	eq_Ae1(x, setbuilder(f))
-	~ setbuilder_def__(f)
+	~ setbuilder_def(f)
 	~ syllVE(
 		(cls z) => { in(z, x) },
 		(cls z) => { in(z, setbuilder(f)) },
@@ -1255,19 +1291,11 @@ rule IAEpAqrIAsrqIsEprmAi(st p, st q, st r, st s) {
 	)
 }
 
-rule power_def__1(cls x) {
-	setbuilder_def__((cls y) => {
-		subseteq(y, x)
-	})
-}
-
-rule power_def__2(cls x, cls y) {
-	Ve[power_def__1](x, y)
-}
-
-rule power_def__3(cls x, cls y) {
+rule power_def_1(cls x, cls y) {
 	subset_is_set_ae_c(y, x)
-	~ power_def__2(x, y)
+	~ setbuilder_def_Ve((cls z) => {
+		subseteq(z, x)
+	}, y)
 	~ IAEpAqrIAsrqIsEprmAi(
 		in(y, power(x)),
 		set(y),
@@ -1276,9 +1304,23 @@ rule power_def__3(cls x, cls y) {
 	)
 }
 
-rule power_def__(cls x) {
+"얘는 power_def보다 강력하다. 즉 power_def는 얘를
+유도할 수 없다. 아마?"
+rule power_def_Ve(cls x, cls y) {
+	power_def_1(x, y)
+	~ mp(
+		set(x),
+		E(
+			in(y, power(x)),
+			subseteq(y, x)
+		)
+	)
+}
+
+"생각해 보니 얘는 멱집합의 defining property라고 부를 만큼 강력하지 않다. 이름을 적당히 바꿔야 할지도 모른다."
+rule power_def(cls x) {
 	Vgen(set(x)) ~
-	Vi[power_def__3](x)
+	Vi[power_def_1](x)
 	~ VIm(
 		(cls z) => { set(x) },
 		(cls z) => {
@@ -1299,21 +1341,10 @@ rule power_def__(cls x) {
 	)
 }
 
-rule power_def(cls x) {
-	setbuilder_def((cls z) => {
-		subseteq(z, x)
-	})
-	~ id(V((cls z) => {
-		E(
-			in(z, power(x)),
-			subseteq(z, x)
-		)
-	}))
-}
-
+"x가 집합일 때, x와 같은 것은 x의 power class에 속한다."
 rule self_in_power(cls x, cls z) {
 	eq_then_subseteq(z, x)
-	~ Ve[power_def](x, z)
+	~ power_def_Ve(x, z)
 	~ Ee2(
 		in(z, power(x)),
 		subseteq(z, x)
@@ -1325,6 +1356,28 @@ rule self_in_power(cls x, cls z) {
 	)
 }
 
+rule self_in_power_Vi_1(cls x, cls z) {
+	cp[self_in_power](x, z)
+}
+
+rule self_in_power_Vi(cls x) {
+	Vgen(set(x)) ~
+	Vi[self_in_power_Vi_1](x)
+	~ VIm(
+		(cls z) => {set(x)},
+		(cls z) => {I(
+			eq(z, x),
+			in(z, power(x))
+		)}
+	) ~ mp(
+		V((cls z) => {set(x)}),
+		V((cls z) => {I(
+			eq(z, x),
+			in(z, power(x))
+		)})
+	)
+}
+
 "singleton class."
 $\{<<=>>#1\}$
 cls singleton(cls x) {
@@ -1333,34 +1386,47 @@ cls singleton(cls x) {
 	})
 }
 
-rule singleton_subseteq_power_1(cls x) {
-	setbuilder_def((cls z) => { eq(z, x) })
-	~ id(
-		V((cls z) => {
-			E(
-				in(z, singleton(x)),
-				eq(z, x)
-			)
-		})
+rule singleton_subseteq_power_1(cls x, cls y) {
+	setbuilder_def_Ve_Ee((cls z) => {eq(z, x)}, y) ~
+	eq_then_subseteq(y, x) ~
+	power_def_Ve(x, y)
+	~ Ee2(
+		in(y, power(x)),
+		subseteq(y, x)
+	)
+	~ syll4(
+		in(y, singleton(x)),
+		eq(y, x),
+		subseteq(y, x),
+		in(y, power(x))
 	)
 }
 
-rule singleton_subseteq_power_2(cls x, cls z) {
-	Ve[singleton_subseteq_power_1](x, z)
-	~ Ee1(
-		in(z, singleton(x)),
-		eq(z, x)
-	)
-	~ self_in_power(x, z)
-	~ syll(
-		in(z, singleton(x)),
-		eq(z, x),
-		in(z, power(x))
-	)
+rule singleton_subseteq_power_2(cls x, cls y) {
+	cp[singleton_subseteq_power_1](x, y)
 }
 
 rule singleton_subseteq_power(cls x) {
+	Vgen(set(x)) ~
 	Vi[singleton_subseteq_power_2](x)
+	~ VIm(
+		(cls y) => {set(x)},
+		(cls y) => {
+			I(
+				in(y, singleton(x)),
+				in(y, power(x))
+			)
+		}
+	)
+	~ mp(
+		V((cls y) => {set(x)}),
+		V((cls y) => {
+			I(
+				in(y, singleton(x)),
+				in(y, power(x))
+			)
+		})
+	)
 	~ id(
 		subseteq(singleton(x), power(x))
 	)
@@ -1455,9 +1521,55 @@ rule power_is_set_2(cls x, cls y) {
 	)
 }
 
-rule power_is_set_3(cls x) {
+rule power_is_set_3(cls x, cls y) {
+	cp[power_is_set_2](x, y)
+}
+
+"멱집합은 집합이다."
+rule power_is_set(cls x) {
 	ax_power_vem(x)
-	~ Vi[power_is_set_2](x)
+	~ Vgen(set(x)) ~
+	Vi[power_is_set_3](x)
+	~ VIm(
+		(cls y) => {set(x)},
+		(cls y) => {
+			I(
+				A(
+					set(y),
+					V((cls z) => {
+						I(
+							subseteq(z, x),
+							in(z, y)
+						)
+					})
+				),
+				A(
+					set(y),
+					subseteq(power(x), y)
+				)
+			)
+		}
+	)
+	~ mp(
+		V((cls y) => {set(x)}),
+		V((cls y) => {
+			I(
+				A(
+					set(y),
+					V((cls z) => {
+						I(
+							subseteq(z, x),
+							in(z, y)
+						)
+					})
+				),
+				A(
+					set(y),
+					subseteq(power(x), y)
+				)
+			)
+		})
+	)
 	~ Xinst1(
 		(cls y) => {
 			A(
@@ -1471,11 +1583,6 @@ rule power_is_set_3(cls x) {
 			A(set(y), subseteq(power(x), y))
 		}
 	)
-}
-
-"멱집합은 집합이다."
-rule power_is_set(cls x) {
-	power_is_set_3(x)
 	~ subset_is_set_ae_cvi(power(x))
 	~ Xinst3(
 		(cls y) => {
@@ -1545,7 +1652,7 @@ cls cartesian(cls x, cls y) {
 }
 
 rule cartesian_def(cls x, cls y) {
-	setbuilder_def__((cls z) => {
+	setbuilder_def((cls z) => {
 		X2((cls a, cls b) => {
 			A(
 				eq(z, v2(a, b)),
@@ -1569,16 +1676,15 @@ rule cartesian_def(cls x, cls y) {
 	}))
 }
 
-"어떤 class가 graph다."
+"어떤 class가 graph다.
+
+[$z\in x]인 임의의 [$z]에 대하여, [$z = (a, b)]인 [$a, b]가 존재한다는 뜻이다."
 $\left(<<\mathop\mathrm{graph}>> #1\right)$
 st graph(cls x) {
-	V((cls z) => {
-		I(
-			in(z, x),
-			X2((cls a, cls b) => {
-				eq(z, v2(a, b))
-			})
-		)
+	Vin(x, (cls z) => {
+		X2((cls a, cls b) => {
+			eq(z, v2(a, b))
+		})
 	})
 }
 
@@ -1586,12 +1692,14 @@ rule cartesian_is_graph(cls x, cls y) {
 	|- graph(cartesian(x, y))
 }
 
-"어떤 class가 function이다."
+"어떤 [$\langle f, A, B\rangle]가 함수이다.
+
+[$f\subseteq A\times B]이고 임의의 [$x\in A]에 대해 [$(x, y)\in f]를 만족하는 유일한 [$y]가 존재한다는 뜻이다."
 $\left(<<\mathop\mathrm{function}>> #1: #2 \to #3\right)$
 st function(cls f, cls a, cls b) {
 	A(
 		subseteq(f, cartesian(a, b)),
-		V((cls x) => {
+		Vin(a, (cls x) => {
 			Q((cls y) => {
 				in(v2(x, y), f)
 			})
@@ -1603,7 +1711,9 @@ st function(cls f, cls a, cls b) {
 $\left({#1}<<(>>#2)\right)$
 cls fcall(cls f, cls x);
 
-"fcall의 defining property."
+"fcall의 defining property.
+
+[$f(x)]는 [$\langle f, A, B\rangle]이 함수이고 [$x\in A]일 때만 정의되며, 이때 [$f(x) = y]는 [$(x, y)\in f]와 동치라는 뜻이다."
 rule fcall_def(cls f, cls a, cls b, cls x, cls y) {
 	function(f, a, b), in(x, a) |- E(
 		eq(fcall(f, x), y),
