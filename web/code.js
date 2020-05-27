@@ -515,21 +515,21 @@ rule ttf_IAEpqEqrEpr(pr f, pr g, pr h, cls x) {
 
 rule syllVE(pr f, pr g, pr h) {
 	Ai(
-		V((cls x) => { E(f(x), g(x)) }),
-		V((cls x) => { E(g(x), h(x)) })
+		V((cls z) => { E(f(z), g(z)) }),
+		V((cls z) => { E(g(z), h(z)) })
 	)
 	~ VAm2(
-		(cls x) => { E(f(x), g(x)) },
-		(cls x) => { E(g(x), h(x)) }
+		(cls z) => { E(f(z), g(z)) },
+		(cls z) => { E(g(z), h(z)) }
 	)
 	~ Vi[ttf_IAEpqEqrEpr](f, g, h)
 	~ VIm(
-		(cls x) => { A(E(f(x), g(x)), E(g(x), h(x))) },
-		(cls x) => { E(f(x), h(x)) }
+		(cls z) => { A(E(f(z), g(z)), E(g(z), h(z))) },
+		(cls z) => { E(f(z), h(z)) }
 	)
 	~ mp(
-		V((cls x) => { A(E(f(x), g(x)), E(g(x), h(x))) }),
-		V((cls x) => { E(f(x), h(x)) })
+		V((cls z) => { A(E(f(z), g(z)), E(g(z), h(z))) }),
+		V((cls z) => { E(f(z), h(z)) })
 	)
 }
 
@@ -668,33 +668,6 @@ rule Xinst3(pr f, st p) {
 	~ Xinst2(p)
 }
 
-"binary relation의 reflexivity."
-$\left(#1\ <<\text{is reflexive}>>\right)$
-st reflexive(pr2 f) {
-	V((cls x) => {
-		f(x, x)
-	})
-}
-
-"binary relation의 symmetry."
-$\left(#1\ <<\text{is symmetric}>>\right)$
-st symmetric(pr2 f) {
-	V2((cls x, cls y) => {
-		I(f(x, y), f(y, x))
-	})
-}
-
-"binary relation의 transitivity."
-$\left(#1\ <<\text{is transitive}>>\right)$
-st transitive(pr2 f) {
-	V3((cls x, cls y, cls z) => {
-		I(
-			A(f(x, y), f(y, z)),
-			f(x, z)
-		)
-	})
-}
-
 ############################
 ######## SET THEORY ########
 ############################
@@ -803,22 +776,17 @@ rule eq_reflexive_tmp2(cls x, cls w) {
 	tt.Epp(in(x, w))
 }
 
-rule eq_reflexive_tmp3(cls x) {
+rule eq_reflexive(cls x) {
 	Vi[eq_reflexive_tmp1](x)
 	~ Vi[eq_reflexive_tmp2](x)
 	~ Ai(
 		V((cls z) => { E(in(z, x), in(z, x)) }),
 		V((cls w) => { E(in(x, w), in(x, w)) })
 	)
+	~ id(eq(x, x))
 }
 
-"[$=]는 반사적(reflexive)이다."
-rule eq_reflexive() {
-	Vi[eq_reflexive_tmp3]()
-	~ id(reflexive(eq))
-}
-
-rule eq_symmetric_tmp(cls x, cls y) {
+rule eq_symmetric(cls x, cls y) {
 	id(eq(x, y)) ~
 	Ae1(
 		V((cls z) => { E(in(z, x), in(z, y)) }),
@@ -839,10 +807,40 @@ rule eq_symmetric_tmp(cls x, cls y) {
 	~ id(eq(y, x))
 }
 
-"[$=]는 대칭적(symmetric)이다."
-rule eq_symmetric() {
-	Vi[Vi[cp[eq_symmetric_tmp]]]()
-	~ id(symmetric(eq))
+rule eq_transitive(cls x, cls y, cls z) {
+	id(eq(y, z)) ~
+	Ae1(
+		V((cls w) => {E(in(w, y), in(w, z))}),
+		V((cls w) => {E(in(y, w), in(z, w))})
+	) ~
+	Ae2(
+		V((cls w) => {E(in(w, y), in(w, z))}),
+		V((cls w) => {E(in(y, w), in(z, w))})
+	) ~
+	id(eq(x, y)) ~
+	Ae1(
+		V((cls w) => {E(in(w, x), in(w, y))}),
+		V((cls w) => {E(in(x, w), in(y, w))})
+	) ~
+	Ae2(
+		V((cls w) => {E(in(w, x), in(w, y))}),
+		V((cls w) => {E(in(x, w), in(y, w))})
+	) ~
+	syllVE(
+		(cls w) => {in(w, x)},
+		(cls w) => {in(w, y)},
+		(cls w) => {in(w, z)}
+	)
+	~ syllVE(
+		(cls w) => {in(x, w)},
+		(cls w) => {in(y, w)},
+		(cls w) => {in(z, w)}
+	)
+	~ Ai(
+		V((cls w) => {E(in(w, x), in(w, z))}),
+		V((cls w) => {E(in(x, w), in(z, w))})
+	)
+	~ id(eq(x, z))
 }
 
 "uniqueness quantification."
@@ -852,28 +850,6 @@ st Q(pr f) {
 		V((cls y) => {
 			E(f(y), eq(y, x))
 		})
-	})
-}
-
-"binary operation의 associativity."
-$\left(#1\ <<\text{is associative}>>\right)$
-st associative([(cls, cls) -> cls] f) {
-	V3((cls x, cls y, cls z) => {
-		eq(
-			f(f(x, y), z),
-			f(x, f(y, z))
-		)
-	})
-}
-
-"binary operation의 commutativity."
-$\left(#1\ <<\text{is commutative}>>\right)$
-st commutative([(cls, cls) -> cls] f) {
-	V2((cls x, cls y) => {
-		eq(
-			f(x, y),
-			f(y, x)
-		)
 	})
 }
 
@@ -888,7 +864,7 @@ rule set_is_set_1(cls x, cls y) {
 }
 
 rule set_is_set_2(cls x, cls y) {
-	eq_symmetric_tmp(y, x) ~
+	eq_symmetric(y, x) ~
 	set_is_set_1(x, y)
 }
 
@@ -1085,11 +1061,6 @@ rule cap_commutative_2(cls x, cls y) {
 		cap(x, y),
 		cap(y, x)
 	)
-}
-
-rule cap_commutative() {
-	Vi[Vi[cap_commutative_2]]()
-	~ id(commutative(cap))
 }
 
 "[$\cup]."
@@ -1705,8 +1676,30 @@ rule graph_composite_def(cls x, cls y) {
 	)
 }
 
-rule graph_composite_is_associative() {
-	|- associative(graph_composite)
+// rule graph_composite(cls x, cls y, cls z) {
+// 	setbuilder_is_setbuilder(
+// 		(cls z) => {
+// 			X2((cls a, cls c) => {
+// 				A(
+// 					eq(z, v2(a, c)),
+// 					X((cls b) => {
+// 						A(
+// 							in(v2(a, b), y),
+// 							in(v2(b, c), x)
+// 						)
+// 					})
+// 				)
+// 			})
+// 		},
+// 		z
+// 	)
+// }
+
+rule graph_composite_associative(cls x, cls y, cls z) {
+	graph(x), graph(y), graph(z) |- eq(
+		graph_composite(graph_composite(x, y), z),
+		graph_composite(x, graph_composite(y, z))
+	)
 }
 
 "graph의 정의역(domain)."
