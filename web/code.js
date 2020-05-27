@@ -515,21 +515,21 @@ rule ttf_IAEpqEqrEpr(pr f, pr g, pr h, cls x) {
 
 rule syllVE(pr f, pr g, pr h) {
 	Ai(
-		V((cls z) => { E(f(z), g(z)) }),
-		V((cls z) => { E(g(z), h(z)) })
+		V((cls w) => { E(f(w), g(w)) }),
+		V((cls w) => { E(g(w), h(w)) })
 	)
 	~ VAm2(
-		(cls z) => { E(f(z), g(z)) },
-		(cls z) => { E(g(z), h(z)) }
+		(cls w) => { E(f(w), g(w)) },
+		(cls w) => { E(g(w), h(w)) }
 	)
 	~ Vi[ttf_IAEpqEqrEpr](f, g, h)
 	~ VIm(
-		(cls z) => { A(E(f(z), g(z)), E(g(z), h(z))) },
-		(cls z) => { E(f(z), h(z)) }
+		(cls w) => { A(E(f(w), g(w)), E(g(w), h(w))) },
+		(cls w) => { E(f(w), h(w)) }
 	)
 	~ mp(
-		V((cls z) => { A(E(f(z), g(z)), E(g(z), h(z))) }),
-		V((cls z) => { E(f(z), h(z)) })
+		V((cls w) => { A(E(f(w), g(w)), E(g(w), h(w))) }),
+		V((cls w) => { E(f(w), h(w)) })
 	)
 }
 
@@ -843,6 +843,33 @@ rule eq_transitive(cls x, cls y, cls z) {
 	~ id(eq(x, z))
 }
 
+rule eq_transitive_3(cls x, cls y, cls z) {
+	eq_transitive(x, y, z)
+	~ eq_symmetric(x, z)
+}
+
+rule eq_transitive_2(cls x, cls y, cls z) {
+	eq_symmetric(z, y) ~
+	eq_transitive(x, y, z)
+}
+
+rule eq_transitive_23(cls x, cls y, cls z) {
+	eq_symmetric(z, y) ~
+	eq_transitive(x, y, z)
+	~ eq_symmetric(x, z)
+}
+
+rule eq_transitive_1(cls x, cls y, cls z) {
+	eq_symmetric(y, x)
+	~ eq_transitive(x, y, z)
+}
+
+rule eq_transitive_13(cls x, cls y, cls z) {
+	eq_symmetric(y, x)
+	~ eq_transitive(x, y, z)
+	~ eq_symmetric(x, z)
+}
+
 "uniqueness quantification."
 $\left(<<\exists!>>#1\right)$
 st Q(pr f) {
@@ -947,10 +974,10 @@ cls setbuilder(pr f);
 
 "setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다."
 rule setbuilder_def(pr f) {
-	|- V((cls z) => {
+	|- V((cls w) => {
 		E(
-			in(z, setbuilder(f)),
-			A(set(z), f(z))
+			in(w, setbuilder(f)),
+			A(set(w), f(w))
 		)
 	})
 }
@@ -1675,25 +1702,6 @@ rule graph_composite_def(cls x, cls y) {
 		})
 	)
 }
-
-// rule graph_composite(cls x, cls y, cls z) {
-// 	setbuilder_is_setbuilder(
-// 		(cls z) => {
-// 			X2((cls a, cls c) => {
-// 				A(
-// 					eq(z, v2(a, c)),
-// 					X((cls b) => {
-// 						A(
-// 							in(v2(a, b), y),
-// 							in(v2(b, c), x)
-// 						)
-// 					})
-// 				)
-// 			})
-// 		},
-// 		z
-// 	)
-// }
 
 rule graph_composite_associative(cls x, cls y, cls z) {
 	graph(x), graph(y), graph(z) |- eq(
