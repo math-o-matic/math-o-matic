@@ -1638,6 +1638,113 @@ rule v2_set_def(cls x, cls y) {
 	)
 }
 
+"어떤 class가 graph다.
+
+[$z\in x]인 임의의 [$z]에 대하여, [$z = (a, b)]인 [$a, b]가 존재한다는 뜻이다.
+
+graph 개념은 모 집합론 교재에 나오는 것인데 통용되는지는 모르겠다."
+$\left(<<\mathop\mathrm{graph}>> #1\right)$
+st graph(cls x) {
+	Vin(x, (cls z) => {
+		X2((cls a, cls b) => {
+			eq(z, v2(a, b))
+		})
+	})
+}
+
+"graph의 역(inverse)."
+$\left({#1}^{<<-1>>}\right)$
+cls graph_inverse(cls x);
+
+"graph_inverse의 defining property.
+
+[$G]가 graph일 때, [$G^{-1} = \{(b, a): (a, b)\in G\}]라는 뜻인데 더 엄밀하게
+[$$\{z: (\exists a)(\exists b)(z = (b, a) \land (a, b) \in G)\}]
+라고 표현되었다."
+rule graph_inverse_def(cls x) {
+	graph(x) |- eq(
+		graph_inverse(x),
+		setbuilder((cls z) => {
+			X2((cls a, cls b) => {
+				A(
+					eq(z, v2(b, a)),
+					in(v2(a, b), x)
+				)
+			})
+		})
+	)
+}
+
+"graph의 합성(composition)."
+$\left(#1 <<\circ>> #2\right)$
+cls graph_composite(cls x, cls y);
+
+"graph_composite의 defining property.
+
+[$G], [$H]가 graph일 때,
+[$$G\circ H = \{(a, c): (\exists b)((a, b)\in H \land (b, c)\in G)\}]
+라는 뜻인데 더 엄밀하게
+[$$\{z: (\exists a)(\exists c)(z=(a, c) \land (\exists b)((a, b)\in H \land (b, c)\in G))\}]
+라고 표현되었다."
+rule graph_composite_def(cls x, cls y) {
+	graph(x), graph(y) |- eq(
+		graph_composite(x, y),
+		setbuilder((cls z) => {
+			X2((cls a, cls c) => {
+				A(
+					eq(z, v2(a, c)),
+					X((cls b) => {
+						A(
+							in(v2(a, b), y),
+							in(v2(b, c), x)
+						)
+					})
+				)
+			})
+		})
+	)
+}
+
+rule graph_composite_is_associative() {
+	|- associative(graph_composite)
+}
+
+"graph의 정의역(domain)."
+$\left(<<\operatorname{dom}>>#1\right)$
+cls graph_dom(cls x);
+
+"graph_dom의 defining property.
+
+[$G]가 graph일 때, [$\{a: (\exists b)((a, b)\in G)\}]라는 뜻이다."
+rule graph_dom_def(cls x) {
+	graph(x) |- eq(
+		graph_dom(x),
+		setbuilder((cls a) => {
+			X((cls b) => {
+				in(v2(a, b), x)
+			})
+		})
+	)
+}
+
+"graph의 치역(image)."
+$\left(<<\operatorname{im}>>#1\right)$
+cls graph_im(cls x);
+
+"graph_im의 defining property.
+
+[$G]가 graph일 때, [$\{b: (\exists a)((a, b)\in G)\}]라는 뜻이다."
+rule graph_im_def(cls x) {
+	graph(x) |- eq(
+		graph_im(x),
+		setbuilder((cls b) => {
+			X((cls a) => {
+				in(v2(a, b), x)
+			})
+		})
+	)
+}
+
 "cartesian product."
 $\left(#1<<\times>>#2\right)$
 cls cartesian(cls x, cls y) {
@@ -1674,18 +1781,6 @@ rule cartesian_def(cls x, cls y) {
 			)
 		)
 	}))
-}
-
-"어떤 class가 graph다.
-
-[$z\in x]인 임의의 [$z]에 대하여, [$z = (a, b)]인 [$a, b]가 존재한다는 뜻이다."
-$\left(<<\mathop\mathrm{graph}>> #1\right)$
-st graph(cls x) {
-	Vin(x, (cls z) => {
-		X2((cls a, cls b) => {
-			eq(z, v2(a, b))
-		})
-	})
 }
 
 rule cartesian_is_graph(cls x, cls y) {
