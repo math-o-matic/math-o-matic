@@ -193,37 +193,6 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 				$script.parentNode.insertBefore($div, $script);
 			});
 
-			function onRadioClick(rulename) {
-				var $f = $(`#form-rule-${rulename}`);
-				var fd = new FormData($f);
-				
-				var [from, to] = [fd.get('from'), fd.get('to')];
-
-				var $result = $('.result', $f);
-
-				try {
-					var chain = program.scope.ruleMap[rulename].chain(from * 1, to * 1);
-					$result.innerHTML = katex.renderToString(chain.toTeXString(), katexOpts);
-
-
-
-					[].forEach.call($$('.katex a', $result), a => {
-						var href = a.getAttribute('href');
-						var idMatch = href.match(/^#id-([0-9]+)$/);
-
-						if (idMatch) {
-							a.dataset.orange = true;
-							a.title = 'id: ' + idMatch[1];
-						} else {
-							a.dataset.blue = true;
-							a.title = a.getAttribute('href');
-						}
-					});
-				} catch (e) {
-					$result.innerHTML = '<i>Chaining failed!</i>';
-				}
-			}
-
 			(() => {
 
 			var start, end;
@@ -325,8 +294,14 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 
 					// + `<pre>${escapeHtml(v)}</pre>`
 
-					+ `<p><b>proof explorer</b></p>`
-					+ `<p>${generateExpressionTree(v.expr)}</p>`
+					+ (
+						v.expr._type == 'tee'
+							? v.axiomatic
+								? '<p><b>axiomatic</b></p>'
+								: '<p><b>not proved</b></p>'
+							: '<p><b>proof explorer</b></p>'
+								+ `<p>${generateExpressionTree(v.expr)}</p>`
+					)
 					// + (
 					// 	v.rules.length == 1 && v.rules[0]._type != 'rulecall'
 					// 		? '<p><b>not proved</b></p>'
@@ -368,6 +343,18 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 					+ `<p class="label"><a id="link-${k}" href="#link-${k}"><b>Link</b> ${k}</a></p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
+					+ (
+						v.axiomatic
+							? '<p><b>axiomatic</b></p>'
+							: '<p><b>not proved</b></p>'
+					)
+
+					+ (
+						v.native
+							? '<p><b>native</b></p>'
+							: ''
+					)
+
 					+ '<p><b>description</b></p>'
 					+ (
 						v.doc
@@ -386,6 +373,18 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 				r = `<div class="block">`
 					+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>Ruleset</b> ${k}</a></p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
+
+					+ (
+						v.axiomatic
+							? '<p><b>axiomatic</b></p>'
+							: '<p><b>not proved</b></p>'
+					)
+
+					+ (
+						v.native
+							? '<p><b>native</b></p>'
+							: ''
+					)
 
 					+ '<p><b>description</b></p>'
 					+ (

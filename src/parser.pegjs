@@ -85,6 +85,7 @@ defun =
 deflink =
 	// native links
 	doc:(documentation __)?
+	axiomatic:("axiomatic" __)?
 	"native" __
 	"link" __
 	name:IDENT _
@@ -93,6 +94,7 @@ deflink =
 		return {
 			_type: 'deflink',
 			doc: doc && doc[0],
+			axiomatic: !!axiomatic,
 			name,
 			native: true,
 			location: location()
@@ -101,6 +103,7 @@ deflink =
 	/
 	// non-native links
 	doc:(documentation __)?
+	axiomatic:("axiomatic" __)?
 	"link" __
 	name:IDENT _
 	params:(
@@ -120,6 +123,7 @@ deflink =
 		return {
 			_type: 'deflink',
 			doc: doc && doc[0],
+			axiomatic: !!axiomatic,
 			name,
 			native: false,
 			params,
@@ -130,6 +134,7 @@ deflink =
 
 defruleset =
 	doc:(documentation __)?
+	axiomatic:("axiomatic" __)?
 	"native" __
 	"ruleset" __
 	name:IDENT _
@@ -138,6 +143,7 @@ defruleset =
 		return {
 			_type: 'defruleset',
 			doc: doc && doc[0],
+			axiomatic: !!axiomatic,
 			name,
 			native: true,
 			location: location()
@@ -146,6 +152,7 @@ defruleset =
 
 defrule =
 	doc:(documentation __)?
+	axiomatic:("axiomatic" __)?
 	"rule" __
 	name:IDENT _
 	params:(
@@ -165,6 +172,7 @@ defrule =
 		return {
 			_type: 'defrule',
 			doc: doc && doc[0],
+			axiomatic: !!axiomatic,
 			name,
 			params,
 			expr,
@@ -477,7 +485,8 @@ keyword =
 	/ "rule"
 	/ "ruleset"
 	/ "link"
-	/ "native";
+	/ "native"
+	/ "axiomatic";
 
 IDENT =
 	!keyword id:[a-zA-Z0-9_]+ {return id.join('')}

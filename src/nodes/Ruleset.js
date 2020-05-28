@@ -1,6 +1,6 @@
 var Node = require('./Node');
 
-function Ruleset({name, native, doc}) {
+function Ruleset({axiomatic, name, native, doc}) {
 	Node.call(this);
 
 	this.doc = doc;
@@ -11,6 +11,7 @@ function Ruleset({name, native, doc}) {
 	if (!native)
 		throw Error('Assertion failed');
 	
+	this.axiomatic = axiomatic;
 	this.name = name;
 	this.native = native || false;
 }

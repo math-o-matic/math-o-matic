@@ -73,19 +73,20 @@ Metamath처럼 Łukasiewicz의 공리계로 어떻게 해보려 했으나 예전
 tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없으므로, 뭔가를 좌변에 넣으려면 modus ponens를 적용해야 한다.
 
 [~(href=./tt.html)인터랙티브 페이지]"
-native ruleset tt;
+axiomatic native ruleset tt;
 
-native link cut;
+"sequent calculus의 cut 규칙."
+axiomatic native link cut;
 
 "conditional proof. deduction theorem이라고도 한다. 어떤 규칙
 [$$(\cdots): p, \cdots, r, q \vdash s]
 를 주면 규칙
 [$$(\cdots): p \cdots, r \vdash q \to s]
 를 뱉는다. [$\vdash] 좌항 마지막에 있는 명제 하나를 우항으로 돌린다. mp와는 역연산 관계가 있다고 할 수 있다."
-native link cp;
+axiomatic native link cp;
 
 "modus ponens 추론 규칙. 추론 규칙은 이것만 있어도 적당히 되는 것 같다. cp와는 역연산 관계가 있다고 할 수 있다."
-rule mp(st p, st q) {
+axiomatic rule mp(st p, st q) {
 	p, I(p, q) |- q
 }
 
@@ -311,7 +312,7 @@ st V(pr f);
 	[*] 입력 규칙의 마지막 매개변수의 타입이 cls여야 함.
 	[*] [$\vdash]의 좌변에 아무것도 없어야 함.
 ]"
-native link Vi;
+axiomatic native link Vi;
 
 "universal quantification elimination. 어떤 규칙
 [$$(x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))]
@@ -324,7 +325,7 @@ native link Vi;
 	[*] [$\vdash]의 우변이 V여야 함.
 	[*] [$\vdash]의 좌변에 아무것도 없어야 함.
 ]"
-native link Ve;
+axiomatic native link Ve;
 
 "입력항이 두 개인 함수를 위한 보편 양화. V에 의존한다."
 $\left(<<\forall>>#1\right)$
@@ -361,7 +362,7 @@ st X2(pr2 f) {
 }
 
 "[$\forall]과 [$\land] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VI만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
-rule VA(pr f, pr g) {
+axiomatic rule VA(pr f, pr g) {
 	|- E(
 		V(Af(f, g)),
 		A(V(f), V(g))
@@ -369,14 +370,14 @@ rule VA(pr f, pr g) {
 }
 
 "[$\forall]과 [$\to] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VA만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
-rule VI(pr f, pr g) {
+axiomatic rule VI(pr f, pr g) {
 	|- I(
 		V(If(f, g)),
 		I(V(f), V(g))
 	)
 }
 
-rule VO(pr f, pr g) {
+axiomatic rule VO(pr f, pr g) {
 	|- I(
 		O(V(f), V(g)),
 		V(Of(f, g))
@@ -384,7 +385,7 @@ rule VO(pr f, pr g) {
 }
 
 "[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것. 특이하게도 Vi 및 Ve로부터 유도할 수 있는 것으로 보이나 아직 표현할 방식이 없다."
-rule VV(pr2 f) {
+axiomatic rule VV(pr2 f) {
 	|- I(
 		V2((cls x, cls y) => { f(x, y) }),
 		V2((cls y, cls x) => { f(x, y) })
@@ -637,7 +638,7 @@ rule mpVE(pr f, pr g) {
 }
 
 "universal generalization."
-rule Vgen(st p) {
+axiomatic rule Vgen(st p) {
 	p |- V((cls w) => { p })
 }
 
@@ -709,17 +710,17 @@ rule VI_Vgen_V2_Vi_VI_m(pr f, pr2 g) {
 }
 
 "existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
-rule Xgen(pr f, cls x) {
+axiomatic rule Xgen(pr f, cls x) {
 	f(x) |- X(f)
 }
 
 "universal instantiation."
-rule Vinst(pr f, cls x) {
+axiomatic rule Vinst(pr f, cls x) {
 	V(f) |- f(x)
 }
 
 "existential instantiation 같은 것 1. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정."
-rule Xinst1(pr f, pr g) {
+axiomatic rule Xinst1(pr f, pr g) {
 	X(f), V(If(f, g)) |- X(g)
 }
 
@@ -1120,7 +1121,7 @@ rule subseteq_subseteq(cls x, cls y, cls z) {
 }
 
 "axiom of extensionality."
-rule extensional(cls x, cls y) {
+axiomatic rule extensional(cls x, cls y) {
 	|- I(
 		V((cls z) => {
 			E(
@@ -1186,7 +1187,7 @@ $\left\{<<:>>#1\right\}$
 cls setbuilder(pr f);
 
 "setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다."
-rule setbuilder_def(pr f) {
+axiomatic rule setbuilder_def(pr f) {
 	|- V((cls w) => {
 		E(
 			in(w, setbuilder(f)),
@@ -1399,7 +1400,7 @@ cls subsetbuilder(cls x, pr f) {
 }
 
 "axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
-rule specify(pr f) {
+axiomatic rule specify(pr f) {
 	|-
 	V((cls x) => {
 		I(
@@ -1644,7 +1645,7 @@ rule singleton_subseteq_power(cls x) {
 }
 
 "axiom of power set."
-rule ax_power() {
+axiomatic rule ax_power() {
 	|- V((cls x) => {
 		I(
 			set(x),
@@ -1810,7 +1811,8 @@ rule singleton_is_set(cls x) {
 	~ subset_is_set(singleton(x), power(x))
 }
 
-rule infinity() {
+"Axiom of infinity."
+axiomatic rule infinity() {
 	|- X((cls x) => {
 		A(
 			set(x),
@@ -1835,14 +1837,14 @@ rule infinity() {
 $\left(#1<<,>>#2\right)$
 cls v2(cls x, cls y);
 
-rule v2_eq_def(cls x, cls y, cls z, cls w) {
+axiomatic rule v2_eq_def(cls x, cls y, cls z, cls w) {
 	|- E(
 		eq(v2(x, y), v2(z, w)),
 		A(eq(x, z), eq(y, w))
 	)
 }
 
-rule v2_set_def(cls x, cls y) {
+axiomatic rule v2_set_def(cls x, cls y) {
 	|- E(
 		set(v2(x, y)),
 		A(set(x), set(y))
@@ -1891,7 +1893,7 @@ cls graph_inverse(cls x);
 [$G]가 graph일 때, [$G^{-1} = \{(b, a): (a, b)\in G\}]라는 뜻인데 더 엄밀하게
 [$$\{z: (\exists a)(\exists b)(z = (b, a) \land (a, b) \in G)\}]
 라고 표현되었다."
-rule graph_inverse_def(cls x) {
+axiomatic rule graph_inverse_def(cls x) {
 	graph(x) |- eq(
 		graph_inverse(x),
 		setbuilder((cls z) => {
@@ -1916,7 +1918,7 @@ cls graph_composite(cls x, cls y);
 라는 뜻인데 더 엄밀하게
 [$$\{z: (\exists a)(\exists c)(z=(a, c) \land (\exists b)((a, b)\in H \land (b, c)\in G))\}]
 라고 표현되었다."
-rule graph_composite_def(cls x, cls y) {
+axiomatic rule graph_composite_def(cls x, cls y) {
 	graph(x), graph(y) |- eq(
 		graph_composite(x, y),
 		setbuilder((cls z) => {
@@ -1949,7 +1951,7 @@ cls graph_dom(cls x);
 "graph_dom의 defining property.
 
 [$G]가 graph일 때, [$\{a: (\exists b)((a, b)\in G)\}]라는 뜻이다."
-rule graph_dom_def(cls x) {
+axiomatic rule graph_dom_def(cls x) {
 	graph(x) |- eq(
 		graph_dom(x),
 		setbuilder((cls a) => {
@@ -1967,7 +1969,7 @@ cls graph_im(cls x);
 "graph_im의 defining property.
 
 [$G]가 graph일 때, [$\{b: (\exists a)((a, b)\in G)\}]라는 뜻이다."
-rule graph_im_def(cls x) {
+axiomatic rule graph_im_def(cls x) {
 	graph(x) |- eq(
 		graph_im(x),
 		setbuilder((cls b) => {
@@ -2042,7 +2044,7 @@ cls fcall(cls f, cls x);
 "fcall의 defining property.
 
 [$f(x)]는 [$\langle f, A, B\rangle]이 함수이고 [$x\in A]일 때만 정의되며, 이때 [$f(x) = y]는 [$(x, y)\in f]와 동치라는 뜻이다."
-rule fcall_def(cls f, cls a, cls b, cls x, cls y) {
+axiomatic rule fcall_def(cls f, cls a, cls b, cls x, cls y) {
 	function(f, a, b), in(x, a) |- E(
 		eq(fcall(f, x), y),
 		in(v2(x, y), f)

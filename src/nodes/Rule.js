@@ -4,7 +4,7 @@ var Tee = require('./Tee');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Rule({name, params, expr, doc}) {
+function Rule({axiomatic, name, params, expr, doc}) {
 	Node.call(this);
 
 	this.doc = doc;
@@ -22,6 +22,7 @@ function Rule({name, params, expr, doc}) {
 		throw Error('Expression should be a simple first-order type');
 	}
 	
+	this.axiomatic = axiomatic;
 	this.name = name;
 	this.params = params;
 	this.expr = expr;

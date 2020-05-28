@@ -1,5 +1,6 @@
 /*
  * PEG.js의 출력과 적절한 클래스 사이를 잇는 인터페이스.
+ * PEG.js의 출력은 여기에서만 처리해야 한다.
  */
 
 var Type = require('./nodes/Type');
@@ -344,6 +345,7 @@ PI.rule = function (obj, parentScope, trace) {
 
 	trace = extendTrace(trace, 'rule', obj.name, obj.location);
 
+	var axiomatic = obj.axiomatic;
 	var name = obj.name;
 	var params = obj.params.map(tvo => {
 		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
@@ -364,7 +366,7 @@ PI.rule = function (obj, parentScope, trace) {
 		throw makeError('Expression should be a simple first-order type', trace);
 	}
 
-	return new Rule({name, params, expr, doc: obj.doc});
+	return new Rule({axiomatic, name, params, expr, doc: obj.doc});
 };
 
 PI.tee2 = function (obj, parentScope, trace) {
@@ -486,6 +488,7 @@ PI.ruleset = function (obj, parentScope, trace, nativeMap) {
 
 	trace = extendTrace(trace, 'ruleset', obj.name, obj.location);
 
+	var axiomatic = obj.axiomatic;
 	var name = obj.name;
 
 	if (!obj.native)
@@ -496,7 +499,7 @@ PI.ruleset = function (obj, parentScope, trace, nativeMap) {
 
 	var native = nativeMap.ruleset[name];
 
-	return new Ruleset({name, native, doc: obj.doc});
+	return new Ruleset({axiomatic, name, native, doc: obj.doc});
 };
 
 PI.link = function (obj, parentScope, trace, nativeMap) {
@@ -507,6 +510,7 @@ PI.link = function (obj, parentScope, trace, nativeMap) {
 
 	trace = extendTrace(trace, 'link', obj.name, obj.location);
 
+	var axiomatic = obj.axiomatic;
 	var name = obj.name;
 
 	if (obj.native) {
@@ -517,7 +521,7 @@ PI.link = function (obj, parentScope, trace, nativeMap) {
 			get: args => nativeMap.link[name].get(args, scope, ExpressionResolver)
 		};
 
-		return new Link({name, native, doc: obj.doc});
+		return new Link({axiomatic, name, native, doc: obj.doc});
 	} else {
 		var params = obj.params.map(tvo => {
 			if (!scope.hasType(typeObjToNestedArr(tvo.type)))
@@ -538,7 +542,7 @@ PI.link = function (obj, parentScope, trace, nativeMap) {
 			throw makeError('Link expression should be a simple second-order type', trace);
 		}
 
-		return new Link({name, params, expr, doc: obj.doc});
+		return new Link({axiomatic, name, params, expr, doc: obj.doc});
 	}
 };
 

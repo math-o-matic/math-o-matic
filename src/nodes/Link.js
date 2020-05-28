@@ -4,7 +4,7 @@ var Tee = require('./Tee');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Link({name, native, params, expr, doc}) {
+function Link({axiomatic, name, native, params, expr, doc}) {
 	Node.call(this);
 
 	this.doc = doc;
@@ -12,6 +12,7 @@ function Link({name, native, params, expr, doc}) {
 	if (typeof name != 'string')
 		throw Error('Assertion failed');
 
+	this.axiomatic = axiomatic;
 	this.name = name;
 
 	if (native) {
