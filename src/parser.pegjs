@@ -83,6 +83,23 @@ defun =
 	}
 
 deflink =
+	// native links
+	doc:(documentation __)?
+	"native" __
+	"link" __
+	name:IDENT _
+	SEM
+	{
+		return {
+			_type: 'deflink',
+			doc: doc && doc[0],
+			name,
+			native: true,
+			location: location()
+		}
+	}
+	/
+	// non-native links
 	doc:(documentation __)?
 	"link" __
 	name:IDENT _
@@ -104,6 +121,7 @@ deflink =
 			_type: 'deflink',
 			doc: doc && doc[0],
 			name,
+			native: false,
 			params,
 			expr,
 			location: location()
@@ -370,7 +388,11 @@ expr2 =
 	/ linkname
 
 expr1 =
-	a:expr1_dontusethis _ "~" _ b:expr1
+	// right associativity
+	a:(
+		expr1_dontusethis
+		/ "(" _ c:expr1 _ ")" {return c}
+	) _ "~" _ b:expr1
 	{
 		return {
 			_type: 'reduction2',

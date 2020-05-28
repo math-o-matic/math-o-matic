@@ -45,7 +45,7 @@ Program.prototype.feed = function (lines, nativeMap) {
 				this.scope.addRuleset(ruleset);
 				break;
 			case 'deflink':
-				var link = PegInterface.link(line, this.scope, []);
+				var link = PegInterface.link(line, this.scope, [], nativeMap);
 				this.scope.addLink(link);
 				break;
 			default:

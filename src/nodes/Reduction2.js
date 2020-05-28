@@ -3,6 +3,8 @@ var MetaType = require('./MetaType');
 var Typevar = require('./Typevar');
 var Link = require('./Link');
 
+var ExpressionResolver = require('../ExpressionResolver');
+
 function Reduction2({expr2, args}) {
 	Node.call(this);
 
@@ -16,24 +18,29 @@ function Reduction2({expr2, args}) {
 	this.expr2 = expr2;
 	this.args = args;
 
-	if (!(expr2.type._type == 'metatype'
-			&& expr2.type.isSimple
-			&& expr2.type.order == 2)) {
-		throw Error('Expression should be a second-order simple type');
-	}
+	if (expr2._type == 'link' && expr2.native) {
+		this.reduced = expr2.native.get(args);
+		this.type = this.reduced.type;
+	} else {
+		if (!(expr2.type._type == 'metatype'
+				&& expr2.type.isSimple
+				&& expr2.type.order == 2)) {
+			throw Error('Expression should be a second-order simple type');
+		}
 
-	var paramTypes = expr2.type.left,
-		argTypes = args.map(e => e.type);
+		var paramTypes = expr2.type.left,
+			argTypes = args.map(e => e.type);
 
-	if (paramTypes.length != argTypes.length)
-		throw Error('Assertion failed');
-
-	for (var i = 0; i < paramTypes.length; i++) {
-		if (!paramTypes[i].equals(argTypes[i]))
+		if (paramTypes.length != argTypes.length)
 			throw Error('Assertion failed');
-	}
 
-	this.type = expr2.type.right;
+		for (var i = 0; i < paramTypes.length; i++) {
+			if (!paramTypes[i].equals(argTypes[i]))
+				throw Error('Assertion failed');
+		}
+
+		this.type = expr2.type.right;
+	}
 }
 
 Reduction2.prototype = Object.create(Node.prototype);

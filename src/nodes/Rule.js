@@ -44,15 +44,20 @@ Rule.prototype.toString = function () {
 
 Rule.prototype.toIndentedString = function (indent) {
 	return [
-		`R ${this.name}(${this.params.join(', ')}) =>`,
-		'\t\t' + this.expanded.toIndentedString(indent + 2)
+		`R ${this.name}(${this.params.join(', ')}) => {`,
+		'\t' + this.expanded.toIndentedString(indent + 1),
+		'}'
 	].join('\n' + '\t'.repeat(indent));
 };
 
 Rule.prototype.toTeXString = function (root) {
 	return `\\href{#rule-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
-		+ `(${this.params.map(e => e.toTeXString()).join(', ')}):`
-		+ '\\\\\\quad' + this.expanded.toTeXString();
+		+ (
+			root
+				? `(${this.params.map(e => e.toTeXString()).join(', ')}):`
+					+ '\\\\\\quad' + this.expanded.toTeXString()
+				: ''
+		);
 };
 
 module.exports = Rule;

@@ -318,7 +318,6 @@ ER.expand1 = function (expr) {
 				expr: ER.expand1(expr.expr)
 			});
 		default:
-			console.error(expr);
 			throw Error('Unknown expr1');
 	}
 };
@@ -394,8 +393,6 @@ ER.equals1 = function (a, b) {
 		a = ER.expand1(a);
 		b = ER.expand1(b);
 
-		console.log(a, b);
-
 		if (a._type == 'tee') {
 			if (b._type != 'tee') {
 				throw Error('wut');
@@ -449,6 +446,10 @@ ER.reduce2 = function (expr) {
 
 	var tee2 = ER.expand2(expr.expr2);
 
+	if (tee2._type == 'link' && tee2.native) {
+		return expr.reduced;
+	}
+
 	if (tee2._type != 'tee2') {
 		throw Error('no');
 	}
@@ -462,7 +463,6 @@ ER.reduce2 = function (expr) {
 
 	for (var i = 0; i < left.length; i++) {
 		if (!ER.equals1(left[i], args[i])) {
-			console.error(left[i], args[i]);
 			throw Error(`Argument matching failed (expected ${left[i]}): ${ER.expand1(args[i])}`);
 		}
 	}
@@ -517,6 +517,10 @@ ER.call2 = function (link, args) {
  * 2계층에서만 최대로 푼다.
  */
 ER.expand2 = function (expr) {
+	if (expr._type == 'link' && expr.native) {
+		return expr;
+	}
+
 	if (expr.type.order != 2) {
 		throw Error('Illegal order');
 	}

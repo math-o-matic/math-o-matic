@@ -9,10 +9,8 @@ function Linkcall({link, args}) {
 	if (!(link instanceof Link))
 		throw Error('Assertion failed');
 
-	if (!(args instanceof Array) || args.some(e => e.type.order != 0)) {
-		console.error(args);
+	if (!(args instanceof Array) || args.some(e => e.type.order != 0))
 		throw Error('Assertion failed');
-	}
 	
 	this.link = link;
 	this.args = args;

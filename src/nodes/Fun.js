@@ -42,9 +42,9 @@ Fun.prototype.toIndentedString = function (indent) {
 
 	return [
 		(this.name ? 'ƒ ' + this.type.to + ' ' + this.name : '')
-			+ `(${this.params.join(', ')}) => (`,
+			+ `(${this.params.join(', ')}) => {`,
 		`\t${this.expr.toIndentedString(indent + 1)}`,
-		')'
+		'}'
 	].join('\n' + '\t'.repeat(indent));
 };
 
@@ -59,7 +59,7 @@ Fun.prototype.toTeXString = function (root) {
 			+ `\\mapsto ${this.expr.toTeXString()}\\right)`;
 
 	if (!root)
-		return `\\href{#def-${this.name}}\\mathrm{${this.name}}`;
+		return `\\href{#def-${this.name}}\\mathrm{${this.escapeTeX(this.name)}}`;
 
 	if (!this.expr)
 		return this.funcallToTeXString(this.params);
@@ -77,11 +77,9 @@ Fun.prototype.funcallToTeXString = function (args) {
 		return this.makeTeX('def-' + this.name, args);
 	}
 
-	var n = this.escapeTeX(this.name);
-
 	return `${!this.name
 			? this.toTeXString()
-			: `\\href{#def-${this.name}}{${this.name.length == 1 ? n : `\\mathrm{${n}}`}}`}`
+			: `\\href{#def-${this.name}}{${this.name.length == 1 ? this.escapeTeX(this.name) : `\\mathrm{${this.escapeTeX(this.name)}}`}}`}`
 		+ `(${args.join(', ')})`;
 };
 

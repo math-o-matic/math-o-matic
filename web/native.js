@@ -168,9 +168,9 @@ native = {
 	},
 	link: {
 		Vi: {
-			get: (rules, scope) => {
-				if (rules.length != 1) return false;
-				var rule = rules[0];
+			get: (rules, scope, ER) => {
+				if (rules.length != 1) throw Error('wut');
+				var rule = ER.expand1(rules[0]);
 
 				if (!scope.hasType('st'))
 					throw Error(`Type st not found`);
@@ -183,17 +183,17 @@ native = {
 				var cls = scope.getType('cls');
 
 				if (!rule.params[rule.params.length - 1].type.equals(cls))
-					return false;
+					throw Error('wut');
 
 				var last = rule.params[rule.params.length - 1];
 
-				var tee = rule.expr;
+				var tee = ER.expand1(rule.expr);
 
 				if (tee._type != 'tee')
-					return false;
+					throw Error('wut');
 
 				if (tee.left.length)
-					return false;
+					throw Error('wut');
 
 				if (!scope.hasTypevar('V'))
 					throw Error(`Typevar V not found`);
@@ -212,7 +212,7 @@ native = {
 					throw Error(`Wrong type for V`);
 
 				return new scope.Rule({
-					name: `Vi[${rule.name}]`,
+					name: '<anonymous>',
 					params: rule.params.slice(0, rule.params.length - 1),
 					expr: new scope.Tee({
 						left: [],
@@ -237,8 +237,8 @@ native = {
 			}
 		},
 		Ve: {
-			get: (rules, scope) => {
-				if (rules.length != 1) return false;
+			get: (rules, scope, ER) => {
+				if (rules.length != 1) throw Error('wut');
 				var rule = rules[0];
 
 				if (!scope.hasType('st'))
@@ -251,13 +251,13 @@ native = {
 
 				var cls = scope.getType('cls');
 
-				var tee = rule.expr;
+				var tee = ER.expand1(rule.expr);
 
 				if (tee._type != 'tee')
-					return false;
+					throw Error('wut');
 
 				if (tee.left.length)
-					return false;
+					throw Error('wut');
 
 				if (!scope.hasTypevar('V'))
 					throw Error(`Typevar V not found`);
@@ -277,7 +277,7 @@ native = {
 
 				if (tee.right._type != 'funcall'
 						|| tee.right.fun != V)
-					return false;
+					throw Error('wut');
 
 				var newvar = new scope.Typevar({
 					type: cls,
@@ -285,7 +285,7 @@ native = {
 				});
 
 				return new scope.Rule({
-					name: `Ve[${rule.name}]`,
+					name: `<anonymous>`,
 					params: rule.params.concat([newvar]),
 					expr: new scope.Tee({
 						left: [],
@@ -297,9 +297,14 @@ native = {
 				});
 			}
 		},
+		cut: {
+			get: (rules, scope, ER) => {
+				return ER.chain(rules.map(ER.expand1));
+			}
+		},
 		cp: {
-			get: (rules, scope) => {
-				if (rules.length != 1) return false;
+			get: (rules, scope, ER) => {
+				if (rules.length != 1) throw Error('wut');
 				var rule = rules[0];
 
 				if (!(rule instanceof scope.Rule))
@@ -310,13 +315,13 @@ native = {
 
 				var st = scope.getType('st');
 
-				var tee = rule.expr;
+				var tee = ER.expand1(rule.expr);
 
 				if (tee._type != 'tee')
-					return false;
+					throw Error('wut');
 
 				if (!tee.left.length)
-					return false;
+					throw Error('wut');
 
 				if (!scope.hasTypevar('I'))
 					throw Error(`Typevar I not found`);
@@ -331,7 +336,7 @@ native = {
 					throw Error(`Wrong type for I`);
 
 				return new scope.Rule({
-					name: `cp[${rule.name}]`,
+					name: `<anonymous>`,
 					params: rule.params,
 					expr: new scope.Tee({
 						left: tee.left.slice(0, tee.left.length - 1),

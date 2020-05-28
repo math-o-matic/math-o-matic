@@ -180,6 +180,8 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 				}
 			}
 
+			var ktx = s => katex.renderToString(s, katexOpts);
+
 			var escapeHtml = s => (s + '').replace(/[&<>"']/g, m => ({
 			    '&': '&amp;', '<': '&lt;', '>': '&gt;',
 			    '"': '&quot;', "'": '&#39;'
@@ -262,7 +264,7 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 
 				r = `<div class="block">`
 					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>Type</b> ${k}</a></p>`
-					+ `<div class="math">${katex.renderToString(v.toTeXString(true), katexOpts)}</div>`
+					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
 					+ '<p><b>description</b></p>'
 					+ (
@@ -281,7 +283,7 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 
 				r = `<div class="block">`
 					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>Def</b> ${k}</a></p>`
-					+ `<div class="math">${katex.renderToString(v.toTeXString(true), katexOpts)}</div>`
+					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
 					+ '<p><b>description</b></p>'
 					+ (
@@ -298,14 +300,33 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 			for (var k in program.scope.ruleMap) {
 				var v = program.scope.ruleMap[k];
 
+				function generateExpressionTree(expr) {
+					if (expr._type == 'reduction2') {
+						return [
+							`<table>`,
+							`<tr><td colspan="2">${ktx(expr.expr2.toTeXString())}</td></tr>`,
+							`<tr><td colspan="2">${ktx(expr.reduced.toTeXString())}</td></tr>`,
+							expr.args.map((arg, i) => {
+								return [
+									`<tr><th>${i+1}</th><td>${generateExpressionTree(expr.args[i])}</td></tr>`
+								].join('');
+							}).join(''),
+							`</table>`
+						].join('');
+					} else {
+						return ktx(expr.toTeXString());
+					}
+				}
+
 				r = `<div class="block">`
 					+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>Rule</b> ${k}</a></p>`
-					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 					
 
 					// + `<pre>${escapeHtml(v)}</pre>`
 
-					+ `<td class="result">${katex.renderToString(v.expr.toTeXString(), katexOpts)}</td>`
+					+ `<p><b>proof explorer</b></p>`
+					+ `<p>${generateExpressionTree(v.expr)}</p>`
 					// + (
 					// 	v.rules.length == 1 && v.rules[0]._type != 'rulecall'
 					// 		? '<p><b>not proved</b></p>'
@@ -345,7 +366,7 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 
 				r = `<div class="block">`
 					+ `<p class="label"><a id="link-${k}" href="#link-${k}"><b>Link</b> ${k}</a></p>`
-					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
 					+ '<p><b>description</b></p>'
 					+ (
@@ -364,7 +385,7 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 
 				r = `<div class="block">`
 					+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>Ruleset</b> ${k}</a></p>`
-					+ `<div class="math">${katex.renderToString(v.toTeXString(), katexOpts)}</div>`
+					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
 					+ '<p><b>description</b></p>'
 					+ (

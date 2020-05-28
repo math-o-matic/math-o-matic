@@ -8,8 +8,14 @@ function Node() {
 }
 
 Node.prototype.escapeTeX = function (s) {
-	return s.replace(/_/g, '\\_')
-			.replace(/\$/g, '\\$');
+	return s.replace(/&|%|\$|#|_|{|}|~|\^|\\/g, m => ({
+		'&': '\\&', '%': '\\%', '$': '\\$',
+		'#': '\\#', '_': '\\_', '{': '\\{',
+		'}': '\\}',
+		'~': '\\textasciitilde',
+		'^': '\\textasciicircum',
+		'\\': '\\textbackslash'
+	})[m]);
 };
 
 Node.prototype.makeTeX = function (id, args) {

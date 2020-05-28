@@ -15,6 +15,8 @@ var Link = require('./nodes/Link');
 var Linkcall = require('./nodes/Linkcall');
 var Reduction2 = require('./nodes/Reduction2');
 
+var ExpressionResolver = require('./ExpressionResolver');
+
 var PI = {};
 
 function typeObjToString(obj) {
@@ -497,7 +499,7 @@ PI.ruleset = function (obj, parentScope, trace, nativeMap) {
 	return new Ruleset({name, native, doc: obj.doc});
 };
 
-PI.link = function (obj, parentScope, trace) {
+PI.link = function (obj, parentScope, trace, nativeMap) {
 	if (obj._type != 'deflink')
 		throw Error('Assertion failed');
 
@@ -506,26 +508,38 @@ PI.link = function (obj, parentScope, trace) {
 	trace = extendTrace(trace, 'link', obj.name, obj.location);
 
 	var name = obj.name;
-	var params = obj.params.map(tvo => {
-		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
-			throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
 
-		if (scope.hasOwnTypevar(tvo.name))
-			throw makeError(`Param name ${tvo.name} already is there`, trace);
+	if (obj.native) {
+		if (!nativeMap.link[name])
+			throw makeError(`Native code for native link ${name} not found`, trace);
 
-		var tv = PI.typevar(tvo, scope, trace);
-		return scope.addTypevar(tv);
-	});
+		var native = {
+			get: args => nativeMap.link[name].get(args, scope, ExpressionResolver)
+		};
 
-	var expr = PI.expr2(obj.expr, scope, trace);
+		return new Link({name, native, doc: obj.doc});
+	} else {
+		var params = obj.params.map(tvo => {
+			if (!scope.hasType(typeObjToNestedArr(tvo.type)))
+				throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
 
-	if (!(expr.type._type == 'metatype'
-			&& expr.type.order == 2
-			&& expr.type.isSimple)) {
-		throw makeError('Link expression should be a simple second-order type', trace);
+			if (scope.hasOwnTypevar(tvo.name))
+				throw makeError(`Param name ${tvo.name} already is there`, trace);
+
+			var tv = PI.typevar(tvo, scope, trace);
+			return scope.addTypevar(tv);
+		});
+
+		var expr = PI.expr2(obj.expr, scope, trace);
+
+		if (!(expr.type._type == 'metatype'
+				&& expr.type.order == 2
+				&& expr.type.isSimple)) {
+			throw makeError('Link expression should be a simple second-order type', trace);
+		}
+
+		return new Link({name, params, expr, doc: obj.doc});
 	}
-
-	return new Link({name, params, expr, doc: obj.doc});
 };
 
 PI.reduction2 = function (obj, parentScope, trace) {
@@ -538,15 +552,23 @@ PI.reduction2 = function (obj, parentScope, trace) {
 
 	var expr2 = PI.expr2(obj.expr2, scope, trace);
 
+	var args = obj.args.map(obj => {
+		return PI.expr1(obj, scope, trace);
+	});
+
+	// Skip type check for native links
+	if (expr2._type == 'link' && expr2.native) {
+		return new Reduction2({
+			expr2,
+			args
+		});
+	}
+
 	if (!(expr2.type._type == 'metatype'
 			&& expr2.type.isSimple
 			&& expr2.type.order == 2)) {
 		throw makeError('expr2 is not reducible', trace);
 	}
-
-	var args = obj.args.map(obj => {
-		return PI.expr1(obj, scope, trace);
-	});
 
 	var paramTypes = expr2.type.left,
 		argTypes = args.map(e => e.type);
