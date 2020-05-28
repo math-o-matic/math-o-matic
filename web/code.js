@@ -421,7 +421,7 @@ rule VAm2(pr f, pr g) {
 rule VIm(pr f, pr g) {
 	VI(f, g)
 	~ mp(
-		V((cls x) => { I(f(x), g(x)) }),
+		V((cls w) => { I(f(w), g(w)) }),
 		I(V(f), V(g))
 	)
 }
@@ -638,7 +638,74 @@ rule mpVE(pr f, pr g) {
 
 "universal generalization."
 rule Vgen(st p) {
-	p |- V((cls x) => { p })
+	p |- V((cls w) => { p })
+}
+
+rule Vgen_c(st p) {
+	cp[Vgen](p)
+}
+
+rule VI_Vgen(st p, pr f) {
+	Vgen_c(p) ~
+	VIm((cls z) => {p}, f)
+	~ syll(
+		p,
+		V((cls z) => {p}),
+		V(f)
+	)
+}
+
+rule VI_Vgen_c(st p, pr f) {
+	cp[VI_Vgen](p, f)
+}
+
+rule VI_Vgen_V2(pr f, pr2 g, cls z) {
+	VI_Vgen_c(f(z), (cls w) => {g(z, w)})
+}
+
+rule VI_Vgen_V2_Vi(pr f, pr2 g) {
+	Vi[VI_Vgen_V2](f, g)
+}
+
+rule VI_Vgen_V2_Vi_VI(pr f, pr2 g) {
+	VI_Vgen_V2_Vi(f, g)
+	~ VIm(
+		(cls z) => {
+			V((cls w) => {
+				I(f(z), g(z, w))
+			})
+		},
+		(cls z) => {
+			I(
+				f(z),
+				V((cls w) => {
+					g(z, w)
+				})
+			)
+		}
+	)
+}
+
+rule VI_Vgen_V2_Vi_VI_m(pr f, pr2 g) {
+	id(V2((cls z, cls w) => {
+		I(f(z), g(z, w))
+	})) ~
+	VI_Vgen_V2_Vi_VI(f, g)
+	~ mp(
+		V((cls z) => {
+			V((cls w) => {
+				I(f(z), g(z, w))
+			})
+		}),
+		V((cls z) => {
+			I(
+				f(z),
+				V((cls w) => {
+					g(z, w)
+				})
+			)
+		})
+	)
 }
 
 "existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
@@ -699,24 +766,13 @@ st Vin(cls a, pr f) {
 	})
 }
 
-rule VVin_0(pr f, pr2 g) {
-	V2((cls z, cls w) => {
-		I(f(z), g(z, w))
-	}) |- V((cls z) => {
-		I(
-			f(z),
-			V((cls w) => {g(z, w)})
-		)
-	})
-}
-
-rule VVin_1(cls a, pr2 f) {
+rule VVin_m(cls a, pr2 f) {
 	id(V((cls z) => {
 		Vin(a, (cls w) => {f(z, w)})
 	})) ~
 	VVm((cls z, cls w) => {
 		I(in(w, a), f(z, w))
-	}) ~ VVin_0(
+	}) ~ VI_Vgen_V2_Vi_VI_m(
 		(cls y) => {in(y, a)},
 		(cls y, cls x) => {f(x, y)}
 	) ~ id(Vin(a, (cls w) => {
@@ -724,15 +780,9 @@ rule VVin_1(cls a, pr2 f) {
 	}))
 }
 
+"V와 Vin은 순서를 바꿀 수 있다."
 rule VVin(cls a, pr2 f) {
-	|- I(
-		V((cls z) => {
-			Vin(a, (cls w) => {f(z, w)})
-		}),
-		Vin(a, (cls w) => {
-			V((cls z) => {f(z, w)})
-		})
-	)
+	cp[VVin_m](a, f)
 }
 
 "어떤 class 내에서의 exists. Vin과 달리 and로 연결된다."
@@ -838,8 +888,12 @@ rule eq_Ae2_Vinst_Ee1_c(cls x, cls y, cls z) {
 	cp[eq_Ae2_Vinst_Ee1](x, y, z)
 }
 
-rule swap(st p, st q, st r) {
+rule swap_c(st p, st q, st r) {
 	tt.IIpIqrIqIpr(p, q, r)
+}
+
+rule swap(st p, st q, st r) {
+	swap_c(p, q, r)
 	~ mp(
 		I(p, I(q, r)),
 		I(q, I(p, r))
@@ -851,6 +905,70 @@ rule swap_m(st p, st q, st r) {
 	~ mp(
 		q,
 		I(p, r)
+	)
+}
+
+rule swapV_1(pr f, pr g, pr h, cls w) {
+	swap_c(f(w), g(w), h(w))
+}
+
+rule swapV_c(pr f, pr g, pr h) {
+	Vi[swapV_1](f, g ,h)
+	~ VIm(
+		(cls w) => {I(f(w), I(g(w), h(w)))},
+		(cls w) => {I(g(w), I(f(w), h(w)))}
+	)
+}
+
+rule swapV(pr f, pr g, pr h) {
+	swapV_c(f, g, h)
+	~ mp(
+		V((cls w) => {I(f(w), I(g(w), h(w)))}),
+		V((cls w) => {I(g(w), I(f(w), h(w)))})
+	)
+}
+
+rule swapV2_1(pr2 f, pr2 g, pr2 h, cls z) {
+	swapV_c(
+		(cls w) => {f(z, w)},
+		(cls w) => {g(z, w)},
+		(cls w) => {h(z, w)}
+	)
+}
+
+rule swapV2_c(pr2 f, pr2 g, pr2 h) {
+	Vi[swapV2_1](f, g ,h)
+	~ VIm(
+		(cls z) => {
+			V((cls w) => {
+				I(f(z, w), I(g(z, w), h(z, w)))
+			})
+		},
+		(cls z) => {
+			V((cls w) => {
+				I(g(z, w), I(f(z, w), h(z, w)))
+			})
+		}
+	)
+	~ id(I(
+		V2((cls z, cls w) => {
+			I(f(z, w), I(g(z, w), h(z, w)))
+		}),
+		V2((cls z, cls w) => {
+			I(g(z, w), I(f(z, w), h(z, w)))
+		})
+	))
+}
+
+rule swapV2(pr2 f, pr2 g, pr2 h) {
+	swapV2_c(f, g, h)
+	~ mp(
+		V2((cls z, cls w) => {
+			I(f(z, w), I(g(z, w), h(z, w)))
+		}),
+		V2((cls z, cls w) => {
+			I(g(z, w), I(f(z, w), h(z, w)))
+		})
 	)
 }
 
