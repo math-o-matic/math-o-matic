@@ -340,6 +340,7 @@ ER.expand1Funcalls = function (expr) {
 
 			return ER.expand1Funcalls(ER.call1(rule, args));
 		case 'reduction2':
+			if (expr.expr2.native) return expr.reduced;
 			throw Error('Not implemented');
 		case 'rule':
 			return new Rule({

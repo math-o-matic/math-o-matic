@@ -31,7 +31,7 @@ function Rule({name, params, expr, doc}) {
 		to: expr.type
 	});
 
-	this.expanded = ExpressionResolver.expand1(expr);
+	this.expanded = ExpressionResolver.expand1Funcalls(expr);
 }
 
 Rule.prototype = Object.create(Node.prototype);

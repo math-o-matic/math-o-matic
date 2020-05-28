@@ -699,6 +699,42 @@ st Vin(cls a, pr f) {
 	})
 }
 
+rule VVin_0(pr f, pr2 g) {
+	V2((cls z, cls w) => {
+		I(f(z), g(z, w))
+	}) |- V((cls z) => {
+		I(
+			f(z),
+			V((cls w) => {g(z, w)})
+		)
+	})
+}
+
+rule VVin_1(cls a, pr2 f) {
+	id(V((cls z) => {
+		Vin(a, (cls w) => {f(z, w)})
+	})) ~
+	VVm((cls z, cls w) => {
+		I(in(w, a), f(z, w))
+	}) ~ VVin_0(
+		(cls y) => {in(y, a)},
+		(cls y, cls x) => {f(x, y)}
+	) ~ id(Vin(a, (cls w) => {
+		V((cls z) => {f(z, w)})
+	}))
+}
+
+rule VVin(cls a, pr2 f) {
+	|- I(
+		V((cls z) => {
+			Vin(a, (cls w) => {f(z, w)})
+		}),
+		Vin(a, (cls w) => {
+			V((cls z) => {f(z, w)})
+		})
+	)
+}
+
 "어떤 class 내에서의 exists. Vin과 달리 and로 연결된다."
 $\left(<<\exists>>_{#1}#2\right)$
 st Xin(cls a, pr f) {
@@ -766,11 +802,64 @@ rule eq_Ae1(cls x, cls y) {
 	)
 }
 
+rule eq_Ae1_Vinst(cls x, cls y, cls z) {
+	eq_Ae1(x, y)
+	~ Vinst((cls z) => {
+		E(in(z, x), in(z, y))
+	}, z)
+}
+
+rule eq_Ae1_Vinst_Ee1(cls x, cls y, cls z) {
+	eq_Ae1_Vinst(x, y, z)
+	~ Ee1(in(z, x), in(z, y))
+}
+
 rule eq_Ae2(cls x, cls y) {
 	id(eq(x, y)) ~
 	Ae2(
 		V((cls z) => { E(in(z, x), in(z, y)) }),
 		V((cls w) => { E(in(x, w), in(y, w)) })
+	)
+}
+
+rule eq_Ae2_Vinst(cls x, cls y, cls z) {
+	eq_Ae2(x, y)
+	~ Vinst((cls z) => {
+		E(in(x, z), in(y, z))
+	}, z)
+}
+
+rule eq_Ae2_Vinst_Ee1(cls x, cls y, cls z) {
+	eq_Ae2_Vinst(x, y, z)
+	~ Ee1(in(x, z), in(y, z))
+}
+
+rule eq_Ae2_Vinst_Ee1_c(cls x, cls y, cls z) {
+	cp[eq_Ae2_Vinst_Ee1](x, y, z)
+}
+
+rule swap(st p, st q, st r) {
+	tt.IIpIqrIqIpr(p, q, r)
+	~ mp(
+		I(p, I(q, r)),
+		I(q, I(p, r))
+	)
+}
+
+rule swap_m(st p, st q, st r) {
+	swap(p, q, r)
+	~ mp(
+		q,
+		I(p, r)
+	)
+}
+
+rule eq_Ae2_Vinst_Ee1_c_swap(cls x, cls y, cls z) {
+	eq_Ae2_Vinst_Ee1_c(x, y, z)
+	~ swap(
+		eq(x, y),
+		in(x, z),
+		in(y, z)
 	)
 }
 
@@ -1654,6 +1743,10 @@ st graph(cls x) {
 			eq(z, v2(a, b))
 		})
 	})
+}
+
+rule graph_forall_1_1(cls x, cls z, cls a, cls b) {
+	eq_Ae2_Vinst_Ee1_c_swap(z, v2(a, b), x)
 }
 
 "graph를 위한 forall.
