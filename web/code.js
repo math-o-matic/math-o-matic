@@ -75,14 +75,14 @@ tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없�
 [~(href=./tt.html)인터랙티브 페이지]"
 axiomatic native ruleset tt;
 
-"sequent calculus의 cut 규칙."
+"sequent calculus의 cut 규칙. 즉
+[$$\frac{\Delta\vdash p\quad p,\Sigma\vdash_P q}{\Delta, \Sigma\vdash q}]
+이다. [$\vdash_P]는 좌변의 permutation을 허용한다는 뜻으로 [$p, \Sigma\vdash q]의 [$p]는 [$\vdash_P] 좌변 아무데나 있어도 된다."
 axiomatic native link cut;
 
-"conditional proof. deduction theorem이라고도 한다. 어떤 규칙
-[$$(\cdots): p, \cdots, r, q \vdash s]
-를 주면 규칙
-[$$(\cdots): p \cdots, r \vdash q \to s]
-를 뱉는다. [$\vdash] 좌항 마지막에 있는 명제 하나를 우항으로 돌린다. mp와는 역연산 관계가 있다고 할 수 있다."
+"conditional proof. deduction theorem이라고도 하는 것 같으나 뭐가 뭔지 모르겠다. 즉
+[$$\frac{\Delta, p\vdash q}{\Delta\vdash p\to q}]
+에 해당한다. [$\Delta, p\vdash q]에서 [$p]는 맨 마지막에 있어야 한다. mp와는 역연산 관계가 있다고 할 수 있다."
 axiomatic native link cp;
 
 "modus ponens 추론 규칙. 추론 규칙은 이것만 있어도 적당히 되는 것 같다. cp와는 역연산 관계가 있다고 할 수 있다."
@@ -301,11 +301,9 @@ pr Nf(pr f) {
 $\left(<<\forall>>#1\right)$
 st V(pr f);
 
-"universal quantification introduction. 어떤 규칙
-[$$(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y)]
-를 주면 규칙
-[$$(x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))]
-를 뱉는다. 매개변수 맨 마지막에 있는 cls 하나를 [$\forall]로 돌리는 방식이다.
+"universal quantification introduction. 즉
+[$$\frac{(x, \cdots, z, y)\mapsto(\vdash f(x, \cdots, z, y))}{(x, \cdots, z)\mapsto(\vdash \forall(y \mapsto f(x, \cdots, z, y)))}]
+이다. 매개변수 맨 마지막에 있는 cls 하나를 [$\forall]로 돌리는 방식이다.
 
 제약사항
 [ul
@@ -314,11 +312,9 @@ st V(pr f);
 ]"
 axiomatic native link Vi;
 
-"universal quantification elimination. 어떤 규칙
-[$$(x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))]
-를 주면 규칙
-[$$(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y)]
-를 뱉는다. Vi의 역연산이라고 볼 수 있다. rule Vinst로부터 유도할 수 있을 것으로 추정된다.
+"universal quantification elimination. 즉
+[$$\frac{(x, \cdots, z)\mapsto(\vdash \forall(y \mapsto f(x, \cdots, z, y)))}{(x, \cdots, z, y)\mapsto(\vdash f(x, \cdots, z, y))}]
+이다. Vi의 역연산이라고 볼 수 있다. rule Vinst로부터 유도할 수 있을 것으로 추정된다.
 
 제약사항
 [ul
@@ -485,7 +481,7 @@ rule VEm(pr f, pr g) {
 }
 
 rule VE(pr f, pr g) {
-	cp[VEm](f, g)
+	cp[VEm(f, g)]
 }
 
 rule ttf_IAIpqIqrIpr(pr f, pr g, pr h, cls x) {
@@ -643,7 +639,7 @@ axiomatic rule Vgen(st p) {
 }
 
 rule Vgen_c(st p) {
-	cp[Vgen](p)
+	cp[Vgen(p)]
 }
 
 rule VI_Vgen(st p, pr f) {
@@ -657,7 +653,7 @@ rule VI_Vgen(st p, pr f) {
 }
 
 rule VI_Vgen_c(st p, pr f) {
-	cp[VI_Vgen](p, f)
+	cp[VI_Vgen(p, f)]
 }
 
 rule VI_Vgen_V2(pr f, pr2 g, cls z) {
@@ -720,7 +716,7 @@ axiomatic rule Vinst(pr f, cls x) {
 }
 
 "existential instantiation 같은 것 1. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정."
-axiomatic rule Xinst1(pr f, pr g) {
+rule Xinst1(pr f, pr g) {
 	X(f), V(If(f, g)) |- X(g)
 }
 
@@ -730,7 +726,7 @@ rule Xinst1E(pr f, pr g) {
 
 "existential instantiation 같은 것 2. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정. Vgen으로부터 증명할 수 있다."
 rule Xinst2(st p) {
-	cp[Vgen](N(p))
+	cp[Vgen(N(p))]
 	~ tt.IINpqINqp(p, V((cls x) => { N(p) }))
 	~ mp(I(N(p), V((cls x) => { N(p) })), I(N(V((cls x) => { N(p) })), p))
 	~ id(I(X((cls x) => { p }), p))
@@ -783,7 +779,7 @@ rule VVin_m(cls a, pr2 f) {
 
 "V와 Vin은 순서를 바꿀 수 있다."
 rule VVin(cls a, pr2 f) {
-	cp[VVin_m](a, f)
+	cp[VVin_m(a, f)]
 }
 
 "어떤 class 내에서의 exists. Vin과 달리 and로 연결된다."
@@ -816,8 +812,8 @@ rule set_Xgen_A(cls x, cls y, cls z) {
 }
 
 rule set_Xgen_O(cls x, cls y, cls z) {
-	cp[set_Xgen](z, x)
-	~ cp[set_Xgen](z, y)
+	cp[set_Xgen(z, x)]
+	~ cp[set_Xgen(z, y)]
 	~ Oe(in(z, x), in(z, y), set(z))
 }
 
@@ -886,7 +882,7 @@ rule eq_Ae2_Vinst_Ee1(cls x, cls y, cls z) {
 }
 
 rule eq_Ae2_Vinst_Ee1_c(cls x, cls y, cls z) {
-	cp[eq_Ae2_Vinst_Ee1](x, y, z)
+	cp[eq_Ae2_Vinst_Ee1(x, y, z)]
 }
 
 rule swap_c(st p, st q, st r) {
@@ -1147,7 +1143,7 @@ rule extensional_m(cls x, cls y) {
 }
 
 rule eq_simple(cls x, cls y) {
-	cp[eq_Ae1](x, y)
+	cp[eq_Ae1(x, y)]
 	~ extensional(x, y)
 	~ Ei(
 		eq(x, y),
@@ -1169,7 +1165,7 @@ rule eq_then_subseteq_m(cls x, cls y) {
 }
 
 rule eq_then_subseteq(cls x, cls y) {
-	cp[eq_then_subseteq_m](x, y)
+	cp[eq_then_subseteq_m(x, y)]
 }
 
 rule eq_subseteq(cls x, cls y, cls z) {
@@ -1263,8 +1259,12 @@ cls cap(cls x, cls y) {
 	})
 }
 
+rule set_Xgen_A_c(cls x, cls y, cls z) {
+	cp[set_Xgen_A(x, y, z)]
+}
+
 rule cap_vi(cls x, cls y) {
-	Vi[cp[set_Xgen_A]](x, y) ~
+	Vi[set_Xgen_A_c](x, y) ~
 	setbuilder_def_set((cls z) => {
 		A(in(z, x), in(z, y))
 	})
@@ -1312,8 +1312,12 @@ cls cup(cls x, cls y) {
 	})
 }
 
+rule set_Xgen_O_c(cls x, cls y, cls z) {
+	cp[set_Xgen_O(x, y, z)]
+}
+
 rule cup_vi(cls x, cls y) {
-	Vi[cp[set_Xgen_O]](x, y) ~
+	Vi[set_Xgen_O_c](x, y) ~
 	setbuilder_def_set((cls z) => {
 		O(in(z, x), in(z, y))
 	})
@@ -1336,7 +1340,7 @@ cls emptyset() {
 }
 
 rule emptyset_1(cls z) {
-	cp[contradict](in(z, emptyset()))
+	cp[contradict(in(z, emptyset()))]
 }
 
 rule emptyset_2() {
@@ -1476,7 +1480,7 @@ rule subset_is_set_ae(cls x, cls y) {
 }
 
 rule subset_is_set_ae_c(cls x, cls y) {
-	cp[subset_is_set_ae](x, y)
+	cp[subset_is_set_ae(x, y)]
 }
 
 rule subset_is_set_ae_cvi(cls x) {
@@ -1569,7 +1573,7 @@ rule self_in_power(cls x, cls z) {
 }
 
 rule self_in_power_Vi_1(cls x, cls z) {
-	cp[self_in_power](x, z)
+	cp[self_in_power(x, z)]
 }
 
 rule self_in_power_Vi(cls x) {
@@ -1615,7 +1619,7 @@ rule singleton_subseteq_power_1(cls x, cls y) {
 }
 
 rule singleton_subseteq_power_2(cls x, cls y) {
-	cp[singleton_subseteq_power_1](x, y)
+	cp[singleton_subseteq_power_1(x, y)]
 }
 
 rule singleton_subseteq_power(cls x) {
@@ -1694,7 +1698,7 @@ rule power_is_set_1(cls x, cls y) {
 }
 
 rule power_is_set_2(cls x, cls y) {
-	cp[power_is_set_1](x, y)
+	cp[power_is_set_1(x, y)]
 	~ tt.IIpqIArpArq(
 		V((cls z) => {
 			I(
@@ -1734,7 +1738,7 @@ rule power_is_set_2(cls x, cls y) {
 }
 
 rule power_is_set_3(cls x, cls y) {
-	cp[power_is_set_2](x, y)
+	cp[power_is_set_2(x, y)]
 }
 
 "멱집합은 집합이다."

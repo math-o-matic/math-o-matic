@@ -307,15 +307,12 @@ native = {
 				if (rules.length != 1) throw Error('wut');
 				var rule = rules[0];
 
-				if (!(rule instanceof scope.Rule))
-					throw Error('Wrong type');
-
 				if (!scope.hasType('st'))
 					throw Error(`Type st not found`);
 
 				var st = scope.getType('st');
 
-				var tee = ER.expand1(rule.expr);
+				var tee = ER.expand1(rule);
 
 				if (tee._type != 'tee')
 					throw Error('wut');
@@ -335,18 +332,14 @@ native = {
 				})))
 					throw Error(`Wrong type for I`);
 
-				return new scope.Rule({
-					name: `<anonymous>`,
-					params: rule.params,
-					expr: new scope.Tee({
-						left: tee.left.slice(0, tee.left.length - 1),
-						right: new scope.Funcall({
-							fun: I,
-							args: [
-								tee.left[tee.left.length - 1],
-								tee.right
-							]
-						})
+				return new scope.Tee({
+					left: tee.left.slice(0, tee.left.length - 1),
+					right: new scope.Funcall({
+						fun: I,
+						args: [
+							tee.left[tee.left.length - 1],
+							tee.right
+						]
 					})
 				});
 			}
