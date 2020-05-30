@@ -6,17 +6,15 @@ code = String.raw`
 "문장 타입. 정의하지 않으면 에러가 난다."
 type st;
 
-"합리적인 것. 정말이지 맞는 것이다. 이걸 만들어 내도 계에는 별 일이 생기지 않는다."
+"참. 이걸 만들어 내도 계에는 별 일이 생기지 않는다."
 $<<\top>>$
 st T;
 
-"모순. 정말이지 틀린 것이다. 이걸 만들어 낸다면 계를 파-괴할 수 있다."
+"거짓. 이걸 만들어 낸다면 계를 말짱 도루묵으로 만들 수 있다."
 $<<\bot>>$
 st F;
 
-"nand(FTTT). Sheffer의 1913년 논문에서 다른 모든 논리 기호를 유도할 수 있는 것이 증명된 것 같다. nor(FFFT) 역시 같은 성질을 갖고 있다(그러나 업계에서는 NAND 게이트를 NOR 게이트보다 선호하는 것 같다).
-
-그러나 여기서는 다른 논리 기호를 유도하지 않고 모든 논리 기호를 primitive 하게 하였다. 이는 어차피 진리표를 가정하므로 별 필요 없기 때문이다. 또 실행 속도를 빠르게 하기 위함이다[&hellip]."
+"nand(FTTT). Sheffer가 1913년 논문에서 다른 모든 논리 기호를 유도할 수 있음을 증명한 것 같다. nor(FFFT) 역시 같은 성질을 갖고 있다."
 $\left(#1<<\barwedge>>#2\right)$
 st NA(st p, st q);
 
@@ -77,7 +75,9 @@ axiomatic native ruleset tt;
 
 "sequent calculus의 cut 규칙. 즉
 [$$\frac{\Delta\vdash p\quad p,\Sigma\vdash_P q}{\Delta, \Sigma\vdash q}]
-이다. [$\vdash_P]는 좌변의 permutation을 허용한다는 뜻으로 [$p, \Sigma\vdash q]의 [$p]는 [$\vdash_P] 좌변 아무데나 있어도 된다."
+이다. [$\vdash_P]는 좌변의 permutation을 허용한다는 뜻으로 [$p, \Sigma\vdash q]의 [$p]는 [$\vdash_P] 좌변 아무데나 있어도 된다.
+
+1계층 reduction 구문을 도입한다면 그로부터 증명할 수 있다."
 axiomatic native link cut;
 
 "conditional proof. deduction theorem이라고도 하는 것 같으나 뭐가 뭔지 모르겠다. 즉
@@ -633,7 +633,7 @@ rule mpVE(pr f, pr g) {
 	Ee1V(f, g) ~ mpV(f, g)
 }
 
-"universal generalization."
+"universal generalization이 아니므로 이름을 바꿔야 할 것이다."
 axiomatic rule Vgen(st p) {
 	p |- V((cls w) => { p })
 }

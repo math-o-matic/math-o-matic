@@ -14,6 +14,7 @@
 				katex
 			});
 		</script>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css">
 		<style>
 			* {
@@ -21,8 +22,17 @@
 			}
 
 			body {
-				font-size: 14px;
-				font-family: monospace, monospace;
+				font: 16px Roboto, sans-serif;
+				font-weight: 400;
+				-webkit-font-smoothing: antialiased;
+				color: #5f6368;
+				line-height: 1.5;
+				word-break: normal;
+				overflow-wrap: break-word;
+			}
+
+			h1, h2, h3, h4, h5, h6, a, b, strong, input, textarea, th, .katex {
+				color: #202124;
 			}
 
 			p {
@@ -35,10 +45,6 @@
 
 			pre {
 				white-space: pre-wrap;
-			}
-
-			a {
-				color: inherit;
 			}
 
 			table {
@@ -54,19 +60,14 @@
 
 			.block {
 				padding: 1em;
-				background-color: #f8f8f8;
+				background-color: #fafafa;
 				border: 1px #ccc solid;
 				border-radius: 3px;
 				margin: 1em 0;
 			}
 
 			.label {
-				margin-top: 0;
-				margin-bottom: 1em;
-			}
-
-			.description {
-				margin: 1em 0;
+				font-family: 'Roboto Mono', monospace, monospace;
 			}
 
 			.math {
@@ -90,78 +91,10 @@
 		</style>
 	</head>
 	<body>
-		<h1>M42/math</h1>
-		<p><a href="https://github.com/logico-philosophical/math">GitHub repo</a></p>
 		<script type="text/m42kup">
-[==소개]
+[=M42/math]
 
-M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
-
-[===무슨 공리계의 모형인가]
-
-일단 set과 분리된 class라는 개념이 있으므로 ZFC는 아니고 NBG 내지 MK일 겁니다.
-
-[==꿀팁]
-
-이름을 정할 때 몇 가지 작명 방식을 따르고 있습니다.
-[ul
-	[*] T: verum. true의 T.
-	[*] F: falsum. false의 F.
-	[*] N: not. not의 N.
-	[*] A: and. and의 A.
-	[*] O: or. or의 O.
-	[*] I: implies. implies의 I.
-	[*] E: iff. equivalent의 E.
-	[*] V: forall. every의 V.
-	[*] X: exists. exist의 X.
-	[*] i: introduction. introduction의 i.
-	[*] e: elimination. elimination의 e.
-	[*] m: modus ponens. modus ponens의 m. [$\vdash p \to q] 형태에 mp를 적용해서 [$p \vdash q] 형태로 만들었을 경우 m을 붙입니다. [$\vdash p \leftrightarrow q]의 경우 [$p \vdash q]가 m1이고 [$q \vdash p]가 m2가 됩니다.
-	[*] f: functional. functional의 f. Af나 Of처럼 함수 작용소 버전을 만들 때 붙입니다.
-	[*] _def: 어떤 def의 defining property로서 사용되는 rule의 이름의 경우 해당 def의 이름에 _def를 붙입니다. def emptyset과 rule emptyset_def의 관계를 참조하세요.
-]
-
-[==몇 가지 동형에 관하여]
-
-어떤 공리계에서 두 개의 규칙이 동형이라는 것은 그거나 그거나라는 겁니다. 현재 다음과 같은 종류가 있습니다.
-
-[ul
-	[*] mp[&ndash]cp 동형: 규칙 mp 및 링크 cp에 의해
-
-[$$`\vdash p \to q \xrightleftharpoons[\mathsf{cp}]\mathsf{mp} p \vdash q`.]
-
-	[*] Ai[&ndash]Ae 동형: 규칙 Ai 및 규칙 Ae1, Ae2에 의해
-
-[$$`p \land q \vdash r \xrightleftharpoons[\mathsf{Ae}]\mathsf{Ai} p, q \vdash r`.]
-
-왼쪽에 적용하기 때문에 Ai에 의해 없어지고 Ae에 의해 생깁니다.
-	[*] Vi[&ndash]Ve 동형: 링크 Vi 및 링크 Ve에 의해
-
-[$$`(x, \cdots, z, y):\ \vdash f(x, \cdots, z, y) \xrightleftharpoons[\mathsf{Ve}]\mathsf{Vi} (x, \cdots, z):\ \vdash \forall(y \mapsto f(x, \cdots, z, y))`]
-
-]
-
-현재 동형 규칙이 넘 많아서 문제가 되고 있습니다. 예를 들어
-
-[$$(x, y): \mathop\mathsf{set} x, x = y \vdash \mathop\mathsf{set} y]
-
-(rule set_is_set_1)는
-
-[$$(x, y): (\mathop\mathsf{set} x) \land (x = y) \vdash \mathop\mathsf{set} y]
-
-와 Ai[&ndash]Ae 동형이고 이거는
-
-[$$`(x, y):\ \vdash [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y)`]
-
-와 mp[&ndash]cp 동형이고 이거는
-
-[$$`():\ \vdash \forall((x, y) \mapsto [(\mathop\mathsf{set} x) \land (x = y)] \to (\mathop\mathsf{set} y))`]
-
-와 Vi[&ndash]Ve 동형인데 이 중에 무엇을 택해야 할지 모르겠군요. 동형 규칙 간에 간단히 변환할 수 있는 수단과 동형 규칙 간의 이름 규칙이 있어야 하겠습니다.
-
-[==함수에 관하여]
-
-코드에서 [;`[class -> st]`], [;`[(st, st) -> st]`] 등의 타입이 함수와 같은 형태로 표현되고 있으나 이들은 메타-함수이며, 공리계 내에서 사용되는 함수의 타입은 [;class]이고 Def function을 만족합니다.
+[~(href=https://github.com/logico-philosophical/math)repo] [&middot] [~(href=https://logico-philosophical.github.io/math/docs/build/index.html)docs]
 		</script>
 		<h2>목록</h2>
 		<p>이하의 내용은
@@ -232,10 +165,10 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 				var v = program.scope.typedefMap[k];
 
 				r = `<div class="block">`
-					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>Type</b> ${k}</a></p>`
+					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>type</b> ${k}</a></p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
-					+ '<p><b>description</b></p>'
+					+ '<p class="label"><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
@@ -251,10 +184,10 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 				var v = program.scope.defMap[k];
 
 				r = `<div class="block">`
-					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>Def</b> ${k}</a></p>`
+					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a></p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
-					+ '<p><b>description</b></p>'
+					+ '<p class="label"><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
@@ -288,7 +221,9 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 				}
 
 				r = `<div class="block">`
-					+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>Rule</b> ${k}</a></p>`
+					+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>${
+						v.axiomatic ? 'axiomatic ' : ''
+					}rule</b> ${k}</a></p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 					
 
@@ -297,34 +232,13 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 					+ (
 						v.expr._type == 'tee'
 							? v.axiomatic
-								? '<p><b>axiomatic</b></p>'
-								: '<p><b>not proved</b></p>'
-							: '<p><b>proof explorer</b></p>'
+								? ''
+								: '<p class="label"><b>not proved</b></p>'
+							: '<p class="label"><b>proof explorer</b></p>'
 								+ `<p>${generateExpressionTree(v.expr)}</p>`
 					)
-					// + (
-					// 	v.rules.length == 1 && v.rules[0]._type != 'rulecall'
-					// 		? '<p><b>not proved</b></p>'
-					// 		: '<p><b>proof explorer</b></p>'
-					// 			+ `<form id="form-rule-${v.name}"><table>
-					// 			<tr>
-					// 				<th colspan="2">range</th>
-					// 				<th>expression</th>
-					// 			</tr>`
-					// 			+ v.rules.map(y => {
-					// 				return katex.renderToString(y.toTeXString(), katexOpts);
-					// 			}).map((e, i) => `
-					// 				<tr>
-					// 					<td><input type="radio" name="from" data-rulename="${v.name}" value="${i}" ${i == 0 ? 'checked' : ''} onclick="onRadioClick(this.dataset.rulename)"></td>
-					// 					<td><input type="radio" name="to" data-rulename="${v.name}" value="${i}" ${i == v.rules.length - 1 ? 'checked' : ''} onclick="onRadioClick(this.dataset.rulename)"></td>
-					// 					<td>${e}</td>
-					// 				</td>`).join('')
-					// 			+ `<tr><th colspan="2">result</th><td class="result">${katex.renderToString(v.expr.toTeXString(), katexOpts)}</td></tr>`
-					// 			+ '</table>'
-					// 			+ '</form>'
-					// )
 
-					+ '<p><b>description</b></p>'
+					+ '<p class="label"><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
@@ -340,22 +254,18 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 				var v = program.scope.linkMap[k];
 
 				r = `<div class="block">`
-					+ `<p class="label"><a id="link-${k}" href="#link-${k}"><b>Link</b> ${k}</a></p>`
+					+ `<p class="label"><a id="link-${k}" href="#link-${k}"><b>${
+						(v.axiomatic ? 'axiomatic ' : '')
+						+ (v.native ? 'native ': '')
+					}link</b> ${k}</a></p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
 					+ (
 						v.axiomatic
-							? '<p><b>axiomatic</b></p>'
-							: '<p><b>not proved</b></p>'
+							? '' : '<p class="label"><b>not proved</b></p>'
 					)
 
-					+ (
-						v.native
-							? '<p><b>native</b></p>'
-							: ''
-					)
-
-					+ '<p><b>description</b></p>'
+					+ '<p class="label"><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
@@ -371,22 +281,18 @@ M42/math는 컴퓨터화된 수학적 공리계같은 것입니다.
 				var v = program.scope.rulesetMap[k];
 
 				r = `<div class="block">`
-					+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>Ruleset</b> ${k}</a></p>`
+					+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>${
+						(v.axiomatic ? 'axiomatic ' : '')
+						+ (v.native ? 'native ' : '')
+					}ruleset</b> ${k}</a></p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
 					+ (
 						v.axiomatic
-							? '<p><b>axiomatic</b></p>'
-							: '<p><b>not proved</b></p>'
+							? '' : '<p class="label"><b>not proved</b></p>'
 					)
 
-					+ (
-						v.native
-							? '<p><b>native</b></p>'
-							: ''
-					)
-
-					+ '<p><b>description</b></p>'
+					+ '<p class="label"><b>description</b></p>'
 					+ (
 						v.doc
 						? `<p class="description">${m42kup.render(v.doc)}</p>`
