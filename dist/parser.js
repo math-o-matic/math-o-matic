@@ -143,8 +143,8 @@ function peg$parse(input, options) {
 
       peg$c0 = function(a) {return a},
       peg$c1 = function(lines) {return lines},
-      peg$c2 = "typedef",
-      peg$c3 = peg$literalExpectation("typedef", false),
+      peg$c2 = "type",
+      peg$c3 = peg$literalExpectation("type", false),
       peg$c4 = function(doc, o) {return o},
       peg$c5 = function(doc, origin, name) {
       		doc = doc && doc[0];
@@ -677,9 +677,9 @@ function peg$parse(input, options) {
       s1 = null;
     }
     if (s1 !== peg$FAILED) {
-      if (input.substr(peg$currPos, 7) === peg$c2) {
+      if (input.substr(peg$currPos, 4) === peg$c2) {
         s2 = peg$c2;
-        peg$currPos += 7;
+        peg$currPos += 4;
       } else {
         s2 = peg$FAILED;
         if (peg$silentFails === 0) { peg$fail(peg$c3); }
@@ -3867,9 +3867,9 @@ function peg$parse(input, options) {
   function peg$parsekeyword() {
     var s0;
 
-    if (input.substr(peg$currPos, 7) === peg$c2) {
+    if (input.substr(peg$currPos, 4) === peg$c2) {
       s0 = peg$c2;
-      peg$currPos += 7;
+      peg$currPos += 4;
     } else {
       s0 = peg$FAILED;
       if (peg$silentFails === 0) { peg$fail(peg$c3); }

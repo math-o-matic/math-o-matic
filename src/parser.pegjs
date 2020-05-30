@@ -10,7 +10,7 @@ line =
 	/ deflink
 
 typedef =
-	doc:(documentation __)? "typedef" __ origin:(o:ftype __ {return o})? name:IDENT _ SEM
+	doc:(documentation __)? "type" __ origin:(o:ftype __ {return o})? name:IDENT _ SEM
 	{
 		doc = doc && doc[0];
 		
@@ -481,7 +481,7 @@ var =
 	}
 
 keyword =
-	"typedef"
+	"type"
 	/ "rule"
 	/ "ruleset"
 	/ "link"

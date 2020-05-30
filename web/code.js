@@ -4,7 +4,7 @@ code = String.raw`
 #####################################
 
 "문장 타입. 정의하지 않으면 에러가 난다."
-typedef st;
+type st;
 
 "합리적인 것. 정말이지 맞는 것이다. 이걸 만들어 내도 계에는 별 일이 생기지 않는다."
 $<<\top>>$
@@ -256,16 +256,16 @@ rule contradict(st p) {
 #################################
 
 "클래스 타입. 술어 논리에서 쓰인다."
-typedef cls;
+type cls;
 
 "class 하나를 받는 술어 타입."
-typedef [cls -> st] pr;
+type [cls -> st] pr;
 
 "class 두 개를 받는 술어 타입."
-typedef [(cls, cls) -> st] pr2;
+type [(cls, cls) -> st] pr2;
 
 "class 세 개를 받는 술어 타입."
-typedef [(cls, cls, cls) -> st] pr3;
+type [(cls, cls, cls) -> st] pr3;
 
 "A의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
 $\left(#1<<\land>>#2\right)$
