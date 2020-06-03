@@ -15,6 +15,10 @@ module.exports = {
 			file: 'model'
 		},
 		{
+			name: 'D 함수에 관하여',
+			file: 'd'
+		},
+		{
 			name: 'ExpressionResolver의 동작방식',
 			file: 'expression-resolver'
 		}

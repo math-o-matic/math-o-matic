@@ -1,0 +1,42 @@
+[=[$D] 함수에 관하여]
+
+[$U(L)]이 [~(href=./model.html)모형] 문서에서 정의된 것과 같이 어떤 형식 언어 [$L]의 메타언어를 만드는 함수라 하자. 이때 임의의 [$S\subseteq L] 및 [$T\subseteq U(L)]에 대해 관계 [$\prec_L]를 다음과 같이 정의하자.
+[$$S\prec_L T := (\forall\Delta\in L^\ast)(\forall p\in L)(\Delta\vdash p\in T\to(\Delta\in S^\ast \to p\in S)).]
+[$S\prec_L T]를 ["[$S]가 [$T]를 이행한다]라 읽고 아랫첨자 [$L]은 적당히 생략하자. 즉 [$T]에 [$\Delta\vdash p]가 있다면, [$S]에 [$\Delta] 전부가 있을 때 [$p]도 있어야 한다는 뜻이다. 이는 [$S_{n+1}]에 의해 [$S_n]이 받는 제약을 뜻한다. 또 [$\mathcal S]를 다음과 같이 정의하자.
+[$$\mathcal S(T) := \{S\subseteq L: S \prec T\}.]
+[$\mathcal S(T)\subseteq\mathcal P(L)]이 되므로 이러한 집합을 구성하는 것은 가능하다. 그렇다면 [$D(T)]는
+[$$D(T) := \bigcap\mathcal S(T)]
+와 같이 정의된다. 즉 어떤 [$T\subseteq U(L)]를 이행하는 [$S\subseteq L]을 모두 교집합 한 것이다. 이제 [$D(T)]가 [$T]를 이행하는 최소의 집합이라는 것과, [$D(T)]의 임의 원소에 대해 [$T]의 원소의 [~(href='https://en.wikipedia.org/wiki/Tree_(data_structure)')트리](tree)를 대응시킬 수 있음을 보일 것이다. 이는 [~(href=./model.html)모형] 문서에서 증명하지 않고 대충 넘어갔던 것이다.
+
+먼저 [$D(T)]가 [$T]를 이행한다는 것부터 보이자.
+[>[**1 정리.] 임의의 [$T\subseteq U(L)]에 대해 [$D(T)\prec T.]
+
+증명. 임의의 [$\Delta\in L^\ast, p\in L]에 대해, [$\Delta\vdash p\in T]라 하자. 이때 [$\Delta\in(D(T))^\ast]이면 [$p\in D(T)]임을 보이면 된다. [$\Delta\in(D(T))^\ast]를 [$(\delta_1, \ldots, \delta_n)\in(D(T))^\ast], 즉 [$(\forall k\in\{1,\ldots,n\})(\delta_k\in D(T))]로 풀어 쓰자. 이때 [$D(T) = \bigcap\mathcal S(T)]이므로 [$\delta_k\in D(T)]는 [$(\forall S\in \mathcal S(T))(\delta_k\in S)]와 동치이다. 즉 [$\delta]들을 다시 뭉쳐서 쓰면 [$(\forall S\in\mathcal S(T))(\Delta\in S^\ast)]가 된다. 비슷하게 [$p\in D(T)]는 [$(\forall S\in\mathcal S(T))(p\in S)]와 동치이다. 그런데
+[$$(\forall S\in\mathcal S(T))(\Delta\in S^\ast\to p\in S)]
+가 성립하므로
+[$$(\forall S\in\mathcal S(T))(\Delta\in S^\ast)\to(\forall S\in\mathcal S(T))(p\in S)]
+가 술어논리의 공리로부터 성립한다. 즉 [$\Delta\in(D(T))^\ast]이면 [$p\in D(T)]임을 보였다. (qed)]
+
+[$D(T)]가 [$T]를 이행하는 임의의 [$S\subseteq L]에 포함됨을 밝히는 것은 쉽다.
+[>[**2 도움정리.] 임의의 [$T\subseteq U(L)] 및 [$S\subseteq L]에 대해 [$S\prec T]이면 [$D(T)\subseteq S].
+
+증명. [$S]가 [$L]에 포함되고 [$S\prec T]이므로 [$S\in\mathcal S(T)]이다. [$D(T) = \bigcap\mathcal S(T)]이므로 [$D(T)\subseteq S]이다. (qed)]
+즉 [$D(T)]는 [$T]를 이행하는 것 중에 가장 작다. 이제 [$D(T)]의 임의 원소에 대해 [$T]의 원소의 트리를 대응시킬 수 있음을 보여야 하는데, 먼저 다음을 증명하자.
+
+[>[**3 도움정리.] 임의의 [$p\in D(T)]에 대해, [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 존재한다.
+
+증명. 대우명제, 즉 임의의 [$p\in L]에 대해, [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 없을 때, [$p\notin D(T)]임을 보이자. 이를 귀류법으로 증명하기 위해, [$p\in D(T)]라 하자. 이때 [$D(T)\setminus\{p\}\prec T]임을 보여 모순을 이끌어낼 것이다. [$S = D(T)\setminus\{p\}]라 하고, [$S\prec T]임을 보이기 위해, 임의의 [$\Sigma\in L^\ast, q\in L]에 대해, [$\Sigma\vdash q\in T]라 하자. 이때 [$\Sigma\in S^\ast]이면 [$q\in S]임을 보이면 된다. [$S^\ast\subseteq (D(T))^\ast]이므로, [$\Sigma\in S^\ast]이면 [$\Sigma\in (D(T))^\ast]이고, [$D(T)\prec T]이므로 즉 [$q\in D(T)]가 된다. 그러므로 [$q]가 [$p]가 아님을 보이면 [$q\in S]가 되는데, 가정으로부터 [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 없으므로, [$p]는 우변에 오지 않는다. 그러므로 우변에 있는 [$q]는 [$p]가 아니며, [$q\in S]가 된다.
+
+즉 [$D(T)\setminus\{p\}\prec T]임을 유도하였는데, 이는 [**2]에 모순이다. 그러므로 [$p\notin D(T)]이다. 즉 대우명제가 증명되었으므로, 원래 명제도 성립한다. (qed)]
+
+즉 [$p]가 [$D(T)]에 속하려면 [$\Delta\vdash p] 형태의 문장이 [$T]에 있어야 한다. 이제 어떤 [$\Delta\vdash p] 형태의 문장은 [$\Delta]에 있는 애들도 [$D(T)]에 속해야 함을 보이자.
+
+[>[**4 도움정리.] 임의의 [$p\in D(T)]에 대해, [$\Delta\vdash p\in T]이고 [$\Delta\in(D(T))^\ast]인 [$\Delta\in L^\ast]가 존재한다.
+
+증명. [**3]으로부터 [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 존재함은 알고 있다. 이제 이들 중에 [$\Delta\in(D(T))^\ast]인 것이 있음을 귀류법으로 보이기 위해, 임의의 [$\Delta\in L^\ast]에 대해 [$\Delta\vdash p\in T]이면 [$\Delta\notin(D(T))^\ast]라고 해 보자. 이때 또다시 [$D(T)\setminus\{p\}\prec T]임을 보여 모순을 이끌어낼 것이다. [$S = D(T)\setminus\{p\}]라 하고, [$S\prec T]임을 보이기 위해, 임의의 [$\Sigma\in L^\ast, q\in L]에 대해, [$\Sigma\vdash q\in T]라 하자. 이때 [$\Sigma\in S^\ast]이면 [$q\in S]임을 보이면 된다. [**3]의 증명에서와 같은 이유로, [$q]가 [$p]가 아님을 보이면 된다. 그런데 가정으로부터 [$\Sigma\vdash p\in T]이면 [$\Sigma\notin(D(T))^\ast]인데, [$S\subseteq D(T)]이므로 즉 [$\Sigma\notin S^\ast]이다. 그런데 [$\Sigma\vdash q\in T]이고 [$\Sigma\in S^\ast]이므로 [$q]는 [$p]가 될 수 없다. 그러므로 [$q]가 [$p]가 아님을 보였다.
+
+즉 [$D(T)\setminus\{p\}\prec T]임을 유도하였는데, 이는 [**2]에 모순이다. 그러므로 [$\Delta\in(D(T))^\ast]인 [$\Delta]가 존재한다. (qed)]
+
+[**4]는 [$D(T)]의 임의 원소에 대해 [$T]의 원소의 트리의 뿌리(root)가 존재함을 보였다. 이제 뻗어나가는 가지가 순환하지 않으며 언제가 멈출 수 있음을 보여야 한다.
+
+(계속)

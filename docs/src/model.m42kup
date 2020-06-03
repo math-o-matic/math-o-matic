@@ -1,12 +1,14 @@
 [=모형]
 
-기호논리학에서 형식 체계(formal system)가 어떻게 정의되는지 모르겠으나, 대략 다음과 같을 것이다. well-formed formula를 모아 둔 형식 언어(formal language) [$L_0]가 있다고 하자. 단 [$L_0]은 countable 하다고 하자. 이때 어떤 부분집합 [$S_0\subseteq L_0]를 만드는 것이 목적이다. [$S_0]을 구성하기 위하여 새로운 집합 [$S_1]을 만들자. 이때 [$S_1]은 새로운 형식 언어 [$L_1]의 부분집합인데, [$L_1]은 [$L_0]의 임의의 문장 [$p_1, p_2, \ldots, p_n, q]에 대해 [$p_1, p_2, \ldots, p_n\vdash q] 형태의 문장들의 집합이다. 이때 좌변에 들어가는 문장의 개수는 0이어도 되고 countably infinite 해도 된다. [$\vdash]는 [$L_1]에서 사용하는 단어이며 [$L_0]의 단어가 아님에 주목하라.
+기호논리학에서 형식 체계(formal system)가 어떻게 정의되는지 모르겠으나, 대략 다음과 같을 것이다. 논리식(well-formed formula)을 모아 둔 형식 언어(formal language) [$L_0]가 있다고 하자. 단 [$L_0]는 countable 하다고 하자. 이때 어떤 부분집합 [$S_0\subseteq L_0]를 만드는 것이 목적이다. [$S_0]을 구성하기 위하여 새로운 집합 [$S_1]을 만들자. 이때 [$S_1]은 새로운 형식 언어 [$L_1 = U(L_0)]의 부분집합인데, [$L_1]은 [$L_0]의 임의의 문장 [$p_1, p_2, \ldots, p_n, q]에 대해 [$p_1, p_2, \ldots, p_n\vdash q] 형태의 문장들의 집합이다. 이때 좌변에 들어가는 문장의 개수는 0이어도 되고 countably infinite 해도 된다. [$\vdash]는 [$L_1]에서 사용하는 단어이며 [$L_0]의 단어가 아님에 주목하라.
 
-[>[**Note.] 위와 같은 정의가 axiom schema 등의 스키마에 대한 표현력을 갖지 못한다고 생각할 수 있으나, axiom schema 같은 경우는 여러 개의 axiom의 묶음이라 생각하면 된다. 또 좌변이 무한해지는 것을 허용하는 것은 고차원에서 axiom schema가 무한 개의 axiom의 묶음으로서 좌변에 들어갈 수 있기 때문이며, 이에 관하여는 나중에 이야기할 것이다.]
+[>[**Note.] 위와 같은 정의가 [~(href=https://en.wikipedia.org/wiki/Axiom_schema)공리 스키마](axiom schema) 등의 스키마에 대한 표현력을 갖지 못한다고 생각할 수 있으나, 공리 스키마 같은 경우는 여러 개의 공리의 묶음이라 생각하면 된다. 또 좌변이 무한해지는 것을 허용하는 것은 고차원에서 공리 스키마가 무한 개의 공리의 묶음으로서 좌변에 들어갈 수 있기 때문이며, 이에 관하여는 아래에서 이야기할 것이다.]
 
 [$p_1, p_2, \ldots, p_n\vdash q]는 [$p_1, p_2, \ldots, p_n\in S_0]일 때 [$q\in S_0]임을 뜻한다. 좌변의 길이가 0일 때에는 [$q\in S_0]을 뜻하며, 좌변의 길이가 0인 문장을 axiom이라 한다. 몇 가지 문장이 [$S_0]에 들었을 때 또 다른 문장이 [$S_0]에 포함된다는 논리를 반복 적용하면 [$S_0]에 포함되는 것을 늘려 갈 수 있으며 논리를 적용한다고 해서 [$S_0]가 줄어들지 않는다. 이때 [$S_1]으로부터 구축된 [$S_0]란 [$S_1]을 만족하는 최소의 [$S_0]을 뜻한다. 이를 [$D(S_1)]이라 쓰자. [$S_0]가 최소가 된다는 것은 [$S_0]의 임의의 문장이 [$S_1]에 의해 요구된다는 것이다. 이때 [$S_0]의 임의의 문장에 대해 [$S_1]의 문장의 트리를 대응시킬 수 있음을 알 수 있다. 예를 들어 [$r\in S_0]이라면 [$\vdash p] 및 [$\vdash q] 및 [$p, q\vdash r]과 같은 연쇄를 [$S_1]에서 찾을 수 있어야 할 것이다. [$p, q\vdash r]을 [$\dfrac {p\quad q}r]과 같이 쓰면 이러한 트리 구조를 잘 표현할 수 있는데, 위의 연쇄를 표현해 보면 다음과 같다.
 
 [$$\dfrac{\dfrac{}{p}\quad \dfrac{}{q}}{r}]
+
+함수 [$D]의 형식적 정의와 성질에 관하여는 [~(href=./d.html)해당 문서]를 참조하라.
 
 명제논리를 위한 간단한 Hilbert system을 만들어 보면 다음과 같다. [$L_0]는 명제논리에 필요한 기호들을 포함하도록 적당히 만들자. [$S_1]이 다음을(다음만을) 포함한다.
 
@@ -30,7 +32,9 @@
 [ul
 	[*] (cut) 임의의 [$p, q\in L_0] 및 [$\Delta, \Sigma\in L_0^\ast]에 대해, [$\Delta\vdash p;\Sigma, p\vdash q\Vdash\Delta, \Sigma\vdash q].
 ]
-Gentzen system인가 sequent calculus에서는 이를 cut 규칙이라 부르는 것 같으므로 이름을 cut으로 하였다. 또 위의 1계층 Hilbert system의 스키마 4개는 2계층에서 앞에 [$\Vdash]가 붙어 axiom schema가 된다. 간단히 cut으로부터 [$p\vdash q\to p]를 유도하는 방법은 다음과 같다.
+Gentzen system인가 sequent calculus에서는 이를 cut 규칙이라 부르는 것 같으므로 이름을 cut으로 하였다. 또 위의 1계층 Hilbert system의 스키마 4개는 2계층에서 앞에 [$\Vdash]가 붙어 axiom schema가 된다. 예를 들어 MP는, 임의의 [$p, q\in L_0]에 대해 [$\Vdash p,p\to q\vdash q]가 된다.
+
+간단히 cut으로부터 [$p\vdash q\to p]를 유도하는 방법은 다음과 같다.
 [$$\dfrac{\dfrac{}{\vdash p\to(q\to p)}\mathrm{L1}\quad \dfrac{}{p, p\to (q\to p)\vdash q\to p}\mathrm{MP}}{p\vdash q\to p}\mathrm{cut}]
 cut 단계에서
 [$$\begin{aligned}
@@ -41,6 +45,10 @@ cut 단계에서
 \end{aligned}]
 이다. 단 [$\varepsilon]은 길이 0인 시퀀스이며 [$p := q]는 [$p]에 [$q]를 대입하였다는 뜻이다.
 
-M42/math에서 필요로 하는 몇 가지 공리 중에서는 2계층에서 표현하여야 하는 것들도 있다. 예를 들어 deduction theorem의 경우 [$\Delta, p\vdash q]일 때 [$\Delta\vdash p\to q]임을 뜻하는데, 이는 2계층 표현임을 알 수 있다. Hilbert system 상에서 deduction theorem은 (메타-)정리이므로 없어도 [$D^2(S_2)]가 같을 것 같지만, 있으면 편하므로 도입이 필요하다. 또 universal generalization은 [$x]에 관한 스키마 [$\vdash fx]가 성립할 때 [$\vdash \forall z\,fz]라는 뜻인데, 이 역시 2계층 표현이다. 이때 2계층 문장의 좌변에는 스키마가 들어가므로 좌변의 길이가 무한할 수 있다. 적당히 표현해 보자면, 어떤 [$f]에 대해 [$\Delta_f\in L_1^\ast]이 [$\vdash fx] 형태의 문장 전부의 시퀀스일 때, 임의의 [$f]에 대해 [$\Delta_f\Vdash\>\vdash \forall z\,fz]가 [$S_2]에 포함된다는 뜻이다. 형식 언어 [$L_0]만 가지고는 [$f]나 [$z]가 뭔지 얘기할 수 없으므로 적당한 형식 문법을 갖고 얘기해야 할 것 같기는 하다.
+M42/math에서 필요로 하는 몇 가지 공리 중에서는 2계층에서 표현하여야 하는 것들도 있다. 예를 들어 다음과 같다.
+[ul
+	[*] deduction theorem의 경우 [$\Delta, p\vdash q]일 때 [$\Delta\vdash p\to q]임을 뜻하는데, 이는 2계층 표현임을 알 수 있다. Hilbert system 상에서 deduction theorem은 (메타-)정리이므로 없어도 [$D(D(S_2))]가 같을 것 같지만, 있으면 편하므로 도입이 필요하다.
+	[*] 또 universal generalization은 [$x]에 관한 스키마 [$\vdash fx]가 성립할 때 [$\vdash \forall z\,fz]라는 뜻인데, 이 역시 2계층 표현이다. 이때 2계층 문장의 좌변에는 스키마가 들어가므로 좌변의 길이가 무한할 수 있다. 적당히 표현해 보자면, 어떤 [$f]에 대해 [$\Delta_f\in L_1^\ast]이 [$\vdash fx] 형태의 문장 전부의 시퀀스일 때, 임의의 [$f]에 대해 [$\Delta_f\Vdash\>\vdash \forall z\,fz]가 [$S_2]에 포함된다는 뜻이다. 형식 언어 [$L_0]만 가지고는 [$f]나 [$z]가 뭔지 얘기할 수 없으므로 적당한 형식 문법을 갖고 얘기해야 할 것 같기는 하다.
+]
 
 이러한 메타-언어를 만드는 과정은 계속될 수 있으니 적당히 필요한 만큼 하면 된다. 이상이 M42/math의 형식 체계에 대한 적당한 설명인데, 실제 작성되는 코드는 위의 모형과 미묘하게 다를 수 있다. 예를 들어 axiom schema를 나타내기 위해 문장을 무한히 나열할 수 없으므로 좀 더 콤팩트하게 표현한다든가 하는 식이다. 또 위의 모형은 M42/math가 어떻게 여러 계층에서의 언어를 연결하여 이들을 섞어 쓸 수 있게 하는지 설명하지 못하며 M42/math에서 언어가 어떻게 만들어지는지에 관해 얘기하지 않는다. 그러한 점을 제외하고는 좋은 설명이라고 본다.
