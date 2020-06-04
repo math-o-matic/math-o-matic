@@ -6,7 +6,7 @@
 [$$\mathcal S(T) := \{S\subseteq L: S \prec T\}.]
 [$\mathcal S(T)\subseteq\mathcal P(L)]이 되므로 이러한 집합을 구성하는 것은 가능하다. 그렇다면 [$D(T)]는
 [$$D(T) := \bigcap\mathcal S(T)]
-와 같이 정의된다. 즉 어떤 [$T\subseteq U(L)]를 이행하는 [$S\subseteq L]을 모두 교집합 한 것이다. 이제 [$D(T)]가 [$T]를 이행하는 최소의 집합이라는 것과, [$D(T)]의 임의 원소에 대해 [$T]의 원소의 [~(href='https://en.wikipedia.org/wiki/Tree_(data_structure)')트리](tree)를 대응시킬 수 있음을 보일 것이다. 이는 [~(href=./model.html)모형] 문서에서 증명하지 않고 대충 넘어갔던 것이다.
+와 같이 정의된다. 즉 어떤 [$T\subseteq U(L)]를 이행하는 [$S\subseteq L]을 모두 교집합 한 것이다. 이제 [$D(T)]가 [$T]를 이행하는 최소의 집합이라는 것과, [$D(T)]의 임의 원소에 대해 [$T]의 원소로 만든 [**증명연쇄]를 대응시킬 수 있음을 보일 것이다. 증명연쇄가 무엇인지는 이후에 나올 것이다. 이는 [~(href=./model.html)모형] 문서에서 증명하지 않고 대충 넘어갔던 것이다.
 
 먼저 [$D(T)]가 [$T]를 이행한다는 것부터 보이자.
 [>[**1 정리.] 임의의 [$T\subseteq U(L)]에 대해 [$D(T)\prec T.]
@@ -31,12 +31,34 @@
 
 즉 [$p]가 [$D(T)]에 속하려면 [$\Delta\vdash p] 형태의 문장이 [$T]에 있어야 한다. 이제 어떤 [$\Delta\vdash p] 형태의 문장은 [$\Delta]에 있는 애들도 [$D(T)]에 속해야 함을 보이자.
 
-[>[**4 도움정리.] 임의의 [$p\in D(T)]에 대해, [$\Delta\vdash p\in T]이고 [$\Delta\in(D(T))^\ast]인 [$\Delta\in L^\ast]가 존재한다.
+[>[**4 도움정리.] 임의의 [$p\in D(T)]에 대해, [$\Delta\vdash p\in T]인 [$\Delta\in(D(T))^\ast]가 존재한다.
 
 증명. [**3]으로부터 [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 존재함은 알고 있다. 이제 이들 중에 [$\Delta\in(D(T))^\ast]인 것이 있음을 귀류법으로 보이기 위해, 임의의 [$\Delta\in L^\ast]에 대해 [$\Delta\vdash p\in T]이면 [$\Delta\notin(D(T))^\ast]라고 해 보자. 이때 또다시 [$D(T)\setminus\{p\}\prec T]임을 보여 모순을 이끌어낼 것이다. [$S = D(T)\setminus\{p\}]라 하고, [$S\prec T]임을 보이기 위해, 임의의 [$\Sigma\in L^\ast, q\in L]에 대해, [$\Sigma\vdash q\in T]라 하자. 이때 [$\Sigma\in S^\ast]이면 [$q\in S]임을 보이면 된다. [**3]의 증명에서와 같은 이유로, [$q]가 [$p]가 아님을 보이면 된다. 그런데 가정으로부터 [$\Sigma\vdash p\in T]이면 [$\Sigma\notin(D(T))^\ast]인데, [$S\subseteq D(T)]이므로 즉 [$\Sigma\notin S^\ast]이다. 그런데 [$\Sigma\vdash q\in T]이고 [$\Sigma\in S^\ast]이므로 [$q]는 [$p]가 될 수 없다. 그러므로 [$q]가 [$p]가 아님을 보였다.
 
 즉 [$D(T)\setminus\{p\}\prec T]임을 유도하였는데, 이는 [**2]에 모순이다. 그러므로 [$\Delta\in(D(T))^\ast]인 [$\Delta]가 존재한다. (qed)]
 
-[**4]는 [$D(T)]의 임의 원소에 대해 [$T]의 원소의 트리의 뿌리(root)가 존재함을 보였다. 이제 뻗어나가는 가지가 순환하지 않으며 언제가 멈출 수 있음을 보여야 한다.
+[**4]는 [$D(T)]의 임의 원소에 대해 증명연쇄의 뿌리(root)가 존재함을 보였다. 이제 증명연쇄가 무엇인지 정의하자.
+
+[>[**5 정의.] 임의의 [$p\in L] 및 [$T\subseteq U(L)]에 대하여 [$p]의 [$T]에 의한 [**증명연쇄의 집합] [$P_T(p)]가 다음과 같이 정의된다.
+
+[ul
+	[*] [$P_T^1(p)]가 [$`\{(\varepsilon, [\>\vdash p]):[\>\vdash p]\in T\}`]이다.
+	[*] [$P_T^{n+1}(p)]가 어떤 [$\Delta\in L^\ast]에 대해 [$n]번째 집합까지를 사용하여 [$\Delta]를 증명한 것과 [$\Delta\vdash p]의 튜플이다. 즉
+	[$$`\{(\mathbf v, [\Delta\vdash p]):\Delta\in L^\ast\land \mathbf v\in P_T^{\leq n}(\Delta)\land[\Delta\vdash p]\in T \}`]
+	이다. 단 [$P_T^n(\Delta)]는 [$\Delta = (\delta_1,\ldots,\delta_k)]에 대해 [$P_T^n(\delta_1)\times\cdots\times P_T^n(\delta_k)]를 뜻하며 [$P_T^n(\varepsilon) = \{\varepsilon\}]이다. 또 [$P_T^{\leq n}(\Delta) = \bigcup_{i\in\{1,\ldots,n\}} P_T^i(\Delta)]이다.
+	[*] [$P_T(p)]가 [$\bigcup_{n\in\N}P_T^n(p)]이다.
+]
+
+증명연쇄의 집합의 임의의 원소가 증명연쇄이다.]
+
+대괄호는 수식의 구별을 위해 친 것이고 큰 의미는 없다. 예를 들어 [$\vdash p] 및 [$p\vdash q] 및 [$p, q\vdash r]이 있다면 [$r]의 증명연쇄는 다이어그램으로 그리자면
+[$$\dfrac{\dfrac{}{p}\quad \dfrac{\dfrac{}{p}}{q}}{r}]
+이고 위의 정의에 맞게 표현하자면
+[$$`(\langle(\varepsilon, [\>\vdash p]), (\langle(\varepsilon, [\>\vdash p])\rangle, [p\vdash q])\rangle, [p, q\vdash r])`]
+이 된다.
+
+[>[**6 도움정리.] 위의 정의에서 임의의 [$n\in\N]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p).]
+
+증명. [$n\geq 2]일 때 [$P_T^n(p)] 및 [$P_T^{n+1}(p)]의 정의에서 [$P_T^{\leq n-1}(\Delta)\subseteq P_T^{\leq n}(\Delta)]이므로 간단히 증명된다. [$n = 1]일 때는 [$P_T^2(p)]의 정의의 [$\Delta]에 [$\varepsilon]을 넣어 보면 알 수 있다. (qed)]
 
 (계속)
