@@ -44,8 +44,8 @@
 [ul
 	[*] [$P_T^1(p)]가 [$`\{(\varepsilon, [\>\vdash p]):[\>\vdash p]\in T\}`]이다.
 	[*] [$P_T^{n+1}(p)]가 어떤 [$\Delta\in L^\ast]에 대해 [$n]번째 집합까지를 사용하여 [$\Delta]를 증명한 것과 [$\Delta\vdash p]의 튜플이다. 즉
-	[$$`\{(\mathbf v, [\Delta\vdash p]):\Delta\in L^\ast\land \mathbf v\in P_T^{\leq n}(\Delta)\land[\Delta\vdash p]\in T \}`]
-	이다. 단 [$P_T^n(\Delta)]는 [$\Delta = (\delta_1,\ldots,\delta_k)]에 대해 [$P_T^n(\delta_1)\times\cdots\times P_T^n(\delta_k)]를 뜻하며 [$P_T^n(\varepsilon) = \{\varepsilon\}]이다. 또 [$P_T^{\leq n}(\Delta) = \bigcup_{i\in\{1,\ldots,n\}} P_T^i(\Delta)]이다.
+	[$$`\{(\mathbf v, [\Delta\vdash p]):\Delta\in L^\ast\land \mathbf v\in P_T^n(\Delta)\land[\Delta\vdash p]\in T \}`]
+	이다. 단 [$P_T^n(\Delta)]는 [$\Delta = (\delta_1,\ldots,\delta_k)]에 대해 [$P_T^n(\delta_1)\times\cdots\times P_T^n(\delta_k)]를 뜻하며 [$P_T^n(\varepsilon) = \{\varepsilon\}]이다. 즉 [$\delta] 각각에 대한 증명연쇄의 튜플의 집합이다.
 	[*] [$P_T(p)]가 [$\bigcup_{n\in\N}P_T^n(p)]이다.
 ]
 
@@ -57,8 +57,15 @@
 [$$`(\langle(\varepsilon, [\>\vdash p]), (\langle(\varepsilon, [\>\vdash p])\rangle, [p\vdash q])\rangle, [p, q\vdash r])`]
 이 된다.
 
-[>[**6 도움정리.] 위의 정의에서 임의의 [$n\in\N]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p).]
+[$P_T^n(p)]는 [$p]의 증명연쇄 중 길이가 [$n] 이하인 것을 모아 둔 것이다. 그러므로 다음이 성립한다.
 
-증명. [$n\geq 2]일 때 [$P_T^n(p)] 및 [$P_T^{n+1}(p)]의 정의에서 [$P_T^{\leq n-1}(\Delta)\subseteq P_T^{\leq n}(\Delta)]이므로 간단히 증명된다. [$n = 1]일 때는 [$P_T^2(p)]의 정의의 [$\Delta]에 [$\varepsilon]을 넣어 보면 알 수 있다. (qed)]
+[>[**6 도움정리.] 임의의 [$n\in\N] 및 [$p\in L]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p).]
+
+증명. [$n]에 대해 수학적 귀납법을 적용하자.
+[ul
+	[*] (base case) [$n = 1]일 때 [$P_T^2(p)]의 정의의 [$\Delta]에 [$\varepsilon]을 넣어 보면 성립함을 알 수 있다.
+	[*] (step case) 어떤 [$n\in\N]에서 임의의 [$p\in L]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p)]라 하자. 이때 [$P_T^{n+1}(p)\subseteq P_T^{n+2}(p)]임을 보일 것이다. [$P_T^{n+1}(p)] 및 [$P_T^{n+2}(p)]의 정의를 비교하라. 가정으로부터, 임의의 [$\Delta\in L^\ast]에 대해 [$\mathbf v\in P_T^n(\Delta) \to \mathbf v\in P_T^{n+1}(\Delta)]이므로 [$P_T^{n+1}(p)\subseteq P_T^{n+2}(p)]임을 보일 수 있다.
+]
+그러므로 수학적 귀납법에 의해 임의의 [$n\in\N]에 대해 성립한다. (qed)]
 
 (계속)
