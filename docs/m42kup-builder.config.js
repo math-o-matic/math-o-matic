@@ -15,7 +15,7 @@ module.exports = {
 			file: 'model'
 		},
 		{
-			name: 'D 함수에 관하여',
+			name: 'D 함수와 증명연쇄에 관하여',
 			file: 'd'
 		},
 		{
