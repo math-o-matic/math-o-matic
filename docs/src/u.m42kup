@@ -1,0 +1,27 @@
+[=[$U] 함수에 관하여]
+
+[$D] 함수는 상위 계층 언어를 주면 하위 계층 언어를 뱉는다. 이제 하위 계층 언어로 상위 계층 언어에 문장을 추가해 보자.
+
+먼저 [~(href=./d.html)이전 문서]에서 정의하였던 [$\prec]의 성질을 하나 증명하자.
+
+[>[**1 보조정리.] [$S\subseteq L] 및 [$T_1, T_2\subseteq M(L)]에 대해,
+[$$S\prec_L T_1\cup T_2 \leftrightarrow S\prec_L T_1\land S\prec_L T_2.]
+
+증명. [$\prec_L]의 정의에서, [$(p\lor q)\to r]과 [$(p\to r)\land (q\to r)]이 동치임을 이용하면 쉽게 보일 수 있다. 직접 해 보라.]
+
+이때 다음을 관찰하라.
+
+[>[**2 정리.] [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해, [$S\prec T]라 하자. 이때 임의의 [$\Delta\in L^\ast], [$p\in L]에 대해 [$\Delta\in S^\ast\to p\in S]이면 [$S\prec T\cup\{\Delta\vdash p\}]이다.
+
+증명. 가정으로부터 [$S\prec\{\Delta\vdash p\}]임을 보여라. [**1]로부터 [$S\prec T\cup\{\Delta\vdash p\}]이다.]
+
+즉 [$\Delta\in S^\ast\to p\in S]이면 [$T]에 [$\Delta\vdash p]를 추가해도 [$S]가 그것을 이행한다. 이로부터 다음이 유도된다.
+
+[>[**3 따름정리.] [$\Delta\in L^\ast, p\in L]에 대해, [$S\prec T]인 임의의 [$S\subseteq L]이 [$\Delta\in S^\ast\to p\in S]를 만족하면, [$D(T) = D(T\cup\{\Delta\vdash p\})]이다.
+
+증명. [**1]로부터, 임의의 [$S\subseteq L]에 대해
+[$$S\prec T\cup\{\Delta\vdash p\}\to S\prec T]
+또 [$S\prec T]이면 가정으로부터 [$\Delta\in S^\ast\to p\in S]이므로, [**2]에 의해 [$S\prec T\cup\{\Delta\vdash p\}]이다. 그러므로 [$S\prec T\cup\{\Delta\vdash p\}]와 [$S\prec T]가 동치이다. 정의로부터 [$D(T) = D(T\cup\{\Delta\vdash p\})]임을 보일 수 있다.
+]
+
+(계속)
