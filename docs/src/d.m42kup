@@ -18,12 +18,12 @@
 가 술어논리의 공리로부터 유도된다. 그런데 이는 [$\Delta\in(D(T))^\ast\to p\in D(T)]와 같으므로 [$D(T)\prec T]임이 유도되었다. (qed)]
 
 [$D(T)]가 [$T]를 이행하는 임의의 [$S\subseteq L]에 포함됨을 밝히는 것은 쉽다.
-[>[**2 도움정리.] 임의의 [$T\subseteq M(L)] 및 [$S\subseteq L]에 대해 [$S\prec T]이면 [$D(T)\subseteq S].
+[>[**2 보조정리.] 임의의 [$T\subseteq M(L)] 및 [$S\subseteq L]에 대해 [$S\prec T]이면 [$D(T)\subseteq S].
 
 증명. [$S]가 [$L]에 포함되고 [$S\prec T]이므로 [$S\in\mathcal S(T)]이다. 이때 [$D(T) = \bigcap\mathcal S(T)]이므로 [$D(T)\subseteq S]이다. (qed)]
 즉 [$D(T)]는 [$T]를 이행하는 것 중에 가장 작다. 이제 [$D(T)]의 임의의 원소가 [$T]에 의한 증명연쇄를 갖는다는 것을 보여야 하는데, 먼저 다음을 증명하자.
 
-[>[**3 도움정리.] 임의의 [$p\in D(T)]에 대해, [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 존재한다.
+[>[**3 보조정리.] 임의의 [$p\in D(T)]에 대해, [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 존재한다.
 
 증명. 대우명제, 즉 임의의 [$p\in L]에 대해, [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 없다고 하고, [$p\notin D(T)]임을 보이자. 이를 귀류법으로 증명하기 위해, [$p\in D(T)]라 하자. 이때 [$D(T)\setminus\{p\}\prec T]임을 보여 모순을 이끌어낼 것이다.
 
@@ -33,7 +33,7 @@
 
 즉 [$p]가 [$D(T)]에 속하려면 [$\Delta\vdash p] 형태의 문장이 [$T]에 있어야 한다. 이제 어떤 [$\Delta\vdash p] 형태의 문장은 [$\Delta]에 있는 애들도 [$D(T)]에 속해야 함을 보이자.
 
-[>[**4 도움정리.] 임의의 [$p\in D(T)]에 대해, [$\Delta\vdash p\in T]인 [$\Delta\in(D(T))^\ast]가 존재한다.
+[>[**4 보조정리.] 임의의 [$p\in D(T)]에 대해, [$\Delta\vdash p\in T]인 [$\Delta\in(D(T))^\ast]가 존재한다.
 
 증명. [**3]으로부터 [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 존재함은 알고 있다. 이제 이들 중에 [$\Delta\in(D(T))^\ast]인 것이 있음을 귀류법으로 보이기 위해, 임의의 [$\Delta\in L^\ast]에 대해 [$\Delta\vdash p\in T]이면 [$\Delta\notin(D(T))^\ast]라고 해 보자. 이때 [**3]에서와 같이 [$D(T)\setminus\{p\}\prec T]임을 보여 모순을 이끌어낼 것이다.
 
@@ -63,7 +63,7 @@
 
 [$P_T^n(p)]는 [$p]의 증명연쇄 중 길이가 [$n] 이하인 것을 모아 둔 것이다. 그러므로 다음이 성립한다.
 
-[>[**6 도움정리.] 임의의 [$n\in\N] 및 [$p\in L]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p).]
+[>[**6 보조정리.] 임의의 [$n\in\N] 및 [$p\in L]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p).]
 
 증명. [$n]에 대해 수학적 귀납법을 적용하자.
 [ul
