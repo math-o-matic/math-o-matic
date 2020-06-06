@@ -25,7 +25,7 @@
 	[*] (b) [$\Delta\in(S\cap K)^\ast]와 [$\Delta\in S^\ast\land\Delta\in K^\ast]가 동치임을 보여라. 다음의 항진명제([;IAIprIqsIApqArs])를 사용하라.
 	[$$((p\to r)\land(q\to s))\to((p\land q)\to(r\land s)).]
 	[;VI] 및 [;VA]를 사용하여 적당히 유도하라 (안해봄).
-	[*] (a') [$\forall(f\to p)]와 [$\exists f\to p]가 동치임을 보여라 (안해봄). 이때
+	[*] (a') [$(\forall x)(fx\to p)]와 [$(\exists x)(fx)\to p]가 동치임을 보여라. 이때
 	[$$(\forall T\in\mathcal T)(\Delta\vdash p\in T\to(\Delta\in S^\ast \to p\in S))]
 	와
 	[$$(\exists T\in\mathcal T)(\Delta\vdash p\in T)\to(\Delta\in S^\ast \to p\in S)]
