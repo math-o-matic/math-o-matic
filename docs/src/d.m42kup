@@ -52,10 +52,29 @@
 증명. [$\mathcal S(T)]의 정의로부터 임의의 [$S\in\mathcal S]가 [$S\prec T]를 만족한다. 그러므로 [**2.0](b')에 의해 [$D(T) = \bigcap\mathcal S(T)\prec T]이다.]
 
 [$D(T)]가 [$T]를 이행하는 임의의 [$S\subseteq L]에 포함됨을 밝히는 것은 쉽다.
+
 [>[**2.2 정리.] 임의의 [$T\subseteq M(L)] 및 [$S\subseteq L]에 대해 [$S\prec T]이면 [$D(T)\subseteq S].
 
 증명. [$S]가 [$L]에 포함되고 [$S\prec T]이므로 [$S\in\mathcal S(T)]이다. 이때 [$D(T) = \bigcap\mathcal S(T)]이므로 [$D(T)\subseteq S]이다.]
-즉 [$D(T)]는 [$T]를 이행하는 것 중에 가장 작다. 이제 [$D(T)]의 임의의 원소가 [$T]에 의한 증명연쇄를 갖는다는 것을 보여야 하는데, 먼저 다음을 증명하자.
+
+즉 [$D(T)]는 [$T]를 이행하는 것 중에 가장 작다. 또 [$D]는 다음과 같은 성질을 가진다.
+
+[>[**2.2의1 정리.] 임의의 [$T, V\subseteq M(L)]에 대해, [$D(T)\prec V\leftrightarrow D(T) = D(T\cup V).]
+
+증명.
+
+[ul
+	[*] [$(\to)] [**2.1]로부터 [$D(T)\prec T]이고 가정으로부터 [$D(T)\prec V]이다. 그러므로 [**2.0](a)에 의해 [$D(T)\prec T\cup V]이며 [**2.2]에 의해 [$D(T\cup V)\subseteq D(T)]이다. 또 [**2.1]에 의해 [$D(T\cup V)\prec T\cup V]이고 [**2.0](c)에 의해 [$D(T\cup V)\prec T]이므로 [**2.2]에 의해 [$D(T)\subseteq D(T\cup V)]이다. [$D(T)\subseteq D(T\cup V)]이고 [$D(T\cup V)\subseteq D(T)]이므로 [$D(T) = D(T\cup V)]가 유도되었다.
+	[*] [$(\leftarrow)] [**2.1]에 의해 [$D(T) = D(T\cup V)\prec T\cup V]이므로, [**2.0](a)에 의해 [$D(T)\prec V]이다.
+]]
+
+[>[**2.2의2 정리.] [$D(T)\cup D(V)\subseteq D(T\cup V).]
+
+증명. 먼저 [$\bigcap\mathcal A\cup\bigcap\mathcal B\subseteq\bigcap(\mathcal A\cap\mathcal B)]임을 보여라. 이때 [$D(T\cup V)]는 [$\bigcap\{S\subseteq L: S\prec T\cup V\}]인데, [**2.0](a)에 의해 이는 [$\bigcap(\mathcal S(T)\cap\mathcal S(V))]와 같다. [$\bigcap\mathcal S(T)\cup\bigcap\mathcal S(V)\subseteq\bigcap(\mathcal S(T)\cap\mathcal S(V))]로부터 정리를 유도할 수 있다.]
+
+[$\bigcap(\mathcal A\cap\mathcal B)]가 [$\bigcap\mathcal A\cap\bigcap\mathcal B]와 같지 않음에 주의하라. 오히려 [$\bigcap\mathcal A\cap\bigcap\mathcal B = \bigcap(\mathcal A\cup\mathcal B)]이다.
+
+이제 [$D(T)]의 임의의 원소가 [$T]에 의한 증명연쇄를 갖는다는 것을 보여야 하는데, 먼저 다음을 증명하자.
 
 [>[**2.3 보조정리.] 임의의 [$p\in D(T)]에 대해, [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 존재한다.
 

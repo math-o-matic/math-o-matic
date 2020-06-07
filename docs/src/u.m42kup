@@ -1,19 +1,6 @@
 [=3. [$U] 함수에 관하여]
 
-[$D] 함수는 상위 계층 언어를 주면 하위 계층 언어를 뱉는다. 이제 하위 계층 언어로 상위 계층 언어에 문장을 추가해 보자. 먼저 다음을 관찰하라.
-
-[>[**3.1 정리.] [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해, [$S\prec T]라 하자. 이때 임의의 [$\Delta\in L^\ast], [$p\in L]에 대해 [$\Delta\in S^\ast\to p\in S]이면 [$S\prec T\cup\{\Delta\vdash p\}]이다.
-
-증명. 가정으로부터 [$S\prec\{\Delta\vdash p\}]임을 보여라. [**2.0](a)로부터 [$S\prec T\cup\{\Delta\vdash p\}]이다.]
-
-즉 [$\Delta\in S^\ast\to p\in S]이면 [$T]에 [$\Delta\vdash p]를 추가해도 [$S]가 그것을 이행한다. 이로부터 다음이 유도된다.
-
-[>[**3.2 따름정리.] [$\Delta\in L^\ast, p\in L]에 대해, [$\Delta\in (D(T))^\ast\to p\in D(T)]를 만족하면, [$D(T) = D(T\cup\{\Delta\vdash p\})]이다.
-
-증명. [$D(T)\prec T]이므로, [**3.1]에 의해 [$D(T)\prec T\cup\{\Delta\vdash p\}]이다. 이제 임의의 [$S\prec T\cup\{\Delta\vdash p\}]에 대해 [$D(T)\subseteq S]임을 보여 [$D(T) = D(T\cup\{\Delta\vdash p\})]임을 보일 것이다. [$S\prec T\cup\{\Delta\vdash p\}]이면 [**2.0](c)에 의해 [$S\prec T]이므로 [$D(T)\subseteq S]이다. 그러므로 [$D(T)\subseteq D(T\cup\{\Delta\vdash p\})]이고 [$D(T\cup\{\Delta\vdash p\})\subseteq D(T)]이므로 [$D(T) = D(T\cup\{\Delta\vdash p\})]임이 유도되었다.
-]
-
-그러므로 [$D] 값을 유지하면서 [$T]를 늘려가는 것이 가능함을 알 수 있다. 이에 착안하여, 이제 [$U] 함수를 정의하자. 먼저 [$\mathcal T(S)]를 다음과 같이 정의하자.
+또 주목할 만한 점은 [$D(T)] 값을 유지하면서 [$T]를 늘려가는 것이 가능하다는 것이다. 먼저 [$\mathcal T(S)]를 다음과 같이 정의하자.
 
 [$$\mathcal T(S) := \{T\subseteq M(L): S\prec T\}.]
 
@@ -25,38 +12,28 @@
 
 먼저 [$S]가 [$U(S)]를 이행한다는 것부터 보이자.
 
-[>[**3.3 정리.] 임의의 [$S\subseteq L]에 대해 [$S\prec U(S).]
+[>[**3.1 정리.] 임의의 [$S\subseteq L]에 대해 [$S\prec U(S).]
 
 증명. [$\mathcal T(S)]의 정의로부터 임의의 [$T\in\mathcal T]가 [$S\prec T]를 만족한다. 그러므로 [**2.0](a')에 의해 [$S\prec \bigcup\mathcal T(S) = U(S)]이다.]
 
-[$U(S)]가 [$S\prec T]인 임의의 [$T\subseteq M(L)]을 포함함을 밝히는 것은 쉽다.
+[$U(S)]가 [$S\prec T]인 임의의 [$T\subseteq M(L)]을 포함함을 밝히는 것은 쉽다. 재미있게도 [$S\prec T]와 [$T\subseteq U(S)]는 사실 동치관계이다.
 
-[>[**3.4 정리.] 임의의 [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해 [$S\prec T]이면 [$T\subseteq U(S).]
+[>[**3.2 정리.] 임의의 [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해 [$S\prec T\leftrightarrow T\subseteq U(S).]
 
-증명. [$T]가 [$M(L)]에 포함되고 [$S\prec T]이므로 [$T\in\mathcal T(S)]이다. 이때 [$U(S) = \bigcup\mathcal T(S)]이므로 [$T\subseteq U(S)]이다.]
-
-즉 [$U(S)]는 [$S]가 이행하는 것 중에 가장 크다. 또 주목할 점은 [**2.0](c)에 의해 [$S]가 [$U(S)]의 임의의 부분집합을 이행한다는 것이다. 즉 [$S\prec T]와 [$T\subseteq U(S)]는 동치이다. 또 [$U(S)]가 [$D] 값을 유지한다는 것을 유지한다는 것을 보여야 하는데, 이를 위해 먼저 다음을 보이자.
-
-[>[**3.5 정리.] [$D(T)\cup D(V)\subseteq D(T\cup V).]
-
-증명. 먼저 [$\bigcap\mathcal A\cup\bigcap\mathcal B\subseteq\bigcap(\mathcal A\cap\mathcal B)]임을 보여라. 이때 [$D(T\cup V)]는 [$\bigcap\{S\subseteq L: S\prec T\cup V\}]인데, [**2.0](a)에 의해 이는 [$\bigcap(\mathcal S(T)\cap\mathcal S(V))]와 같다. [$\bigcap\mathcal S(T)\cup\bigcap\mathcal S(V)\subseteq\bigcap(\mathcal S(T)\cap\mathcal S(V))]로부터 정리를 유도할 수 있다.]
-
-[$\bigcap(\mathcal A\cap\mathcal B)]가 [$\bigcap\mathcal A\cap\bigcap\mathcal B]와 같지 않음에 주의하라. 오히려 [$\bigcap\mathcal A\cap\bigcap\mathcal B = \bigcap(\mathcal A\cup\mathcal B)]이다.
-
-이제 다음을 보이자.
-
-[>[**3.6 정리.] [$D(T) = D(V)]일 때 [$D(T) = D(T\cup V).]
-
-증명. [$D(T) = D(V)]라 하고 [$D(T) = D(T\cup V)]임을 보이자. 먼저 [**2.8]에 의해, 임의의 [$p\in L]에 대해 [$P_T(p)\ne\emptyset\leftrightarrow P_V(p)\ne\emptyset]이다. [**3.5]로부터 [$D(T)\subseteq D(T\cup V)]임은 알고 있으므로 [$D(T\cup V)\subseteq D(T)]임을 보이자. [**2.8]에 의해 이는 임의의 [$p\in L]에 대해, [$P_{T\cup V}(p)\ne\emptyset\to P_T(p)\ne\emptyset]이라는 것과 동치이다. [$P_{T\cup V}(p)\ne\emptyset]이라 하고 [$P_T(p)\ne\emptyset]임을 보이자. [$P_{T\cup V}(p)\ne\emptyset]이면 어떤 [$n\in\N]에 대해 [$P_{T\cup V}^n(p)\ne\emptyset]이다. 이제 임의의 [$n\in\N] 및 [$p\in L]에 대해, [$P_{T\cup V}^n(p)\ne\emptyset]이면 [$P_T(p)\ne\emptyset]임을 수학적 귀납법을 통해 보이자.
+증명.
 
 [ul
-	[*] (base case) [$n=1]일 때 [$P_{T\cup V}^1(p)\ne\emptyset]이 된다. 즉 [$\vdash p\in T\cup V]이므로 [$\vdash p\in T] 또는 [$\vdash p\in V]이다. [$\vdash p\in T]이면 [$P_T(p)\ne\emptyset]임이 바로 유도되며, [$\vdash p\in V]이어도 [$P_V(p)\ne\emptyset\to P_T(p)\ne\emptyset]임을 앞에서 보였으므로 같은 것이 유도된다.
-	[*] (step case) 어떤 [$n\in\N]에서 임의의 [$p\in L]에 대해 [$P_{T\cup V}^n(p)\ne\emptyset]이면 [$P_T(p)\ne\emptyset]이라 하자. 이때 [$P_{T\cup V}^{n+1}(p)\ne\emptyset]이라 하고 [$P_T(p)\ne\emptyset]임을 보이자. [$P_{T\cup V}^{n+1}(p)\ne\emptyset]이므로 [$\Delta\vdash p\in T\cup V]인 [$\Delta\in L^\ast]가 존재하고 [$\mathbf v\in P_{T\cup V}^n(\Delta)]인 [$\mathbf v]가 존재한다. 즉 가정에 의해 [$\mathbf u\in P_T(\Delta)]인 [$\mathbf u]가 존재한다. 또 [$\mathbf u\in P_T^m(\Delta)]인 [$m\in\N]이 존재한다. [$\Delta\vdash p\in T]이면 [$P_T^{m+1}(p)\ne\emptyset]이므로 [$P_T(p)\ne\emptyset]임이 유도되며, [$\Delta\vdash p\in V]이어도 앞에서 보인 바에 의해 [$\mathbf u\in P_V(\Delta)]인 [$\mathbf u]가 존재하며 같은 방식으로 [$P_V(p)\ne\emptyset]이 되며 즉 [$P_T(p)\ne\emptyset]임이 유도된다.
+	[*] [$(\to)] [$T]가 [$M(L)]에 포함되고 [$S\prec T]이므로 [$T\in\mathcal T(S)]이다. 이때 [$U(S) = \bigcup\mathcal T(S)]이므로 [$T\subseteq U(S)]이다.
+	[*] [$(\leftarrow)] [**3.1]에 의해 [$S\prec U(S)]이고, 가정으로부터 [$T\subseteq U(S)]이므로 [**2.0](c)에 의해 [$S\prec T]이다.
+]]
+
+즉 [$U(S)]는 [$S]가 이행하는 것 중에 가장 크며, [$U(S)]의 임의의 부분집합은 [$S]를 이행한다. 이제 [$U(S)]가 [$D] 값을 유지함을 보이자.
+
+[>[**3.3 정리.] [$D(U(S)) = S.]
+
+증명. [$T]를 [$`T = \{[\vdash p]: p\in S\}`]로 정의하자. [$D(T) = S]임을 보여라. [**3.1]에 의해 [$D(T)\prec U(S)]이므로 [**2.2의1]에 의해 [$D(T) = D(T\cup U(S))]인데, [$S\prec T]이므로 [**3.2]에 의해 [$T\subseteq U(S)]이다. 즉 [$D(U(S)) = S]를 얻는다.
 ]
 
-그러므로 임의의 [$n\in\N] 및 [$p\in L]에 대해, [$P_{T\cup V}^n(p)\ne\emptyset]이면 [$P_T(p)\ne\emptyset]이다. 그런데 어떤 [$n\in\N]에 대해 [$P_{T\cup V}^n(p)\ne\emptyset]이므로 [$P_T(p)\ne\emptyset]이 유도된다. 그러므로 어쩌구 저쩌구 해서 증명된다.
-]
-
-그러므로 어떤 [$S]에 대해 [$D(T) = S]인 [$T]를 다 합집합 해도 [$D] 값이 [$S]가 된다. 이제 [$U(S)]가 그거라는 것을 보이자.
+즉 [$S]가 이행하는 것 중에 가장 큰 것의 [$D] 값 역시 [$S]이다. 그렇다고 [$U(S)]의 임의의 부분집합의 [$D] 값이 [$S]인 것은 아니다. 단 [$D(T) = S]인 어떤 [$T]에 대해, [$T\subseteq V\subseteq U(S)]를 만족하는 [$V]는 [$D(V) = S]이다.
 
 (계속)
