@@ -108,7 +108,7 @@
 
 [$P_T^n(p)] 집합을 사용하여 몇 가지 재미난 것을 정의할 수도 있겠으나, 일단 그만하겠다. 이제 이제 [$D(T)]의 임의 원소가 증명연쇄를 가짐을 보이자.
 
-[>[**2.7 정리.] 임의의 [$p\in D(T)]에 대해, [$p]의 [$T]에 의한 증명연쇄가 존재한다. 즉 [$P_T(p)]가 공집합이 아니다.
+[>[**2.7 보조정리.] 임의의 [$p\in D(T)]에 대해, [$p]의 [$T]에 의한 증명연쇄가 존재한다. 즉 [$P_T(p)]가 공집합이 아니다.
 
 증명. 부정하자. 즉 어떤 [$p\in D(T)]에 대해 [$P_T(p)]가 공집합이다. 이때 [**2.4]에 의해 [$\Delta\vdash p\in T]인 [$\Delta\in(D(T))^\ast]가 존재한다. 이때 [$\Delta = \varepsilon]이라면 [$`(\varepsilon, [\vdash p])\in P_T^1(p)`]이므로 모순이다. 그러므로 [$\Delta]의 길이는 1 이상이다.
 
@@ -135,16 +135,16 @@
 
 즉 [$D(T)]의 모든 원소는 [$T]에 의한 증명연쇄를 갖는다. [**2.7]의 역(converse)을 증명하는 것은 [**2.7]보다 간단하다.
 
-[>[**2.8 정리.] 임의의 [$p\in L]에 대해, [$p]의 [$T]에 의한 증명연쇄가 존재할 때, [$p\in D(T)]이다.
+[>[**2.8 정리.] 임의의 [$p\in L]에 대해, [$p\in D(T)\leftrightarrow P_T(p)\ne\emptyset.]
 
-증명. 먼저 [$n\in\N]일 때, 임의의 [$p\in L]에 대해 [$P_T^n(p)\ne\emptyset]이면 [$p\in D(T)]임을 수학적 귀납법을 통해 보이자.
+증명. [**2.7]에 의해 [$(\to)]가 성립하므로 [$(\leftarrow)]를 보이자. 먼저 [$n\in\N]일 때 임의의 [$p\in L]에 대해, [$P_T^n(p)\ne\emptyset]이면 [$p\in D(T)]임을 수학적 귀납법을 통해 보이자.
 
 [ul
 	[*] (base case) [$n = 1]일 때 [$P_T^1(p)\ne\emptyset]이 된다. 즉 [$\vdash p\in T]이므로 [**2.1]에 의해 [$p\in D(T)]이다.
 	[*] (step case) 어떤 [$n\in\N]에서 임의의 [$p\in L]에 대해 [$P_T^n(p)\ne\emptyset]이면 [$p\in D(T)]라 하자. 이때 [$P_T^{n+1}(p)\ne\emptyset]이라 하고 [$p\in D(T)]임을 보이자. [$P_T^{n+1}(p)\ne\emptyset]이므로 [$\Delta\vdash p\in T]인 [$\Delta\in L^\ast]가 존재하고 [$\mathbf v\in P_T^n(\Delta)]인 [$\mathbf v]가 존재한다. [$\Delta=\varepsilon]이면 [$\vdash p\in T]이므로 [$p\in D(T)]가 바로 유도되고, 그렇지 않고 [$\Delta = (\delta_1,\ldots,\delta_k)]라면 임의의 [$\delta_i]에 대해 [$P_T^n(\delta_i)\ne\emptyset]이고 가정으로부터 [$\delta_i\in D(T)]이다. 즉 [$\Delta\in(D(T))^\ast]이고, [**2.1]로부터 [$p\in D(T)]가 된다.
 ]
 
-그러므로 수학적 귀납법에 의해 임의의 [$n\in\N]에 대해 [$P_T^n(p)\ne\emptyset]이면 [$p\in D(T)]이다. 그런데 가정으로부터 [$P_T(p)\ne\emptyset]이므로 어떤 [$n\in\N]에 대해 [$P_T^n(p)\ne\emptyset]이다. 곧 [$p\in D(T)]임이 유도된다.
+그러므로 수학적 귀납법에 의해 임의의 [$n\in\N]에 대해, [$P_T^n(p)\ne\emptyset]이면 [$p\in D(T)]이다. 그런데 가정으로부터 [$P_T(p)\ne\emptyset]이므로 어떤 [$n\in\N]에 대해 [$P_T^n(p)\ne\emptyset]이다. 곧 [$p\in D(T)]임이 유도된다.
 ]
 
 결론적으로 [$T]에 의한 증명연쇄가 존재하는 것과, [$D(T)]에 속하는 것이 동치임을 보였다. 이는 [$D(T)]의 원소를 찾는 과정이 [$T]에 의한 증명연쇄를 찾는 과정이며, 임의의 [$D(T)]의 원소에 대해 이러한 증명연쇄는 항상 찾을 수 있음을 보여 준다. 이는 이 문서에서 보이고자 했던 바이다.

@@ -47,4 +47,16 @@
 
 [>[**3.6 정리.] [$D(T) = D(V)]일 때 [$D(T) = D(T\cup V).]
 
-증명. [**3.5]로부터 [$D(T)\subseteq D(T\cup V)]임은 알고 있으므로 [$D(T\cup V)\subseteq D(T)]임을 보이자. [$p\in D(T\cup V)]라 하고 [$p\in D(T)]임을 보이면 된다. [$p\in D(T\cup V)]라 하자. (계속)]
+증명. [$D(T) = D(V)]라 하고 [$D(T) = D(T\cup V)]임을 보이자. 먼저 [**2.8]에 의해, 임의의 [$p\in L]에 대해 [$P_T(p)\ne\emptyset\leftrightarrow P_V(p)\ne\emptyset]이다. [**3.5]로부터 [$D(T)\subseteq D(T\cup V)]임은 알고 있으므로 [$D(T\cup V)\subseteq D(T)]임을 보이자. [**2.8]에 의해 이는 임의의 [$p\in L]에 대해, [$P_{T\cup V}(p)\ne\emptyset\to P_T(p)\ne\emptyset]이라는 것과 동치이다. [$P_{T\cup V}(p)\ne\emptyset]이라 하고 [$P_T(p)\ne\emptyset]임을 보이자. [$P_{T\cup V}(p)\ne\emptyset]이면 어떤 [$n\in\N]에 대해 [$P_{T\cup V}^n(p)\ne\emptyset]이다. 이제 임의의 [$n\in\N] 및 [$p\in L]에 대해, [$P_{T\cup V}^n(p)\ne\emptyset]이면 [$P_T(p)\ne\emptyset]임을 수학적 귀납법을 통해 보이자.
+
+[ul
+	[*] (base case) [$n=1]일 때 [$P_{T\cup V}^1(p)\ne\emptyset]이 된다. 즉 [$\vdash p\in T\cup V]이므로 [$\vdash p\in T] 또는 [$\vdash p\in V]이다. [$\vdash p\in T]이면 [$P_T(p)\ne\emptyset]임이 바로 유도되며, [$\vdash p\in V]이어도 [$P_V(p)\ne\emptyset\to P_T(p)\ne\emptyset]임을 앞에서 보였으므로 같은 것이 유도된다.
+	[*] (step case) 어떤 [$n\in\N]에서 임의의 [$p\in L]에 대해 [$P_{T\cup V}^n(p)\ne\emptyset]이면 [$P_T(p)\ne\emptyset]이라 하자. 이때 [$P_{T\cup V}^{n+1}(p)\ne\emptyset]이라 하고 [$P_T(p)\ne\emptyset]임을 보이자. [$P_{T\cup V}^{n+1}(p)\ne\emptyset]이므로 [$\Delta\vdash p\in T\cup V]인 [$\Delta\in L^\ast]가 존재하고 [$\mathbf v\in P_{T\cup V}^n(\Delta)]인 [$\mathbf v]가 존재한다. 즉 가정에 의해 [$\mathbf u\in P_T(\Delta)]인 [$\mathbf u]가 존재한다. 또 [$\mathbf u\in P_T^m(\Delta)]인 [$m\in\N]이 존재한다. [$\Delta\vdash p\in T]이면 [$P_T^{m+1}(p)\ne\emptyset]이므로 [$P_T(p)\ne\emptyset]임이 유도되며, [$\Delta\vdash p\in V]이어도 앞에서 보인 바에 의해 [$\mathbf u\in P_V(\Delta)]인 [$\mathbf u]가 존재하며 같은 방식으로 [$P_V(p)\ne\emptyset]이 되며 즉 [$P_T(p)\ne\emptyset]임이 유도된다.
+]
+
+그러므로 임의의 [$n\in\N] 및 [$p\in L]에 대해, [$P_{T\cup V}^n(p)\ne\emptyset]이면 [$P_T(p)\ne\emptyset]이다. 그런데 어떤 [$n\in\N]에 대해 [$P_{T\cup V}^n(p)\ne\emptyset]이므로 [$P_T(p)\ne\emptyset]이 유도된다. 그러므로 어쩌구 저쩌구 해서 증명된다.
+]
+
+그러므로 어떤 [$S]에 대해 [$D(T) = S]인 [$T]를 다 합집합 해도 [$D] 값이 [$S]가 된다. 이제 [$U(S)]가 그거라는 것을 보이자.
+
+(계속)
