@@ -15,7 +15,7 @@
 
 그러므로 [$D] 값을 유지하면서 [$T]를 늘려가는 것이 가능함을 알 수 있다. 이에 착안하여, 이제 [$U] 함수를 정의하자. 먼저 [$\mathcal T(S)]를 다음과 같이 정의하자.
 
-[$$\mathcal T(S) := \{T\subseteq M(L): D(T) = S\}.]
+[$$\mathcal T(S) := \{T\subseteq M(L): S\prec T\}.]
 
 [$\mathcal T(S)\subseteq\mathcal P(M(L))]이므로 이러한 집합을 구성하는 것은 가능하다. 그렇다면 [$U(S)]는
 
@@ -27,6 +27,24 @@
 
 [>[**3.3 정리.] 임의의 [$S\subseteq L]에 대해 [$S\prec U(S).]
 
-증명. [$\mathcal T(S)]의 정의로부터 임의의 [$T\in\mathcal T]가 [$S\prec T]를 만족한다. 그러므로 [**2.0](a')에 의해 [$S\prec \bigcup\mathcal T(S) = U(S)]이다.
+증명. [$\mathcal T(S)]의 정의로부터 임의의 [$T\in\mathcal T]가 [$S\prec T]를 만족한다. 그러므로 [**2.0](a')에 의해 [$S\prec \bigcup\mathcal T(S) = U(S)]이다.]
 
-(계속)
+[$U(S)]가 [$S\prec T]인 임의의 [$T\subseteq M(L)]을 포함함을 밝히는 것은 쉽다.
+
+[>[**3.4 정리.] 임의의 [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해 [$S\prec T]이면 [$T\subseteq U(S).]
+
+증명. [$T]가 [$M(L)]에 포함되고 [$S\prec T]이므로 [$T\in\mathcal T(S)]이다. 이때 [$U(S) = \bigcup\mathcal T(S)]이므로 [$T\subseteq U(S)]이다.]
+
+즉 [$U(S)]는 [$S]가 이행하는 것 중에 가장 크다. 또 주목할 점은 [**2.0](c)에 의해 [$S]가 [$U(S)]의 임의의 부분집합을 이행한다는 것이다. 즉 [$S\prec T]와 [$T\subseteq U(S)]는 동치이다. 또 [$U(S)]가 [$D] 값을 유지한다는 것을 유지한다는 것을 보여야 하는데, 이를 위해 먼저 다음을 보이자.
+
+[>[**3.5 정리.] [$D(T)\cup D(V)\subseteq D(T\cup V).]
+
+증명. 먼저 [$\bigcap\mathcal A\cup\bigcap\mathcal B\subseteq\bigcap(\mathcal A\cap\mathcal B)]임을 보여라. 이때 [$D(T\cup V)]는 [$\bigcap\{S\subseteq L: S\prec T\cup V\}]인데, [**2.0](a)에 의해 이는 [$\bigcap(\mathcal S(T)\cap\mathcal S(V))]와 같다. [$\bigcap\mathcal S(T)\cup\bigcap\mathcal S(V)\subseteq\bigcap(\mathcal S(T)\cap\mathcal S(V))]로부터 정리를 유도할 수 있다.]
+
+[$\bigcap(\mathcal A\cap\mathcal B)]가 [$\bigcap\mathcal A\cap\bigcap\mathcal B]와 같지 않음에 주의하라. 오히려 [$\bigcap\mathcal A\cap\bigcap\mathcal B = \bigcap(\mathcal A\cup\mathcal B)]이다.
+
+이제 다음을 보이자.
+
+[>[**3.6 정리.] [$D(T) = D(V)]일 때 [$D(T) = D(T\cup V).]
+
+증명. [**3.5]로부터 [$D(T)\subseteq D(T\cup V)]임은 알고 있으므로 [$D(T\cup V)\subseteq D(T)]임을 보이자. [$p\in D(T\cup V)]라 하고 [$p\in D(T)]임을 보이면 된다. [$p\in D(T\cup V)]라 하자. (계속)]
