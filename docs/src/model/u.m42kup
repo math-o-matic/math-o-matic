@@ -1,0 +1,89 @@
+[=1.3. [$U] 함수에 관하여]
+
+또 주목할 만한 점은 [$D(T)] 값을 유지하면서 [$T]를 늘려가는 것이 가능하다는 것이다. 먼저 [$\mathcal T(S)]를 다음과 같이 정의하자.
+
+[$$\mathcal T(S) := \{T\subseteq M(L): S\prec T\}.]
+
+[$\mathcal T(S)\subseteq\mathcal P(M(L))]이므로 이러한 집합을 구성하는 것은 가능하다. 그렇다면 [$U(S)]는
+
+[$$U(S) := \bigcup\mathcal T(S)]
+
+와 같이 정의된다. 즉 어떤 [$S\subseteq L]이 이행하는 [$T\subseteq M(L)]을 모두 합집합 한 것이다.
+
+먼저 [$S]가 [$U(S)]를 이행한다는 것부터 보이자.
+
+[>[**1.3.1 정리.] 임의의 [$S\subseteq L]에 대해 [$S\prec U(S).]
+
+증명. [$\mathcal T(S)]의 정의로부터 임의의 [$T\in\mathcal T]가 [$S\prec T]를 만족한다. 그러므로 [**1.2.1](a')에 의해 [$S\prec \bigcup\mathcal T(S) = U(S)]이다.]
+
+[$U(S)]가 [$S\prec T]인 임의의 [$T\subseteq M(L)]을 포함함을 밝히는 것은 쉽다. 재미있게도 [$S\prec T]와 [$T\subseteq U(S)]는 사실 동치관계이다.
+
+[>[**1.3.2 정리.] 임의의 [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해 [$S\prec T\leftrightarrow T\subseteq U(S).]
+
+증명.
+
+[ul
+	[*] [$(\to)] [$T]가 [$M(L)]에 포함되고 [$S\prec T]이므로 [$T\in\mathcal T(S)]이다. 이때 [$U(S) = \bigcup\mathcal T(S)]이므로 [$T\subseteq U(S)]이다.
+	[*] [$(\leftarrow)] [**1.3.1]에 의해 [$S\prec U(S)]이고, 가정으로부터 [$T\subseteq U(S)]이므로 [**1.2.1](c)에 의해 [$S\prec T]이다.
+]]
+
+즉 [$U(S)]는 [$S]가 이행하는 것 중에 가장 크며, [$U(S)]의 임의의 부분집합은 [$S]를 이행한다. 이제 [$U(S)]가 [$D] 값을 유지함을 보이자.
+
+[>[**1.3.3 정리.] [$D(U(S)) = S.]
+
+증명. [$T]를 [$`T = \{[\vdash p]: p\in S\}`]로 정의하자. [$D(T) = S]임을 보여라. [**1.3.1]에 의해 [$D(T)\prec U(S)]이므로 [**1.2.4]에 의해 [$D(T) = D(T\cup U(S))]인데, [$S\prec T]이므로 [**1.3.2]에 의해 [$T\subseteq U(S)]이다. 즉 [$D(U(S)) = S]를 얻는다.
+]
+
+즉 [$S]가 이행하는 것 중에 가장 큰 것의 [$D] 값 역시 [$S]이다. 그렇다고 [$U(S)]의 임의의 부분집합의 [$D] 값이 [$S]인 것은 아니다. 단 [$D(T) = S]인 어떤 [$T]에 대해, [$T\subseteq V\subseteq U(S)]를 만족하는 [$V]는 [$D(V) = S]이다. 이제 어떤 것이 [$U(S)]에 속하는지 보이자.
+
+[>[**1.3.4 정리.] 임의의 [$S\subseteq L] 및 [$\Delta\in L^\ast, p\in L]에 대해, [$\Delta\vdash p\in U(S)\leftrightarrow (\Delta\in S^\ast\to p\in S).]
+
+증명. [**1.3.1]에 의해 [$S\prec U(S)]이므로 정의로부터 [$(\to)]가 성립한다. 그러므로 [$(\leftarrow)]임을 보이자. [$\Delta\in S^\ast\to p\in S]라 하고 [$\Delta\vdash p\in U(S)]임을 보이자. 가정으로부터 [$S\prec\{\Delta\vdash p\}]임을 보여라. 이때 [**1.3.2]에 의해 [$\{\Delta\vdash p\}\subseteq U(S)], 즉 [$\Delta\vdash p\in U(S)]를 얻는다. 그러므로 [$(\leftarrow)]도 보였다.
+]
+
+즉 [$\Delta\in S^\ast\to p\in S]이면(일 때에만) [$\Delta\vdash p]가 [$U(S)]에 속한다. 이때 다음이 간단히 유도된다.
+
+[>[**1.3.5 따름정리.] 임의의 [$S\subseteq L] 및 [$p\in L]에 대해, [$\vdash p\in U(S)\leftrightarrow p\in S.]
+
+증명. [**1.3.4]의 [$\Delta]에 [$\varepsilon]을 대입하라.]
+
+이때 몇 가지 문장이 시스템의 성질로부터 항상 [$U^2(S) = U(U(S))]에 속한다.
+
+[>[**1.3.6 정리.] 임의의 [$S\subseteq L]에 대해 다음이 성립한다.
+
+[ul
+	[*] (a) (cut) 임의의 [$\Delta,\Sigma_1,\Sigma_2\in L^\ast], [$p, q\in L]에 대해,
+	[$$\dfrac{\Delta\vdash p\quad\Sigma_1,p,\Sigma_2\vdash q}{\Sigma_1,\Delta,\Sigma_2\vdash q}\in U^2(S).]
+	[*] (b) (weakening)
+	[$$\dfrac{\Delta_1,\Delta_2,\Delta_2\vdash p}{\Delta_1,\Delta_2\vdash p}\in U^2(S).]
+	[*] (c) (contraction)
+	[$$\dfrac{\Delta,\Delta\vdash p}{\Delta\vdash p}\in U^2(S).]
+	[*] (d) (permutation)
+	[$$\dfrac{\Delta_1, \Delta_2\vdash p}{\Delta_2,\Delta_1\vdash p}\in U^2(S).]
+]
+
+증명.
+
+[ul
+	[*] (a) [**1.3.4]에 의해, [$\Delta\vdash p] 및 [$\Sigma_1,p,\Sigma_2\vdash p]가 [$U(S)]에 속하면 [$\Sigma_1,\Delta,\Sigma_2\vdash q]가 [$U(S)]에 속함을 보이면 된다. [$\Delta\vdash p] 및 [$\Sigma_1,p,\Sigma_2\vdash q]가 [$U(S)]에 속하면, [**1.3.1]에 의해 [$S\prec U(S)]이므로 [$\prec]의 정의에 의해 [$\Delta\in S^\ast]이면 [$p\in S]이고, [$\Sigma_1\in S^\ast\land p\in S\land \Sigma_2\in S^\ast]이면 [$q\in S]이다. 그러므로 [$\Sigma_1,\Delta,\Sigma_2\in S^\ast]이면 [$q\in S]임을 알 수 있다. 즉 [**1.3.4]에 의해 [$\Sigma_1,\Delta,\Sigma_2\vdash q\in U(S)]이다. 그러므로 cut이 성립한다.
+]
+
+(b)에서 (d)까지에 대한 증명 방식은 (a)의 증명 방식과 다를 바 없으므로 증명을 생략하였다.
+]
+
+또 몇 가지 문장이 시스템의 성질로부터 항상 [$U^3(S) = U(U(U(S)))]에 속한다.
+
+[>[**1.3.7 정리.] 임의의 [$S\subseteq L]에 대해 다음이 성립한다.
+
+[ul
+	[*] (a) (cp2)
+	[$$\dfrac{\vdash p\Vdash\>\vdash q}{\Vdash p\vdash q}\in U^3(S).]
+]
+
+증명.
+
+[ul
+	[*] (a) [**1.3.4]에 의해, [$\vdash p\Vdash\>\vdash q\in U^2(S)]일 때 [$\Vdash p\vdash q\in U^2(S)]임을 보이면 된다. [$\vdash p\Vdash\>\vdash q\in U^2(S)]이고 [$U(S)\prec U^2(S)]이므로 [$\prec]의 정의에 의해 [$\vdash p\in U(S)]이면 [$\vdash q\in U(S)]이다. 이는 [**1.3.5]에 의해 [$p\in S\to q\in S]와 동치이다. 그러므로 [**1.3.4]에 의해 [$p\vdash q\in U(S)]이다. [**1.3.5]에 의해 [$\Vdash p\vdash q\in U^2(S)]임을 보였다.
+]]
+
+[**1.3.6] 및 [**1.3.7]의 규칙들은 M42/math 코드 상에서도 계층상승구문(가칭) 및 계층하강구문(가칭)을 통해 유도할 수 있다. 이에 관하여는 M42/math 문법에 관한 문서에서 얘기하도록 하자.
