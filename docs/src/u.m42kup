@@ -34,6 +34,13 @@
 증명. [$T]를 [$`T = \{[\vdash p]: p\in S\}`]로 정의하자. [$D(T) = S]임을 보여라. [**3.1]에 의해 [$D(T)\prec U(S)]이므로 [**2.2의1]에 의해 [$D(T) = D(T\cup U(S))]인데, [$S\prec T]이므로 [**3.2]에 의해 [$T\subseteq U(S)]이다. 즉 [$D(U(S)) = S]를 얻는다.
 ]
 
-즉 [$S]가 이행하는 것 중에 가장 큰 것의 [$D] 값 역시 [$S]이다. 그렇다고 [$U(S)]의 임의의 부분집합의 [$D] 값이 [$S]인 것은 아니다. 단 [$D(T) = S]인 어떤 [$T]에 대해, [$T\subseteq V\subseteq U(S)]를 만족하는 [$V]는 [$D(V) = S]이다.
+즉 [$S]가 이행하는 것 중에 가장 큰 것의 [$D] 값 역시 [$S]이다. 그렇다고 [$U(S)]의 임의의 부분집합의 [$D] 값이 [$S]인 것은 아니다. 단 [$D(T) = S]인 어떤 [$T]에 대해, [$T\subseteq V\subseteq U(S)]를 만족하는 [$V]는 [$D(V) = S]이다. 이제 어떤 것이 [$U(S)]에 속하는지 보이자.
+
+[>[**3.4 정리.] 임의의 [$S\subseteq L] 및 [$\Delta\in L^\ast, p\in L]에 대해, [$\Delta\vdash p\in U(S)\leftrightarrow (\Delta\in S^\ast\to p\in S).]
+
+증명. [**3.1]에 의해 [$S\prec U(S)]이므로 정의로부터 [$(\to)]가 성립한다. 그러므로 [$(\leftarrow)]임을 보이자. [$\Delta\in S^\ast\to p\in S]라 하고 [$\Delta\vdash p\in U(S)]임을 보이자. 가정으로부터 [$S\prec\{\Delta\vdash p\}]임을 보여라. 이때 [**3.2]에 의해 [$\{\Delta\vdash p\}\subseteq U(S)], 즉 [$\Delta\vdash p\in U(S)]를 얻는다. 그러므로 [$(\leftarrow)]도 보였다.
+]
+
+즉 [$\Delta\in S^\ast\to p\in S]이면(일 때에만) [$\Delta\vdash p]가 [$U(S)]에 속한다.
 
 (계속)
