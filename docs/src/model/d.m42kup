@@ -49,7 +49,7 @@
 먼저 [$D(T)]가 [$T]를 이행한다는 것부터 보이자.
 [>[**1.2.2 정리.] 임의의 [$T\subseteq M(L)]에 대해 [$D(T)\prec T.]
 
-증명. [$\mathcal S(T)]의 정의로부터 임의의 [$S\in\mathcal S]가 [$S\prec T]를 만족한다. 그러므로 [**1.2.1](b')에 의해 [$D(T) = \bigcap\mathcal S(T)\prec T]이다.]
+증명. [$\mathcal S(T)]의 정의로부터 임의의 [$S\in\mathcal S(T)]가 [$S\prec T]를 만족한다. 그러므로 [**1.2.1](b')에 의해 [$D(T) = \bigcap\mathcal S(T)\prec T]이다.]
 
 [$D(T)]가 [$T]를 이행하는 임의의 [$S\subseteq L]에 포함됨을 밝히는 것은 쉽다.
 
