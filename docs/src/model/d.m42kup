@@ -99,7 +99,7 @@
 [>[**1.2.8 정의.] 임의의 [$p\in L] 및 [$T\subseteq M(L)]에 대하여 [$p]의 [$T]에 의한 [**증명연쇄의 집합] [$P_T(p)]가 다음과 같이 정의된다.
 
 [ul
-	[*] [$P_T^1(p)]가 [$`\{(\varepsilon, [\>\vdash p]):[\>\vdash p]\in T\}`]이다.
+	[*] [$P_T^0(p) = \emptyset]이라 하자.
 	[*] [$P_T^{n+1}(p)]가 어떤 [$\Delta\in L^\ast]에 대해 [$n]번째 집합까지를 사용하여 [$\Delta]를 증명한 것과 [$\Delta\vdash p]의 튜플이다. 즉
 	[$$`\{(\mathbf v, [\Delta\vdash p]):\Delta\in L^\ast\land \mathbf v\in P_T^n(\Delta)\land[\Delta\vdash p]\in T \}`]
 	이다. 단 [$P_T^n(\Delta)]는 [$\Delta = (\delta_1,\ldots,\delta_k)]에 대해 [$P_T^n(\delta_1)\times\cdots\times P_T^n(\delta_k)]를 뜻하며 [$P_T^n(\varepsilon) = \{\varepsilon\}]이다. 즉 [$\delta] 각각에 대한 증명연쇄의 튜플의 집합이다.
@@ -112,18 +112,18 @@
 [$$\dfrac{\dfrac{}{p}\quad \dfrac{\dfrac{}{p}}{q}}{r}]
 이고 위의 정의에 맞게 표현하자면
 [$$`(\langle(\varepsilon, [\>\vdash p]), (\langle(\varepsilon, [\>\vdash p])\rangle, [p\vdash q])\rangle, [p, q\vdash r])`]
-이 된다.
+이 된다. [$P_T^1(p)]는 [$`[\vdash p]`\in T]이면 [$\{(\varepsilon, `[\vdash p]`)\}], 아니면 [$\emptyset]이다.
 
 [$P_T^n(p)]는 [$p]의 증명연쇄 중 길이가 [$n] 이하인 것을 모아 둔 것이다. 그러므로 다음이 성립한다.
 
-[>[**1.2.9 정리.] 임의의 [$n\in\N] 및 [$p\in L]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p).]
+[>[**1.2.9 정리.] 임의의 [$n\in\{0\}\cup\N] 및 [$p\in L]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p).]
 
 증명. [$n]에 대해 수학적 귀납법을 적용하자.
 [ul
-	[*] (base case) [$n = 1]일 때 [$P_T^2(p)]의 정의의 [$\Delta]에 [$\varepsilon]을 넣어 보면 성립함을 알 수 있다.
-	[*] (step case) 어떤 [$n\in\N]에서 임의의 [$p\in L]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p)]라 하자. 이때 [$P_T^{n+1}(p)\subseteq P_T^{n+2}(p)]임을 보일 것이다. [$P_T^{n+1}(p)] 및 [$P_T^{n+2}(p)]의 정의를 비교하라. 가정으로부터, 임의의 [$\Delta\in L^\ast]에 대해 [$\mathbf v\in P_T^n(\Delta) \to \mathbf v\in P_T^{n+1}(\Delta)]이므로 [$P_T^{n+1}(p)\subseteq P_T^{n+2}(p)]임을 보일 수 있다.
+	[*] (base case) [$n = 0]일 때 자명하다.
+	[*] (step case) 어떤 [$n\in\{0\}\cup\N]에서 임의의 [$p\in L]에 대해 [$P_T^n(p)\subseteq P_T^{n+1}(p)]라 하자. 이때 [$P_T^{n+1}(p)\subseteq P_T^{n+2}(p)]임을 보일 것이다. [$P_T^{n+1}(p)] 및 [$P_T^{n+2}(p)]의 정의를 비교하라. 가정으로부터, 임의의 [$\Delta\in L^\ast]에 대해 [$\mathbf v\in P_T^n(\Delta) \to \mathbf v\in P_T^{n+1}(\Delta)]이므로 [$P_T^{n+1}(p)\subseteq P_T^{n+2}(p)]임을 보일 수 있다.
 ]
-그러므로 수학적 귀납법에 의해 임의의 [$n\in\N]에 대해 성립한다.]
+그러므로 수학적 귀납법에 의해 임의의 [$n\in\{0\}\cup\N]에 대해 성립한다.]
 
 [$P_T^n(p)] 집합을 사용하여 몇 가지 재미난 것을 정의할 수도 있겠으나, 일단 그만하겠다. 이제 이제 [$D(T)]의 임의 원소가 증명연쇄를 가짐을 보이자.
 
