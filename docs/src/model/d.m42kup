@@ -101,18 +101,18 @@
 [ul
 	[*] [$P_T^0(p) = \emptyset]이라 하자.
 	[*] [$P_T^{n+1}(p)]가 어떤 [$\Delta\in L^\ast]에 대해 [$n]번째 집합까지를 사용하여 [$\Delta]를 증명한 것과 [$\Delta\vdash p]의 튜플이다. 즉
-	[$$`\{(\mathbf v, [\Delta\vdash p]):\Delta\in L^\ast\land \mathbf v\in P_T^n(\Delta)\land[\Delta\vdash p]\in T \}`]
+	[$$\{(\mathbf v, \underline{\Delta\vdash p}):\Delta\in L^\ast\land \mathbf v\in P_T^n(\Delta)\land\underline{\Delta\vdash p}\in T \}]
 	이다. 단 [$P_T^n(\Delta)]는 [$\Delta = (\delta_1,\ldots,\delta_k)]에 대해 [$P_T^n(\delta_1)\times\cdots\times P_T^n(\delta_k)]를 뜻하며 [$P_T^n(\varepsilon) = \{\varepsilon\}]이다. 즉 [$\delta] 각각에 대한 증명연쇄의 튜플의 집합이다.
 	[*] [$P_T(p)]가 [$\bigcup_{n\in\N}P_T^n(p)]이다.
 ]
 
 증명연쇄의 집합의 임의의 원소가 증명연쇄이다.]
 
-대괄호는 수식의 구별을 위해 친 것이고 큰 의미는 없다. 예를 들어 [$\vdash p] 및 [$p\vdash q] 및 [$p, q\vdash r]이 있다면 [$r]의 증명연쇄는 다이어그램으로 그리자면
+밑줄은 수식의 구별을 위해 친 것이고 큰 의미는 없다. 예를 들어 [$\vdash p] 및 [$p\vdash q] 및 [$p, q\vdash r]이 있다면 [$r]의 증명연쇄는 다이어그램으로 그리자면
 [$$\dfrac{\dfrac{}{p}\quad \dfrac{\dfrac{}{p}}{q}}{r}]
 이고 위의 정의에 맞게 표현하자면
-[$$`(\langle(\varepsilon, [\>\vdash p]), (\langle(\varepsilon, [\>\vdash p])\rangle, [p\vdash q])\rangle, [p, q\vdash r])`]
-이 된다. [$P_T^1(p)]는 [$`[\vdash p]`\in T]이면 [$\{(\varepsilon, `[\vdash p]`)\}], 아니면 [$\emptyset]이다.
+[$$(\langle(\varepsilon, \underline{\vdash p}), (\langle(\varepsilon, \underline{\vdash p})\rangle, \underline{p\vdash q})\rangle, \underline{p, q\vdash r})]
+이 된다. [$P_T^1(p)]는 [$\underline{\vdash p}\in T]이면 [$\{(\varepsilon, \underline{\vdash p})\}], 아니면 [$\emptyset]이다.
 
 [$P_T^n(p)]는 [$p]의 증명연쇄 중 길이가 [$n] 이하인 것을 모아 둔 것이다. 그러므로 다음이 성립한다.
 
@@ -129,7 +129,7 @@
 
 [>[**1.2.10 보조정리.] 임의의 [$p\in D(T)]에 대해, [$p]의 [$T]에 의한 증명연쇄가 존재한다. 즉 [$P_T(p)]가 공집합이 아니다.
 
-증명. 부정하자. 즉 어떤 [$p\in D(T)]에 대해 [$P_T(p)]가 공집합이다. 이때 [**1.2.7]에 의해 [$\Delta\vdash p\in T]인 [$\Delta\in(D(T))^\ast]가 존재한다. 이때 [$\Delta = \varepsilon]이라면 [$`(\varepsilon, [\vdash p])\in P_T^1(p)`]이므로 모순이다. 그러므로 [$\Delta]의 길이는 1 이상이다.
+증명. 부정하자. 즉 어떤 [$p\in D(T)]에 대해 [$P_T(p)]가 공집합이다. 이때 [**1.2.7]에 의해 [$\Delta\vdash p\in T]인 [$\Delta\in(D(T))^\ast]가 존재한다. 이때 [$\Delta = \varepsilon]이라면 [$(\varepsilon, \underline{\vdash p})\in P_T^1(p)]이므로 모순이다. 그러므로 [$\Delta]의 길이는 1 이상이다.
 
 [$\Delta = (\delta_1,\ldots,\delta_k)]라 하자. 모든 [$\delta_i]에 대해 [$P_T(\delta_i)]가 공집합이 아니라고 해 보자. 그렇다면 [$P_T]의 정의와 [**1.2.9]에 의해 어떤 [$n\in\N]에서 모든 [$\delta_i]에 대해 [$P_T^n(\delta_i)]가 공집합이 아닐 것이다. 즉 [$P_T^n(\Delta)]가 공집합이 아니게 되므로 정의로부터 [$P_T^{n+1}(p)]가 공집합이 아니게 되는데, 이는 모순이다. 그러므로 [$P_T(\delta_i)]가 공집합인 [$\delta_i]가 존재한다.
 
