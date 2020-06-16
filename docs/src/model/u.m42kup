@@ -34,7 +34,15 @@
 증명. [$T]를 [$T = \{\underline{\vdash p}: p\in S\}]로 정의하자. [$D(T) = S]임을 보여라. [**1.3.1]에 의해 [$D(T)\prec U(S)]이므로 [**1.2.4]에 의해 [$D(T) = D(T\cup U(S))]인데, [$S\prec T]이므로 [**1.3.2]에 의해 [$T\subseteq U(S)]이다. 즉 [$D(U(S)) = S]를 얻는다.
 ]
 
-즉 [$S]가 이행하는 것 중에 가장 큰 것의 [$D] 값 역시 [$S]이다. 그렇다고 [$U(S)]의 임의의 부분집합의 [$D] 값이 [$S]인 것은 아니다. 단 [$D(T) = S]인 어떤 [$T]에 대해, [$T\subseteq V\subseteq U(S)]를 만족하는 [$V]는 [$D(V) = S]이다. 이제 어떤 것이 [$U(S)]에 속하는지 보이자.
+즉 [$S]가 이행하는 것 중에 가장 큰 것의 [$D] 값 역시 [$S]이다. 그렇다고 [$U(S)]의 임의의 부분집합의 [$D] 값이 [$S]인 것은 아니다. 단 [$D(T) = S]인 어떤 [$T]에 대해, [$T\subseteq V\subseteq U(S)]를 만족하는 [$V]는 [$D(V) = S]이다.
+
+또 다음을 쉽게 보일 수 있다.
+
+[>[**1.3.3의1 따름정리.] 임의의 [$n\in\N]에 대해 [$D^n(U^n(S)) = S.]
+
+증명. 간단히 [$D]와 [$U]의 경계에 [**1.3.3]을 반복 적용하라. 수학적 귀납법을 쓰면 될 것이다.]
+
+이제 어떤 것이 [$U(S)]에 속하는지 보이자.
 
 [>[**1.3.4 정리.] 임의의 [$S\subseteq L] 및 [$\Delta\in L^\ast, p\in L]에 대해, [$\Delta\vdash p\in U(S)\leftrightarrow (\Delta\in S^\ast\to p\in S).] 즉 [$$U(S) = \{\Delta\vdash p:\Delta\in L^\ast\land p\in L\land (\Delta\in S^\ast\to p\in S)\}]이다.
 
@@ -92,8 +100,12 @@
 [ul
 	[*] [$P_\varphi^{n,0}(A)]가 [$A\in S_n]일 때 [$\{(\cdot, A)\}]이고, 아니면 [$\emptyset]이다.
 
-	[*] [$m\geq 1]일 때 [$P_\varphi^{n,m}(A)]가 [$P_\varphi^{n,m,\uarr}(A)\cup P_\varphi^{n,m,\cdot}(A)\cup P_\varphi^{n,m,\darr}(A)]이다.
+	[*] [$m\geq 1]일 때 [$P_\varphi^{n,m}(A)]가 [$P_\varphi^{n,m,\darr}(A)\cup P_\varphi^{n,0}(A)\cup P_\varphi^{n,m,\uarr}(A)]이다.
 	[ul
+		[*] [$P_\varphi^{n,m,\darr}(A)]가
+		[$$\{(\darr, \mathbf v, w): \Delta\in (M^n(L))^\ast\land\mathbf v\in P_\varphi^{n,m-1}(\Delta)\land w\in P_\varphi^{n+1,m-1}(\Delta\vdash A)\}]
+		이다. 단 [$P_\varphi^{n,m-1}(\Delta)]는 [$\Delta=(\delta_1,\ldots,\delta_k)]에 대해 [$P_\varphi^{n,m-1}(\delta_1)\times\cdots\times P_\varphi^{n,m-1}(\delta_k)]를 뜻하며 [$P_\varphi^{n,m-1}(\varepsilon) = \{\varepsilon\}]이다. 즉 [$\delta] 각각에 대한 [$n]계층 증명연쇄의 튜플의 집합이다.
+
 		[*] [$P_\varphi^{n,m,\uarr}(A)]가 [$n=0]일 때 [$\emptyset]이고, [$n\geq 1]일 때
 		[$$\{(\uarr, \Delta, v): A=\underline{\Delta\vdash p}\land v\in P_{\varphi+_n\Delta}^{n-1,m-1}(p)\}]
 		이다. 단 [$\Delta = (\delta_1,\ldots,\delta_i)]일 때
@@ -102,23 +114,17 @@
 			\varphi(k) & \text{otherwise}
 		\end{cases}]
 		이라 하자. 즉 [$\varphi(n)]에 [$\Delta]의 엔트리들을 추가한 것이다.
-
-		[*] [$P_\varphi^{n,m,\cdot}(A)]가 [$A\in S_n]일 때 [$\{(\cdot, A)\}]이고, 아니면 [$\emptyset]이다. 즉 [$P_\varphi^{n,0}(A)]와 같다.
-
-		[*] [$P_\varphi^{n,m,\darr}(A)]가
-		[$$\{(\darr, \mathbf v, w): \Delta\in (M^n(L))^\ast\land\mathbf v\in P_\varphi^{n,m-1}(\Delta)\land w\in P_\varphi^{n+1,m-1}(\Delta\vdash A)\}]
-		이다. 단 [$P_\varphi^{n,m-1}(\Delta)]는 [$\Delta=(\delta_1,\ldots,\delta_k)]에 대해 [$P_\varphi^{n,m-1}(\delta_1)\times\cdots\times P_\varphi^{n,m-1}(\delta_k)]를 뜻하며 [$P_\varphi^{n,m-1}(\varepsilon) = \{\varepsilon\}]이다. 즉 [$\delta] 각각에 대한 [$n]계층 증명연쇄의 튜플의 집합이다.
 	]
 
 	[*] [$P_\varphi^n(A)]가 [$\bigcup_{m\in \{0\}\cup N}P_\varphi^{n,m}(A)]이다.
 ]
 ]
 
-[$S_n' = \{A: P_\varphi^n(A)\ne\emptyset\}]이라 하면, [$(\uarr)] 및 [$(\cdot)] 및 [$(\darr)] 타입의 뜻은 대략 다음을 의도하고 있다.
+[$S_n' = \{A: P_\varphi^n(A)\ne\emptyset\}]이라 하면, [$(\darr)] 및 [$(\cdot)] 및 [$(\uarr)] 타입의 뜻은 대략 다음을 의도하고 있다.
 [ul
-	[*] [$(\uarr)]은 [$\Delta\in(S_n')^\ast]이라 하였을 때 [$p\in S_n']임이 유도되면 [$\Delta\vdash p\in S_{n+1}']이라는 뜻이다.
-	[*] [$(\cdot)]은 [$A\in S_n]이니 [$A\in S_n']이라는 뜻이다.
 	[*] [$(\darr)]은 [$\Delta\in(S_n')^\ast]이고 [$\Delta\vdash p\in S_{n+1}']이니 [$p\in S_n']이라는 뜻이다.
+	[*] [$(\cdot)]은 [$A\in S_n]이니 [$A\in S_n']이라는 뜻이다.
+	[*] [$(\uarr)]은 [$\Delta\in(S_n')^\ast]이라 하였을 때 [$p\in S_n']임이 유도되면 [$\Delta\vdash p\in S_{n+1}']이라는 뜻이다.
 ]
 단계 간 증명연쇄의 관계는 대략 다음과 같다.
 [~~https://i.imgur.com/4VTXFtq.png]
