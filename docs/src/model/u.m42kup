@@ -162,18 +162,16 @@
 증명. [$m]에 대해 수학적 귀납법을 적용하자.
 
 [ul
-	[*] (base case) [$m = 0]일 때 임의의 [$n\in\N_0] 및 [$\varphi]에 대해 [$P_\varphi^{n,0}(A)=P_\varphi^{n,1,\cdot}(A)]이므로 성립한다.
+	[*] (base case) [$m = 0]일 때 임의의 [$n\in\N_0] 및 [$\varphi]에 대해 [$P_\varphi^{n,0}(A)\subseteq P_\varphi^{n,1}(A)]이므로 성립한다.
 	[*] (step case) 어떤 [$m\in\N_0]에 대해 임의의 [$n\in\N_0] 및 [$\varphi]가 [$P_\varphi^{n,m}(A)\subseteq P_\varphi^{n,m+1}(A)]를 만족한다고 하자. 임의의 [$n\in\N_0] 및 [$\varphi]에 대해 [$P_\varphi^{n,m+1}(A)\subseteq P_\varphi^{n,m+2}(A)]임을 보이면 된다. 이는
 	[$$\begin{aligned}
 		(\forall n)(\forall\varphi)(P_\varphi^{n,m+1,\uarr}(A)&\subseteq P_\varphi^{n,m+2,\uarr}(A)),&\qquad(1) \\
-		(\forall n)(\forall\varphi)(P_\varphi^{n,m+1,\cdot}(A)&\subseteq P_\varphi^{n,m+2,\cdot}(A)),&(2) \\
-		(\forall n)(\forall\varphi)(P_\varphi^{n,m+1,\darr}(A)&\subseteq P_\varphi^{n,m+2,\darr}(A))&(3)
+		(\forall n)(\forall\varphi)(P_\varphi^{n,m+1,\darr}(A)&\subseteq P_\varphi^{n,m+2,\darr}(A))&(2)
 	\end{aligned}]
 	임을 보이면 따라 온다.
 	[ul
 		[*] (1) [$P_\varphi^{n,m+1,\uarr}(A)]와 [$P_\varphi^{n,m+2,\uarr}(A)]의 정의를 비교하라. [$n=0]일 때 성립하고, [$n\geq 1]일 때 가정으로부터 [$P_{\varphi+_n\Delta}^{n-1,m}(p)\subseteq P_{\varphi+_n\Delta}^{n-1,m+1}(p)]이므로 [$P_\varphi^{n,m+1,\uarr}(A)\subseteq P_\varphi^{n,m+2,\uarr}(A)]가 된다.
-		[*] (2) 정의로부터 [$P_\varphi^{n,m+1,\cdot}(A)= P_\varphi^{n,m+2,\cdot}(A)=P_\varphi^{n,0}(A)]이다.
-		[*] (3) [$P_\varphi^{n,m+1,\darr}(A)]와 [$P_\varphi^{n,m+2,\darr}(A)]의 정의를 비교하라. 가정으로부터 [$P_\varphi^{n,m}(\Delta)\subseteq P_\varphi^{n,m+1}(\Delta)] 및 [$P_\varphi^{n+1,m}(\Delta\vdash A)\subseteq P_\varphi^{n+1,m+1}(\Delta\vdash A)]이므로 [$P_\varphi^{n,m+1,\darr}(A)\subseteq P_\varphi^{n,m+2,\darr}(A)]가 된다.
+		[*] (2) [$P_\varphi^{n,m+1,\darr}(A)]와 [$P_\varphi^{n,m+2,\darr}(A)]의 정의를 비교하라. 가정으로부터 [$P_\varphi^{n,m}(\Delta)\subseteq P_\varphi^{n,m+1}(\Delta)] 및 [$P_\varphi^{n+1,m}(\Delta\vdash A)\subseteq P_\varphi^{n+1,m+1}(\Delta\vdash A)]이므로 [$P_\varphi^{n,m+1,\darr}(A)\subseteq P_\varphi^{n,m+2,\darr}(A)]가 된다.
 	]
 	그러므로 [$P_\varphi^{n,m+1}(A)\subseteq P_\varphi^{n,m+2}(A)]임이 유도된다.
 ]]
