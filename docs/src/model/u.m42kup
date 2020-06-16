@@ -107,13 +107,13 @@
 		이다. 단 [$P_\varphi^{n,m-1}(\Delta)]는 [$\Delta=(\delta_1,\ldots,\delta_k)]에 대해 [$P_\varphi^{n,m-1}(\delta_1)\times\cdots\times P_\varphi^{n,m-1}(\delta_k)]를 뜻하며 [$P_\varphi^{n,m-1}(\varepsilon) = \{\varepsilon\}]이다. 즉 [$\delta] 각각에 대한 [$n]계층 증명연쇄의 튜플의 집합이다.
 
 		[*] [$P_\varphi^{n,m,\uarr}(A)]가 [$n=0]일 때 [$\emptyset]이고, [$n\geq 1]일 때
-		[$$\{(\uarr, \Delta, v): A=\underline{\Delta\vdash p}\land v\in P_{\varphi+_n\Delta}^{n-1,m-1}(p)\}]
+		[$$\{(\uarr, \Delta, v): A=\underline{\Delta\vdash p}\land v\in P_{\varphi+_{n-1}\Delta}^{n-1,m-1}(p)\}]
 		이다. 단 [$\Delta = (\delta_1,\ldots,\delta_i)]일 때
-		[$$(\varphi+_n\Delta)(k) = \begin{cases}
-			\varphi(k)\cup\{\delta_1,\ldots,\delta_i\}&\text{if }k=n\\
+		[$$(\varphi+_{n-1}\Delta)(k) = \begin{cases}
+			\varphi(k)\cup\{\delta_1,\ldots,\delta_i\}&\text{if }k=n-1\\
 			\varphi(k) & \text{otherwise}
 		\end{cases}]
-		이라 하자. 즉 [$\varphi(n)]에 [$\Delta]의 엔트리들을 추가한 것이다.
+		이라 하자. 즉 [$\varphi(n-1)]에 [$\Delta]의 엔트리들을 추가한 것이다.
 	]
 
 	[*] [$P_\varphi^n(A)]가 [$\bigcup_{m\in \{0\}\cup N}P_\varphi^{n,m}(A)]이다.
@@ -124,7 +124,7 @@
 [ul
 	[*] [$(\darr)]은 [$\Delta\in(S_n')^\ast]이고 [$\Delta\vdash p\in S_{n+1}']이니 [$p\in S_n']이라는 뜻이다.
 	[*] [$(\cdot)]은 [$A\in S_n]이니 [$A\in S_n']이라는 뜻이다.
-	[*] [$(\uarr)]은 [$\Delta\in(S_n')^\ast]이라 하였을 때 [$p\in S_n']임이 유도되면 [$\Delta\vdash p\in S_{n+1}']이라는 뜻이다.
+	[*] [$(\uarr)]은 [$\Delta\in(S_{n-1}')^\ast]이라 하였을 때 [$p\in S_{n-1}']임이 유도되면 [$\Delta\vdash p\in S_n']이라는 뜻이다.
 ]
 단계 간 증명연쇄의 관계는 대략 다음과 같다.
 [~~https://i.imgur.com/4VTXFtq.png]
@@ -170,10 +170,44 @@
 	\end{aligned}]
 	임을 보이면 따라 온다.
 	[ul
-		[*] (1) [$P_\varphi^{n,m+1,\uarr}(A)]와 [$P_\varphi^{n,m+2,\uarr}(A)]의 정의를 비교하라. [$n=0]일 때 성립하고, [$n\geq 1]일 때 가정으로부터 [$P_{\varphi+_n\Delta}^{n-1,m}(p)\subseteq P_{\varphi+_n\Delta}^{n-1,m+1}(p)]이므로 [$P_\varphi^{n,m+1,\uarr}(A)\subseteq P_\varphi^{n,m+2,\uarr}(A)]가 된다.
+		[*] (1) [$P_\varphi^{n,m+1,\uarr}(A)]와 [$P_\varphi^{n,m+2,\uarr}(A)]의 정의를 비교하라. [$n=0]일 때 성립하고, [$n\geq 1]일 때 가정으로부터 [$P_{\varphi+_{n-1}\Delta}^{n-1,m}(p)\subseteq P_{\varphi+_{n-1}\Delta}^{n-1,m+1}(p)]이므로 [$P_\varphi^{n,m+1,\uarr}(A)\subseteq P_\varphi^{n,m+2,\uarr}(A)]가 된다.
 		[*] (2) [$P_\varphi^{n,m+1,\darr}(A)]와 [$P_\varphi^{n,m+2,\darr}(A)]의 정의를 비교하라. 가정으로부터 [$P_\varphi^{n,m}(\Delta)\subseteq P_\varphi^{n,m+1}(\Delta)] 및 [$P_\varphi^{n+1,m}(\Delta\vdash A)\subseteq P_\varphi^{n+1,m+1}(\Delta\vdash A)]이므로 [$P_\varphi^{n,m+1,\darr}(A)\subseteq P_\varphi^{n,m+2,\darr}(A)]가 된다.
 	]
 	그러므로 [$P_\varphi^{n,m+1}(A)\subseteq P_\varphi^{n,m+2}(A)]임이 유도된다.
 ]]
 
 직관적으로 생각해 보자면 [$P_\varphi^{n,m}(A)]가 [$P_\varphi^{n,0}(A)]로부터 만들어지듯 [$P_\varphi^{n,m+1}(A)]이 [$P_\varphi^{n,1}(A)]로부터 만들어지는데, [$P_\varphi^{n,0}(A)\subseteq P_\varphi^{n,1}(A)]이므로 [$P_\varphi^{n,m+1}(A)]가 [$P_\varphi^{n,m}(A)]보다 더 많은 증명연쇄를 포함하게 될 것이다. 좀 더 강력한 정리를 만들 수도 있을 듯하다.
+
+유용한 것을 하나 정의해 보자.
+
+[>[**1.3.10 정의.] [$\varphi]의 [**차수](order) [$\operatorname{ord}\varphi]를 [$\varphi(n)\ne\emptyset]인 최대 [$n\in\N_0]로 정의한다. 단 [$\varphi(n)\ne\emptyset]인 [$n]이 없을 때는 [$-1]이고, 그렇지 않고 [$n]의 최댓값이 없을 경우 [$\infty]이다.]
+
+[$n>\operatorname{ord}\varphi]일 때 [$\varphi(n)=\emptyset]임을 알 수 있다. 이제 다음을 보이자.
+
+[>[**1.3.11 정리.] [$Q_\varphi^{n,m} = \{A\in M^n(L):P_\varphi^{n,m}(A)\ne\emptyset\}]이라 하자. 임의의 [$n\in\N_0] 및 [$\varphi] 및 정수 [$i, j]에 대해 [$n = \operatorname{ord}\varphi] 및 [$0\leq j<i]일 때 [$Q_\varphi^{n+i,j}=\emptyset]이다.
+
+증명. [$j]에 수학적 귀납법을 적용하자. 0부터 하면 된다.
+
+[ul
+	[*] (base case) [$j=0]이다. [$n=\operatorname{ord}\varphi]이고 [$i> 0]일 때 [$Q_\varphi^{n+i,0}=\emptyset]임을 보이면 되는데, 이는 임의의 [$A\in M^{n+i}(L)]에 대해 [$P_\varphi^{n+i,0}(A)=\emptyset]이라는 뜻이다. 이는 [$\operatorname{ord}\varphi = n]으로부터 [$\varphi(n+i)=\emptyset]이므로 정의로부터 그렇게 된다.
+	[*] (step case) 어떤 [$j\in\N_0] 및 임의의 [$n\in\N_0, \varphi], 정수 [$i]에 대해 [$n=\operatorname{ord}\varphi] 및 [$0\leq j<i]일 때 [$Q_\varphi^{n+i,j}=\emptyset]이라 하자. 이때 [$k>j+1]인 임의의 정수 [$k] 및 [$n\in\N_0,\varphi]에 대해 [$Q_\varphi^{n+k,j+1}=\emptyset]임을 보이면 되는데, 이는 임의의 [$A\in M^{n+k}(L)]에 대해 [$P_\varphi^{n+k,j+1}(A)=\emptyset]이라는 뜻이다. 이는 다음과 같이 보일 수 있다.
+
+	[ul
+		[*] [$P_\varphi^{n+k,j+1,\darr}(A)]는 [$Q_\varphi^{n+k+1,j}=\emptyset]이므로 [$\emptyset]이다.
+		[*] [$P_\varphi^{n+k,0}(A)]는 [$\operatorname{ord}\varphi = n]이므로 [$\emptyset]이다.
+		[*] [$P_\varphi^{n+k,j+1,\uarr}(A)]는 [$Q_{\varphi+_{n+k-1}\Delta}^{n+k-1,j}=\emptyset]이므로 [$\emptyset]이다.
+	]
+
+	즉 [$Q_\varphi^{n+k,j+1}=\emptyset]이다.
+]
+
+즉 수학적 귀납법으로부터 정리가 유도된다.]
+
+직관적으로, 각 단계마다 계층을 최대 하나씩만 이동할 수 있으므로 [$n]계층에 있는 것이 [$n+k]계층까지 가려면 최소 [$k] 단계를 거쳐야 하므로 [**1.3.11]과 같은 정리가 성립한다. 표로 그려 보자면 대충 다음과 같다.
+
+[table
+	[$(n, 0)] [*] [$(n+1, 0)] (비어 있음) [*] [$(n+2, 0)] (비어 있음) [*] [$(n+3, 0)] (비어 있음) [**]
+	[$(n, 1)] [*] [$(n+1, 1)] [*] [$(n+2,1)] (비어 있음) [*] [$(n+3,1)] (비어 있음) [**]
+	[$(n, 2)] [*] [$(n+1, 2)] [*] [$(n+2,2)] [*] [$(n+3, 2)] (비어 있음) [**]
+	[$(n, 3)] [*] [$(n+1, 3)] [*] [$(n+2,3)] [*] [$(n+3, 3)]
+]
