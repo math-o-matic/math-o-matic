@@ -116,7 +116,7 @@
 		이라 하자. 즉 [$\varphi(n-1)]에 [$\Delta]의 엔트리들을 추가한 것이다.
 	]
 
-	[*] [$P_\varphi^n(A)]가 [$\bigcup_{m\in \{0\}\cup N}P_\varphi^{n,m}(A)]이다.
+	[*] [$P_\varphi^n(A)]가 [$\bigcup_{m\in \{0\}\cup\N}P_\varphi^{n,m}(A)]이다. 또 [$P_\varphi^{n,\uarr}(A)=\bigcup_{m\in\N}P_\varphi^{n,m,\uarr}(A)] 및 [$P_\varphi^{n,\darr}(A)=\bigcup_{m\in\N}P_\varphi^{n,m,\darr}(A)]라 하자.
 ]
 ]
 
@@ -211,3 +211,19 @@
 	[$(n, 2)] [*] [$(n+1, 2)] [*] [$(n+2,2)] [*] [$(n+3, 2)] (비어 있음) [**]
 	[$(n, 3)] [*] [$(n+1, 3)] [*] [$(n+2,3)] [*] [$(n+3, 3)]
 ]
+
+[>[**1.3.12 정리.] 임의의 [$n\in\N_0] 및 [$\varphi]에 대해 [$n\geq\operatorname{ord}\varphi]일 때 [$Q_\varphi^{n,\darr}\subseteq Q_\varphi^{n,0}\cup Q_\varphi^{n,\uarr}].
+
+증명. [$Q_\varphi^{n,\darr}\subseteq Q_\varphi^{n,0}\cup Q_\varphi^{n,\uarr}]은, 임의의 [$A\in M^n(L)]에 대해 [$P_\varphi^{n,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]이라는 것과 동치이다. 먼저 임의의 [$n\in\N_0] 및 [$m\in\N] 및 [$\varphi] 및 [$A\in M^n(L)]에 대해 [$n\geq\operatorname{ord}\varphi]이고 [$P_\varphi^{n,m,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]임을 보이자. [$m]에 대해 수학적 귀납법을 적용하자.
+
+[ul
+	[*] (base case) [$m=1]이다. [$Q_\varphi^{n+1, 0}=\emptyset]이므로 [$P_\varphi^{n,m,\darr}(A)=\emptyset]이다. 전건 부정이므로 성립한다.
+
+	[*] (step case) 어떤 [$m\in\N]에 대해, 임의의 [$n\in\N_0] 및 [$\varphi] 및 [$A\in M^n(L)]에 대해 [$n\geq\operatorname{ord}\varphi]이고 [$P_\varphi^{n,m,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]이라 하자. 이때 [$P_\varphi^{n,m+1,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]임을 보일 것이다. [$P_\varphi^{n,m+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Delta\in M^n(L)]에 대해 [$\mathbf v\in P_\varphi^{n,m}(\Delta)] 및 [$w\in P_\varphi^{n+1,m}(\Delta\vdash A)]가 존재한다. 이때 [$n\geq\operatorname{ord}\varphi]로부터 [$P_\varphi^{n+1,0}(\Delta\vdash A)=\emptyset]이므로 [$w\in P_\varphi^{n+1,m,\darr}(\Delta\vdash A)] 또는 [$w\in P_\varphi^{n+1,m,\uarr}(\Delta\vdash A)]이다. 각각의 경우에 대해 증명하자.
+
+	[ul
+		[*] [$w\in P_\varphi^{n+1,m,\darr}(\Delta\vdash A)]인 경우, [$n+1\geq\operatorname{ord}\varphi]이므로 가정으로부터 [$P_\varphi^{n+1,0}(\Delta\vdash A)\cup P_\varphi^{n+1,\uarr}(\Delta\vdash A)\ne\emptyset]이 된다. 이때 [$P_\varphi^{n+1,0}(\Delta\vdash A)=\emptyset]이므로 어떤 [$w']이 [$P_\varphi^{n+1,\uarr}(\Delta\vdash A)]에 속한다. 그러므로 어떤 [$m'\in\N]에 대해 [$w'\in P_\varphi^{n+1,m',\uarr}(\Delta\vdash A)]이다. 그러므로 [$u\in P_{\varphi+_n\Delta}^{n,m'-1}(A)]인 [$u]가 존재한다. 그런데 [$\mathbf v\in P_\varphi^{n,m}(\Delta)]이므로 [$u'\in P_\varphi^n(A)]인 [$u']가 존재할 것 같다. 그래서?
+
+		[*] [$w\in P_\varphi^{n+1,m,\uarr}(\Delta\vdash A)]인 경우, [$w\in P_\varphi^{n+1,\uarr}(\Delta\vdash A)]이므로 위에서 [$w']에 적용한 논리를 적용하면 된다.
+	]
+]]
