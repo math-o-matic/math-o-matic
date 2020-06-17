@@ -143,11 +143,17 @@
 
 	가 된다.
 	
-	[*]아무 것도 없을 때 [$p\vdash p]도 해 보자면
+	[*] 아무 것도 없을 때 [$p\vdash p]도 해 보자면
 
 	[$$(\uarr, \langle p_0\rangle, \overline p_0)_1]
 
 	가 된다. [$(\uarr)]에 의해 [$p]가 [$\varphi(0)]에 추가되어 [$\overline p]를 할 수 있다.
+
+	[*] cp2도 해 보자면
+
+	[$$(\uarr, \langle\underline{\vdash p\Vdash\>\vdash q}_2\rangle, (\uarr, \varepsilon, (\uarr, \langle p_0\rangle, (\darr,\varepsilon,(\darr,\langle(\uarr, \varepsilon, \overline p_0)_1\rangle, \overline{\vdash p\Vdash\>\vdash q}_2)_1)_0)_1)_2)_3]
+
+	가 된다.
 ]
 
 [$P_\varphi^{n,m}(A)]는 길이가 [$m] 이하인 증명연쇄를 모아 둔 것일 듯하다. 그러므로 다음이 성립한다.
