@@ -185,39 +185,46 @@
 
 [$n>\operatorname{ord}\varphi]일 때 [$\varphi(n)=\emptyset]임을 알 수 있다.
 
-[>[**1.3.10의1 정의.] [$Q_\varphi^n]를 [$\{A\in M^n(L): P_\varphi^n(A)\ne\emptyset\}]이라 정의하자. 비슷하게 [$Q_\varphi^{n, m}] 및 [$Q_\varphi^{n, m, \uarr}] 및 [$Q_\varphi^{n, m, \darr}] 및 [$Q_\varphi^{n, \uarr}] 및 [$Q_\varphi^{n, \darr}]을 정의하자.]
+[>[**1.3.10의1 정의.] [$Q_\varphi^n]를 [$\{A\in M^n(L): P_\varphi^n(A)\ne\emptyset\}]이라 정의하자. 비슷하게 [$Q_\varphi^{n, m}] 및 [$Q_\varphi^{n, m, \uarr}] 및 [$Q_\varphi^{n, m, \darr}] 및 [$Q_\varphi^{n, \uarr}] 및 [$Q_\varphi^{n, \darr}]을 정의하자. 또
+[$$\mathbf Q_\varphi
+	= \prod_{n\in\N_0}\mathcal P(Q_\varphi^n)
+	= \{\psi: \psi(n)\subseteq Q_\varphi^n\text{ for all }n\in\N_0\}]
+이라 하자.]
 
-즉 증명연쇄가 있는 것들의 집합이라 할 수 있다. [$Q_\varphi^n=\emptyset]이면 임의의 [$A\in M^n(L)]에 대해 [$P_\varphi^n(A)=\emptyset]임을 알 수 있다. 다음을 보이자.
+즉 증명할 수 있는 것들의 집합이라 할 수 있다. [$Q_\varphi^n=\emptyset]이면 임의의 [$A\in M^n(L)]에 대해 [$P_\varphi^n(A)=\emptyset]임을 알 수 있다. 다음을 보이자.
 
-[>[**1.3.11 정리.] 임의의 [$n,m\in\N_0] 및 [$\varphi] 및 [$\Delta\in(M^n(L))^\ast]에 대해, [$P_\varphi^n(\Delta)\ne\emptyset]이면 [$Q_{\varphi+_n\Delta}^m=Q_\varphi^m]이다.
+[>[**1.3.11 정리.] 임의의 [$\varphi], [$\psi]에 대해, [$\psi\in\mathbf Q_\varphi]이면 [$\mathbf Q_{\varphi+\psi}=\mathbf Q_\varphi]이다.
 
-증명. [$Q_\varphi^m\subseteq Q_{\varphi+_n\Delta}^m]임은 간단하므로 [$Q_{\varphi+_n\Delta}^m\subseteq Q_\varphi^m]임을 증명하자. 이는 임의의 [$A\in M^m(L)]에 대해 [$P_{\varphi+_n\Delta}^m(A)\ne\emptyset]이면 [$P_\varphi^m(A)\ne\emptyset]이라는 뜻이다. 먼저 임의의 [$k\in\N_0]에 대해, [$P_\varphi^n(\Delta)\ne\emptyset] 및 [$P_{\varphi+_n\Delta}^{m,k}(A)\ne\emptyset]이면 [$P_\varphi^m(A)\ne\emptyset]임을 보이자. [$k]에 수학적 귀납법을 적용하자.
+증명. [$\mathbf Q_\varphi\subseteq\mathbf Q_{\varphi+\psi}]임은 간단하므로 [$\mathbf Q_{\varphi+\psi}\subseteq\mathbf Q_\varphi]임을 보이자. 이는 임의의 [$n\in\N_0] 및 [$A\in M^n(L)]에 대해 [$P_{\varphi+\psi}^n(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]이라는 뜻이다. 먼저 임의의 [$k\in\N_0]에 대해, [$\psi\in\mathbf Q_\varphi] 및 [$P_{\varphi+\psi}^{n,k}(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]임을 보이자. [$k]에 수학적 귀납법을 적용하자.
 
 [ul
-	[*] (base case) [$P_\varphi^n(\Delta)\ne\emptyset] 및 [$P_{\varphi+_n\Delta}^{m,0}(A)\ne\emptyset]이라 하자. [$P_\varphi^m(A)\ne\emptyset]을 유도하면 된다.
-	[ul
-		[*] [$n\ne m]이면 [$P_{\varphi+_n\Delta}^{m,0}(A)=P_\varphi^{m,0}(A)\subseteq P_\varphi^m(A)]이므로 [$P_\varphi^m(A)\ne\emptyset]임이 유도된다.
-		[*] [$n=m]이면 [$A\in\varphi(n)]이거나 [$A]가 [$\Delta]의 엔트리 중에 있다.
-		[ul
-			[*] [$A\in\varphi(n)]이면 [$P_\varphi^{m,0}(A)\ne\emptyset]이므로 [$P_\varphi^m(A)\ne\emptyset]임이 유도된다.
-			[*] [$A]가 [$\Delta]의 엔트리 중에 있다면 [$P_\varphi^n(\Delta)\ne\emptyset]으로부터 [$P_\varphi^n(A)\ne\emptyset]이 유도된다.
-		]
-	]
-	[*] (step case) [$P_\varphi^n(\Delta)\ne\emptyset] 및 [$P_{\varphi+_n\Delta}^{m,k}(A)\ne\emptyset]이면 [$P_\varphi^m(A)\ne\emptyset]이라 하자. 이제 [$P_\varphi^n(\Delta)\ne\emptyset] 및 [$P_{\varphi+_n\Delta}^{m,k+1}(A)\ne\emptyset]으로부터 [$P_\varphi^m(A)\ne\emptyset]을 유도하자. 이때 [$$P_{\varphi+_n\Delta}^{m,k+1}(A)=P_{\varphi+_n\Delta}^{m,k+1,\darr}(A)\cup P_{\varphi+_n\Delta}^{m,0}(A)\cup P_{\varphi+_n\Delta}^{m,k+1,\uarr}(A)]임에 주목하라. 즉 좌변이 공집합이 아니면 우변의 세 개 중 하나는 공집합이 아니다.
-	[ul
-		[*] [$P_{\varphi+_n\Delta}^{m,k+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Sigma\in(M^m(L))^\ast]에 대해 [$P_{\varphi+_n\Delta}^{m,k}(\Sigma)\ne\emptyset] 및 [$P_{\varphi+_n\Delta}^{m+1,k}(\Sigma\vdash A)\ne\emptyset]이다. 즉 가정으로부터 [$P_\varphi^m(\Sigma)\ne\emptyset] 및 [$P_\varphi^{m+1}(\Sigma\vdash A)\ne\emptyset]이다. 이때 [**1.3.9]에 의해 [$(\darr)]을 하여 [$P_\varphi^m(A)\ne\emptyset]을 얻을 수 있다.
+	[*] (base case) [$\psi\in\mathbf Q_\varphi] 및 [$P_{\varphi+\psi}^{n,0}(A)\ne\emptyset]이라 하자. [$P_\varphi^n(A)\ne\emptyset]을 유도하면 된다. [$\psi\in\mathbf Q_\varphi]로부터 [$\psi(n)\subseteq Q_\varphi^n]이다. 또 [$P_{\varphi+\psi}^{n,0}(A)\ne\emptyset]으로부터 [$A\in\varphi(n)\cup\psi(n)]이다. [$A\in\varphi(n)]이면 [$P_\varphi^{n,0}(A)\ne\emptyset]이 바로 유도되고, [$A\in\psi(n)]이면 [$A\in Q_\varphi^n]이므로 즉 [$P_\varphi^n(A)\ne\emptyset]이다.
 
-		[*] [$P_{\varphi+_n\Delta}^{m,0}(A)\ne\emptyset]이면 base case에서 보였듯 [$P_\varphi^m(A)\ne\emptyset]이다.
+	[*] (step case) [$\psi\in\mathbf Q_\varphi] 및 [$P_{\varphi+\psi}^{n,k}(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]이라 하자. 이제 [$\psi\in\mathbf Q_\varphi] 및 [$P_{\varphi+\psi}^{n,k+1}(A)\ne\emptyset]으로부터 [$P_\varphi^n(A)\ne\emptyset]을 유도하자. 이때
+	
+	[$$P_{\varphi+\psi}^{n,k+1}(A)=P_{\varphi+\psi}^{n,k+1,\darr}(A)\cup P_{\varphi+\psi}^{n,0}(A)\cup P_{\varphi+\psi}^{n,k+1,\uarr}(A)]
 
-		[*] [$P_{\varphi+_n\Delta}^{m,k+1,\uarr}(A)\ne\emptyset]이면 일단 [$m\geq 1]이다. 즉 [$A]가 [$\Gamma\vdash B] 형태이며 [$P_{\varphi+_n\Delta+_{m-1}\Gamma}^{m-1,k}(B)\ne\emptyset]이다. 즉 [$P_{(\varphi+_{m-1}\Gamma)+_n\Delta}^{m-1,k}(B)] 및 [$P_{\varphi+_{m-1}\Gamma}^n(\Delta)]가 공집합이 아니므로, 가정으로부터 [$P_{\varphi+_{m-1}\Gamma}^{m-1}(B)\ne\emptyset]이다. [$(\uarr)]을 하면 [$P_\varphi^m(\Sigma\vdash B)=P_\varphi^m(A)\ne\emptyset]을 얻는다.
+	임에 주목하라. 즉 좌변이 공집합이 아니면 우변의 세 개 중 하나는 공집합이 아니다.
+	[ul
+		[*] [$P_{\varphi+\psi}^{n,k+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Sigma\in(M^n(L))^\ast]에 대해 [$P_{\varphi+\psi}^{n,k}(\Sigma)\ne\emptyset] 및 [$P_{\varphi+\psi}^{n+1,k}(\Sigma\vdash A)\ne\emptyset]이다. 즉 가정으로부터 [$P_\varphi^n(\Sigma)\ne\emptyset] 및 [$P_\varphi^{n+1}(\Sigma\vdash A)\ne\emptyset]이다. 이때 [**1.3.9]에 의해 [$(\darr)]을 하여 [$P_\varphi^n(A)\ne\emptyset]을 얻을 수 있다.
+
+		[*] [$P_{\varphi+\psi}^{n,0}(A)\ne\emptyset]이면 base case에서 보였듯 [$P_\varphi^n(A)\ne\emptyset]이다.
+
+		[*] [$P_{\varphi+\psi}^{n,k+1,\uarr}(A)\ne\emptyset]이면 일단 [$n\geq 1]이다. 즉 [$A]가 [$\Gamma\vdash B] 형태이며 [$P_{\varphi+\psi+_{n-1}\Gamma}^{n-1,k}(B)\ne\emptyset]이다. 즉 [$P_{(\varphi+_{n-1}\Gamma)+\psi}^{n-1,k}(B)]가 공집합이 아니고 [$\psi\in\mathbf Q_{\varphi+_{n-1}\Gamma}]이므로, 가정으로부터 [$P_{\varphi+_{n-1}\Gamma}^{n-1}(B)\ne\emptyset]이다. [$(\uarr)]을 하면 [$P_\varphi^n(\Gamma\vdash B)=P_\varphi^n(A)\ne\emptyset]을 얻는다.
 	]
-	그러므로 [$P_\varphi^m(A)\ne\emptyset]이 유도된다.
+	그러므로 [$P_\varphi^n(A)\ne\emptyset]이 유도된다.
 ]
 
-즉 [$P_\varphi^n(\Delta)\ne\emptyset]일 때 임의의 [$k\in\N_0]에 대해 [$P_{\varphi+_n\Delta}^{m,k}(A)\ne\emptyset]이면 [$P_\varphi^m(A)\ne\emptyset]이다. 그런데 [$P_{\varphi+_n\Delta}^m(A)\ne\emptyset]이면 어떤 [$k\in\N_0]에 대해 [$P_{\varphi+_n\Delta}^{m,k}(A)\ne\emptyset]이다. 즉 임의의 [$A\in M^m(L)]에 대해 [$P_{\varphi+_n\Delta}^m(A)\ne\emptyset]이면 [$P_\varphi^m(A)\ne\emptyset]인데, 이는 [$Q_{\varphi+_n\Delta}^m\subseteq Q_\varphi^m]을 뜻하므로 정리가 증명되었다.
+즉 [$\psi\in\mathbf Q_\varphi]일 때 임의의 [$k\in\N_0]에 대해 [$P_{\varphi+\psi}^{n,k}(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]이다. 그런데 [$P_{\varphi+\psi}^n(A)\ne\emptyset]이면 어떤 [$k\in\N_0]에 대해 [$P_{\varphi+\psi}^{n,k}(A)\ne\emptyset]이다. 즉 임의의 [$n\in\N_0] 및 [$A\in M^n(L)]에 대해 [$P_{\varphi+\psi}^n(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]인데, 이는 [$\mathbf Q_{\varphi+\psi}\subseteq\mathbf Q_\varphi]를 뜻하므로 정리가 증명되었다.
 ]
 
-즉 [$\varphi]가 [$\Delta]를 증명할 수 있다면 [$\varphi+_n\Delta]가 증명할 수 있는 것은 [$\varphi]만 써서 증명할 수 있다는 뜻이다.
+즉 [$\varphi]가 [$\psi]를 증명할 수 있다면 [$\varphi+\psi]가 증명할 수 있는 것과 [$\varphi]가 증명할 수 있는 것이 같다는 것이다.
+
+[>[**1.3.11의1 따름정리.] [$\varphi\in\mathbf Q_\psi] 및 [$\psi\in\mathbf Q_\varphi]이면 [$\mathbf Q_\varphi = \mathbf Q_\psi].
+
+증명 생략.]
+
+즉 두 공리계가 서로의 공리를 증명할 수 있다면 두 공리계가 증명할 수 있는 것이 똑같다는 뜻이다.
 
 또 다음을 보이자.
 
@@ -253,12 +260,12 @@
 
 [>[**1.3.13 정리.] 임의의 [$n\in\N_0] 및 [$\varphi]에 대해 [$n\geq\operatorname{ord}\varphi]일 때 [$Q_\varphi^{n,\darr}\subseteq Q_\varphi^{n,0}\cup Q_\varphi^{n,\uarr}].
 
-증명. [$Q_\varphi^{n,\darr}\subseteq Q_\varphi^{n,0}\cup Q_\varphi^{n,\uarr}]은, 임의의 [$A\in M^n(L)]에 대해 [$P_\varphi^{n,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]이라는 것과 동치이다. 먼저 임의의 [$n\in\N_0] 및 [$m\in\N] 및 [$\varphi] 및 [$A\in M^n(L)]에 대해 [$n\geq\operatorname{ord}\varphi]이고 [$P_\varphi^{n,m,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]임을 보이자. [$m]에 대해 수학적 귀납법을 적용하자.
+증명. [$Q_\varphi^{n,\darr}\subseteq Q_\varphi^{n,0}\cup Q_\varphi^{n,\uarr}]은, 임의의 [$A\in M^n(L)]에 대해 [$P_\varphi^{n,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]이라는 것과 동치이다. 먼저 임의의 [$m\in\N]에 대해 [$n\geq\operatorname{ord}\varphi]이고 [$P_\varphi^{n,m,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]임을 보이자. [$m]에 대해 수학적 귀납법을 적용하자.
 
 [ul
-	[*] (base case) [$m=1]이다. [$Q_\varphi^{n+1, 0}=\emptyset]이므로 [$P_\varphi^{n,m,\darr}(A)=\emptyset]이다. 전건 부정이므로 성립한다.
+	[*] (base case) [$m=1]이다. [$Q_\varphi^{n+1, 0}=\emptyset]이므로 [$P_\varphi^{n,1,\darr}(A)=\emptyset]이다. 전건 부정이므로 성립한다.
 
-	[*] (step case) 어떤 [$m\in\N]에 대해, 임의의 [$n\in\N_0] 및 [$\varphi] 및 [$A\in M^n(L)]에 대해 [$n\geq\operatorname{ord}\varphi]이고 [$P_\varphi^{n,m,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]이라 하자. 이때 [$P_\varphi^{n,m+1,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]임을 보일 것이다. [$P_\varphi^{n,m+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Delta\in M^n(L)]에 대해 [$\mathbf v\in P_\varphi^{n,m}(\Delta)] 및 [$w\in P_\varphi^{n+1,m}(\Delta\vdash A)]가 존재한다. 이때 [$n\geq\operatorname{ord}\varphi]로부터 [$P_\varphi^{n+1,0}(\Delta\vdash A)=\emptyset]이므로 [$w\in P_\varphi^{n+1,m,\darr}(\Delta\vdash A)] 또는 [$w\in P_\varphi^{n+1,m,\uarr}(\Delta\vdash A)]이다. 각각의 경우에 대해 증명하자.
+	[*] (step case) 어떤 [$m\in\N]에 대해, [$n\geq\operatorname{ord}\varphi]이고 [$P_\varphi^{n,m,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]이라 하자. 이때 [$P_\varphi^{n,m+1,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]임을 보일 것이다. [$P_\varphi^{n,m+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Delta\in M^n(L)]에 대해 [$\mathbf v\in P_\varphi^{n,m}(\Delta)] 및 [$w\in P_\varphi^{n+1,m}(\Delta\vdash A)]가 존재한다. 이때 [$n\geq\operatorname{ord}\varphi]로부터 [$P_\varphi^{n+1,0}(\Delta\vdash A)=\emptyset]이므로 [$w\in P_\varphi^{n+1,m,\darr}(\Delta\vdash A)] 또는 [$w\in P_\varphi^{n+1,m,\uarr}(\Delta\vdash A)]이다. 각각의 경우에 대해 증명하자.
 
 	[ul
 		[*] [$w\in P_\varphi^{n+1,m,\darr}(\Delta\vdash A)]인 경우, [$n+1\geq\operatorname{ord}\varphi]이므로 가정으로부터 [$P_\varphi^{n+1,0}(\Delta\vdash A)\cup P_\varphi^{n+1,\uarr}(\Delta\vdash A)\ne\emptyset]이 된다. 이때 [$P_\varphi^{n+1,0}(\Delta\vdash A)=\emptyset]이므로 어떤 [$w']이 [$P_\varphi^{n+1,\uarr}(\Delta\vdash A)]에 속한다. 그러므로 어떤 [$m'\in\N]에 대해 [$w'\in P_\varphi^{n+1,m',\uarr}(\Delta\vdash A)]이다. 그러므로 [$u\in P_{\varphi+_n\Delta}^{n,m'-1}(A)]인 [$u]가 존재한다. 이때 [$\operatorname{ord}(\varphi+_n\Delta)=n]이므로 가정으로부터 [$P_{\varphi+_n\Delta}^{n,0}(A)\cup P_{\varphi+_n\Delta}^{n,\uarr}(A)\ne\emptyset]임을 유도할 수 있다.
