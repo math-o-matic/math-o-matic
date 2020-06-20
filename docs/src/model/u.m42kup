@@ -96,7 +96,7 @@
 
 [**1.3.6] 및 [**1.3.7]의 결과로부터 영감을 받아 증명연쇄 얘기를 더 해보자.
 
-[>[**1.3.7 정의.] 어떤 첨수족(indexed family of sets) [$\{A_i\}_{i\in I}]의 곱집합(infinite Cartesian product)은 다음과 같이 정의된다.
+[>[**1.3.7의1 정의.] 어떤 첨수족(indexed family of sets) [$\{A_i\}_{i\in I}]의 곱집합(infinite Cartesian product)은 다음과 같이 정의된다.
 [$$\prod_{i\in I}A_i = \left\{\left.f:I\to\bigcup_{i\in I}A_i\right|(\forall i\in I)(f(i)\in A_i)\right\}.]
 이때 [$\N_0=\{0\}\cup\N]이라 하고 [$\mathbf M(L)]을 다음과 같이 정의하자.
 [$$\mathbf M(L)\coloneqq\prod_{n\in\N_0}\mathcal P(M^n(L)) = \{\varphi\ |\ \varphi(n)\subseteq M^n(L)\text{ for all }n\in\N_0\}.]]
