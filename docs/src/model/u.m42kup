@@ -103,6 +103,36 @@
 
 즉 [$\mathbf M(L)]은 [$\N_0]에서 정의되며 [$\varphi(n)\subseteq M^n(L)]인 함수 [$\varphi]의 집합이다.
 
+[>[**1.3.7의2 정의.] [$\mathbf M(L)] 상에서 [$\mathbf\emptyset]을 다음과 같이 정의하자.
+[$$\mathbf\emptyset(n)=\emptyset\text{ for all }n\in\N_0.]
+또 이항연산 [$+] 및 [$-]를 다음과 같이 정의하자.
+[$$\begin{aligned}
+	(\varphi + \psi)(n) &= \varphi(n)\cup\psi(n)\text{ for all }n\in\N_0, \\
+	(\varphi - \psi)(n) &= \varphi(n)\setminus\psi(n)\text{ for all }n\in\N_0.
+\end{aligned}]
+또 이항관계 [$\leq]를 다음과 같이 정의하자.
+[$$\varphi\leq\psi\lrarr(\forall n\in\N_0)(\varphi(n)\subseteq\psi(n)).]
+]
+
+[>[**1.3.7의3 정리.] 다음이 성립한다.
+
+[ul
+	[*] (a) [$(\mathbf M(L), +)]가 멱등(idempotent)인 가환 모노이드(commutative monoid)이며 [$\mathbf\emptyset]이 그 항등원이다.
+	[*] (b) [$\leq]가 반순서(partial order)이며 [$+]가 [$\leq]에 대해 순서 보존(order-preserving)이다.
+	[*] (c) [$\mathbf\emptyset\leq\varphi.]
+	[*] (d) [$\varphi-\psi\leq\varphi\leq\varphi+\psi.]
+	[*] (e) 다음은 모두 동치이다.
+	[ul
+		[*] [$\varphi\leq\psi.]
+		[*] [$\varphi-\psi=\mathbf\emptyset.]
+		[*] [$\varphi+\psi=\psi.]
+	]
+	[*] (f) [$\varphi-\varphi=\mathbf\emptyset.]
+	[*] (g) [$(\varphi-\psi)+\psi = \varphi.]
+]
+
+증명 생략.]
+
 [>[**1.3.8 정의.] 임의의 [$\varphi\in\mathbf M(L)] 및 [$A\in M^n(L)]에 대하여 [$A]의 [$\varphi]에 의한 [**[$n]계층 증명연쇄의 집합] [$P_\varphi^n(A)]가 다음과 같이 정의된다. [$\uarr] 및 [$\cdot] 및 [$\darr]은 적당히 [$1, 0, -1]이라 하자.
 [ul
 	[*] [$P_\varphi^{n,0}(A)]가 [$A\in\varphi(n)]일 때 [$\{(\cdot, A)\}]이고, 아니면 [$\emptyset]이다.
@@ -115,7 +145,7 @@
 
 		[*] [$P_\varphi^{n,m,\uarr}(A)]가 [$n=0]일 때 [$\emptyset]이고, [$n\geq 1]일 때
 		[$$\{(\uarr, \Delta, v): A=\underline{\Delta\vdash p}\land v\in P_{\varphi+_{n-1}\Delta}^{n-1,m-1}(p)\}]
-		이다. 단 [$\Delta = (\delta_1,\ldots,\delta_i)]일 때 [${}_{n-1}\Delta]가 정의역이 [$\N_0]인 함수로서 [$n-1]이 입력일 때 [$\{\delta_1,\ldots,\delta_i\}]를 출력하고, 아니면 [$\emptyset]을 출력한다고 하고, [$\varphi+_{n-1}\Delta]는 두 함수의 출력의 합집합을 출력하는 함수라 하자. 즉 [$\varphi(n-1)]에 [$\Delta]의 엔트리들을 추가한 것이다.
+		이다. 단 [$\Delta = (\delta_1,\ldots,\delta_i)]일 때 [${}_{n-1}\Delta]가 정의역이 [$\N_0]인 함수로서 [$n-1]이 입력일 때 [$\{\delta_1,\ldots,\delta_i\}]를 출력하고, 아니면 [$\emptyset]을 출력한다고 하자. 즉 [$\varphi(n-1)]에 [$\Delta]의 엔트리들을 추가한 것이다.
 	]
 
 	[*] [$P_\varphi^n(A)]가 [$\bigcup_{m\in \{0\}\cup\N}P_\varphi^{n,m}(A)]이다. 또 [$P_\varphi^{n,\uarr}(A)=\bigcup_{m\in\N}P_\varphi^{n,m,\uarr}(A)] 및 [$P_\varphi^{n,\darr}(A)=\bigcup_{m\in\N}P_\varphi^{n,m,\darr}(A)]라 하자.
@@ -165,7 +195,7 @@
 
 [$P_\varphi^{n,m}(A)]는 길이가 [$m] 이하인 증명연쇄를 모아 둔 것일 듯하다. 그러므로 다음이 성립한다.
 
-[>[**1.3.9 정리.] 임의의 [$n, m\in\N_0] 및 [$\varphi\in\mathbf M(L)]에 대해 [$P_\varphi^{n,m}(A)\subseteq P_\varphi^{n,m+1}(A).]
+[>[**1.3.9 정리.] 임의의 [$n, m\in\N_0] 및 [$\varphi\in\mathbf M(L)] 및 [$A\in M^n(L)]에 대해 [$P_\varphi^{n,m}(A)\subseteq P_\varphi^{n,m+1}(A).]
 
 증명. [$m]에 대해 수학적 귀납법을 적용하자.
 
@@ -184,7 +214,7 @@
 	그러므로 [$P_\varphi^{n,m+1}(A)\subseteq P_\varphi^{n,m+2}(A)]임이 유도된다.
 ]]
 
-직관적으로 생각해 보자면 [$P_\varphi^{n,m}(A)]가 [$P_\varphi^{n,0}(A)]로부터 만들어지듯 [$P_\varphi^{n,m+1}(A)]이 [$P_\varphi^{n,1}(A)]로부터 만들어지는데, [$P_\varphi^{n,0}(A)\subseteq P_\varphi^{n,1}(A)]이므로 [$P_\varphi^{n,m+1}(A)]가 [$P_\varphi^{n,m}(A)]보다 더 많은 증명연쇄를 포함하게 될 것이다. 좀 더 강력한 정리를 만들 수도 있을 듯하다.
+직관적으로 생각해 보자면 [$P_\varphi^{n,m}(A)]가 [$P_\varphi^{n,0}(A)]로부터 만들어지듯 [$P_\varphi^{n,m+1}(A)]이 [$P_\varphi^{n,1}(A)]로부터 만들어지는데, [$P_\varphi^{n,0}(A)\subseteq P_\varphi^{n,1}(A)]이므로 [$P_\varphi^{n,m+1}(A)]가 [$P_\varphi^{n,m}(A)]보다 더 많은 증명연쇄를 포함하게 될 것이다. 좀 더 강력한 정리를 만들 수도 있을 것이다.
 
 유용한 것을 몇 가지 정의해 보자.
 
@@ -198,7 +228,18 @@
 	= \{\psi: \psi(n)\subseteq Q_\varphi^n\text{ for all }n\in\N_0\}]
 이라 하자.]
 
-즉 증명할 수 있는 것들의 집합이라 할 수 있다. [$Q_\varphi^n=\emptyset]이면 임의의 [$A\in M^n(L)]에 대해 [$P_\varphi^n(A)=\emptyset]임을 알 수 있다. 다음을 보이자.
+즉 증명할 수 있는 것들의 집합이라 할 수 있다.
+
+[>[**1.3.10의2 정리.] 임의의 [$\varphi\in\mathbf M(L)]에 대해 [$(\mathbf Q_\varphi, +)]는 [$(\mathbf M(L), +)]의 부분 모노이드(submonoid)이다.
+
+증명.
+
+[ul
+	[*] (항등원의 존재) [$\mathbf\emptyset\in\mathbf Q_\varphi]임은 간단히 보일 수 있다.
+	[*] (연산의 닫힘(closure)) [$\psi,\chi\in\mathbf Q_\varphi]일 때 [$\psi+\chi\in\mathbf Q_\varphi]임은 간단히 보일 수 있다.
+]
+
+그러므로 부분 모노이드가 된다.]
 
 [>[**1.3.11 정리.] 임의의 [$\varphi,\psi\in\mathbf M(L)]에 대해, [$\psi\in\mathbf Q_\varphi]이면 [$\mathbf Q_{\varphi+\psi}=\mathbf Q_\varphi]이다.
 
