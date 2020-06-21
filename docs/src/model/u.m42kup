@@ -115,11 +115,10 @@
 
 [ul
 	[*] (a) [$(\mathbf M(L), +)]가 멱등(idempotent)인 가환 모노이드(commutative monoid)이며 [$\mathbf\emptyset]이 그 항등원이다.
-	[*] (b)
-	[*] (c) [$\leq]가 반순서(partial order)이며 [$+]가 [$\leq]에 대해 순서 보존(order-preserving)이다.
-	[*] (d) [$\mathbf\emptyset\leq\varphi.]
-	[*] (e) [$\varphi\leq\varphi+\psi.]
-	[*] (f) [$\varphi\leq\psi\lrarr\varphi+\psi=\psi.]
+	[*] (b) [$\leq]가 반순서(partial order)이며 [$+]가 [$\leq]에 대해 순서 보존(order-preserving)이다.
+	[*] (c) [$\mathbf\emptyset\leq\varphi.]
+	[*] (d) [$\varphi\leq\varphi+\psi.]
+	[*] (e) [$\varphi\leq\psi\lrarr\varphi+\psi=\psi.]
 ]
 
 증명 생략.]
@@ -247,36 +246,53 @@
 
 [>[**1.3.10의4 추측.] [$Q(\varphi)]는 주 아이디얼(principal ideal)이고 그 주 원소(principal element)는 [$\sum Q(\varphi)]이다.]
 
-[>[**1.3.11 정리.] 임의의 [$\varphi,\psi\in\mathbf M(L)]에 대해, [$\psi\in Q(\varphi)\lrarr Q(\varphi+\psi)= Q(\varphi).]
+[>[**1.3.11 정리.] 임의의 [$\varphi,\psi\in\mathbf M(L)]에 대해, 다음이 모두 동치이다.
+[ul
+	[*] [$\psi\in Q(\varphi).]
+	[*] [$Q(\varphi+\psi)= Q(\varphi).]
+	[*] [$Q(\psi)\subseteq Q(\varphi).]
+]
 
-증명.
+증명. 다음의 세 가지를 보이면 된다.
+
+[$$\begin{aligned}
+	\psi\in Q(\varphi)&\to Q(\varphi+\psi)=Q(\varphi),&\quad(1) \\
+	Q(\varphi+\psi)=Q(\varphi)&\to Q(\psi)\subseteq Q(\varphi),&(2) \\
+	Q(\psi)\subseteq Q(\varphi)&\to\psi\in Q(\varphi).&(3)
+\end{aligned}]
 
 [ul
-	[*] [$(\rarr)] [$ Q(\varphi)\subseteq Q(\varphi+\psi)]임은 간단하므로 [$ Q(\varphi+\psi)\subseteq Q(\varphi)]임을 보이자. 이는 임의의 [$n\in\N_0] 및 [$A\in M^n(L)]에 대해 [$P_{\varphi+\psi}^n(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]이라는 뜻이다. 먼저 임의의 [$k\in\N_0]에 대해, [$\psi\in Q(\varphi)] 및 [$P_{\varphi+\psi}^{n,k}(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]임을 보이자. [$k]에 수학적 귀납법을 적용하자.
+	[*] [$.(1)]에서 [$ Q(\varphi)\subseteq Q(\varphi+\psi)]는 항상 성립하므로 [$\psi\in Q(\varphi)]일 때 [$ Q(\varphi+\psi)\subseteq Q(\varphi)]임을 보이자. 이는 임의의 [$n\in\N_0]에 대해 [$Q_n(\varphi+\psi)\subseteq Q_n(\varphi)]이라는 뜻이다. 먼저 임의의 [$k\in\N_0]에 대해, [$\psi\in Q(\varphi)]이면 임의의 [$n\in\N_0]에 대해 [$Q_{n,k}(\varphi+\psi)\subseteq Q_n(\varphi)]임을 보이자. [$k]에 수학적 귀납법을 적용하자.
 
 	[ul
-		[*] (base case) [$\psi\in Q(\varphi)] 및 [$P_{\varphi+\psi}^{n,0}(A)\ne\emptyset]이라 하자. [$P_\varphi^n(A)\ne\emptyset]을 유도하면 된다. [$\psi\in Q(\varphi)]로부터 [$\psi(n)\subseteq Q_n(\varphi)]이다. 또 [$P_{\varphi+\psi}^{n,0}(A)\ne\emptyset]으로부터 [$A\in\varphi(n)\cup\psi(n)]이다. [$A\in\varphi(n)]이면 [$P_\varphi^{n,0}(A)\ne\emptyset]이 바로 유도되고, [$A\in\psi(n)]이면 [$A\in Q_n(\varphi)]이므로 즉 [$P_\varphi^n(A)\ne\emptyset]이다.
+		[*] (base case) [$\psi\in Q(\varphi)]일 때 [$Q_{n,0}(\varphi+\psi)\subseteq Q_n(\varphi)]임을 유도하면 된다. [$Q_{n,0}(\varphi+\psi)=(\varphi+\psi)(n)=\varphi(n)\cup\psi(n)]인데 [$\varphi,\psi\in Q(\varphi)]로부터 [$\varphi(n)\cup\psi(n)\subseteq Q_n(\varphi)]이므로 유도된다.
 
-		[*] (step case) [$\psi\in Q(\varphi)] 및 [$P_{\varphi+\psi}^{n,k}(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]이라 하자. 이제 [$\psi\in Q(\varphi)] 및 [$P_{\varphi+\psi}^{n,k+1}(A)\ne\emptyset]으로부터 [$P_\varphi^n(A)\ne\emptyset]을 유도하자. 이때
+		[*] (step case) [$\psi\in Q(\varphi)]일 때 [$Q_{n,k}(\varphi+\psi)\subseteq Q_n(\varphi)]이라 하자. 이제 [$\psi\in Q(\varphi)]일 때 [$Q_{n,k+1}(\varphi+\psi)\subseteq Q_n(\varphi)]를 유도하자. 이때
 		
-		[$$P_{\varphi+\psi}^{n,k+1}(A)=P_{\varphi+\psi}^{n,k+1,\darr}(A)\cup P_{\varphi+\psi}^{n,0}(A)\cup P_{\varphi+\psi}^{n,k+1,\uarr}(A)]
+		[$$Q_{n,k+1}(\varphi+\psi)=Q_{n,k+1,\darr}(\varphi+\psi)\cup Q_{n,0}(\varphi+\psi)\cup Q_{n,k+1,\uarr}(\varphi+\psi)]
 
-		임에 주목하라. 즉 좌변이 공집합이 아니면 우변의 세 개 중 하나는 공집합이 아니다.
+		임에 주목하라. 즉 우변의 세 개가 모두 [$Q_n(\varphi)]에 속함을 보이면 된다.
 		[ul
-			[*] [$P_{\varphi+\psi}^{n,k+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Sigma\in(M^n(L))^\ast]에 대해 [$P_{\varphi+\psi}^{n,k}(\Sigma)\ne\emptyset] 및 [$P_{\varphi+\psi}^{n+1,k}(\Sigma\vdash A)\ne\emptyset]이다. 즉 가정으로부터 [$P_\varphi^n(\Sigma)\ne\emptyset] 및 [$P_\varphi^{n+1}(\Sigma\vdash A)\ne\emptyset]이다. 이때 [**1.3.9]에 의해 [$(\darr)]을 하여 [$P_\varphi^n(A)\ne\emptyset]을 얻을 수 있다.
+			[*] [$A\in M^n(L)]일 때 [$P_{\varphi+\psi}^{n,k+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Sigma\in(M^n(L))^\ast]에 대해 [$P_{\varphi+\psi}^{n,k}(\Sigma)\ne\emptyset] 및 [$P_{\varphi+\psi}^{n+1,k}(\Sigma\vdash A)\ne\emptyset]이다. 즉 가정으로부터 [$P_\varphi^n(\Sigma)\ne\emptyset] 및 [$P_\varphi^{n+1}(\Sigma\vdash A)\ne\emptyset]이다. 이때 [**1.3.9]에 의해 [$(\darr)]을 하여 [$P_\varphi^n(A)\ne\emptyset]을 얻을 수 있다. 즉 [$Q_{n,k+1,\darr}(\varphi+\psi)\subseteq Q_n(\varphi)]이다.
 
-			[*] [$P_{\varphi+\psi}^{n,0}(A)\ne\emptyset]이면 base case에서 보였듯 [$P_\varphi^n(A)\ne\emptyset]이다.
+			[*] [$Q_{n,0}(\varphi+\psi)\subseteq Q_n(\varphi)]임은 base case에서 보였다.
 
-			[*] [$P_{\varphi+\psi}^{n,k+1,\uarr}(A)\ne\emptyset]이면 일단 [$n\geq 1]이다. 즉 [$A]가 [$\Gamma\vdash B] 형태이며 [$P_{\varphi+\psi+_{n-1}\Gamma}^{n-1,k}(B)\ne\emptyset]이다. 즉 [$P_{(\varphi+_{n-1}\Gamma)+\psi}^{n-1,k}(B)]가 공집합이 아니고 [$\psi\in Q(\varphi+_{n-1}\Gamma)]이므로, 가정으로부터 [$P_{\varphi+_{n-1}\Gamma}^{n-1}(B)\ne\emptyset]이다. [$(\uarr)]을 하면 [$P_\varphi^n(\Gamma\vdash B)=P_\varphi^n(A)\ne\emptyset]을 얻는다.
+			[*] [$A\in M^n(L)]일 때 [$P_{\varphi+\psi}^{n,k+1,\uarr}(A)\ne\emptyset]이면 일단 [$n\geq 1]이다. 즉 [$A]가 [$\Gamma\vdash B] 형태이며 [$P_{\varphi+\psi+_{n-1}\Gamma}^{n-1,k}(B)\ne\emptyset]이다. 즉 [$P_{(\varphi+_{n-1}\Gamma)+\psi}^{n-1,k}(B)\ne\emptyset]이고 [$\psi\in Q(\varphi+_{n-1}\Gamma)]이므로, 가정으로부터 [$P_{\varphi+_{n-1}\Gamma}^{n-1}(B)\ne\emptyset]이다. [$(\uarr)]을 하면 [$P_\varphi^n(\Gamma\vdash B)=P_\varphi^n(A)\ne\emptyset]을 얻는다. 즉 [$Q_{n,k+1,\uarr}(\varphi+\psi)\subseteq Q_n(\varphi)]이다.
 		]
-		그러므로 [$P_\varphi^n(A)\ne\emptyset]이 유도된다.
+		그러므로 [$Q_{n,k+1}(\varphi+\psi)\subseteq Q_n(\varphi)]가 유도된다.
 	]
 
-	즉 [$\psi\in Q(\varphi)]일 때 임의의 [$k\in\N_0]에 대해 [$P_{\varphi+\psi}^{n,k}(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]이다. 그런데 [$P_{\varphi+\psi}^n(A)\ne\emptyset]이면 어떤 [$k\in\N_0]에 대해 [$P_{\varphi+\psi}^{n,k}(A)\ne\emptyset]이다. 즉 임의의 [$n\in\N_0] 및 [$A\in M^n(L)]에 대해 [$P_{\varphi+\psi}^n(A)\ne\emptyset]이면 [$P_\varphi^n(A)\ne\emptyset]인데, 이는 [$ Q(\varphi+\psi)\subseteq Q(\varphi)]를 뜻하므로 [$(\rarr)]이 증명되었다.
-	[*] [$(\larr)] [$\psi\in Q(\psi)]인데 [$\psi\leq\varphi+\psi]이므로 [$\psi\in Q(\varphi+\psi)= Q(\varphi)]이다.
+	즉 [$\psi\in Q(\varphi)]일 때 임의의 [$n,k\in\N_0]에 대해 [$Q_{n,k}(\varphi+\psi)\subseteq Q_n(\varphi)]이다. 그런데 [$A\in Q_n(\varphi+\psi)]이면 어떤 [$k\in\N_0]에 대해 [$A\in Q_{n,k}(\varphi+\psi)]이다. 즉 임의의 [$n\in\N_0]에 대해 [$Q_n(\varphi+\psi)\subseteq Q_n(\varphi)]인데, 이는 [$Q(\varphi+\psi)\subseteq Q(\varphi)]를 뜻하므로 [$.(1)]이 증명되었다.
+
+	[*] [$.(2)], [$.(3)]은 간단하다.
 ]]
 
-즉 [$\varphi]가 [$\psi]를 증명할 수 있다면 [$\varphi+\psi]가 증명할 수 있는 것과 [$\varphi]가 증명할 수 있는 것이 같다는 것이다.
+즉 다음이 모두 동치라는 것이다.
+[ul
+	[*] [$\varphi]가 [$\psi]를 증명할 수 있다.
+	[*] [$\varphi+\psi]가 증명할 수 있는 것이 [$\varphi]가 증명할 수 있는 것과 같다.
+	[*] [$\psi]가 증명할 수 있는 것은 [$\varphi]도 증명할 수 있다.
+]
 
 [>[**1.3.11의1 따름정리.] 임의의 [$\varphi,\psi\in\mathbf M(L)]에 대해,
 [$$\varphi\in Q(\psi)\land\psi\in Q(\varphi)\lrarr Q(\varphi) =  Q(\psi).]
