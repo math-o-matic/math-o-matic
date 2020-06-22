@@ -96,32 +96,49 @@
 
 [**1.3.6] 및 [**1.3.7]의 결과로부터 영감을 받아 증명연쇄 얘기를 더 해보자.
 
-[>[**1.3.7의1 정의.] 어떤 첨수족(indexed family of sets) [$\{A_i\}_{i\in I}]의 곱집합(infinite Cartesian product)은 다음과 같이 정의된다.
-[$$\prod_{i\in I}A_i = \left\{\left.f:I\to\bigcup_{i\in I}A_i\right|(\forall i\in I)(f(i)\in A_i)\right\}.]
+[>[**1.3.7의1 정의.] 어떤 첨수족(indexed family of sets) [$\{A_i\}_{i\in I}]의 분리합집합(disjoint union) [$\bigsqcup_{i\in I} A_i]는 다음과 같이 정의된다.
+
+[$$\bigsqcup_{i\in I} A_i\coloneqq\bigcup_{i\in I}\{(a,i):a\in A_i\}.]
+
 이때 [$\N_0=\{0\}\cup\N]이라 하고 [$\mathbf M(L)]을 다음과 같이 정의하자.
-[$$\mathbf M(L)\coloneqq\prod_{n\in\N_0}\mathcal P(M^n(L)) = \{\varphi\ |\ \varphi(n)\subseteq M^n(L)\text{ for all }n\in\N_0\}.]]
 
-즉 [$\mathbf M(L)]은 [$\N_0]에서 정의되며 [$\varphi(n)\subseteq M^n(L)]인 함수 [$\varphi]의 집합이다.
+[$$\mathbf M(L)\coloneqq\mathcal P\left(\bigsqcup_{n\in\N_0}M^n(L)\right).]
 
-[>[**1.3.7의2 정의.] [$\mathbf M(L)] 상에서 [$\mathbf\emptyset]을 다음과 같이 정의하자.
-[$$\mathbf\emptyset(n)=\emptyset\text{ for all }n\in\N_0.]
-또 이항연산 [$+]를 다음과 같이 정의하자.
-[$$(\varphi + \psi)(n) = \varphi(n)\cup\psi(n)\text{ for all }n\in\N_0.]
-또 이항관계 [$\leq]를 다음과 같이 정의하자.
-[$$\varphi\leq\psi\lrarr(\forall n\in\N_0)(\varphi(n)\subseteq\psi(n)).]
+또 임의의 [$\varphi\in\mathbf M(L)] 및 [$n\in\N_0]에 대해 [$\varphi(n)]을 다음과 같이 정의하자.
+
+[$$\varphi(n)\coloneqq\{A: (A, n)\in\varphi\}.]
 ]
 
-[>[**1.3.7의3 정리.] 다음이 성립한다.
+위의 정의는 [$\mathbf M(L)]을 [$M^n(L)]에 속하는 문장과 [$n]을 대응시키는 관계의 집합으로 정의하였다. 이는 [$\mathbf M(L)]에 속하는 것들 간의 연산을 용이하게 하기 위함이다. 이와 달리 [$\mathbf M(L)]을 같은 뜻을 갖는 함수의 집합으로 정의할 수도 있다.
+
+어떤 첨수족 [$\{A_i\}_{i\in I}]의 곱집합(infinite Cartesian product) [$\prod_{i\in I}A_i]는 다음과 같이 정의된다.
+
+[$$\prod_{i\in I}A_i\coloneqq\left\{\left.f:I\to\bigcup_{i\in I}A_i\right|(\forall i\in I)(f(i)\in A_i)\right\}.]
+
+이때 [$\mathbf M(L)]을
+
+[$$\prod_{n\in\N_0}\mathcal P(M^n(L)) = \{\varphi\ |\ \varphi(n)\subseteq M^n(L)\text{ for all }n\in\N_0\}]
+
+이라고 정의하면 [$\mathbf M(L)]이 [$\N_0]에서 정의되며 [$\varphi(n)\subseteq M^n(L)]인 함수 [$\varphi]의 집합이 된다. 그러나 우리는 [$\mathbf M(L)]을 관계의 집합으로 정의하기로 한다.
+
+[>[**1.3.7의2 정리.] 다음이 성립한다.
 
 [ul
-	[*] (a) [$(\mathbf M(L), +)]가 멱등(idempotent)인 가환 모노이드(commutative monoid)이며 [$\mathbf\emptyset]이 그 항등원이다.
-	[*] (b) [$\leq]가 반순서(partial order)이며 [$+]가 [$\leq]에 대해 순서 보존(order-preserving)이다.
-	[*] (c) [$\mathbf\emptyset\leq\varphi.]
-	[*] (d) [$\varphi\leq\varphi+\psi.]
-	[*] (e) [$\varphi\leq\psi\lrarr\varphi+\psi=\psi.]
+	[*] (a) [$(\mathbf M(L), \cup)]이 멱등(idempotent)인 가환 모노이드(commutative monoid)이며 [$\emptyset]이 그 항등원이다.
+	[*] (b) [$(\varphi\cup\psi)(n) = \varphi(n)\cup\psi(n).]
 ]
 
-증명 생략.]
+증명.
+
+[ul
+	[*] (a) 어떤 집합 [$S]에 대해 [$(\mathcal P(S),\cup)]이 가환 모노이드가 된다는 것은 잘 알려져 있다.
+	[*] (b) [$$\begin{aligned}
+		(\varphi\cup\psi)(n) 
+			&= \{A: (A, n)\in\varphi\cup\psi\} \\
+			&= \{A:(A,n)\in\varphi\}\cup\{A:(A,n)\in\psi\} \\
+			&= \varphi(n)\cup\psi(n).
+	\end{aligned}]
+]]
 
 [>[**1.3.8 정의.] 임의의 [$\varphi\in\mathbf M(L)] 및 [$A\in M^n(L)]에 대하여 [$A]의 [$\varphi]에 의한 [**[$n]계층 증명연쇄의 집합] [$P_\varphi^n(A)]가 다음과 같이 정의된다. [$\uarr] 및 [$\cdot] 및 [$\darr]은 적당히 [$1, 0, -1]이라 하자.
 [ul
@@ -134,8 +151,9 @@
 		이다. 단 [$P_\varphi^{n,m-1}(\Delta)]는 [$\Delta=(\delta_1,\ldots,\delta_k)]에 대해 [$P_\varphi^{n,m-1}(\delta_1)\times\cdots\times P_\varphi^{n,m-1}(\delta_k)]를 뜻하며 [$P_\varphi^{n,m-1}(\varepsilon) = \{\varepsilon\}]이다. 즉 [$\delta] 각각에 대한 [$n]계층 증명연쇄의 튜플의 집합이다.
 
 		[*] [$P_\varphi^{n,m,\uarr}(A)]가 [$n=0]일 때 [$\emptyset]이고, [$n\geq 1]일 때
-		[$$\{(\uarr, \Delta, v): A=\underline{\Delta\vdash p}\land v\in P_{\varphi+_{n-1}\Delta}^{n-1,m-1}(p)\}]
-		이다. 단 [$\Delta = (\delta_1,\ldots,\delta_i)]일 때 [${}_{n-1}\Delta]가 정의역이 [$\N_0]인 함수로서 [$n-1]이 입력일 때 [$\{\delta_1,\ldots,\delta_i\}]를 출력하고, 아니면 [$\emptyset]을 출력한다고 하자. 즉 [$\varphi(n-1)]에 [$\Delta]의 엔트리들을 추가한 것이다.
+		[$$\{(\uarr, \Delta, v): A=\underline{\Delta\vdash p}\land v\in P_{\varphi\cup_{n-1}\Delta}^{n-1,m-1}(p)\}]
+		이다.
+		단 [$\Delta = (\delta_1,\ldots,\delta_k)]일 때 [${}_{n-1}\Delta=\{(\delta_i,n-1):i=1,\ldots,k\}]라 하자.
 	]
 
 	[*] [$P_\varphi^n(A)]가 [$\bigcup_{m\in \{0\}\cup\N}P_\varphi^{n,m}(A)]이다. 또 [$P_\varphi^{n,\uarr}(A)=\bigcup_{m\in\N}P_\varphi^{n,m,\uarr}(A)] 및 [$P_\varphi^{n,\darr}(A)=\bigcup_{m\in\N}P_\varphi^{n,m,\darr}(A)]라 하자.
@@ -195,7 +213,8 @@
 	\end{aligned}]
 	임을 보이면 따라 온다.
 	[ul
-		[*] (1) [$P_\varphi^{n,m+1,\uarr}(A)]와 [$P_\varphi^{n,m+2,\uarr}(A)]의 정의를 비교하라. [$n=0]일 때 성립하고, [$n\geq 1]일 때 가정으로부터 [$P_{\varphi+_{n-1}\Delta}^{n-1,m}(p)\subseteq P_{\varphi+_{n-1}\Delta}^{n-1,m+1}(p)]이므로 [$P_\varphi^{n,m+1,\uarr}(A)\subseteq P_\varphi^{n,m+2,\uarr}(A)]가 된다.
+		[*] (1) [$P_\varphi^{n,m+1,\uarr}(A)]와 [$P_\varphi^{n,m+2,\uarr}(A)]의 정의를 비교하라. [$n=0]일 때 성립하고, [$n\geq 1]일 때 가정으로부터 [$P_{\varphi\cup_{n-1}\Delta}^{n-1,m}(p)\subseteq P_{\varphi\cup_{n-1}\Delta}^{n-1,m+1}(p)]이므로 [$P_\varphi^{n,m+1,\uarr}(A)\subseteq P_\varphi^{n,m+2,\uarr}(A)]가 된다.
+
 		[*] (2) [$P_\varphi^{n,m+1,\darr}(A)]와 [$P_\varphi^{n,m+2,\darr}(A)]의 정의를 비교하라. 가정으로부터 [$P_\varphi^{n,m}(\Delta)\subseteq P_\varphi^{n,m+1}(\Delta)] 및 [$P_\varphi^{n+1,m}(\Delta\vdash A)\subseteq P_\varphi^{n+1,m+1}(\Delta\vdash A)]이므로 [$P_\varphi^{n,m+1,\darr}(A)\subseteq P_\varphi^{n,m+2,\darr}(A)]가 된다.
 	]
 	그러므로 [$P_\varphi^{n,m+1}(A)\subseteq P_\varphi^{n,m+2}(A)]임이 유도된다.
@@ -210,21 +229,19 @@
 [$n>\operatorname{ord}\varphi]일 때 [$\varphi(n)=\emptyset]임을 알 수 있다.
 
 [>[**1.3.10의1 정의.] [$Q_n(\varphi)]를 [$\{A\in M^n(L): P_\varphi^n(A)\ne\emptyset\}]이라 정의하자. 비슷하게 [$Q_{n, m}(\varphi)] 및 [$Q_{n, m, \uarr}(\varphi)] 및 [$Q_{n, m, \darr}(\varphi)] 및 [$Q_{n, \uarr}(\varphi)] 및 [$Q_{n, \darr}(\varphi)]를 정의하자. 또
-[$$Q(\varphi)
-	= \prod_{n\in\N_0}\mathcal P(Q_n(\varphi))
-	= \{\psi: \psi(n)\subseteq Q_n(\varphi)\text{ for all }n\in\N_0\}]
+[$$Q(\varphi) = \mathcal P\left(\bigsqcup_{n\in\N_0}Q_n(\varphi)\right)]
 이라 하자.]
 
 즉 증명할 수 있는 것들의 집합이라 할 수 있다.
 
-[>[**1.3.10의2 정리.] 임의의 [$\varphi\in\mathbf M(L)]에 대해 [$( Q(\varphi), +)]는 [$(\mathbf M(L), +)]의 부분 모노이드(submonoid)이다.
+[>[**1.3.10의2 정리.] 임의의 [$\varphi\in\mathbf M(L)]에 대해 [$( Q(\varphi),\cup)]은 [$(\mathbf M(L),\cup)]의 부분 모노이드(submonoid)이다.
 
 증명.
 
 [ul
 	[*] (부분집합) [$ Q(\varphi)\subseteq\mathbf M(L)]임은 간단히 보일 수 있다.
-	[*] (항등원의 존재) [$\mathbf\emptyset\in Q(\varphi)]임은 간단히 보일 수 있다.
-	[*] (연산의 닫힘(closure)) [$\psi,\chi\in Q(\varphi)]일 때 [$\psi+\chi\in Q(\varphi)]임은 간단히 보일 수 있다.
+	[*] (항등원의 존재) [$\emptyset\in Q(\varphi)]임은 간단히 보일 수 있다.
+	[*] (연산의 닫힘(closure)) [$\psi,\chi\in Q(\varphi)]일 때 [$\psi\cup\chi\in Q(\varphi)]임은 간단히 보일 수 있다.
 ]
 
 그러므로 부분 모노이드가 된다.]
@@ -232,57 +249,57 @@
 [>[**1.3.10의3 정리.] 임의의 [$\varphi,\psi,\chi\in\mathbf M(L)]에 대해 다음이 성립한다.
 [ul
 	[*] (a) [$\varphi\in Q(\varphi).]
-	[*] (b) [$Q(\varphi)]는 [$(\mathbf M(L),\leq)]의 [~(href='https://en.wikipedia.org/wiki/Ideal_(order_theory)')(순서) 아이디얼]이다. 즉 다음이 성립한다.
+	[*] (b) [$Q(\varphi)]는 [$(\mathbf M(L),\subseteq)]의 [~(href='https://en.wikipedia.org/wiki/Ideal_(order_theory)')(순서) 아이디얼]이다. 즉 다음이 성립한다.
 	[ul
 		[*] [$ Q(\varphi)]는 공집합이 아니다.
-		[*] [$ Q(\varphi)]는 [$\mathbf M(L)]의 하집합(lower set)이다. 즉 [$\psi\leq\chi]이면 [$\chi\in Q(\varphi)\to\psi\in Q(\varphi)]이다.
+		[*] [$ Q(\varphi)]는 [$\mathbf M(L)]의 하집합(lower set)이다. 즉 [$\psi\subseteq\chi]이면 [$\chi\in Q(\varphi)\to\psi\in Q(\varphi)]이다.
 		[*] [$ Q(\varphi)]는 상향 집합(upward directed set)이다.
 	]
-	[*] (c) [$\varphi\leq\psi\to Q(\varphi)\subseteq Q(\psi).]
+	[*] (c) [$\varphi\subseteq\psi\to Q(\varphi)\subseteq Q(\psi).]
 	[*] (d) [$ Q(\varphi)\subseteq Q(\psi)\lrarr(\forall n\in\N_0)(Q_n(\varphi)\subseteq Q_n(\psi)).]
 ]
 
 증명 생략.]
 
-[>[**1.3.10의4 추측.] [$Q(\varphi)]는 주 아이디얼(principal ideal)이고 그 주 원소(principal element)는 [$\sum Q(\varphi)]이다.]
+[>[**1.3.10의4 추측.] [$Q(\varphi)]는 주 아이디얼(principal ideal)이고 그 주 원소(principal element)는 [$\bigcup Q(\varphi)]이다.]
 
 [>[**1.3.11 정리.] 임의의 [$\varphi,\psi\in\mathbf M(L)]에 대해, 다음이 모두 동치이다.
 [ul
 	[*] [$\psi\in Q(\varphi).]
-	[*] [$Q(\varphi+\psi)= Q(\varphi).]
+	[*] [$Q(\varphi\cup\psi)= Q(\varphi).]
 	[*] [$Q(\psi)\subseteq Q(\varphi).]
 ]
 
 증명. 다음의 세 가지를 보이면 된다.
 
 [$$\begin{aligned}
-	\psi\in Q(\varphi)&\to Q(\varphi+\psi)=Q(\varphi),&\quad(1) \\
-	Q(\varphi+\psi)=Q(\varphi)&\to Q(\psi)\subseteq Q(\varphi),&(2) \\
+	\psi\in Q(\varphi)&\to Q(\varphi\cup\psi)=Q(\varphi),&\quad(1) \\
+	Q(\varphi\cup\psi)=Q(\varphi)&\to Q(\psi)\subseteq Q(\varphi),&(2) \\
 	Q(\psi)\subseteq Q(\varphi)&\to\psi\in Q(\varphi).&(3)
 \end{aligned}]
 
 [ul
-	[*] [$.(1)]에서 [$ Q(\varphi)\subseteq Q(\varphi+\psi)]는 항상 성립하므로 [$\psi\in Q(\varphi)]일 때 [$ Q(\varphi+\psi)\subseteq Q(\varphi)]임을 보이자. 이는 임의의 [$n\in\N_0]에 대해 [$Q_n(\varphi+\psi)\subseteq Q_n(\varphi)]이라는 뜻이다. 먼저 임의의 [$k\in\N_0]에 대해, [$\psi\in Q(\varphi)]이면 임의의 [$n\in\N_0]에 대해 [$Q_{n,k}(\varphi+\psi)\subseteq Q_n(\varphi)]임을 보이자. [$k]에 수학적 귀납법을 적용하자.
+	[*] [$.(1)]에서 [$ Q(\varphi)\subseteq Q(\varphi\cup\psi)]는 항상 성립하므로 [$\psi\in Q(\varphi)]일 때 [$ Q(\varphi\cup\psi)\subseteq Q(\varphi)]임을 보이자. 이는 임의의 [$n\in\N_0]에 대해 [$Q_n(\varphi\cup\psi)\subseteq Q_n(\varphi)]이라는 뜻이다. 먼저 임의의 [$k\in\N_0]에 대해, [$\psi\in Q(\varphi)]이면 임의의 [$n\in\N_0]에 대해 [$Q_{n,k}(\varphi\cup\psi)\subseteq Q_n(\varphi)]임을 보이자. [$k]에 수학적 귀납법을 적용하자.
 
 	[ul
-		[*] (base case) [$\psi\in Q(\varphi)]일 때 [$Q_{n,0}(\varphi+\psi)\subseteq Q_n(\varphi)]임을 유도하면 된다. [$Q_{n,0}(\varphi+\psi)=(\varphi+\psi)(n)=\varphi(n)\cup\psi(n)]인데 [$\varphi,\psi\in Q(\varphi)]로부터 [$\varphi(n)\cup\psi(n)\subseteq Q_n(\varphi)]이므로 유도된다.
+		[*] (base case) [$\psi\in Q(\varphi)]일 때 [$Q_{n,0}(\varphi\cup\psi)\subseteq Q_n(\varphi)]임을 유도하면 된다. [$Q_{n,0}(\varphi\cup\psi)=(\varphi\cup\psi)(n)=\varphi(n)\cup\psi(n)]인데 [$\varphi,\psi\in Q(\varphi)]로부터 [$\varphi(n)\cup\psi(n)\subseteq Q_n(\varphi)]이므로 유도된다.
 
-		[*] (step case) [$\psi\in Q(\varphi)]일 때 [$Q_{n,k}(\varphi+\psi)\subseteq Q_n(\varphi)]이라 하자. 이제 [$\psi\in Q(\varphi)]일 때 [$Q_{n,k+1}(\varphi+\psi)\subseteq Q_n(\varphi)]를 유도하자. 이때
+		[*] (step case) [$\psi\in Q(\varphi)]일 때 [$Q_{n,k}(\varphi\cup\psi)\subseteq Q_n(\varphi)]이라 하자. 이제 [$\psi\in Q(\varphi)]일 때 [$Q_{n,k+1}(\varphi\cup\psi)\subseteq Q_n(\varphi)]를 유도하자. 이때
 		
-		[$$Q_{n,k+1}(\varphi+\psi)=Q_{n,k+1,\darr}(\varphi+\psi)\cup Q_{n,0}(\varphi+\psi)\cup Q_{n,k+1,\uarr}(\varphi+\psi)]
+		[$$Q_{n,k+1}(\varphi\cup\psi)=Q_{n,k+1,\darr}(\varphi\cup\psi)\cup Q_{n,0}(\varphi\cup\psi)\cup Q_{n,k+1,\uarr}(\varphi\cup\psi)]
 
 		임에 주목하라. 즉 우변의 세 개가 모두 [$Q_n(\varphi)]에 속함을 보이면 된다.
 		[ul
-			[*] [$A\in M^n(L)]일 때 [$P_{\varphi+\psi}^{n,k+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Sigma\in(M^n(L))^\ast]에 대해 [$P_{\varphi+\psi}^{n,k}(\Sigma)\ne\emptyset] 및 [$P_{\varphi+\psi}^{n+1,k}(\Sigma\vdash A)\ne\emptyset]이다. 즉 가정으로부터 [$P_\varphi^n(\Sigma)\ne\emptyset] 및 [$P_\varphi^{n+1}(\Sigma\vdash A)\ne\emptyset]이다. 이때 [**1.3.9]에 의해 [$(\darr)]을 하여 [$P_\varphi^n(A)\ne\emptyset]을 얻을 수 있다. 즉 [$Q_{n,k+1,\darr}(\varphi+\psi)\subseteq Q_n(\varphi)]이다.
+			[*] [$A\in M^n(L)]일 때 [$P_{\varphi\cup\psi}^{n,k+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Sigma\in(M^n(L))^\ast]에 대해 [$P_{\varphi\cup\psi}^{n,k}(\Sigma)\ne\emptyset] 및 [$P_{\varphi\cup\psi}^{n+1,k}(\Sigma\vdash A)\ne\emptyset]이다. 즉 가정으로부터 [$P_\varphi^n(\Sigma)\ne\emptyset] 및 [$P_\varphi^{n+1}(\Sigma\vdash A)\ne\emptyset]이다. 이때 [**1.3.9]에 의해 [$(\darr)]을 하여 [$P_\varphi^n(A)\ne\emptyset]을 얻을 수 있다. 즉 [$Q_{n,k+1,\darr}(\varphi\cup\psi)\subseteq Q_n(\varphi)]이다.
 
-			[*] [$Q_{n,0}(\varphi+\psi)\subseteq Q_n(\varphi)]임은 base case에서 보였다.
+			[*] [$Q_{n,0}(\varphi\cup\psi)\subseteq Q_n(\varphi)]임은 base case에서 보였다.
 
-			[*] [$A\in M^n(L)]일 때 [$P_{\varphi+\psi}^{n,k+1,\uarr}(A)\ne\emptyset]이면 일단 [$n\geq 1]이다. 즉 [$A]가 [$\Gamma\vdash B] 형태이며 [$P_{\varphi+\psi+_{n-1}\Gamma}^{n-1,k}(B)\ne\emptyset]이다. 즉 [$P_{(\varphi+_{n-1}\Gamma)+\psi}^{n-1,k}(B)\ne\emptyset]이고 [$\psi\in Q(\varphi+_{n-1}\Gamma)]이므로, 가정으로부터 [$P_{\varphi+_{n-1}\Gamma}^{n-1}(B)\ne\emptyset]이다. [$(\uarr)]을 하면 [$P_\varphi^n(\Gamma\vdash B)=P_\varphi^n(A)\ne\emptyset]을 얻는다. 즉 [$Q_{n,k+1,\uarr}(\varphi+\psi)\subseteq Q_n(\varphi)]이다.
+			[*] [$A\in M^n(L)]일 때 [$P_{\varphi\cup\psi}^{n,k+1,\uarr}(A)\ne\emptyset]이면 일단 [$n\geq 1]이다. 즉 [$A]가 [$\Gamma\vdash B] 형태이며 [$P_{\varphi\cup\psi\cup_{n-1}\Gamma}^{n-1,k}(B)\ne\emptyset]이다. 즉 [$P_{(\varphi\cup_{n-1}\Gamma)\cup\psi}^{n-1,k}(B)\ne\emptyset]이고 [$\psi\in Q(\varphi\cup_{n-1}\Gamma)]이므로, 가정으로부터 [$P_{\varphi\cup_{n-1}\Gamma}^{n-1}(B)\ne\emptyset]이다. [$(\uarr)]을 하면 [$P_\varphi^n(\Gamma\vdash B)=P_\varphi^n(A)\ne\emptyset]을 얻는다. 즉 [$Q_{n,k+1,\uarr}(\varphi\cup\psi)\subseteq Q_n(\varphi)]이다.
 		]
-		그러므로 [$Q_{n,k+1}(\varphi+\psi)\subseteq Q_n(\varphi)]가 유도된다.
+		그러므로 [$Q_{n,k+1}(\varphi\cup\psi)\subseteq Q_n(\varphi)]가 유도된다.
 	]
 
-	즉 [$\psi\in Q(\varphi)]일 때 임의의 [$n,k\in\N_0]에 대해 [$Q_{n,k}(\varphi+\psi)\subseteq Q_n(\varphi)]이다. 그런데 [$A\in Q_n(\varphi+\psi)]이면 어떤 [$k\in\N_0]에 대해 [$A\in Q_{n,k}(\varphi+\psi)]이다. 즉 임의의 [$n\in\N_0]에 대해 [$Q_n(\varphi+\psi)\subseteq Q_n(\varphi)]인데, 이는 [$Q(\varphi+\psi)\subseteq Q(\varphi)]를 뜻하므로 [$.(1)]이 증명되었다.
+	즉 [$\psi\in Q(\varphi)]일 때 임의의 [$n,k\in\N_0]에 대해 [$Q_{n,k}(\varphi\cup\psi)\subseteq Q_n(\varphi)]이다. 그런데 [$A\in Q_n(\varphi\cup\psi)]이면 어떤 [$k\in\N_0]에 대해 [$A\in Q_{n,k}(\varphi\cup\psi)]이다. 즉 임의의 [$n\in\N_0]에 대해 [$Q_n(\varphi\cup\psi)\subseteq Q_n(\varphi)]인데, 이는 [$Q(\varphi\cup\psi)\subseteq Q(\varphi)]를 뜻하므로 [$.(1)]이 증명되었다.
 
 	[*] [$.(2)], [$.(3)]은 간단하다.
 ]]
@@ -290,7 +307,7 @@
 즉 다음이 모두 동치라는 것이다.
 [ul
 	[*] [$\varphi]가 [$\psi]를 증명할 수 있다.
-	[*] [$\varphi+\psi]가 증명할 수 있는 것이 [$\varphi]가 증명할 수 있는 것과 같다.
+	[*] [$\varphi\cup\psi]가 증명할 수 있는 것이 [$\varphi]가 증명할 수 있는 것과 같다.
 	[*] [$\psi]가 증명할 수 있는 것은 [$\varphi]도 증명할 수 있다.
 ]
 
@@ -304,22 +321,22 @@
 [>[**1.3.11의2 정의.] [$\mathcal Q]를 다음과 같이 정의하자.
 [$$\mathcal Q\coloneqq\operatorname{im}Q=\{ Q(\varphi):\varphi\in\mathbf M(L)\}.]
 [$\mathcal Q] 상에서 잘 정의되는(well-defined) 이항연산 [$+]를 다음과 같이 정의하자.
-[$$ Q(\varphi) + Q(\psi)\coloneqq Q(\varphi+\psi).]
+[$$ Q(\varphi) + Q(\psi)\coloneqq Q(\varphi\cup\psi).]
 ]
 
 [>[**1.3.11의3 정리.] 다음이 성립한다.
 
 [ul
 	[*] (a) [$+]가 [$\mathcal Q] 상에서 잘 정의된다.
-	[*] (b) [$(\mathcal Q, +)]가 멱등인 가환 모노이드이며 [$ Q(\mathbf\emptyset)]이 그 항등원이다.
+	[*] (b) [$(\mathcal Q, +)]가 멱등인 가환 모노이드이며 [$ Q(\emptyset)]이 그 항등원이다.
 	[*] (c) [$Q: \mathbf M(L)\to \mathcal Q]가 모노이드 준동형(monoid homomorphism)이며 전사함수(surjection)이다.
-	[*] (d) [$Q]가 [$\leq] 및 [$\subseteq]에 대해 순서 보존이다.
+	[*] (d) [$Q]가 순서 보존이다.
 ]
 
 증명.
 
 [ul
-	[*] (a) [$ Q(\varphi')= Q(\varphi)] 및 [$ Q(\psi')= Q(\psi)]일 때 [$ Q(\varphi'+\psi')= Q(\varphi+\psi)]임을 보이면 된다. [$\varphi'\in Q(\varphi)\subseteq Q(\varphi+\psi)] 및 [$\psi'\in Q(\psi)\subseteq Q(\varphi+\psi)]로부터 [$\varphi'+\psi'\in Q(\varphi+\psi)]이다. 같은 방식으로 [$\varphi+\psi\in Q(\varphi'+\psi')]이다. [**1.3.11의1]로부터 [$ Q(\varphi'+\psi')= Q(\varphi+\psi)]가 유도되므로 [$+]가 잘 정의됨을 보였다.
+	[*] (a) [$ Q(\varphi')= Q(\varphi)] 및 [$ Q(\psi')= Q(\psi)]일 때 [$ Q(\varphi'\cup\psi')= Q(\varphi\cup\psi)]임을 보이면 된다. [$\varphi'\in Q(\varphi)\subseteq Q(\varphi\cup\psi)] 및 [$\psi'\in Q(\psi)\subseteq Q(\varphi\cup\psi)]로부터 [$\varphi'\cup\psi'\in Q(\varphi\cup\psi)]이다. 같은 방식으로 [$\varphi\cup\psi\in Q(\varphi'\cup\psi')]이다. [**1.3.11의1]로부터 [$ Q(\varphi'\cup\psi')= Q(\varphi\cup\psi)]가 유도되므로 [$+]가 잘 정의됨을 보였다.
 ]
 
 나머지 증명 생략.]
@@ -337,7 +354,7 @@
 	[ul
 		[*] [$P_\varphi^{n+k,j+1,\darr}(A)]는 [$Q_{n+k+1,j}(\varphi)=\emptyset]이므로 [$\emptyset]이다.
 		[*] [$P_\varphi^{n+k,0}(A)]는 [$\operatorname{ord}\varphi = n]이므로 [$\emptyset]이다.
-		[*] [$P_\varphi^{n+k,j+1,\uarr}(A)]는 [$\operatorname{ord}(\varphi+_{n+k-1}\Delta)=n+k-1\geq n]으로부터 [$Q_{n+k-1,j}(\varphi+_{n+k-1}\Delta)=\emptyset]이므로 [$\emptyset]이다.
+		[*] [$P_\varphi^{n+k,j+1,\uarr}(A)]는 [$\operatorname{ord}(\varphi\cup_{n+k-1}\Delta)=n+k-1\geq n]으로부터 [$Q_{n+k-1,j}(\varphi\cup_{n+k-1}\Delta)=\emptyset]이므로 [$\emptyset]이다.
 	]
 
 	즉 [$Q_{n+k,j+1}(\varphi)=\emptyset]이다.
@@ -366,15 +383,15 @@
 	[*] (step case) 어떤 [$m\in\N]에 대해, [$n\geq\operatorname{ord}\varphi]이고 [$P_\varphi^{n,m,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]이라 하자. 이때 [$P_\varphi^{n,m+1,\darr}(A)\ne\emptyset]이면 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]임을 보일 것이다. [$P_\varphi^{n,m+1,\darr}(A)\ne\emptyset]이면 어떤 [$\Delta\in M^n(L)]에 대해 [$\mathbf v\in P_\varphi^{n,m}(\Delta)] 및 [$w\in P_\varphi^{n+1,m}(\Delta\vdash A)]가 존재한다. 이때 [$n\geq\operatorname{ord}\varphi]로부터 [$P_\varphi^{n+1,0}(\Delta\vdash A)=\emptyset]이므로 [$w\in P_\varphi^{n+1,m,\darr}(\Delta\vdash A)] 또는 [$w\in P_\varphi^{n+1,m,\uarr}(\Delta\vdash A)]이다. 각각의 경우에 대해 증명하자.
 
 	[ul
-		[*] [$w\in P_\varphi^{n+1,m,\darr}(\Delta\vdash A)]인 경우, [$n+1\geq\operatorname{ord}\varphi]이므로 가정으로부터 [$P_\varphi^{n+1,0}(\Delta\vdash A)\cup P_\varphi^{n+1,\uarr}(\Delta\vdash A)\ne\emptyset]이 된다. 이때 [$P_\varphi^{n+1,0}(\Delta\vdash A)=\emptyset]이므로 어떤 [$w']이 [$P_\varphi^{n+1,\uarr}(\Delta\vdash A)]에 속한다. 그러므로 어떤 [$m'\in\N]에 대해 [$w'\in P_\varphi^{n+1,m',\uarr}(\Delta\vdash A)]이다. 그러므로 [$u\in P_{\varphi+_n\Delta}^{n,m'-1}(A)]인 [$u]가 존재한다. 이때 [$\operatorname{ord}(\varphi+_n\Delta)=n]이므로 가정으로부터 [$P_{\varphi+_n\Delta}^{n,0}(A)\cup P_{\varphi+_n\Delta}^{n,\uarr}(A)\ne\emptyset]임을 유도할 수 있다.
+		[*] [$w\in P_\varphi^{n+1,m,\darr}(\Delta\vdash A)]인 경우, [$n+1\geq\operatorname{ord}\varphi]이므로 가정으로부터 [$P_\varphi^{n+1,0}(\Delta\vdash A)\cup P_\varphi^{n+1,\uarr}(\Delta\vdash A)\ne\emptyset]이 된다. 이때 [$P_\varphi^{n+1,0}(\Delta\vdash A)=\emptyset]이므로 어떤 [$w']이 [$P_\varphi^{n+1,\uarr}(\Delta\vdash A)]에 속한다. 그러므로 어떤 [$m'\in\N]에 대해 [$w'\in P_\varphi^{n+1,m',\uarr}(\Delta\vdash A)]이다. 그러므로 [$u\in P_{\varphi\cup_n\Delta}^{n,m'-1}(A)]인 [$u]가 존재한다. 이때 [$\operatorname{ord}(\varphi\cup_n\Delta)=n]이므로 가정으로부터 [$P_{\varphi\cup_n\Delta}^{n,0}(A)\cup P_{\varphi\cup_n\Delta}^{n,\uarr}(A)\ne\emptyset]임을 유도할 수 있다.
 
 		[ul
-			[*] [$P_{\varphi+_n\Delta}^{n,0}(A)\ne\emptyset]일 경우 [$A\in\varphi(n)]이거나 [$A]가 [$\Delta]의 엔트리 중에 있다.
+			[*] [$P_{\varphi\cup_n\Delta}^{n,0}(A)\ne\emptyset]일 경우 [$A\in\varphi(n)]이거나 [$A]가 [$\Delta]의 엔트리 중에 있다.
 			[ul
 				[*] [$A\in\varphi(n)]이면 [$P_\varphi^{n,0}(A)\ne\emptyset]임을 보일 수 있다.
 				[*] [$A]가 [$\Delta]의 엔트리 중에 있다면 [$\mathbf v\in P_\varphi^{n,m}(\Delta)]인데 가정으로부터 [$P_\varphi^{n,0}(\Delta)\cup P_\varphi^{n,\uarr}(\Delta)\ne\emptyset]임을 보일 수 있다. 이로부터 [$P_\varphi^{n,0}(A)\cup P_\varphi^{n,\uarr}(A)\ne\emptyset]이다.
 			]
-			[*] [$P_{\varphi+_n\Delta}^{n,\uarr}(A)\ne\emptyset]일 경우 어떤 [$k\in\N]에 대해 [$P_{\varphi+_n\Delta}^{n,k,\uarr}(A)\ne\emptyset]이다. 일단 [$n\geq 1]이다. 즉 [$A]가 어떤 [$\Sigma\in(M^{n-1}(L))^\ast] 및 [$B\in M^{n-1}(L)]에 대해 [$\Sigma\vdash B] 형태이다. 그리고 [$P_{\varphi+_n\Delta+_{n-1}\Sigma}^{n-1,k-1}(B)\ne\emptyset]이다. 즉 [$P_{(\varphi+_{n-1}\Sigma)+_n\Delta}^{n-1}(B)\ne\emptyset]이다. 또 [$P_\varphi^n(\Delta)\ne\emptyset]이므로 [$P_{\varphi+_{n-1}\Sigma}^n(\Delta)\ne\emptyset]이다. 그러므로 [**1.3.11]에 의해 [$P_{\varphi+_{n-1}\Sigma}^{n-1}(B)\ne\emptyset]이다. 즉 [$(\uarr)]을 적용하면 [$P_\varphi^{n,\uarr}(\Sigma\vdash B)\ne\emptyset]을 얻는다. 즉 [$P_\varphi^{n,\uarr}(A)\ne\emptyset]이다.
+			[*] [$P_{\varphi\cup_n\Delta}^{n,\uarr}(A)\ne\emptyset]일 경우 어떤 [$k\in\N]에 대해 [$P_{\varphi\cup_n\Delta}^{n,k,\uarr}(A)\ne\emptyset]이다. 일단 [$n\geq 1]이다. 즉 [$A]가 어떤 [$\Sigma\in(M^{n-1}(L))^\ast] 및 [$B\in M^{n-1}(L)]에 대해 [$\Sigma\vdash B] 형태이다. 그리고 [$P_{\varphi\cup_n\Delta\cup_{n-1}\Sigma}^{n-1,k-1}(B)\ne\emptyset]이다. 즉 [$P_{(\varphi\cup_{n-1}\Sigma)\cup_n\Delta}^{n-1}(B)\ne\emptyset]이다. 또 [$P_\varphi^n(\Delta)\ne\emptyset]이므로 [$P_{\varphi\cup_{n-1}\Sigma}^n(\Delta)\ne\emptyset]이다. 그러므로 [**1.3.11]에 의해 [$P_{\varphi\cup_{n-1}\Sigma}^{n-1}(B)\ne\emptyset]이다. 즉 [$(\uarr)]을 적용하면 [$P_\varphi^{n,\uarr}(\Sigma\vdash B)\ne\emptyset]을 얻는다. 즉 [$P_\varphi^{n,\uarr}(A)\ne\emptyset]이다.
 		]
 
 		[*] [$w\in P_\varphi^{n+1,m,\uarr}(\Delta\vdash A)]인 경우, 위에서 [$w']에 적용한 논리를 적용하면 된다.
