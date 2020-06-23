@@ -127,7 +127,9 @@
 
 [ul
 	[*] (a) [$(\Phi, \cup)]이 멱등(idempotent)인 가환 모노이드(commutative monoid)이며 [$\emptyset]이 그 항등원이다.
+	[*] (a') [$(\Phi, \cap)]이 멱등인 가환 모노이드이며 [$\bigcup\Phi]가 그 항등원이다.
 	[*] (b) [$(\varphi\cup\psi)(n) = \varphi(n)\cup\psi(n).]
+	[*] (b') [$(\varphi\cap\psi)(n) = \varphi(n)\cap\psi(n).]
 	[*] (c) [$\varphi=\bigsqcup_{n\in\N_0}\varphi(n).]
 	[*] (d) [$\varphi=\psi\lrarr(\forall n\in\N_0)(\varphi(n)=\psi(n)).]
 ]
@@ -243,6 +245,8 @@
 	[*] (a) [$ Q(\varphi)\subseteq Q(\psi)\lrarr(\forall n\in\N_0)(Q_n(\varphi)\subseteq Q_n(\psi)).]
 	[*] (b) (확장성(extensiveness)) [$\varphi\subseteq Q(\varphi).]
 	[*] (c) (단조성(monotonicity)) [$\varphi\subseteq\psi\to Q(\varphi)\subseteq Q(\psi).]
+	[*] (d) [$Q(\varphi\cap\psi)\subseteq Q(\varphi)\cap Q(\psi).]
+	[*] (e) [$Q(\varphi)\cup Q(\psi)\subseteq Q(\varphi\cup\psi).]
 ]
 
 증명 생략.]
@@ -298,12 +302,18 @@
 [>[**1.3.11의0 따름정리.] [$Q]가 [~(href=https://en.wikipedia.org/wiki/Closure_operator)결과 연산](consequence operator)이다. 즉 다음이 성립한다.
 
 [ul
-	[*] (확장성(extensiveness)) [$\varphi\subseteq Q(\varphi).]
-	[*] (단조성(monotonicity)) [$\varphi\subseteq\psi\to Q(\varphi)\subseteq Q(\psi).]
-	[*] (멱등성(idempotence)) [$Q(Q(\varphi)) = Q(\varphi).]
+	[*] (확장성) [$\varphi\subseteq Q(\varphi).]
+	[*] (단조성) [$\varphi\subseteq\psi\to Q(\varphi)\subseteq Q(\psi).]
+	[*] (멱등성) [$Q(Q(\varphi)) = Q(\varphi).]
 ]
 
 증명. 확장성과 단조성을 가진다는 것은 이미 보였으므로 멱등성을 증명해 보자. 확장성에 의해 [$\varphi\subseteq Q(\varphi)]이므로 [**1.3.11]에 의해 [$Q(\varphi\cup Q(\varphi))=Q(\varphi)]인데, [$\varphi\subseteq Q(\varphi)]이므로 [$Q(Q(\varphi))=Q(\varphi)]가 유도된다.]
+
+[>[**1.3.11의0.5 따름정리.] [$\varphi\subseteq\psi\subseteq Q(\varphi)]이면 [$Q(\varphi)=Q(\psi).]
+
+증명. [$\varphi\subseteq \psi]로부터 단조성에 의해 [$Q(\varphi)\subseteq Q(\psi)]이다. 또 [$\psi\subseteq Q(\varphi)]로부터 단조성 및 멱등성에 의해 [$Q(\psi)\subseteq Q(Q(\varphi))=Q(\varphi)]이다. 즉 [$Q(\varphi)=Q(\psi)]이다.]
+
+[**1.3.11의0.5]는 순수하게 결과 연산자의 성질임에 주목하라.
 
 [>[**1.3.11의1 따름정리.] [$Q(\varphi\cup Q(\psi))=Q(\varphi\cup\psi).]
 
@@ -325,18 +335,28 @@
 [>[**1.3.11의4 정리.] 다음이 성립한다.
 
 [ul
-	[*] (a) [$\Psi=\{\varphi\in\Phi:Q(\varphi)=\varphi\}.]
-	[*] (b) [$(\Psi, +)]가 멱등인 가환 모노이드이며 [$ Q(\emptyset)]이 그 항등원이다.
-	[*] (c) [$Q: \Phi\to\Psi]가 [$(\Phi,\cup)]에서 [$(\Psi,+)]로의 모노이드 준동형(monoid homomorphism)이다.
+	[*] (a) [$\Psi=\{\varphi\in\Phi:Q(\varphi)=\varphi\}=\{\varphi\in\Phi:Q(\varphi)\subseteq\varphi\}.]
+	[*] (b) [$(\Psi, \cap)]이 [$(\Phi, \cap)]의 부분 모노이드(submonoid)이다.
+	[*] (c) [$(\Psi, +)]가 멱등인 가환 모노이드이며 [$ Q(\emptyset)]이 그 항등원이다.
+	[*] (d) [$Q: \Phi\to\Psi]가 [$(\Phi,\cup)]에서 [$(\Psi,+)]로의 모노이드 준동형(monoid homomorphism)이다.
 ]
 
 증명.
 
 [ul
-	[*] (a) [$\Psi'=\{\varphi\in\Phi:Q(\varphi)=\varphi\}]라 하고 [$\Psi=\Psi']를 보이자. [$\psi\in\Psi]이면 어떤 [$\varphi\in\Phi]에 대해 [$\psi=Q(\varphi)]이다. 즉 멱등성에 의해 [$Q(\psi)=Q(Q(\varphi))=Q(\varphi)=\psi]이므로 [$\psi\in\Psi']이다. 또 [$\psi\in\Psi']이면 [$Q(\psi)=\psi]인데 [$Q(\psi)\in\Psi]이므로 [$\psi\in\Psi]이다. 즉 [$\Psi=\Psi']이다.
-	[*] (b)
+	[*] (a) [$\Psi'=\{\varphi\in\Phi:Q(\varphi)=\varphi\}]라 하고 [$\Psi=\Psi']를 보이자. [$\psi\in\Psi]이면 어떤 [$\varphi\in\Phi]에 대해 [$\psi=Q(\varphi)]이다. 즉 멱등성에 의해 [$Q(\psi)=Q(Q(\varphi))=Q(\varphi)=\psi]이므로 [$\psi\in\Psi']이다. 또 [$\psi\in\Psi']이면 [$Q(\psi)=\psi]인데 [$Q(\psi)\in\Psi]이므로 [$\psi\in\Psi]이다. 즉 [$\Psi=\Psi']이다. 또 확장성에 의해 [$Q(\varphi)=\varphi\lrarr Q(\varphi)\subseteq\varphi]이므로 [$\{\varphi\in\Phi:Q(\varphi)\subseteq\varphi\}]와도 같다.
+
+	[*] (b) 다음을 보이자.
 	[ul
-		[*] (닫혀 있음(closure)) [$\varphi+\psi=Q(\varphi\cup\psi)\in\Psi]이므로 닫혀 있다.
+		[*] (항등원) [$Q\left(\bigcup\Phi\right)\in\Phi]이므로 [$Q\left(\bigcup\Phi\right)\subseteq\bigcup\Phi]이다. 즉 [$\bigcup\Phi\in\Psi]이다.
+		[*] (닫혀 있음(closure)) 임의의 [$\varphi,\psi\in\Psi]에 대해, 단조성에 의해 [$Q(\varphi\cap\psi)\subseteq Q(\varphi)\cap Q(\psi)=\varphi\cap\psi]이다. 그러므로 [$\varphi\cap\psi\in\Psi]이다.
+	]
+
+	그러므로 부분 모노이드가 된다.
+
+	[*] (c)
+	[ul
+		[*] (닫혀 있음) [$\varphi+\psi=Q(\varphi\cup\psi)\in\Psi]이므로 닫혀 있다.
 		
 		[*] (결합법칙(associativity)) [$(\varphi+\psi)+\chi=\varphi+(\psi+\chi)]임을 보이자. 즉 [$$Q(Q(\varphi\cup\psi)\cup\chi)=Q(\varphi\cup Q(\psi\cup\chi))]임을 보이면 되는데, [**1.3.11의1]로부터 이는 성립한다.
 		
@@ -348,7 +368,7 @@
 	]
 	그러므로 [$(\Psi,+)]가 멱등인 가환 모노이드이고 [$Q(\emptyset)]이 그 항등원이다.
 
-	[*] (c) [$Q]가 [$\emptyset]을 [$Q(\emptyset)]으로 보내고, 임의의 [$\varphi,\psi\in\Phi]에 대해 [$Q(\varphi)+Q(\psi)=Q(Q(\varphi)\cup Q(\psi))]이다. [**1.3.11의1]로부터 이는 [$Q(\varphi\cup\psi)]와 같다. 그러므로 [$Q(\varphi)+Q(\psi)=Q(\varphi\cup\psi)]가 되어 [$Q]가 모노이드 준동형이다.
+	[*] (d) [$Q]가 [$\emptyset]을 [$Q(\emptyset)]으로 보내고, 임의의 [$\varphi,\psi\in\Phi]에 대해 [$Q(\varphi)+Q(\psi)=Q(Q(\varphi)\cup Q(\psi))]이다. [**1.3.11의1]로부터 이는 [$Q(\varphi\cup\psi)]와 같다. 그러므로 [$Q(\varphi)+Q(\psi)=Q(\varphi\cup\psi)]가 되어 [$Q]가 모노이드 준동형이다.
 ]]
 
 또 다음을 보이자.
