@@ -88,18 +88,28 @@ PI.type = function (obj, parentScope, trace) {
 
 	var origin = obj.origin ? scope.getType(typeObjToNestedArr(obj.origin)) : null;
 
+	var name = obj.name;
+	var doc = obj.doc;
+	var base = obj.base;
+
+	if (base && origin) {
+		throw makeError(`Base type must be primitive`, trace);
+	}
+
 	if (origin) {
 		return new Type({
-			name: obj.name,
-			doc: obj.doc,
+			name,
+			doc,
+			base,
 			origin
 		});
 	}
 
 	return new Type({
 		functional: false,
-		name: obj.name,
-		doc: obj.doc
+		name,
+		doc,
+		base
 	});
 };
 
@@ -391,16 +401,16 @@ PI.tee = function (obj, parentScope, trace) {
 
 	trace = extendTrace(trace, 'tee', '<anonymous>', obj.location);
 
-	if (!scope.root.hasType('st'))
-		throw makeError('Type st is not defined', trace);
+	if (!scope.baseType)
+		throw makeError('Base type is not defined', trace);
 
-	var ST = scope.root.getType('st');
+	var base = scope.baseType;
 
 	var foo = obj => {
 		var ret = PI.expr0(obj, scope, trace);
 
-		if (!ST.equals(ret.type))
-			throw makeError(`Type failed to match st: ${ret.type}`, trace);
+		if (!base.equals(ret.type))
+			throw makeError(`Type failed to match the base: ${ret.type}`, trace);
 
 		return ret;
 	};

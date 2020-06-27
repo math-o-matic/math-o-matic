@@ -10,13 +10,18 @@ line =
 	/ deflink
 
 typedef =
-	doc:(documentation __)? "type" __ origin:(o:ftype __ {return o})? name:IDENT _ SEM
+	doc:(documentation __)?
+	base:("base" __)?
+	"type" __
+	origin:(o:ftype __ {return o})?
+	name:IDENT _ SEM
 	{
 		doc = doc && doc[0];
 		
 		return {
 			_type: 'typedef',
 			doc,
+			base: !!base,
 			origin,
 			name,
 			location: location()
@@ -481,12 +486,13 @@ var =
 	}
 
 keyword =
-	"type"
-	/ "rule"
-	/ "ruleset"
+	"axiomatic"
+	/ "base"
 	/ "link"
 	/ "native"
-	/ "axiomatic";
+	/ "rule"
+	/ "ruleset"
+	/ "type";
 
 IDENT =
 	!keyword id:[a-zA-Z0-9_]+ {return id.join('')}

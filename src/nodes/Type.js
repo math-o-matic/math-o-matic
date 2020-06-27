@@ -4,6 +4,7 @@ function Type(o) {
 	Node.call(this);
 
 	this.doc = o.doc;
+	this.isBaseType = !!o.base;
 
 	if (o.origin) {
 		if (typeof o.name != 'string')

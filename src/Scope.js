@@ -35,6 +35,8 @@ function Scope(parent) {
 
 	this.parent = parent;
 	this.root = parent ? parent.root : this;
+
+	this.baseType = parent ? parent.baseType : null;
 }
 
 Scope.prototype.extend = function () {
@@ -97,6 +99,17 @@ Scope.prototype.addType = function (type) {
 
 	if (this.hasOwnType(type.name))
 		throw Error(`Type with name ${type.name} already is there`);
+
+	if (type.isBaseType) {
+		if (this.baseType) {
+			throw Error('A base type already exists');
+		}
+
+		(function broadcast(scope) {
+			scope.baseType = type;
+			if (scope.parent) broadcast(scope.parent);
+		})(this);
+	}
 
 	return this.typedefMap[type.name] = type;
 };

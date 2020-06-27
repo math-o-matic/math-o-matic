@@ -107,14 +107,14 @@ native = {
 					throw Error('Validation failed');
 
 				// 3: 노드 트리 만들기
-				if (!scope.root.hasType('st'))
-					throw Error(`Type st not found`);
+				if (!scope.baseType)
+					throw Error(`Base type not found`);
 
-				var st = scope.root.getType('st');
+				var base = scope.baseType;
 
 				var typevars = Array(usedVars.length).fill().map((_, i) => {
 					return new scope.Typevar({
-						type: st,
+						type: base,
 						name: vars[usedVars[i]]
 					});
 				});
@@ -172,10 +172,10 @@ native = {
 				if (rules.length != 1) throw Error('wut');
 				var rule = ER.expand1(rules[0]);
 
-				if (!scope.hasType('st'))
-					throw Error(`Type st not found`);
+				if (!scope.baseType)
+					throw Error(`Base type not found`);
 
-				var st = scope.getType('st');
+				var base = scope.baseType;
 				
 				if (!scope.hasType('cls'))
 					throw Error(`Type cls not found`);
@@ -205,9 +205,9 @@ native = {
 					from: [new scope.Type({
 						functional: true,
 						from: [cls],
-						to: st
+						to: base
 					})],
-					to: st
+					to: base
 				})))
 					throw Error(`Wrong type for V`);
 
@@ -224,7 +224,7 @@ native = {
 									type: new scope.Type({
 										functional: true,
 										from: [cls],
-										to: st
+										to: base
 									}),
 									atomic: false,
 									params: [last],
@@ -241,10 +241,10 @@ native = {
 				if (rules.length != 1) throw Error('wut');
 				var rule = rules[0];
 
-				if (!scope.hasType('st'))
-					throw Error(`Type st not found`);
+				if (!scope.baseType)
+					throw Error(`Base type not found`);
 
-				var st = scope.getType('st');
+				var base = scope.baseType;
 				
 				if (!scope.hasType('cls'))
 					throw Error(`Type cls not found`);
@@ -269,9 +269,9 @@ native = {
 					from: [new scope.Type({
 						functional: true,
 						from: [cls],
-						to: st
+						to: base
 					})],
-					to: st
+					to: base
 				})))
 					throw Error(`Wrong type for V`);
 
@@ -307,10 +307,10 @@ native = {
 				if (rules.length != 1) throw Error('wut');
 				var rule = rules[0];
 
-				if (!scope.hasType('st'))
-					throw Error(`Type st not found`);
+				if (!scope.baseType)
+					throw Error(`Base type not found`);
 
-				var st = scope.getType('st');
+				var base = scope.baseType;
 
 				var tee = ER.expand1(rule);
 
@@ -327,8 +327,8 @@ native = {
 
 				if (!I.type.equals(new scope.Type({
 					functional: true,
-					from: [st, st],
-					to: st
+					from: [base, base],
+					to: base
 				})))
 					throw Error(`Wrong type for I`);
 
