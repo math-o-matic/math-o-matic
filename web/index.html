@@ -85,6 +85,11 @@
 				color: #303F9F;
 			}
 
+			.katex a[data-green] > :not(.mspace) {
+				background-color: #E8F5E9;
+				color: #006064;
+			}
+
 			.katex a[data-orange] {
 				color: #E65100;
 			}
@@ -316,12 +321,16 @@
 			[].forEach.call($$('.katex a'), a => {
 				var href = a.getAttribute('href');
 				var idMatch = href.match(/^#id-([0-9]+)$/);
+				var defMatch = href.match(/^#def-.+$/);
 
 				if (idMatch) {
 					a.dataset.orange = true;
 					a.title = 'id: ' + idMatch[1];
-				} else {
+				} else if (defMatch) {
 					a.dataset.blue = true;
+					a.title = a.getAttribute('href');
+				} else {
+					a.dataset.green = true;
 					a.title = a.getAttribute('href');
 				}
 			});
