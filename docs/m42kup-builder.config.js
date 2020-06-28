@@ -12,7 +12,7 @@ module.exports = {
 	list: [
 		{
 			name: '수학적 모형',
-			dir: 'model',
+			dir: 'theory',
 			list: [
 				{
 					name: '대강의 모형',
@@ -25,6 +25,10 @@ module.exports = {
 				{
 					name: 'U 함수에 관하여',
 					file: 'u'
+				},
+				{
+					name: '다계층으로의 확장',
+					file: 'multilayer'
 				}
 			]
 		},

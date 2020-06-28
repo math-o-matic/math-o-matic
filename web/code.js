@@ -74,8 +74,8 @@ tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없�
 axiomatic native ruleset tt;
 
 "sequent calculus의 cut 규칙. 즉
-[$$\frac{\Delta\vdash p\quad p,\Sigma\vdash_P q}{\Delta, \Sigma\vdash q}]
-이다. [$\vdash_P]는 좌변의 permutation을 허용한다는 뜻으로 [$p, \Sigma\vdash q]의 [$p]는 [$\vdash_P] 좌변 아무데나 있어도 된다.
+[$$\frac{\Delta\vdash p\quad \Sigma_1,p,\Sigma_2\vdash q}{\Sigma_1,\Delta,\Sigma_2\vdash q}]
+이다. 단 [$p]의 첫 번째 일치가 [$\Delta]로 치환된다. 즉 [$\Sigma_1]에는 [$p]가 없다.
 
 1계층 reduction 구문을 도입한다면 그로부터 증명할 수 있다."
 axiomatic native link cut;

@@ -170,7 +170,9 @@
 				var v = program.scope.typedefMap[k];
 
 				r = `<div class="block">`
-					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>type</b> ${k}</a></p>`
+					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>${
+						(v.isBaseType ? 'base ' : '')
+					}type</b> ${k}</a></p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
 					+ '<p class="label"><b>description</b></p>'

@@ -2,7 +2,7 @@
 
 [$M(L)]이 [~(href=./model.html)모형] 문서에서 정의된 것과 같이 어떤 형식 언어 [$L]의 메타언어를 만드는 함수라 하자. 이때 임의의 [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해 관계 [$\prec_L]를 다음과 같이 정의하자.
 
-[$$S\prec_L T := (\forall\Delta\in L^\ast)(\forall p\in L)(\Delta\vdash p\in T\to(\Delta\in S^\ast \to p\in S)).]
+[$$S\prec_L T\xleftrightarrow\text{def}(\forall\Delta\in L^\ast)(\forall p\in L)(\Delta\vdash p\in T\to(\Delta\in S^\ast \to p\in S)).]
 
 [$S\prec_L T]를 ["[$S]가 [$T]를 이행한다]라 읽고 아랫첨자 [$L]은 적당히 생략하자. 즉 [$T]에 [$\Delta\vdash p]가 있다면, [$S]에 [$\Delta] 전부가 있을 때 [$p]도 있어야 한다는 뜻이다. 이는 [$S_{n+1}]에 의해 [$S_n]이 받는 제약을 뜻한다. 이때 다음이 성립한다.
 
@@ -38,11 +38,11 @@
 
 또 [$\mathcal D(T)]를 다음과 같이 정의하자.
 
-[$$\mathcal D(T) := \{S\subseteq L: S \prec T\}.]
+[$$\mathcal D(T)\coloneqq\{S\subseteq L: S \prec T\}.]
 
 [$\mathcal D(T)\subseteq\mathcal P(L)]이 되므로 이러한 집합을 구성하는 것은 가능하다. 그렇다면 [$D(T)]는
 
-[$$D(T) := \bigcap\mathcal D(T)]
+[$$D(T)\coloneqq\bigcap\mathcal D(T)]
 
 와 같이 정의된다. 즉 어떤 [$T\subseteq M(L)]를 이행하는 [$S\subseteq L]을 모두 교집합 한 것이다. 이때 [$L\prec T]이므로(증명해 보라) [$\mathcal D(T)]가 공집합이 아니며 즉 [$D(T)\subseteq L]이다. 이제 [$D(T)]가 [$T]를 이행하는 최소의 집합임을 보인 후, [$D(T)]에 속하는 것과 [$T]에 의한 증명연쇄가 존재하는 것이 동치임을 보일 것이다. 증명연쇄가 무엇인지는 아래에서 정의할 것이다. 이는 [~(href=./model.html)모형] 문서에서 증명하지 않고 대충 넘어갔던 것이다.
 

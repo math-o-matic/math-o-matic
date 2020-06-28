@@ -2,11 +2,11 @@
 
 또 주목할 만한 점은 [$D(T)] 값을 유지하면서 [$T]를 늘려가는 것이 가능하다는 것이다. 먼저 [$\mathcal U(S)]를 다음과 같이 정의하자.
 
-[$$\mathcal U(S) := \{T\subseteq M(L): S\prec T\}.]
+[$$\mathcal U(S)\coloneqq\{T\subseteq M(L): S\prec T\}.]
 
 [$\mathcal U(S)\subseteq\mathcal P(M(L))]이므로 이러한 집합을 구성하는 것은 가능하다. 그렇다면 [$U(S)]는
 
-[$$U(S) := \bigcup\mathcal U(S)]
+[$$U(S)\coloneqq\bigcup\mathcal U(S)]
 
 와 같이 정의된다. 즉 어떤 [$S\subseteq L]이 이행하는 [$T\subseteq M(L)]을 모두 합집합 한 것이다.
 
