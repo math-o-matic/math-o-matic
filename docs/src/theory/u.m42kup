@@ -55,27 +55,6 @@
 
 증명. [**1.3.4]의 [$\Delta]에 [$\varepsilon]을 대입하라.]
 
-[$U(D(T))]는 [$D] 값이 [$T]와 같으므로 [$U(D(T))]에 있는 규칙들은 [$T]에 대해 아래 방향으로 [~(href=https://en.wikipedia.org/wiki/Admissible_rule)admissible]하다. 그러나 [$U(D(T))]는 만들어 내기에는 너무 크다. 그러므로 [$U(D(T))]보다 좀 더 작은 집합을 만들어 보자.
-
-어떤 [$T\subseteq M(L)]에 대해 [$\mathcal E(T)]를 다음과 같이 정의하자.
-
-[$$\mathcal E(T)\coloneqq\{V\subseteq M(L): (\forall S\subseteq L)(S\prec T\lrarr S\prec V)\}.]
-
-이때 [$E(T)]를
-
-[$$E(T)\coloneqq\bigcup\mathcal E(T)]
-
-와 같이 정의하자.
-
-[>[**1.3.5의1 정리.] [$S\prec T\lrarr S\prec E(T)]. 즉 [$E(T)\in\mathcal E(T).]
-
-증명.
-
-[ul
-	[*] [$(\to)] [$S\prec T]라 하자. 임의의 [$V\in\mathcal E(T)]에 대해 [$S\prec V]이다. [**1.2.1](a')에 의해 [$S\prec\bigcup\mathcal E(T)=E(T)]가 된다.
-	[*] [$(\larr)] [$S\prec E(T)]라 하자. [$T\in\mathcal E(T)]이므로 [$T\subseteq E(T)]이다. [**1.2.1](c)에 의해 [$S\prec T]가 된다.
-]]
-
 몇 가지 문장이 시스템의 성질로부터 항상 [$U^2(S) = U(U(S))]에 속한다.
 
 [>[**1.3.6 정리.] 임의의 [$S\subseteq L]에 대해 다음이 성립한다.
