@@ -68,11 +68,13 @@
 	[*] [$(\leftarrow)] [**1.2.2]에 의해 [$D(T) = D(T\cup V)\prec T\cup V]이므로, [**1.2.1](a)에 의해 [$D(T)\prec V]이다.
 ]]
 
-[>[**1.2.5 정리.] [$D(T)\cup D(V)\subseteq D(T\cup V).]
+[>[**1.2.4의1 정리.] [$D]는 단조롭다. 즉 [$T\subseteq V\to D(T)\subseteq D(V)]이다.
 
-증명. 먼저 [$\bigcap\mathcal A\cup\bigcap\mathcal B\subseteq\bigcap(\mathcal A\cap\mathcal B)]임을 보여라. 이때 [$D(T\cup V)]는 [$\bigcap\{S\subseteq L: S\prec T\cup V\}]인데, [**1.2.1](a)에 의해 이는 [$\bigcap(\mathcal D(T)\cap\mathcal D(V))]와 같다. [$\bigcap\mathcal D(T)\cup\bigcap\mathcal D(V)\subseteq\bigcap(\mathcal D(T)\cap\mathcal D(V))]로부터 정리를 유도할 수 있다.]
+증명. [$T\subseteq V]이면 [**1.2.1](c)에 의해 [$S\prec V\to S\prec T]이다. 즉 [$\mathcal D(V)\subseteq\mathcal D(T)]이다. 즉 [$D(V)]가 [$D(T)]보다 적은 것을 교집합 하므로 [$D(T)\subseteq D(V)]이다.]
 
-[$\bigcap(\mathcal A\cap\mathcal B)]가 [$\bigcap\mathcal A\cap\bigcap\mathcal B]와 같지 않음에 주의하라. 오히려 [$\bigcap\mathcal A\cap\bigcap\mathcal B = \bigcap(\mathcal A\cup\mathcal B)]이다.
+[>[**1.2.5 따름정리.] [$D(T)\cup D(V)\subseteq D(T\cup V).]
+
+증명 생략. [**1.2.4의1]로부터 쉽게 유도된다.]
 
 이제 [$D(T)]의 임의의 원소가 [$T]에 의한 증명연쇄를 갖는다는 것을 보여야 하는데, 먼저 다음을 증명하자.
 
