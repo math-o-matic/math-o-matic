@@ -72,7 +72,7 @@
 
 증명. [$T\subseteq V]이면 [**1.2.1](c)에 의해 [$S\prec V\to S\prec T]이다. 즉 [$\mathcal D(V)\subseteq\mathcal D(T)]이다. 즉 [$D(V)]가 [$D(T)]보다 적은 것을 교집합 하므로 [$D(T)\subseteq D(V)]이다.]
 
-[>[**1.2.5 따름정리.] [$D(T)\cup D(V)\subseteq D(T\cup V).]
+[>[**1.2.5 따름정리.] [$n\in\N_0]일 때 [$D^n(T)\cup D^n(V)\subseteq D^n(T\cup V).]
 
 증명 생략. [**1.2.4의1]로부터 쉽게 유도된다.]
 
