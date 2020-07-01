@@ -68,7 +68,7 @@
 	[*] (c) [$\lesssim]이 순서관계 같은 것이다. 즉 다음이 성립한다.
 	[ul
 		[*] (반사성(reflexivity)) [$\varphi\lesssim\varphi.]
-		[*] (반대칭성(antisymmetry) 같은 것) [$\varphi\lesssim\psi] 및 [$\psi\lesssim\varphi]이면 [$\varphi\sim\psi].
+		[*] (반대칭성(antisymmetry) 같은 것) [$\varphi\lesssim\psi] 및 [$\psi\lesssim\varphi]이면 [$\varphi\sim\psi]. 역도 성립한다.
 		[*] (추이성(transitivity)) [$\varphi\lesssim\psi] 및 [$\psi\lesssim\chi]이면 [$\varphi\lesssim\chi].
 	]
 	[*] (d) [$\varphi\subseteq\psi]이면 [$\varphi\lesssim\psi].
