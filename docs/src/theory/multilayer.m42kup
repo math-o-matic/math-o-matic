@@ -53,16 +53,33 @@
 	[*] (c) [$(S\prec\varphi\land\psi\subseteq\varphi)\to S\prec\psi.]
 ]]
 
-[$\Phi] 상에서 동치관계 [$\sim_L]을 다음과 같이 정의하자.
+[$\Phi] 상에서 관계 [$\lesssim_L] 및 [$\sim_L]을 다음과 같이 정의하자.
 
-[$$\varphi\sim_L\psi\xleftrightarrow\text{def}(\forall S\subseteq L)(S\prec\varphi\lrarr S\prec\psi).]
+[$$\begin{aligned}
+	\varphi\lesssim_L\psi&\xleftrightarrow\text{def}(\forall S\subseteq L)(S\prec\psi\to S\prec\varphi), \\
+	\varphi\sim_L\psi&\xleftrightarrow\text{def}(\forall S\subseteq L)(S\prec\varphi\lrarr S\prec\psi).
+\end{aligned}]
 
-동치관계임을 보이는 것은 간단하다. 이때 [$\varphi]의 [**확장] [$E(\varphi)]를 다음과 같이 정의하자.
+[>[**1.4.3 정리.] 다음이 성립한다.
+
+[ul
+	[*] (a) [$\sim]이 동치관계이다.
+	[*] (b) [$\varphi]의 [$\sim]에 의한 동치류(equivalence class) [$`[\varphi]`_\sim]이 [$\cup] 연산에 대해 닫혀 있다.
+	[*] (c) [$\lesssim]이 순서관계 같은 것이다. 즉 다음이 성립한다.
+	[ul
+		[*] (반사성(reflexivity)) [$\varphi\lesssim\varphi.]
+		[*] (반대칭성(antisymmetry) 같은 것) [$\varphi\lesssim\psi] 및 [$\psi\lesssim\varphi]이면 [$\varphi\sim\psi].
+		[*] (추이성(transitivity)) [$\varphi\lesssim\psi] 및 [$\psi\lesssim\chi]이면 [$\varphi\lesssim\chi].
+	]
+	[*] (d) [$\varphi\subseteq\psi]이면 [$\varphi\lesssim\psi].
+	[*] (e) [$\varphi\lesssim\psi]이면 [$\mathcal D(\psi)\subseteq\mathcal D(\varphi)]. 즉 [$D(\varphi)\subseteq D(\psi)].
+]]
+
+
+이때 [$\varphi]의 [**확장] [$E(\varphi)]를 다음과 같이 정의하자.
 
 [$$E(\varphi)\coloneqq\bigcup`[\varphi]`_\sim.]
 
-단 [$`[\varphi]`_\sim]은 [$\varphi]의 [$\sim]에 의한 동치류(equivalence class)이다.
-
-[>[**1.4.3 정리.] [$\varphi\sim E(\varphi).]
+[>[**1.4.4 정리.] [$\varphi\sim E(\varphi).]
 
 증명. [$\varphi\subseteq E(\varphi)]이므로 [**1.4.2](c)에 의해 [$S\prec E(\varphi)\to S\prec\varphi]이다. 또 [$S\prec\varphi]이면 임의의 [$\psi\in`[\varphi]`_\sim]에 대해 [$S\prec\psi]이므로 [**1.4.2](a')에 의해 [$S\prec E(\varphi)]이다. 즉 [$\varphi\sim E(\varphi)]이다.]
