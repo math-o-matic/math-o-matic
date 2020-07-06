@@ -3,6 +3,8 @@ var MetaType = require('./MetaType');
 var Typevar = require('./Typevar');
 var Rule = require('./Rule');
 
+var ExpressionResolver = require('../ExpressionResolver');
+
 function Rulecall({rule, args}) {
 	Node.call(this);
 
@@ -30,6 +32,8 @@ function Rulecall({rule, args}) {
 	}
 
 	this.type = rule.type.to;
+
+	this.expanded = ExpressionResolver.expand1Funcalls(this);
 }
 
 Rulecall.prototype = Object.create(Node.prototype);

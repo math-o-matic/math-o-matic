@@ -210,20 +210,29 @@
 				var v = program.scope.ruleMap[k];
 
 				function generateExpressionTree(expr) {
-					if (expr._type == 'reduction2') {
-						return [
-							`<table>`,
-							`<tr><td colspan="2">${ktx(expr.expr2.toTeXString())}</td></tr>`,
-							`<tr><td colspan="2">${ktx(expr.reduced.toTeXString())}</td></tr>`,
-							expr.args.map((arg, i) => {
-								return [
-									`<tr><th>${i+1}</th><td>${generateExpressionTree(expr.args[i])}</td></tr>`
-								].join('');
-							}).join(''),
-							`</table>`
-						].join('');
-					} else {
-						return ktx(expr.toTeXString());
+					switch (expr._type) {
+						case 'reduction2':
+							return [
+								`<table>`,
+								expr.args.map((arg, i) => {
+									return [
+										`<tr><th>${i+1}</th><td>${generateExpressionTree(expr.args[i])}</td></tr>`
+									].join('');
+								}).join(''),
+								`<tr><th>↓</th><td>${ktx(expr.expr2.toTeXString())}</td></tr>`,
+								`<tr><td colspan="2">${ktx(expr.reduced.toTeXString())}</td></tr>`,
+								`</table>`
+							].join('');
+						case 'rulecall':
+							return [
+								`<table>`,
+								`<tr><td>${ktx(expr.toTeXString())}</td></tr>`,
+								`<tr><td>${ktx(expr.expanded.toTeXString())}</td></tr>`,
+								`</table>`
+							].join('');
+						default:
+							console.log(expr);
+							return ktx(expr.toTeXString());
 					}
 				}
 
