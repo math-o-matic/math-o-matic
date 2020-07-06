@@ -239,7 +239,7 @@
 				r = `<div class="block">`
 					+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>${
 						v.axiomatic ? 'axiomatic ' : ''
-					}rule</b> ${k}</a></p>`
+					}rule</b> ${k}</a>(${v.params.map(p => p.toSimpleString()).join(', ')})</p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 					
 

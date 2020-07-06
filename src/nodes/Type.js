@@ -48,6 +48,14 @@ Type.prototype.toString = function () {
 	return this.toIndentedString(0);
 };
 
+Type.prototype.toSimpleString = function () {
+	if (this.name) return this.name;
+
+	var resolved = this.resolve();
+
+	return `[${resolved.from.map(e => e.toSimpleString()).join(', ')} -> ${resolved.to.toSimpleString()}]`;
+}
+
 Type.prototype.toIndentedString = function (indent) {
 	if (this.isSimple) return this.name;
 
