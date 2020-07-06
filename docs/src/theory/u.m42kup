@@ -59,7 +59,7 @@
 
 증명. [**1.3.2]에 의해 [$S\prec U(S)\cap U(K)] 및 [$K\prec U(S)\cap U(K)]이므로 [**1.2.1](b)에 의해 [$S\cap K\prec U(S)\cap U(K)]이다. [**1.3.2]에 의해 정리가 유도된다.]
 
-[$U^n(S)\cap U^n(K)\subseteq U^n(S\cap K)]는 [$n>1]일 때 일반적으로 성립하지 않는다. [$n=2]일 때의 반례는 [$S=\{1, 2\}], [$K=\{2, 3\}]일 때 [$1\vdash 3\Vdash\>\vdash 3]이다. [$n>2]일 때는 [$\vdash^n 1\vdash 3\Vdash\>\vdash 3]을 반례로 들면 될 것이다. 이 반례는 상상력의 부족함으로 인해 컴퓨터로 알아낸 것이다.
+[$U^n(S)\cap U^n(K)\subseteq U^n(S\cap K)]는 [$n>1]일 때 일반적으로 성립하지 않는다. [$n=2]일 때의 반례는 [$S=\{p\}], [$K=\{q\}]일 때 [$p\vdash q\Vdash\>\vdash q]이다. [$(p\to q)\to q]가 [$p\lor q]와 동치임에 주목하라. [$n>2]일 때는 [$\vdash^n p\vdash q\Vdash\>\vdash q]을 반례로 들면 될 것이다. 이 반례는 상상력의 부족함으로 인해 컴퓨터로 알아낸 것이다.
 
 몇 가지 문장이 시스템의 성질로부터 항상 [$U^2(S) = U(U(S))]에 속한다.
 
