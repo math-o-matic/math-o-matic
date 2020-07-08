@@ -190,7 +190,7 @@
 	<p class="tex result-${result}">${katex.renderToString(tex, {displayMode: true})}</p>
 	<table>
 	<colgroup>
-		<col class="vars" span="${table.left.length}">
+		${table.left.length ? `<col class="vars" span="${table.left.length}">` : ''}
 		<col class="result" span="1">
 	</colgroup>
 	<tr>${table.left.map(({name}) => `<th>${name}</th>`).join('')}
