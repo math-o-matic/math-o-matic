@@ -1,31 +1,12 @@
 [=1.3. [$U] 함수에 관하여]
 
-또 주목할 만한 점은 [$D(T)] 값을 유지하면서 [$T]를 늘려가는 것이 가능하다는 것이다. 먼저 [$\mathcal U(S)]를 다음과 같이 정의하자.
-
-[$$\mathcal U(S)\coloneqq\{T\subseteq M(L): S\prec T\}.]
-
-[$\mathcal U(S)\subseteq\mathcal P(M(L))]이므로 이러한 집합을 구성하는 것은 가능하다. 그렇다면 [$U(S)]는
-
-[$$U(S)\coloneqq\bigcup\mathcal U(S)]
-
-와 같이 정의된다. 즉 어떤 [$S\subseteq L]이 이행하는 [$T\subseteq M(L)]을 모두 합집합 한 것이다.
-
-먼저 [$S]가 [$U(S)]를 이행한다는 것부터 보이자.
-
 [>[**1.3.1 정리.] 임의의 [$S\subseteq L]에 대해 [$S\prec U(S).]
 
-증명. [$\mathcal U(S)]의 정의로부터 임의의 [$T\in\mathcal U(S)]가 [$S\prec T]를 만족한다. 그러므로 [**1.2.1](a')에 의해 [$S\prec \bigcup\mathcal U(S) = U(S)]이다.]
-
-[$U(S)]가 [$S\prec T]인 임의의 [$T\subseteq M(L)]을 포함함을 밝히는 것은 쉽다. 재미있게도 [$S\prec T]와 [$T\subseteq U(S)]는 사실 동치관계이다.
+[**1.2.0의1]로 옮겨짐.]
 
 [>[**1.3.2 정리.] 임의의 [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해 [$S\prec T\leftrightarrow T\subseteq U(S).]
 
-증명.
-
-[ul
-	[*] [$(\to)] [$T]가 [$M(L)]에 포함되고 [$S\prec T]이므로 [$T\in\mathcal U(S)]이다. 이때 [$U(S) = \bigcup\mathcal U(S)]이므로 [$T\subseteq U(S)]이다.
-	[*] [$(\leftarrow)] [**1.3.1]에 의해 [$S\prec U(S)]이고, 가정으로부터 [$T\subseteq U(S)]이므로 [**1.2.1](c)에 의해 [$S\prec T]이다.
-]]
+[**1.2.0]으로 옮겨짐.]
 
 즉 [$U(S)]는 [$S]가 이행하는 것 중에 가장 크며, [$U(S)]의 임의의 부분집합은 [$S]를 이행한다. 이제 [$U(S)]가 [$D] 값을 유지함을 보이자.
 
