@@ -1,63 +1,42 @@
 [=1.4. 다계층으로의 확장]
 
-[$\prec]의 정의롤 일반화하여 [$n\in\N_0]에 대해 [$\prec^n]을 정의해 보자. [$\prec]을 [$\prec^1]이라 하고, [$S\subseteq L] 및 [$V\subseteq M^2(L)]에 대해 [$S\prec^2 V]를 다음과 같이 정의하자.
+[$n\in\N_0]에 대해 [$S\subseteq L] 및 [$T\subseteq M^n(L)]일 때 [$S\vartriangleleft_n T]를 다음과 같이 정의하자.
 
-[>[$S\prec^2 V]를 임의의 [$\Delta_k, \Sigma\in L^\ast] 및 [$A_k,B\in L]에 대해, [$\underline{\Delta_1\vdash A_1;\ldots;\Delta_n\vdash A_n\Vdash\Sigma\vdash B}\in V]이면, [$(\forall k\in\{1,\ldots,n\})(\Delta_k\in S^\ast\to A_k\in S)]일 때 [$\Sigma\in S^\ast\to B\in S]임을 뜻하도록 정의한다.]
+[$$S\vartriangleleft_n T\xleftrightarrow\text{def} T\subseteq U^n(S).]
 
-이때 [**1.3.4]에 의해 [$\Delta_k\in S^\ast\to A_k\in S]가 [$\Delta_k\vdash A_k\in U(S)]와 동치임을 알 수 있다. 즉 [$S\prec^2 V]가 [$U(S)\prec V]와 동치가 된다. 재귀적으로 생각해 보면 [$S\prec^n T]가 [$U^{n-1}(S)\prec T]임을 알 수 있다. 그러므로
+또 [$U^\ast(S)]를 다음과 같이 정의하자.
 
-[$$\begin{aligned}
-	S\prec^0 T&\xleftrightarrow\text{def}T\subseteq S, \\
-	S\prec^n T&\xleftrightarrow\text{def}U^{n-1}(S)\prec T\text{ for }n\in\N
-\end{aligned}]
+[$$U^\ast(S)\coloneqq\bigsqcup_{n\in\N_0}U^n(S).]
 
-라 하자. 이는 M42/math 체계에서 [$n]계층 공리가 갖는 뜻을 확정한다. 이때 [**1.3.2]에 의해 [$U^{n-1}(S)\prec T]가 [$T\subseteq U^n(S)]와 동치이므로 [$n\in\N_0]일 때 [$S\prec^n T]를 [$T\subseteq U^n(S)]라고 정의할 수도 있을 것이다. 또 [$\mathcal D_n(T)]를
+또 [$S\subseteq L] 및 [$\varphi\in\Phi]에 대해 [$S\vartriangleleft\varphi]를 다음과 같이 정의하자.
 
-[$$\mathcal D_n(T)\coloneqq\{S\subseteq L:S\prec^n T\}]
-
-라 하고 [$D_n(T)]를
-
-[$$D_n(T)\coloneqq\bigcap\mathcal D_n(T)]
-
-라 하자. [$D_0(T)=T] 및 [$D_1(T)=D(T)]임에 주목하라.
+[$$S\vartriangleleft\varphi\xleftrightarrow\text{def}\varphi\subseteq U^\ast(S).]
 
 [>[**1.4.1 정리.] 다음이 성립한다.
 
 [ul
-	[*] (a) [$(S\prec^n T\land S\prec^n V)\leftrightarrow S\prec^n T\cup V.]
-	[*] (a') [$(\forall T\in\mathcal T)(S\prec^n T)\leftrightarrow S\prec^n\bigcup\mathcal T.]
-	[*] (c) [$(S\prec^n T\land V\subseteq T)\to S\prec^n V.]
+	[*] (a) [$(S\vartriangleleft_n T\land S\vartriangleleft_n V)\leftrightarrow S\vartriangleleft_n T\cup V.]
+	[*] (a') [$(\forall T\in\mathcal T)(S\vartriangleleft_n T)\leftrightarrow S\vartriangleleft_n\bigcup\mathcal T.]
+	[*] (c) [$(S\vartriangleleft_n T\land V\subseteq T)\to S\vartriangleleft_n V.]
 ]
 
 증명 생략.]
 
-또 [$\varphi\in\Phi]에 대해
-
-[$$S\prec^\ast\varphi\xleftrightarrow\text{def}(\forall n\in\N_0)(S\prec^n\varphi(n))]
-
-및
-
-[$$\mathcal D_\ast(\varphi)\coloneqq\{S\subseteq L:S\prec^\ast\varphi\}]
-
-및
-
-[$$D_\ast(\varphi)\coloneqq\bigcap\mathcal D_\ast(\varphi)]
-
-라 하자. 이제부터는 [$\prec^\ast,\mathcal D_\ast,D_\ast]를 각각 [$\prec,\mathcal D, D]라 하고 기존의 [$\prec,\mathcal D, D]는 각각 [$\prec^1, \mathcal D_1, D_1]이라 칭하자.
-
 [>[**1.4.2 정리.] 다음이 성립한다.
 
 [ul
-	[*] (a) [$(S\prec\varphi\land S\prec\psi)\lrarr S\prec \varphi\cup\psi.]
-	[*] (a') [$(\forall\theta\in\Theta)(S\prec\theta)\leftrightarrow S\prec\bigcup\Theta.]
-	[*] (c) [$(S\prec\varphi\land\psi\subseteq\varphi)\to S\prec\psi.]
-]]
+	[*] (a) [$(S\vartriangleleft\varphi\land S\vartriangleleft\psi)\lrarr S\vartriangleleft \varphi\cup\psi.]
+	[*] (a') [$(\forall\theta\in\Theta)(S\vartriangleleft\theta)\leftrightarrow S\vartriangleleft\bigcup\Theta.]
+	[*] (c) [$(S\vartriangleleft\varphi\land\psi\subseteq\varphi)\to S\vartriangleleft\psi.]
+]
+
+증명 생략.]
 
 [$\Phi] 상에서 관계 [$\lesssim_L] 및 [$\sim_L]을 다음과 같이 정의하자.
 
 [$$\begin{aligned}
-	\varphi\lesssim_L\psi&\xleftrightarrow\text{def}(\forall S\subseteq L)(S\prec\psi\to S\prec\varphi), \\
-	\varphi\sim_L\psi&\xleftrightarrow\text{def}(\forall S\subseteq L)(S\prec\varphi\lrarr S\prec\psi).
+	\varphi\lesssim_L\psi&\xleftrightarrow\text{def}(\forall S\subseteq L)(S\vartriangleleft\psi\to S\vartriangleleft\varphi), \\
+	\varphi\sim_L\psi&\xleftrightarrow\text{def}(\forall S\subseteq L)(S\vartriangleleft\varphi\lrarr S\vartriangleleft\psi).
 \end{aligned}]
 
 [>[**1.4.3 정리.] 다음이 성립한다.
@@ -72,8 +51,10 @@
 		[*] (추이성(transitivity)) [$\varphi\lesssim\psi] 및 [$\psi\lesssim\chi]이면 [$\varphi\lesssim\chi].
 	]
 	[*] (d) [$\varphi\subseteq\psi]이면 [$\varphi\lesssim\psi].
-	[*] (e) [$\varphi\lesssim\psi]이면 [$\mathcal D(\psi)\subseteq\mathcal D(\varphi)]. 즉 [$D(\varphi)\subseteq D(\psi)].
-]]
+	[*] (e) [$\varphi\lesssim\psi]와 [$\psi\sim\varphi\cup\psi]가 동치이다.
+]
+
+증명 생략.]
 
 
 이때 [$\varphi]의 [**확장] [$E(\varphi)]를 다음과 같이 정의하자.
@@ -82,4 +63,6 @@
 
 [>[**1.4.4 정리.] [$\varphi\sim E(\varphi).]
 
-증명. [$\varphi\subseteq E(\varphi)]이므로 [**1.4.2](c)에 의해 [$S\prec E(\varphi)\to S\prec\varphi]이다. 또 [$S\prec\varphi]이면 임의의 [$\psi\in`[\varphi]`_\sim]에 대해 [$S\prec\psi]이므로 [**1.4.2](a')에 의해 [$S\prec E(\varphi)]이다. 즉 [$\varphi\sim E(\varphi)]이다.]
+증명. [$\varphi\subseteq E(\varphi)]이므로 [**1.4.2](c)에 의해 [$S\vartriangleleft E(\varphi)\to S\vartriangleleft\varphi]이다. 또 [$S\vartriangleleft\varphi]이면 임의의 [$\psi\in`[\varphi]`_\sim]에 대해 [$S\vartriangleleft\psi]이므로 [**1.4.2](a')에 의해 [$S\vartriangleleft E(\varphi)]이다. 즉 [$\varphi\sim E(\varphi)]이다.]
+
+(계속)
