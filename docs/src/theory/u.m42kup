@@ -27,7 +27,7 @@
 
 [>[**1.3.4 정리.] 임의의 [$S\subseteq L] 및 [$\Delta\in L^\ast, p\in L]에 대해, [$\Delta\vdash p\in U(S)\leftrightarrow (\Delta\in S^\ast\to p\in S).] 즉 [$$U(S) = \{\Delta\vdash p:\Delta\in L^\ast\land p\in L\land (\Delta\in S^\ast\to p\in S)\}]이다.
 
-증명. [**1.3.1]에 의해 [$S\prec U(S)]이므로 정의로부터 [$(\to)]가 성립한다. 그러므로 [$(\leftarrow)]임을 보이자. [$\Delta\in S^\ast\to p\in S]라 하고 [$\Delta\vdash p\in U(S)]임을 보이자. 가정으로부터 [$S\prec\{\Delta\vdash p\}]임을 보여라. 이때 [**1.3.2]에 의해 [$\{\Delta\vdash p\}\subseteq U(S)], 즉 [$\Delta\vdash p\in U(S)]를 얻는다. 그러므로 [$(\leftarrow)]도 보였다.
+[$U]의 정의가 변하여 자명해졌다.
 ]
 
 즉 [$\Delta\in S^\ast\to p\in S]이면(일 때에만) [$\Delta\vdash p]가 [$U(S)]에 속한다. 이때 다음이 간단히 유도된다.
@@ -38,7 +38,7 @@
 
 [>[**1.3.5의1 정리.] [$U(S)\cap U(K)\subseteq U(S\cap K).]
 
-증명. [**1.3.2]에 의해 [$S\prec U(S)\cap U(K)] 및 [$K\prec U(S)\cap U(K)]이므로 [**1.2.1](b)에 의해 [$S\cap K\prec U(S)\cap U(K)]이다. [**1.3.2]에 의해 정리가 유도된다.]
+[**1.2.0의2]로 옮겨짐.]
 
 [$U^n(S)\cap U^n(K)\subseteq U^n(S\cap K)]는 [$n>1]일 때 일반적으로 성립하지 않는다. [$n=2]일 때의 반례는 [$S=\{p\}], [$K=\{q\}]일 때 [$p\vdash q\Vdash\>\vdash q]이다. [$(p\to q)\to q]가 [$p\lor q]와 동치임에 주목하라. [$n>2]일 때는 [$\vdash^n p\vdash q\Vdash\>\vdash q]을 반례로 들면 될 것이다. 이 반례는 상상력의 부족함으로 인해 컴퓨터로 알아낸 것이다.
 
