@@ -32,6 +32,8 @@
 
 증명 생략.]
 
+[$S\vartriangleleft_n T]가 [$S\vartriangleleft T_{(n)}]과 동치이므로 [$\vartriangleleft_n]의 표현은 [$\vartriangleleft] 표현에 흡수될 수 있다. 대충 [$S\vartriangleleft T]라 쓰자.
+
 [$\Phi] 상에서 관계 [$\lesssim_L] 및 [$\sim_L]을 다음과 같이 정의하자.
 
 [$$\begin{aligned}
@@ -52,6 +54,7 @@
 	]
 	[*] (d) [$\varphi\subseteq\psi]이면 [$\varphi\lesssim\psi].
 	[*] (e) [$\varphi\lesssim\psi]와 [$\psi\sim\varphi\cup\psi]가 동치이다.
+	[*] (f) [$(\varphi\lesssim\chi\land\psi\lesssim\chi)\lrarr\varphi\cup\psi\lesssim\chi.]
 ]
 
 증명 생략.]
@@ -64,5 +67,21 @@
 [>[**1.4.4 정리.] [$\varphi\sim E(\varphi).]
 
 증명. [$\varphi\subseteq E(\varphi)]이므로 [**1.4.2](c)에 의해 [$S\vartriangleleft E(\varphi)\to S\vartriangleleft\varphi]이다. 또 [$S\vartriangleleft\varphi]이면 임의의 [$\psi\in`[\varphi]`_\sim]에 대해 [$S\vartriangleleft\psi]이므로 [**1.4.2](a')에 의해 [$S\vartriangleleft E(\varphi)]이다. 즉 [$\varphi\sim E(\varphi)]이다.]
+
+즉 [$E(\varphi)]는 [$`[\varphi]`_\sim] 중에서 제일 큰 것(maximum)이다. 제일 작은 것(minimum)은 일반적으로 존재하지 않는다.
+
+[>[**1.4.5 정리.] [$\varphi\lesssim\psi]가 [$\varphi\subseteq E(\psi)]와 동치이다. 또 [$E(\psi)=\bigcap_{S\vartriangleleft\psi}U^\ast(S)]이다.
+
+증명.
+
+[$$\begin{aligned}
+	\varphi\lesssim\psi&\lrarr(\forall S)(S\vartriangleleft\psi\to S\vartriangleleft\varphi) \\
+	&\lrarr(\forall S\vartriangleleft\psi)(\varphi\subseteq U^\ast(S)) \\
+	&\lrarr\varphi\subseteq\bigcap_{S\vartriangleleft\psi}U^\ast(S).
+\end{aligned}]
+
+이제 [$E'(\psi)=\bigcap_{S\vartriangleleft\psi}U^\ast(S)]라 하고 [$E(\psi)=E'(\psi)]임을 보이자. 위의 동치관계로부터 [$\psi\sim E'(\psi)]임을 보여라. 이로부터 [$E'(\psi)\subseteq E(\psi)] 및 [$E(\psi)\subseteq E'(\psi)]이므로 [$E]와 [$E']이 같다. 그러므로 정리가 증명된다.]
+
+즉 [$E(\psi)]는 [$\varphi\lesssim\psi]인 [$\varphi] 중에서 제일 큰 것이며 임의의 [$\varphi\subseteq E(\psi)]가 [$\varphi\lesssim\psi]를 만족한다.
 
 (계속)
