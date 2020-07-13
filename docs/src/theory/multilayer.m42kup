@@ -84,4 +84,41 @@
 
 즉 [$E(\psi)]는 [$\varphi\lesssim\psi]인 [$\varphi] 중에서 제일 큰 것이며 임의의 [$\varphi\subseteq E(\psi)]가 [$\varphi\lesssim\psi]를 만족한다.
 
+[>[**1.4.6 정리.] [$\varphi\sim Q(\varphi).]
+
+증명. 먼저 임의의 [$n, m\in\N_0]에 대해 [$Q_{n, m}(\varphi)\subseteq E(\varphi)(n)]임을 보이자. 임의의 [$A\in Q_{n,m}(\varphi)]에 대해 [$A\in E(\varphi)(n)], 즉 [$A\lesssim\varphi]임을 보이면 된다. [$m]에 수학적 귀납법을 적용하자.
+
+[ul
+	[*] (base case) [$A\in Q_{n,0}(\varphi)]이면 [$A\in\varphi(n)]이므로 [$A\lesssim\varphi]이다.
+	[*] (step case) [$Q_{n,m}(\varphi)\subseteq E(\varphi)(n)]이라 하자. [$A\in Q_{n,m+1}(\varphi)]일 때 [$P_\varphi^{n,m+1,\darr}(A),P_\varphi^{n,0}(A),P_\varphi^{n,m+1,\uarr}(A)] 중 하나는 공집합이 아니다.
+	[ul
+		[*] [$P_\varphi^{n,m+1,\darr}(A)]가 공집합이 아니라면 어떤 [$\Delta]에 대해 [$\Delta\in (E(\varphi)(n))^\ast] 및 [$\Delta\vdash A\in E(\varphi)(n+1)]이다. 즉 [$\Delta\lesssim\varphi] 및 [$\Delta\vdash A\lesssim\varphi]이다. 이때
+		[$$\begin{aligned}
+			\Delta\lesssim\varphi&\land \Delta\vdash A\lesssim\varphi \\
+				&\lrarr (\forall S)(S\vartriangleleft\varphi\to S\vartriangleleft\Delta) \land (\forall S)(S\vartriangleleft\varphi\to S\vartriangleleft\Delta\vdash A) \\
+				&\lrarr (\forall S)(S\vartriangleleft\varphi\to(S\vartriangleleft\Delta\land S\vartriangleleft\Delta\vdash A)) \\
+				&\lrarr (\forall S)(S\vartriangleleft\varphi\to(S\vartriangleleft\Delta\land (S\vartriangleleft\Delta\to S\vartriangleleft A))) \\
+				&\to (\forall S)(S\vartriangleleft\varphi\to S\vartriangleleft A) \\
+				&\lrarr A\lesssim\varphi
+		\end{aligned}]
+		이므로 [$A\lesssim\varphi]가 유도된다.
+
+		[*] [$P_\varphi^{n,0}(A)]가 공집합이 아니라면 base case에서 보였듯 [$A\lesssim\varphi]이다.
+
+		[*] [$P_\varphi^{n,m+1,\uarr}(A)]가 공집합이 아니라면 [$n\geq 1]이고 [$A]가 [$\Delta\vdash B] 형태이다. 또 [$B\in Q_{n-1,m}(\varphi\cup\Delta)], 즉 [$B\lesssim\varphi\cup\Delta]이다. 이때
+		[$$\begin{aligned}
+			B\lesssim\varphi\cup\Delta
+				&\lrarr (\forall S)(S\vartriangleleft\varphi\cup\Delta\to S\vartriangleleft B) \\
+				&\lrarr (\forall S)((S\vartriangleleft\varphi\land S\vartriangleleft\Delta)\to S\vartriangleleft B) \\
+				&\lrarr (\forall S)(S\vartriangleleft\varphi\to(S\vartriangleleft\Delta\to S\vartriangleleft B)) \\
+				&\lrarr (\forall S)(S\vartriangleleft\varphi\to S\vartriangleleft\Delta\vdash B) \\
+				&\lrarr \Delta\vdash B\lesssim\varphi
+		\end{aligned}]
+		이므로 [$A\lesssim\varphi]가 유도된다.
+	]
+]
+
+그러므로 임의의 [$n, m\in\N_0]에 대해 [$Q_{n, m}(\varphi)\subseteq E(\varphi)(n)]이다. 즉 [$Q_n(\varphi)\subseteq E(\varphi)(n)]이다. 즉 [$Q(\varphi)\subseteq E(\varphi)]이다. 그러므로 [$Q(\varphi)\lesssim\varphi]인데, [$\varphi\subseteq Q(\varphi)]이므로 [$\varphi\lesssim Q(\varphi)]이다. 즉 [$\varphi\sim Q(\varphi)]이다.
+]
+
 (계속)
