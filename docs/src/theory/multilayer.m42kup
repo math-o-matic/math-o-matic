@@ -68,7 +68,7 @@
 
 증명. [$\varphi\subseteq E(\varphi)]이므로 [**1.4.2](c)에 의해 [$S\vartriangleleft E(\varphi)\to S\vartriangleleft\varphi]이다. 또 [$S\vartriangleleft\varphi]이면 임의의 [$\psi\in`[\varphi]`_\sim]에 대해 [$S\vartriangleleft\psi]이므로 [**1.4.2](a')에 의해 [$S\vartriangleleft E(\varphi)]이다. 즉 [$\varphi\sim E(\varphi)]이다.]
 
-즉 [$E(\varphi)]는 [$`[\varphi]`_\sim] 중에서 제일 큰 것(maximum)이다. 제일 작은 것(minimum)은 일반적으로 존재하지 않는다.
+즉 [$E(\varphi)]는 [$`[\varphi]`_\sim] 중에서 제일 큰 것(greatest element)이다. 제일 작은 것(least element)은 일반적으로 존재하지 않는다.
 
 [>[**1.4.5 정리.] [$\varphi\lesssim\psi]가 [$\varphi\subseteq E(\psi)]와 동치이다. 또 [$E(\psi)=\bigcap_{S\vartriangleleft\psi}U^\ast(S)]이다.
 
