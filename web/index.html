@@ -8,7 +8,7 @@
 		<script src="./code.js"></script>
 		<script src="./native.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/m42kup@0.2.0/dist/m42kup.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/m42kup@0.2.1/dist/m42kup.min.js"></script>
 		<script>
 			m42kup.set({
 				katex
@@ -210,30 +210,32 @@
 				var v = program.scope.ruleMap[k];
 
 				function generateExpressionTree(expr) {
-					switch (expr._type) {
-						case 'reduction2':
-							return [
-								`<table>`,
-								expr.args.map((arg, i) => {
-									return [
-										`<tr><th>${i+1}</th><td>${generateExpressionTree(expr.args[i])}</td></tr>`
-									].join('');
-								}).join(''),
-								`<tr><th>↓</th><td>${ktx(expr.expr2.toTeXString())}</td></tr>`,
-								`<tr><td colspan="2">${ktx(expr.reduced.toTeXString())}</td></tr>`,
-								`</table>`
-							].join('');
-						case 'rulecall':
-							return [
-								`<table>`,
-								`<tr><td>${ktx(expr.toTeXString())}</td></tr>`,
-								`<tr><td>${ktx(expr.expanded.toTeXString())}</td></tr>`,
-								`</table>`
-							].join('');
-						default:
-							console.log(expr);
-							return ktx(expr.toTeXString());
-					}
+					ctr = 0;
+
+					var html = '<table>';
+					html += '<tr><th>#</th><th>expr</th><th>rule</th></tr>'
+
+					html += (function recurse(expr) {
+						switch (expr._type) {
+							case 'reduction2':
+								var args = expr.args.map((arg, i) => {
+									return [recurse(expr.args[i]), ctr];
+								});
+
+								return [
+									args.map(e => e[0]).join(''),
+									`<tr><th>${++ctr}</th><td>${ktx(expr.reduced.toTeXString())}</td><td>${ktx(expr.expr2.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
+								].join('');
+							case 'rulecall':
+								return `<tr><th>${++ctr}</th><td>${ktx(expr.expanded.toTeXString())}</td><td>${ktx(expr.toTeXString())}</td></tr>`;
+							default:
+								return ktx(expr.toTeXString());
+						}
+					})(expr);
+
+					html += '</table>';
+
+					return html;
 				}
 
 				r = `<div class="block">`
