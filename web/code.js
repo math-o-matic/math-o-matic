@@ -583,7 +583,9 @@ rule VI_Vgen_V2(pr f, pr2 g, cls z) {
 }
 
 rule VI_Vgen_V2_Vi(pr f, pr2 g) {
-	Vi[VI_Vgen_V2](f, g)
+	Vi_((cls z) => {
+		I(V((cls w) => {I(f(z), g(z, w))}), I(f(z), V((cls w) => {g(z, w)})))
+	})[(cls z) => {VI_Vgen_V2(f, g, z)}]
 }
 
 rule VI_Vgen_V2_Vi_VI(pr f, pr2 g) {
@@ -807,7 +809,9 @@ rule swapV_1(pr f, pr g, pr h, cls w) {
 }
 
 rule swapV_c(pr f, pr g, pr h) {
-	Vi[swapV_1](f, g ,h)
+	Vi_((cls w) => {
+		I(I(f(w), I(g(w), h(w))), I(g(w), I(f(w), h(w))))
+	})[(cls w) => {swapV_1(f, g, h, w)}]
 	~ VIm(
 		(cls w) => {I(f(w), I(g(w), h(w)))},
 		(cls w) => {I(g(w), I(f(w), h(w)))}
@@ -827,7 +831,12 @@ rule swapV2_1(pr2 f, pr2 g, pr2 h, cls z) {
 }
 
 rule swapV2_c(pr2 f, pr2 g, pr2 h) {
-	Vi[swapV2_1](f, g ,h)
+	Vi_((cls z) => {
+		I(
+			V((cls w) => {I(f(z, w), I(g(z, w), h(z, w)))}),
+			V((cls w) => {I(g(z, w), I(f(z, w), h(z, w)))})
+		)
+	})[(cls z) => {swapV2_1(f, g, h, z)}]
 	~ VIm(
 		(cls z) => {
 			V((cls w) => {
@@ -872,8 +881,12 @@ rule eq_reflexive_tmp2(cls x, cls w) {
 }
 
 rule eq_reflexive(cls x) {
-	Vi[eq_reflexive_tmp1](x)
-	~ Vi[eq_reflexive_tmp2](x)
+	Vi_((cls z) => {
+		E(in(z, x), in(z, x))
+	})[(cls z) => {eq_reflexive_tmp1(x, z)}]
+	~ Vi_((cls w) => {
+		E(in(x, w), in(x, w))
+	})[(cls w) => {eq_reflexive_tmp2(x, w)}]
 	~ Ai(
 		V((cls z) => { E(in(z, x), in(z, x)) }),
 		V((cls w) => { E(in(x, w), in(x, w)) })
