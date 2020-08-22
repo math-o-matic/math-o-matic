@@ -402,9 +402,9 @@ rule ttf_IEpqEqp(pr f, pr g, cls x) {
 "IEpqEqpm의 V형."
 rule IVEpqVEqpfm(pr f, pr g) {
 	mp[
-		((pr f, pr g) => {Vi_((cls x) => {
+		Vi_((cls x) => {
 			I(E(f(x), g(x)), E(g(x), f(x)))
-		})[(cls x) => { ttf_IEpqEqp(f, g, x) }]})(f, g)
+		})[(cls x) => { ttf_IEpqEqp(f, g, x) }]
 		~ VIm(
 			(cls x) => { E(f(x), g(x)) },
 			(cls x) => { E(g(x), f(x)) }
@@ -419,9 +419,9 @@ rule ttf_IEpqIpq(pr f, pr g, cls x) {
 "Ee1의 V형."
 rule Ee1V(pr f, pr g) {
 	mp[
-		((pr f, pr g) => {Vi_((cls x) => {
+		Vi_((cls x) => {
 			I(E(f(x), g(x)), I(f(x), g(x)))
-		})[(cls x) => {ttf_IEpqIpq(f, g, x)}]})(f, g)
+		})[(cls x) => {ttf_IEpqIpq(f, g, x)}]
 		~ VIm(
 			(cls z) => { E(f(z), g(z)) },
 			(cls z) => { I(f(z), g(z)) }
@@ -457,9 +457,9 @@ rule syllV(pr f, pr g, pr h) {
 		(cls x) => { I(g(x), h(x)) }
 	)
 	~ mp[
-		((pr f, pr g, pr h) => {Vi_((cls x) => {
+		Vi_((cls x) => {
 			I(A(I(f(x), g(x)), I(g(x), h(x))), I(f(x), h(x)))
-		})[(cls x) => {tt.IAIpqIqrIpr(f(x), g(x), h(x))}]})(f, g, h)
+		})[(cls x) => {tt.IAIpqIqrIpr(f(x), g(x), h(x))}]
 		~ VIm(
 			(cls x) => { A(I(f(x), g(x)), I(g(x), h(x))) },
 			(cls x) => { I(f(x), h(x)) }
@@ -477,9 +477,9 @@ rule syllVE(pr f, pr g, pr h) {
 		(cls w) => { E(g(w), h(w)) }
 	)
 	~ mp[
-		((pr f, pr g, pr h) => {Vi_((cls x) => {
+		Vi_((cls x) => {
 			I(A(E(f(x), g(x)), E(g(x), h(x))), E(f(x), h(x)))
-		})[(cls x) => {tt.IAEpqEqrEpr(f(x), g(x), h(x))}]})(f, g, h)
+		})[(cls x) => {tt.IAEpqEqrEpr(f(x), g(x), h(x))}]
 		~ VIm(
 			(cls w) => { A(E(f(w), g(w)), E(g(w), h(w))) },
 			(cls w) => { E(f(w), h(w)) }
@@ -494,9 +494,9 @@ rule XO(pr f, pr g) {
 		V(Af(Nf(f), Nf(g))), V(Nf(f)), V(Nf(g))
 	)])
 	~ ((
-		((pr f, pr g) => {Vi_((cls x) => {
+		Vi_((cls x) => {
 			E(N(O(f(x), g(x))), A(N(f(x)), N(g(x))))
-		})[(cls x) => {tt.ENOpqANpNq(f(x), g(x))}]})(f, g)
+		})[(cls x) => {tt.ENOpqANpNq(f(x), g(x))}]
 		~ VEm(
 			(cls x) => { N(O(f(x), g(x))) },
 			(cls x) => { A(N(f(x)), N(g(x))) }

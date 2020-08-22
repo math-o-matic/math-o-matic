@@ -93,6 +93,10 @@
 			.katex a[data-orange] {
 				color: #E65100;
 			}
+
+			td.brb {
+				border-right: 3px black solid;
+			}
 		</style>
 	</head>
 	<body>
@@ -209,26 +213,55 @@
 			function generateExpressionTree(expr) {
 				var ctr = 0;
 
-				var html = '<table>';
-				html += '<tr><th>#</th><th>expr</th><th>rule</th></tr>'
-
-				html += (function recurse(expr) {
+				var ncols = (function recurse(expr) {
 					switch (expr._type) {
 						case 'reduction2':
+							return Math.max(
+								...expr.args.map(recurse),
+								1
+							);
+						case 'rulecall':
+							return 1;
+						case 'rule':
+							return recurse(expr.expr) + 1;
+						default:
+							return 1;
+					}
+				})(expr);
+
+				var html = '<table>';
+				html += `<tr><th>#</th><th colspan="${ncols}">expr</th><th>rule</th></tr>`;
+
+				html += (function recurse(expr, left) {
+					var padding = left.length;
+
+					switch (expr._type) {
+						case 'reduction2':
+							var hasArgs = !!expr.args.length;
+
 							var args = expr.args.map((arg, i) => {
-								return [recurse(expr.args[i]), ctr];
+								return [recurse(expr.args[i], i == 0 ? left : Array(left.length).fill([])), ctr];
 							});
+
+							left = hasArgs ? Array(left.length).fill([]) : left;
+
+							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
 
 							return [
 								args.map(e => e[0]).join(''),
-								`<tr><th>${++ctr}</th><td>${ktx(expr.reduced.toTeXString())}</td><td>${ktx(expr.expr2.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
+								`<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.reduced.toTeXString())}</td><td>${ktx(expr.expr2.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
 							].join('');
 						case 'rulecall':
-							return `<tr><th>${++ctr}</th><td>${ktx(expr.expanded.toTeXString())}</td><td>${ktx(expr.toTeXString())}</td></tr>`;
+							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
+
+							return `<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.expanded.toTeXString())}</td><td>${ktx(expr.toTeXString())}</td></tr>`;
+						case 'rule':
+							return recurse(expr.expr, left.concat([expr.params]));
 						default:
+							console.error('Unknown type:', expr);
 							return ktx(expr.toTeXString());
 					}
-				})(expr);
+				})(expr, []);
 
 				html += '</table>';
 
