@@ -396,11 +396,13 @@ rule ttf_IEpqEqp(pr f, pr g, cls x) {
 
 "IEpqEqpm의 V형."
 rule IVEpqVEqpfm(pr f, pr g) {
-	mp[Vi[ttf_IEpqEqp](f, g)
-	~ VIm(
-		(cls x) => { E(f(x), g(x)) },
-		(cls x) => { E(g(x), f(x)) }
-	)]
+	mp[
+		Vi[ttf_IEpqEqp](f, g)
+		~ VIm(
+			(cls x) => { E(f(x), g(x)) },
+			(cls x) => { E(g(x), f(x)) }
+		)
+	]
 }
 
 rule ttf_IEpqIpq(pr f, pr g, cls x) {
