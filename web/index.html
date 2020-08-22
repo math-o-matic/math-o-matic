@@ -230,7 +230,7 @@
 				})(expr);
 
 				var html = '<table>';
-				html += `<tr><th>#</th><th colspan="${ncols}">expr</th><th>rule</th></tr>`;
+				html += `<tr><th>#</th><th colspan="${ncols}">expr</th><th colspan="2">rule</th></tr>`;
 
 				html += (function recurse(expr, left) {
 					var padding = left.length;
@@ -249,12 +249,12 @@
 
 							return [
 								args.map(e => e[0]).join(''),
-								`<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.reduced.toTeXString())}</td><td>${ktx(expr.expr2.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
+								`<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.reduced.toTeXString())}</td><td>&#x25BC;</td><td>${ktx(expr.expr2.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
 							].join('');
 						case 'rulecall':
 							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
 
-							return `<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.expanded.toTeXString())}</td><td>${ktx(expr.toTeXString())}</td></tr>`;
+							return `<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.expanded.toTeXString())}</td><td>&#x25C7;</td><td>${ktx(expr.toTeXString())}</td></tr>`;
 						case 'rule':
 							return recurse(expr.expr, left.concat([expr.params]));
 						default:
