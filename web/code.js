@@ -395,16 +395,12 @@ rule VVm(pr2 f) {
 	mp[VV(f)]
 }
 
-rule ttf_IEpqEqp(pr f, pr g, cls x) {
-	tt.IEpqEqp(f(x), g(x))
-}
-
 "IEpqEqpm의 V형."
 rule IVEpqVEqpfm(pr f, pr g) {
 	mp[
 		Vi_((cls x) => {
 			I(E(f(x), g(x)), E(g(x), f(x)))
-		})[(cls x) => { ttf_IEpqEqp(f, g, x) }]
+		})[(cls x) => { tt.IEpqEqp(f(x), g(x)) }]
 		~ VIm(
 			(cls x) => { E(f(x), g(x)) },
 			(cls x) => { E(g(x), f(x)) }
@@ -412,16 +408,12 @@ rule IVEpqVEqpfm(pr f, pr g) {
 	]
 }
 
-rule ttf_IEpqIpq(pr f, pr g, cls x) {
-	tt.IEpqIpq(f(x), g(x))
-}
-
 "Ee1의 V형."
 rule Ee1V(pr f, pr g) {
 	mp[
 		Vi_((cls x) => {
 			I(E(f(x), g(x)), I(f(x), g(x)))
-		})[(cls x) => {ttf_IEpqIpq(f, g, x)}]
+		})[(cls x) => {tt.IEpqIpq(f(x), g(x))}]
 		~ VIm(
 			(cls z) => { E(f(z), g(z)) },
 			(cls z) => { I(f(z), g(z)) }
@@ -1089,10 +1081,6 @@ rule setbuilder_def_Ve_Ee(pr f, cls z) {
 	)]
 }
 
-rule ttf_IAEpAqrIrqEpr(pr f, pr g, pr h, cls x) {
-	tt.IAEpAqrIrqEpr(f(x), g(x), h(x))
-}
-
 rule setbuilder_def_set_1(pr f, pr g, pr h) {
 	Ai(
 		V((cls x) => { E(f(x), A(g(x), h(x))) }),
@@ -1102,7 +1090,7 @@ rule setbuilder_def_set_1(pr f, pr g, pr h) {
 		(cls x) => { E(f(x), A(g(x), h(x))) },
 		(cls x) => { I(h(x), g(x)) }
 	) ~
-	mp[Vi[ttf_IAEpAqrIrqEpr](f, g, h)
+	mp[Vi[(pr f, pr g, pr h, cls x) => {tt.IAEpAqrIrqEpr(f(x), g(x), h(x))}](f, g, h)
 	~ VIm(
 		(cls x) => { A(E(f(x), A(g(x), h(x))), I(h(x), g(x))) },
 		(cls x) => { E(f(x), h(x)) }
