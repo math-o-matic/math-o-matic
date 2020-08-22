@@ -4,12 +4,12 @@ var Tee = require('./Tee');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Rule({axiomatic, name, params, expr, doc}) {
+function Rule({axiomatic, /* nullable */ name, params, expr, doc}) {
 	Node.call(this);
 
 	this.doc = doc;
 
-	if (typeof name != 'string')
+	if (name !== null && typeof name != 'string')
 		throw Error('Assertion failed');
 
 	if (!(params instanceof Array)
@@ -45,20 +45,28 @@ Rule.prototype.toString = function () {
 
 Rule.prototype.toIndentedString = function (indent) {
 	return [
-		`R ${this.name}(${this.params.join(', ')}) => {`,
+		`R ${this.name || ''}(${this.params.join(', ')}) => {`,
 		'\t' + this.expanded.toIndentedString(indent + 1),
 		'}'
 	].join('\n' + '\t'.repeat(indent));
 };
 
 Rule.prototype.toTeXString = function (root) {
-	return `\\href{#rule-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
-		+ (
-			root
-				? `(${this.params.map(e => e.toTeXString()).join(', ')}):`
-					+ '\\\\\\quad' + this.expanded.toTeXString()
-				: ''
-		);
+	if (!this.name) {
+		return '\\left('
+			+ (
+				this.params.length == 1
+				? this.params[0].toTeXString()
+				: `\\left(${this.params.map(e => e.toTeXString()).join(', ')}\\right)`
+			)
+			+ `\\mapsto ${this.expr.toTeXString()}\\right)`;
+	}
+
+	if (!root)
+		return `\\href{#rule-${this.name}}\\mathsf{${this.escapeTeX(this.name)}}`;
+
+	return `\\href{#rule-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString()).join(', ')}):`
+				+ '\\\\\\quad' + this.expanded.toTeXString();
 };
 
 module.exports = Rule;

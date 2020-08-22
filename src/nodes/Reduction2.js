@@ -40,6 +40,20 @@ function Reduction2({expr2, args}) {
 		}
 
 		this.type = expr2.type.right;
+
+		var tee2 = ExpressionResolver.expand2(expr2);
+
+		if (tee2._type != 'tee2') {
+			throw Error('Assertion failed');
+		}
+
+		for (var i = 0; i < tee2.left.length; i++) {
+			if (!ExpressionResolver.equals1(tee2.left[i], args[i])) {
+				throw Error('Assertion failed');
+			}
+		}
+
+		this.reduced = tee2.right;
 	}
 }
 

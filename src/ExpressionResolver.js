@@ -42,7 +42,7 @@ ER.substitute0 = function (expr, map) {
 				throw Error('Parameter collision');
 
 			return new Fun({
-				name: false,
+				name: null,
 				type: expr.type,
 				params: expr.params,
 				expr: ER.substitute0(expr.expr, map)
@@ -118,7 +118,7 @@ ER.expand0Funcalls = function (expr) {
 		return ER.expand0Funcalls(ER.call0(fun, args));
 	} else if (expr._type == 'fun' && !expr.name) {
 		return new Fun({
-			name: false,
+			name: null,
 			type: expr.type,
 			params: expr.params,
 			expr: ER.expand0Funcalls(expr.expr)
@@ -143,7 +143,7 @@ ER.expand0 = function (expr) {
 		return ER.expand0(ER.call0(fun, args));
 	} else if (expr._type == 'fun' && expr.expr) {
 		return new Fun({
-			name: false,
+			name: null,
 			type: expr.type,
 			params: expr.params,
 			expr: ER.expand0(expr.expr)
@@ -269,7 +269,7 @@ ER.substitute1 = function (expr, map) {
 				throw Error('Parameter collision');
 
 			return new Rule({
-				name: false,
+				name: null,
 				params: expr.params,
 				expr: ER.substitute1(expr.expr, map)
 			});
@@ -340,8 +340,7 @@ ER.expand1Funcalls = function (expr) {
 
 			return ER.expand1Funcalls(ER.call1(rule, args));
 		case 'reduction2':
-			if (expr.expr2.native) return expr.reduced;
-			throw Error('Not implemented');
+			return ER.expand1Funcalls(expr.reduced);
 		case 'rule':
 			return new Rule({
 				name: '<anonymous>',
@@ -371,7 +370,7 @@ ER.expand1Full = function (expr) {
 
 			return ER.expand1Full(ER.call1(rule, args));
 		case 'reduction2':
-			throw Error('Not implemented');
+			return ER.expand1Full(expr.reduced);
 		case 'rule':
 			return new Rule({
 				name: '<anonymous>',

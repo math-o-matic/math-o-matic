@@ -212,7 +212,7 @@ native = {
 					throw Error(`Wrong type for V`);
 
 				return new scope.Rule({
-					name: '<anonymous>',
+					name: null,
 					params: rule.params.slice(0, rule.params.length - 1),
 					expr: new scope.Tee({
 						left: [],
@@ -220,13 +220,12 @@ native = {
 							fun: V,
 							args: [
 								new scope.Fun({
-									anonymous: true,
+									name: null,
 									type: new scope.Type({
 										functional: true,
 										from: [cls],
 										to: base
 									}),
-									atomic: false,
 									params: [last],
 									expr: tee.right
 								})
@@ -285,7 +284,7 @@ native = {
 				});
 
 				return new scope.Rule({
-					name: `<anonymous>`,
+					name: null,
 					params: rule.params.concat([newvar]),
 					expr: new scope.Tee({
 						left: [],

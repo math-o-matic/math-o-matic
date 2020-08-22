@@ -55,10 +55,7 @@ Tee.prototype.toIndentedString = function (indent) {
 };
 
 Tee.prototype.toTeXString = function (root) {
-	if (!this.left.length)
-		return `\\ \\vdash ${this.right.toTeXString()}`;
-	
-	return `${this.left.map(e => e.toTeXString()).join(', ')} \\vdash ${this.right.toTeXString()}`;
+	return `{${this.left.map(e => e.toTeXString()).join(', ')} \\vdash ${this.right.toTeXString()}}`;
 };
 
 module.exports = Tee;

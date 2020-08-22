@@ -1,12 +1,15 @@
 var Node = require('./Node');
 
-function Fun({name, type, params, expr, doc, tex}) {
+function Fun({/* nullable */ name, type, params, /* nullable */ expr, doc, tex}) {
 	Node.call(this);
 
 	this.doc = doc;
 	this.tex = tex;
 
-	if (name && typeof name != 'string')
+	if (!name && !expr)
+		throw Error('Anonymous fun cannot be primitive');
+
+	if (name !== null && typeof name != 'string')
 		throw Error('Assertion failed');
 
 	if (type._type != 'type')
@@ -16,16 +19,13 @@ function Fun({name, type, params, expr, doc, tex}) {
 			|| params.map(e => e instanceof Node).some(e => !e))
 		throw Error('Assertion failed');
 
-	if (expr && !(expr instanceof Node))
+	if (expr !== null && !(expr instanceof Node))
 		throw Error('Assertion failed');
 
-	if (!name && !expr)
-		throw Error('Anonymous fun cannot be atomic');
-
-	this.name = name;		// nullable
+	this.name = name;
 	this.type = type;
 	this.params = params;
-	this.expr = expr;		// nullable
+	this.expr = expr;
 }
 
 Fun.prototype = Object.create(Node.prototype);
@@ -49,7 +49,7 @@ Fun.prototype.toIndentedString = function (indent) {
 };
 
 Fun.prototype.toTeXString = function (root) {
-	if (!this.name)
+	if (!this.name) {
 		return '\\left('
 			+ (
 				this.params.length == 1
@@ -57,6 +57,7 @@ Fun.prototype.toTeXString = function (root) {
 				: `\\left(${this.params.map(e => e.toTeXString()).join(', ')}\\right)`
 			)
 			+ `\\mapsto ${this.expr.toTeXString()}\\right)`;
+	}
 
 	if (!root)
 		return `\\href{#def-${this.name}}\\mathrm{${this.escapeTeX(this.name)}}`;

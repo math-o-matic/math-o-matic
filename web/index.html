@@ -206,37 +206,37 @@
 				arr[v._id] = r;
 			}
 
+			function generateExpressionTree(expr) {
+				var ctr = 0;
+
+				var html = '<table>';
+				html += '<tr><th>#</th><th>expr</th><th>rule</th></tr>'
+
+				html += (function recurse(expr) {
+					switch (expr._type) {
+						case 'reduction2':
+							var args = expr.args.map((arg, i) => {
+								return [recurse(expr.args[i]), ctr];
+							});
+
+							return [
+								args.map(e => e[0]).join(''),
+								`<tr><th>${++ctr}</th><td>${ktx(expr.reduced.toTeXString())}</td><td>${ktx(expr.expr2.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
+							].join('');
+						case 'rulecall':
+							return `<tr><th>${++ctr}</th><td>${ktx(expr.expanded.toTeXString())}</td><td>${ktx(expr.toTeXString())}</td></tr>`;
+						default:
+							return ktx(expr.toTeXString());
+					}
+				})(expr);
+
+				html += '</table>';
+
+				return html;
+			}
+
 			for (var k in program.scope.ruleMap) {
 				var v = program.scope.ruleMap[k];
-
-				function generateExpressionTree(expr) {
-					ctr = 0;
-
-					var html = '<table>';
-					html += '<tr><th>#</th><th>expr</th><th>rule</th></tr>'
-
-					html += (function recurse(expr) {
-						switch (expr._type) {
-							case 'reduction2':
-								var args = expr.args.map((arg, i) => {
-									return [recurse(expr.args[i]), ctr];
-								});
-
-								return [
-									args.map(e => e[0]).join(''),
-									`<tr><th>${++ctr}</th><td>${ktx(expr.reduced.toTeXString())}</td><td>${ktx(expr.expr2.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
-								].join('');
-							case 'rulecall':
-								return `<tr><th>${++ctr}</th><td>${ktx(expr.expanded.toTeXString())}</td><td>${ktx(expr.toTeXString())}</td></tr>`;
-							default:
-								return ktx(expr.toTeXString());
-						}
-					})(expr);
-
-					html += '</table>';
-
-					return html;
-				}
 
 				r = `<div class="block">`
 					+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>${

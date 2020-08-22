@@ -275,7 +275,7 @@ pr Nf(pr f) {
 $\left(<<\forall>>#1\right)$
 st V(pr f);
 
-"universal quantification introduction. 즉
+"universal introduction. 즉
 [$$\frac{(x, \cdots, z, y)\mapsto(\vdash f(x, \cdots, z, y))}{(x, \cdots, z)\mapsto(\vdash \forall(y \mapsto f(x, \cdots, z, y)))}]
 이다. 매개변수 맨 마지막에 있는 cls 하나를 [$\forall]로 돌리는 방식이다.
 
@@ -286,7 +286,12 @@ st V(pr f);
 ]"
 axiomatic native link Vi;
 
-"universal quantification elimination. 즉
+"Vi의 네이티브 하지 않은 버전."
+axiomatic link Vi_(pr f) {
+	(cls x) => { |- f(x) } ||- |- V(f)
+}
+
+"universal elimination. 즉
 [$$\frac{(x, \cdots, z)\mapsto(\vdash \forall(y \mapsto f(x, \cdots, z, y)))}{(x, \cdots, z, y)\mapsto(\vdash f(x, \cdots, z, y))}]
 이다. Vi의 역연산이라고 볼 수 있다. rule Vinst로부터 유도할 수 있을 것으로 추정된다.
 
@@ -397,7 +402,9 @@ rule ttf_IEpqEqp(pr f, pr g, cls x) {
 "IEpqEqpm의 V형."
 rule IVEpqVEqpfm(pr f, pr g) {
 	mp[
-		Vi[ttf_IEpqEqp](f, g)
+		((pr f, pr g) => {Vi_((cls x) => {
+			I(E(f(x), g(x)), E(g(x), f(x)))
+		})[(cls x) => { ttf_IEpqEqp(f, g, x) }]})(f, g)
 		~ VIm(
 			(cls x) => { E(f(x), g(x)) },
 			(cls x) => { E(g(x), f(x)) }
@@ -411,11 +418,15 @@ rule ttf_IEpqIpq(pr f, pr g, cls x) {
 
 "Ee1의 V형."
 rule Ee1V(pr f, pr g) {
-	mp[Vi[ttf_IEpqIpq](f, g)
-	~ VIm(
-		(cls z) => { E(f(z), g(z)) },
-		(cls z) => { I(f(z), g(z)) }
-	)]
+	mp[
+		((pr f, pr g) => {Vi_((cls x) => {
+			I(E(f(x), g(x)), I(f(x), g(x)))
+		})[(cls x) => {ttf_IEpqIpq(f, g, x)}]})(f, g)
+		~ VIm(
+			(cls z) => { E(f(z), g(z)) },
+			(cls z) => { I(f(z), g(z)) }
+		)
+	]
 }
 
 "Ee2의 V형."
@@ -436,10 +447,6 @@ rule VE(pr f, pr g) {
 	cp[VEm(f, g)]
 }
 
-rule ttf_IAIpqIqrIpr(pr f, pr g, pr h, cls x) {
-	tt.IAIpqIqrIpr(f(x), g(x), h(x))
-}
-
 rule syllV(pr f, pr g, pr h) {
 	Ai(
 		V(If(f, g)),
@@ -449,15 +456,15 @@ rule syllV(pr f, pr g, pr h) {
 		(cls x) => { I(f(x), g(x)) },
 		(cls x) => { I(g(x), h(x)) }
 	)
-	~ mp[Vi[ttf_IAIpqIqrIpr](f, g, h)
-	~ VIm(
-		(cls x) => { A(I(f(x), g(x)), I(g(x), h(x))) },
-		(cls x) => { I(f(x), h(x)) }
-	)]
-}
-
-rule ttf_IAEpqEqrEpr(pr f, pr g, pr h, cls x) {
-	tt.IAEpqEqrEpr(f(x), g(x), h(x))
+	~ mp[
+		((pr f, pr g, pr h) => {Vi_((cls x) => {
+			I(A(I(f(x), g(x)), I(g(x), h(x))), I(f(x), h(x)))
+		})[(cls x) => {tt.IAIpqIqrIpr(f(x), g(x), h(x))}]})(f, g, h)
+		~ VIm(
+			(cls x) => { A(I(f(x), g(x)), I(g(x), h(x))) },
+			(cls x) => { I(f(x), h(x)) }
+		)
+	]
 }
 
 rule syllVE(pr f, pr g, pr h) {
@@ -469,15 +476,15 @@ rule syllVE(pr f, pr g, pr h) {
 		(cls w) => { E(f(w), g(w)) },
 		(cls w) => { E(g(w), h(w)) }
 	)
-	~ mp[Vi[ttf_IAEpqEqrEpr](f, g, h)
-	~ VIm(
-		(cls w) => { A(E(f(w), g(w)), E(g(w), h(w))) },
-		(cls w) => { E(f(w), h(w)) }
-	)]
-}
-
-rule ttf_ENOpqANpNq(pr f, pr g, cls x) {
-	tt.ENOpqANpNq(f(x), g(x))
+	~ mp[
+		((pr f, pr g, pr h) => {Vi_((cls x) => {
+			I(A(E(f(x), g(x)), E(g(x), h(x))), E(f(x), h(x)))
+		})[(cls x) => {tt.IAEpqEqrEpr(f(x), g(x), h(x))}]})(f, g, h)
+		~ VIm(
+			(cls w) => { A(E(f(w), g(w)), E(g(w), h(w))) },
+			(cls w) => { E(f(w), h(w)) }
+		)
+	]
 }
 
 "[$\exists]과 [$\lor] 간의 분배법칙 같은 것. VA로부터 증명할 수 있다."
@@ -486,11 +493,15 @@ rule XO(pr f, pr g) {
 	mp[tt.IEpAqrENpONqNr(
 		V(Af(Nf(f), Nf(g))), V(Nf(f)), V(Nf(g))
 	)])
-	~ ((Vi[ttf_ENOpqANpNq](f, g)
-	~ VEm(
-		(cls x) => { N(O(f(x), g(x))) },
-		(cls x) => { A(N(f(x)), N(g(x))) }
-	))
+	~ ((
+		((pr f, pr g) => {Vi_((cls x) => {
+			E(N(O(f(x), g(x))), A(N(f(x)), N(g(x))))
+		})[(cls x) => {tt.ENOpqANpNq(f(x), g(x))}]})(f, g)
+		~ VEm(
+			(cls x) => { N(O(f(x), g(x))) },
+			(cls x) => { A(N(f(x)), N(g(x))) }
+		)
+	)
 	~ mp[tt.IEpqENpNq(
 		V((cls x) => { N(O(f(x), g(x))) }),
 		V((cls x) => { A(N(f(x)), N(g(x))) })
