@@ -1,13 +1,13 @@
 {
-  "name": "m42-math",
+  "name": "math-o-matic",
   "version": "0.1.0",
   "description": "Computerized axiomatic system in JavaScript",
   "repository": {
     "type": "git",
-    "url": "http://github.com/logico-philosophical/math.git"
+    "url": "http://github.com/logico-philosophical/math-o-matic.git"
   },
   "bugs": {
-    "url": "http://github.com/logico-philosophical/math/issues"
+    "url": "http://github.com/logico-philosophical/math-o-matic/issues"
   },
   "main": "src/entry.js",
   "scripts": {
@@ -19,8 +19,7 @@
   "keywords": [],
   "author": {
     "name": "logico-philosophical",
-    "url": "http://github.com/logico-philosophical",
-    "email": "ossia@korea.ac.kr"
+    "url": "http://github.com/logico-philosophical"
   },
   "license": "MIT",
   "dependencies": {},
