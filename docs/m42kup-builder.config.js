@@ -27,7 +27,11 @@ module.exports = {
 					file: 'u'
 				},
 				{
-					name: '다계층으로의 확장',
+					name: 'E 함수???',
+					file: 'e'
+				},
+				{
+					name: '다계층 D 함수???',
 					file: 'multilayer'
 				}
 			]

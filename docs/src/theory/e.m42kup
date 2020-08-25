@@ -1,0 +1,145 @@
+[=1.4. E 함수에 관하여]
+
+[$n\in\N_0]에 대해 [$S\subseteq L] 및 [$T\subseteq M^n(L)]일 때 [$S\vartriangleleft_n T]를 다음과 같이 정의하자.
+
+[$$S\vartriangleleft_n T\xleftrightarrow\text{def} T\subseteq U^n(S).]
+
+또 [$U^\ast(S)]를 다음과 같이 정의하자.
+
+[$$U^\ast(S)\coloneqq\bigsqcup_{n\in\N_0}U^n(S).]
+
+또 [$S\subseteq L] 및 [$\varphi\in\Phi]에 대해 [$S\vartriangleleft\varphi]를 다음과 같이 정의하자.
+
+[$$S\vartriangleleft\varphi\xleftrightarrow\text{def}\varphi\subseteq U^\ast(S).]
+
+[>[**1.4.1 정리.] 다음이 성립한다.
+
+[ul
+	[*] (a) [$(S\vartriangleleft_n T\land S\vartriangleleft_n V)\leftrightarrow S\vartriangleleft_n T\cup V.]
+	[*] (a') [$(\forall T\in\mathcal T)(S\vartriangleleft_n T)\leftrightarrow S\vartriangleleft_n\bigcup\mathcal T.]
+	[*] (c) [$(S\vartriangleleft_n T\land V\subseteq T)\to S\vartriangleleft_n V.]
+]
+
+증명 생략.]
+
+[>[**1.4.2 정리.] 다음이 성립한다.
+
+[ul
+	[*] (a) [$(S\vartriangleleft\varphi\land S\vartriangleleft\psi)\lrarr S\vartriangleleft \varphi\cup\psi.]
+	[*] (a') [$(\forall\theta\in\Theta)(S\vartriangleleft\theta)\leftrightarrow S\vartriangleleft\bigcup\Theta.]
+	[*] (c) [$(S\vartriangleleft\varphi\land\psi\subseteq\varphi)\to S\vartriangleleft\psi.]
+]
+
+증명 생략.]
+
+[$S\vartriangleleft_n T]가 [$S\vartriangleleft T_{(n)}]과 동치이므로 [$\vartriangleleft_n]의 표현은 [$\vartriangleleft] 표현에 흡수될 수 있다. 대충 [$S\vartriangleleft T]라 쓰자.
+
+[$\Phi] 상에서 관계 [$\lesssim_L] 및 [$\sim_L]을 다음과 같이 정의하자.
+
+[$$\begin{aligned}
+	\varphi\lesssim_L\psi&\xleftrightarrow\text{def}(\forall S\subseteq L)(S\vartriangleleft\psi\to S\vartriangleleft\varphi), \\
+	\varphi\sim_L\psi&\xleftrightarrow\text{def}(\forall S\subseteq L)(S\vartriangleleft\varphi\lrarr S\vartriangleleft\psi).
+\end{aligned}]
+
+[>[**1.4.3 정리.] 다음이 성립한다.
+
+[ul
+	[*] (a) [$\sim]이 동치관계이다.
+	[*] (b) [$\varphi]의 [$\sim]에 의한 동치류(equivalence class) [$`[\varphi]`_\sim]이 [$\cup] 연산에 대해 닫혀 있다.
+	[*] (c) [$\lesssim]이 순서관계 같은 것이다. 즉 다음이 성립한다.
+	[ul
+		[*] (반사성(reflexivity)) [$\varphi\lesssim\varphi.]
+		[*] (반대칭성(antisymmetry) 같은 것) [$\varphi\lesssim\psi] 및 [$\psi\lesssim\varphi]이면 [$\varphi\sim\psi]. 역도 성립한다.
+		[*] (추이성(transitivity)) [$\varphi\lesssim\psi] 및 [$\psi\lesssim\chi]이면 [$\varphi\lesssim\chi].
+	]
+	[*] (d) [$\varphi\subseteq\psi]이면 [$\varphi\lesssim\psi].
+	[*] (e) [$\varphi\lesssim\psi]와 [$\psi\sim\varphi\cup\psi]가 동치이다.
+	[*] (f) [$(\varphi\lesssim\chi\land\psi\lesssim\chi)\lrarr\varphi\cup\psi\lesssim\chi.]
+]
+
+증명 생략.]
+
+
+이때 [$\varphi]의 [**확장] [$E(\varphi)]를 다음과 같이 정의하자.
+
+[$$E(\varphi)\coloneqq\bigcup`[\varphi]`_\sim.]
+
+[>[**1.4.4 정리.] [$\varphi\sim E(\varphi).]
+
+증명. [$\varphi\subseteq E(\varphi)]이므로 [**1.4.2](c)에 의해 [$S\vartriangleleft E(\varphi)\to S\vartriangleleft\varphi]이다. 또 [$S\vartriangleleft\varphi]이면 임의의 [$\psi\in`[\varphi]`_\sim]에 대해 [$S\vartriangleleft\psi]이므로 [**1.4.2](a')에 의해 [$S\vartriangleleft E(\varphi)]이다. 즉 [$\varphi\sim E(\varphi)]이다.]
+
+즉 [$E(\varphi)]는 [$`[\varphi]`_\sim] 중에서 제일 큰 것(greatest element)이다. 제일 작은 것(least element)은 일반적으로 존재하지 않는다.
+
+[>[**1.4.5 정리.] [$\varphi\lesssim\psi]가 [$\varphi\subseteq E(\psi)]와 동치이다. 또 [$E(\psi)=\bigcap_{S\vartriangleleft\psi}U^\ast(S)]이다.
+
+증명.
+
+[$$\begin{aligned}
+	\varphi\lesssim\psi&\lrarr(\forall S)(S\vartriangleleft\psi\to S\vartriangleleft\varphi) \\
+	&\lrarr(\forall S\vartriangleleft\psi)(\varphi\subseteq U^\ast(S)) \\
+	&\lrarr\varphi\subseteq\bigcap_{S\vartriangleleft\psi}U^\ast(S).
+\end{aligned}]
+
+이제 [$E'(\psi)=\bigcap_{S\vartriangleleft\psi}U^\ast(S)]라 하고 [$E(\psi)=E'(\psi)]임을 보이자. 위의 동치관계로부터 [$\psi\sim E'(\psi)]임을 보여라. 이로부터 [$E'(\psi)\subseteq E(\psi)] 및 [$E(\psi)\subseteq E'(\psi)]이므로 [$E]와 [$E']이 같다. 그러므로 정리가 증명된다.]
+
+즉 [$E(\psi)]는 [$\varphi\lesssim\psi]인 [$\varphi] 중에서 제일 큰 것이며 임의의 [$\varphi\subseteq E(\psi)]가 [$\varphi\lesssim\psi]를 만족한다.
+
+[>[**1.4.6 정리.] [$E]가 결과 연산이다. 즉 다음이 성립한다.
+
+[ul
+	[*] (확장성) [$\varphi\subseteq E(\varphi).]
+	[*] (단조성) [$\varphi\subseteq\psi\to E(\varphi)\subseteq E(\psi).]
+	[*] (멱등성) [$E(E(\varphi))=E(\varphi).]
+]
+
+증명 생략.]
+
+[>[**1.4.7 정리.] 다음이 성립한다.
+
+[ul
+	[*] (a) [$(\Delta\lesssim\varphi\land\Delta\vdash A\lesssim\varphi)\to A\lesssim\varphi.]
+	[*] (b) [$A\lesssim\varphi\cup\Delta\lrarr \Delta\vdash A\lesssim\varphi.]
+]
+
+증명.
+
+[ul
+	[*] (a) [$$\begin{aligned}
+		\Delta\lesssim\varphi&\land \Delta\vdash A\lesssim\varphi \\
+			&\lrarr (\forall S)(S\vartriangleleft\varphi\to S\vartriangleleft\Delta) \land (\forall S)(S\vartriangleleft\varphi\to S\vartriangleleft\Delta\vdash A) \\
+			&\lrarr (\forall S)(S\vartriangleleft\varphi\to(S\vartriangleleft\Delta\land S\vartriangleleft\Delta\vdash A)) \\
+			&\lrarr (\forall S)(S\vartriangleleft\varphi\to(S\vartriangleleft\Delta\land (S\vartriangleleft\Delta\to S\vartriangleleft A))) \\
+			&\to (\forall S)(S\vartriangleleft\varphi\to S\vartriangleleft A) \\
+			&\lrarr A\lesssim\varphi.
+	\end{aligned}]
+
+	[*] (b) [$$\begin{aligned}
+		A\lesssim\varphi\cup\Delta
+			&\lrarr (\forall S)(S\vartriangleleft\varphi\cup\Delta\to S\vartriangleleft A) \\
+			&\lrarr (\forall S)((S\vartriangleleft\varphi\land S\vartriangleleft\Delta)\to S\vartriangleleft A) \\
+			&\lrarr (\forall S)(S\vartriangleleft\varphi\to(S\vartriangleleft\Delta\to S\vartriangleleft A)) \\
+			&\lrarr (\forall S)(S\vartriangleleft\varphi\to S\vartriangleleft\Delta\vdash A) \\
+			&\lrarr \Delta\vdash A\lesssim\varphi.
+	\end{aligned}]
+]]
+
+[>[**1.4.8 정리.] [$\varphi\sim Q(\varphi).]
+
+증명. 먼저 임의의 [$n, m\in\N_0]에 대해 [$Q_{n, m}(\varphi)\subseteq E(\varphi)(n)]임을 보이자. 임의의 [$A\in Q_{n,m}(\varphi)]에 대해 [$A\in E(\varphi)(n)], 즉 [$A\lesssim\varphi]임을 보이면 된다. [$m]에 수학적 귀납법을 적용하자.
+
+[ul
+	[*] (base case) [$A\in Q_{n,0}(\varphi)]이면 [$A\in\varphi(n)]이므로 [$A\lesssim\varphi]이다.
+	[*] (step case) [$Q_{n,m}(\varphi)\subseteq E(\varphi)(n)]이라 하자. [$A\in Q_{n,m+1}(\varphi)]일 때 [$P_\varphi^{n,m+1,\darr}(A),P_\varphi^{n,0}(A),P_\varphi^{n,m+1,\uarr}(A)] 중 하나는 공집합이 아니다.
+	[ul
+		[*] [$P_\varphi^{n,m+1,\darr}(A)]가 공집합이 아니라면 어떤 [$\Delta]에 대해 [$\Delta\in (E(\varphi)(n))^\ast] 및 [$\Delta\vdash A\in E(\varphi)(n+1)]이다. 즉 [$\Delta\lesssim\varphi] 및 [$\Delta\vdash A\lesssim\varphi]이다. 이때 [**1.4.7](a)에 의해 [$A\lesssim\varphi]가 유도된다.
+
+		[*] [$P_\varphi^{n,0}(A)]가 공집합이 아니라면 base case에서 보였듯 [$A\lesssim\varphi]이다.
+
+		[*] [$P_\varphi^{n,m+1,\uarr}(A)]가 공집합이 아니라면 [$n\geq 1]이고 [$A]가 [$\Delta\vdash B] 형태이다. 또 [$B\in Q_{n-1,m}(\varphi\cup\Delta)], 즉 [$B\lesssim\varphi\cup\Delta]이다. 이때 [**1.4.7](b)에 의해 [$A\lesssim\varphi]가 유도된다.
+	]
+]
+
+그러므로 임의의 [$n, m\in\N_0]에 대해 [$Q_{n, m}(\varphi)\subseteq E(\varphi)(n)]이다. 즉 [$Q_n(\varphi)\subseteq E(\varphi)(n)]이다. 즉 [$Q(\varphi)\subseteq E(\varphi)]이다. 그러므로 [$Q(\varphi)\lesssim\varphi]인데, [$\varphi\subseteq Q(\varphi)]이므로 [$\varphi\lesssim Q(\varphi)]이다. 즉 [$\varphi\sim Q(\varphi)]이다.
+]
+
+(계속)
