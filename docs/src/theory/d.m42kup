@@ -1,6 +1,6 @@
 [=1.2. [$D] 함수와 증명연쇄에 관하여]
 
-[$M(L)]이 [~(href=./model.html)모형] 문서에서 정의된 것과 같이 어떤 형식 언어 [$L]의 메타언어를 만드는 함수라 하자. 이때 임의의 [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해 관계 [$\prec_L]를 다음과 같이 정의하자. 이는 M42/math 체계에서 1계층 공리가 갖는 뜻을 확정한다.
+[$M(L)]이 [~(href=./model.html)모형] 문서에서 정의된 것과 같이 어떤 형식 언어 [$L]의 메타언어를 만드는 함수라 하자. 이때 임의의 [$S\subseteq L] 및 [$T\subseteq M(L)]에 대해 관계 [$\prec_L]를 다음과 같이 정의하자. 이는 math-o-matic 체계에서 1계층 공리가 갖는 뜻을 확정한다.
 
 [$$S\prec_L T\xleftrightarrow\text{def}(\forall\Delta\in L^\ast)(\forall A\in L)(\Delta\vdash A\in T\to(\Delta\in S^\ast \to A\in S)).]
 

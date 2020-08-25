@@ -5,7 +5,7 @@ var m42kup = require('m42kup'),
 m42kup.set({hljs, katex});
 
 module.exports = {
-	name: 'M42/math 명세',
+	name: 'math-o-matic 명세',
 	src: 'src',
 	dst: 'build',
 	render: text => m42kup.render(text),
