@@ -75,7 +75,10 @@ function extendTrace(trace, type, name, location) {
 
 function makeError(message, trace) {
 	return new Error(message + '\n\tat ' + trace
-		.map(e => `${e[0]} ${e[1]} (code.js:${e[2].start.line}:${e[2].start.column})`).join('\n\tat '));
+		.map(e => {
+			var [type, name, location] = e;
+			return `${type} ${name || '<anonymous>'} (code.js:${location.start.line}:${location.start.column})`;
+		}).join('\n\tat '));
 }
 
 PI.type = function (obj, parentScope, trace) {
@@ -144,7 +147,7 @@ PI.fun = function (obj, parentScope, trace) {
 	var expr = null;
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'fun', obj.name || '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'fun', obj.name || false, obj.location);
 
 	var doc = obj.doc || null;
 	var tex = obj.tex || null;
@@ -217,7 +220,7 @@ PI.funcall = function (obj, parentScope, trace) {
 		throw Error('Assertion failed');
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'funcall', obj.fun.name || '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'funcall', obj.fun.name || false, obj.location);
 
 	var fun = PI.expr0(obj.fun, scope, trace);
 
@@ -260,7 +263,7 @@ PI.expr2 = function (obj, parentScope, trace) {
 };
 
 PI.expr1 = function (obj, parentScope, trace) {
-	if (!['tee', 'rulecall', 'reduction2', 'rulename'].includes(obj._type))
+	if (!['tee', 'rulecall', 'ruleexpr', 'reduction2', 'rulename'].includes(obj._type))
 		throw Error('Assertion failed');
 
 	// don't extend scope/trace
@@ -271,6 +274,8 @@ PI.expr1 = function (obj, parentScope, trace) {
 			return PI.tee(obj, scope, trace);
 		case 'rulecall':
 			return PI.rulecall(obj, scope, trace);
+		case 'ruleexpr':
+			return PI.rule(obj, scope, trace);
 		case 'reduction2':
 			return PI.reduction2(obj, scope, trace);
 		case 'rulename':
@@ -348,7 +353,7 @@ PI.rulename = function (obj, parentScope, trace) {
 };
 
 PI.rule = function (obj, parentScope, trace) {
-	if (obj._type != 'defrule')
+	if (obj._type != 'defrule' && obj._type != 'ruleexpr')
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
@@ -385,7 +390,7 @@ PI.tee2 = function (obj, parentScope, trace) {
 
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'tee2', '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'tee2', false, obj.location);
 
 	var left = obj.left.map(e => PI.expr1(e, scope, trace));
 	var right = PI.expr1(obj.right, scope, trace);
@@ -399,7 +404,7 @@ PI.tee = function (obj, parentScope, trace) {
 
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'tee', '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'tee', false, obj.location);
 
 	if (!scope.baseType)
 		throw makeError('Base type is not defined', trace);
@@ -430,7 +435,7 @@ PI.linkcall = function (obj, parentScope, trace) {
 
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'linkcall', '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'linkcall', false, obj.location);
 
 	var link = PI.expr2(obj.link, scope, trace);
 
@@ -467,7 +472,7 @@ PI.rulecall = function (obj, parentScope, trace) {
 
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'rulecall', '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'rulecall', false, obj.location);
 
 	var rule = PI.expr1(obj.rule, scope, trace);
 
@@ -565,7 +570,7 @@ PI.reduction2 = function (obj, parentScope, trace) {
 
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'reduction2', obj.expr2.name || '<anonymous>', obj.location);
+	trace = extendTrace(trace, 'reduction2', obj.expr2.name || false, obj.location);
 
 	var expr2 = PI.expr2(obj.expr2, scope, trace);
 

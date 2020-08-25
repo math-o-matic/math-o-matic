@@ -46,10 +46,7 @@ Tee2.prototype.toIndentedString = function (indent) {
 };
 
 Tee2.prototype.toTeXString = function (root) {
-	if (!this.left.length)
-		return `\\ \\Vdash ${this.right.toTeXString()}`;
-	
-	return `${this.left.map(e => e.toTeXString()).join('; ')} \\Vdash ${this.right.toTeXString()}`;
+	return `{${this.left.map(e => e.toTeXString()).join('; ')} \\Vdash ${this.right.toTeXString()}}`;
 };
 
 module.exports = Tee2;

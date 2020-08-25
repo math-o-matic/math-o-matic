@@ -395,6 +395,32 @@ funexpr =
 		}
 	}
 
+// (T t) => { expr1 }
+ruleexpr =
+	params:(
+		"(" _
+		p:(
+			head:defparam _
+			tail:("," _ tv:defparam _ {return tv})*
+			{return [head].concat(tail)}
+		)?
+		")" _
+		{return p || []}
+	)
+	"=>" _
+	"{" _ expr:expr1 _ "}"
+	{
+		return {
+			_type: 'ruleexpr',
+			doc: false,
+			axiomatic: true,
+			name: null,
+			params,
+			expr,
+			location: location()
+		}
+	}
+
 expr2 =
 	tee2
 	/ linkcall
@@ -424,6 +450,7 @@ expr1 =
 expr1_dontusethis =
 	tee
 	/ rulecall
+	/ ruleexpr
 	/ reduction2
 	/ rulename
 

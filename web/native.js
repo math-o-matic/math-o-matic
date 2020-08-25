@@ -212,7 +212,7 @@ native = {
 					throw Error(`Wrong type for V`);
 
 				return new scope.Rule({
-					name: '<anonymous>',
+					name: null,
 					params: rule.params.slice(0, rule.params.length - 1),
 					expr: new scope.Tee({
 						left: [],
@@ -220,13 +220,12 @@ native = {
 							fun: V,
 							args: [
 								new scope.Fun({
-									anonymous: true,
+									name: null,
 									type: new scope.Type({
 										functional: true,
 										from: [cls],
 										to: base
 									}),
-									atomic: false,
 									params: [last],
 									expr: tee.right
 								})
@@ -285,7 +284,7 @@ native = {
 				});
 
 				return new scope.Rule({
-					name: `<anonymous>`,
+					name: null,
 					params: rule.params.concat([newvar]),
 					expr: new scope.Tee({
 						left: [],
@@ -300,6 +299,47 @@ native = {
 		cut: {
 			get: (rules, scope, ER) => {
 				return ER.chain(rules.map(ER.expand1));
+			}
+		},
+		mp: {
+			get: (rules, scope, ER) => {
+				if (rules.length != 1) throw Error('wut');
+				var rule = rules[0];
+
+				if (!scope.baseType)
+					throw Error(`Base type not found`);
+
+				var base = scope.baseType;
+
+				var tee = ER.expand1(rule);
+
+				var right = ER.expand0Funcalls(tee.right);
+
+				if (tee._type != 'tee')
+					throw Error('wut');
+
+				if (!scope.hasTypevar('I'))
+					throw Error(`Typevar I not found`);
+
+				var I = scope.getTypevar('I');
+
+				if (!I.type.equals(new scope.Type({
+					functional: true,
+					from: [base, base],
+					to: base
+				})))
+					throw Error(`Wrong type for I`);
+
+				if (right._type != 'funcall'
+						|| right.fun != I) {
+					console.log(right);
+					throw Error('wut');
+				}
+
+				return new scope.Tee({
+					left: tee.left.concat([right.args[0]]),
+					right: right.args[1]
+				});
 			}
 		},
 		cp: {
