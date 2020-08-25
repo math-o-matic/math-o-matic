@@ -409,8 +409,11 @@ PI.tee = function (obj, parentScope, trace) {
 	var foo = obj => {
 		var ret = PI.expr0(obj, scope, trace);
 
-		if (!base.equals(ret.type))
-			throw makeError(`Type failed to match the base: ${ret.type}`, trace);
+		if (!base.equals(ret.type)
+				&& !(ret.type.isFunctional && base.equals(ret.type.resolve().to))) {
+			throw makeError(`Type failed to match the base type: ${ret.type}`, trace);
+		}
+			
 
 		return ret;
 	};
