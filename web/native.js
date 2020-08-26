@@ -301,7 +301,7 @@ native = {
 				return ER.chain(rules.map(ER.expand1));
 			}
 		},
-		mp: {
+		mpa: {
 			get: (rules, scope, ER) => {
 				if (rules.length != 1) throw Error('wut');
 				var rule = rules[0];

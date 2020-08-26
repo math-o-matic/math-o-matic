@@ -93,13 +93,13 @@ axiomatic rule mp(st p, st q) {
 "규칙 mp의 링크 버전. 즉
 [$$\frac{\Delta\vdash p\to q}{\Delta, p\vdash q}]
 이다. 규칙 mp보다 적용하는 것이 간단하다. 규칙 mp로부터 증명할 수 있으나 아직 표현할 수 있는 방법이 없다."
-axiomatic native link mp;
+axiomatic native link mpa;
 
 "conjunction introduction. [$ \vdash] 좌변의 [$p \land q]를 [$p, q]로 만들 수 있다.
 
 mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임을 보인 것이다."
 rule Ai(st p, st q) {
-	mp[mp[tt.IpIqApq(p, q)]]
+	mpa[mpa[tt.IpIqApq(p, q)]]
 }
 
 "conjunction introduction 2번."
@@ -109,22 +109,22 @@ rule A3i(st p, st q, st r) {
 
 "conjunction elimination 1."
 rule Ae1(st p, st q) {
-	mp[tt.IApqp(p, q)]
+	mpa[tt.IApqp(p, q)]
 }
 
 "conjunction elimination 2."
 rule Ae2(st p, st q) {
-	mp[tt.IApqq(p, q)]
+	mpa[tt.IApqq(p, q)]
 }
 
 "disjunction introduction 1."
 rule Oi1(st p, st q) {
-	mp[tt.IpOpq(p, q)]
+	mpa[tt.IpOpq(p, q)]
 }
 
 "disjunction introduction 2."
 rule Oi2(st p, st q) {
-	mp[tt.IqOpq(p, q)]
+	mpa[tt.IqOpq(p, q)]
 }
 
 "disjunction elimination."
@@ -134,7 +134,7 @@ rule Oe(st p, st q, st r) {
 		I(p, r),
 		I(q, r)
 	)
-	~ mp[tt.IAAOpqIprIqrr(p, q, r)]
+	~ mpa[tt.IAAOpqIprIqrr(p, q, r)]
 }
 
 "negation introduction."
@@ -143,52 +143,52 @@ rule Ni(st p, st q) {
 		I(p, q),
 		I(p, N(q))
 	)
-	~ mp[tt.IAIpqIpNqNp(p, q)]
+	~ mpa[tt.IAIpqIpNqNp(p, q)]
 }
 
 "negation elimination."
 rule Ne(st p, st q) {
-	mp[tt.INpIpq(p, q)]
+	mpa[tt.INpIpq(p, q)]
 }
 
 "double negation elimination."
 rule NNe(st p) {
-	mp[tt.INNpp(p)]
+	mpa[tt.INNpp(p)]
 }
 
 "biconditional introduction."
 rule Ei(st p, st q) {
 	Ai(I(p, q), I(q, p))
-	~ mp[tt.IAIpqIqpEpq(p, q)]
+	~ mpa[tt.IAIpqIqpEpq(p, q)]
 }
 
 "biconditional elimination 1."
 rule Ee1(st p, st q) {
-	mp[tt.IEpqIpq(p, q)]
+	mpa[tt.IEpqIpq(p, q)]
 }
 
 "biconditional elimination 2."
 rule Ee2(st p, st q) {
-	mp[tt.IEpqIqp(p, q)]
+	mpa[tt.IEpqIqp(p, q)]
 }
 
 rule IEpqEqpm(st p, st q) {
-	mp[tt.IEpqEqp(p, q)]
+	mpa[tt.IEpqEqp(p, q)]
 }
 
 rule IpIqpm(st p, st q) {
-	mp[tt.IpIqp(p, q)]
+	mpa[tt.IpIqp(p, q)]
 }
 
 "E를 위한 mp."
 rule mpE(st p, st q) {
-	mp[Ee1(p, q)]
+	mpa[Ee1(p, q)]
 }
 
 "cp 형을 위한 삼단논법."
 rule syll(st p, st q, st r) {
 	Ai(I(p, q), I(q, r))
-	~ mp[tt.IAIpqIqrIpr(p, q, r)]
+	~ mpa[tt.IAIpqIqrIpr(p, q, r)]
 }
 
 rule syll4(st p, st q, st r, st s) {
@@ -198,7 +198,7 @@ rule syll4(st p, st q, st r, st s) {
 "E를 위한 syll."
 rule syllE(st p, st q, st r) {
 	Ai(E(p, q), E(q, r))
-	~ mp[tt.IAEpqEqrEpr(p, q, r)]
+	~ mpa[tt.IAEpqEqrEpr(p, q, r)]
 }
 
 rule syllE4(st p, st q, st r, st s) {
@@ -207,12 +207,12 @@ rule syllE4(st p, st q, st r, st s) {
 
 "아무것도 하지 않는 무언가. 표현형식을 바꾸는 데 쓰이고 있다."
 rule id(st p) {
-	mp[tt.Ipp(p)]
+	mpa[tt.Ipp(p)]
 }
 
 "푹발률(ex falso quodlibet)."
 rule explode(st p, st q) {
-	mp[Ne(p, q)]
+	mpa[Ne(p, q)]
 }
 
 "[$\bot]을 만들어 내는 방법. 계의 기본규칙으로부터 이걸 호출할 수 있다면 계를 파-괴할 수 있다. 계가 이것을 만들어내지 않음을 검증하는 것은 중요하다."
@@ -222,7 +222,7 @@ rule destroy(st p) {
 
 "귀류법(reductio ad absurdum)."
 rule contradict(st p) {
-	mp[tt.IIpFNp(p)]
+	mpa[tt.IIpFNp(p)]
 }
 
 #################################
@@ -369,7 +369,7 @@ axiomatic rule VV(pr2 f) {
 
 "VA의 m1형."
 rule VAm1(pr f, pr g) {
-	mp[VA(f, g)
+	mpa[VA(f, g)
 	~ Ee1(
 		V(Af(f, g)),
 		A(V(f), V(g))
@@ -378,7 +378,7 @@ rule VAm1(pr f, pr g) {
 
 "VA의 m2형."
 rule VAm2(pr f, pr g) {
-	mp[VA(f, g)
+	mpa[VA(f, g)
 	~ Ee2(
 		V(Af(f, g)),
 		A(V(f), V(g))
@@ -387,17 +387,17 @@ rule VAm2(pr f, pr g) {
 
 "VI의 m형."
 rule VIm(pr f, pr g) {
-	mp[VI(f, g)]
+	mpa[VI(f, g)]
 }
 
 "VV의 m형."
 rule VVm(pr2 f) {
-	mp[VV(f)]
+	mpa[VV(f)]
 }
 
 "IEpqEqpm의 V형."
 rule IVEpqVEqpfm(pr f, pr g) {
-	mp[
+	mpa[
 		Vi_((cls x) => {
 			I(E(f(x), g(x)), E(g(x), f(x)))
 		})[(cls x) => { tt.IEpqEqp(f(x), g(x)) }]
@@ -410,7 +410,7 @@ rule IVEpqVEqpfm(pr f, pr g) {
 
 "Ee1의 V형."
 rule Ee1V(pr f, pr g) {
-	mp[
+	mpa[
 		Vi_((cls x) => {
 			I(E(f(x), g(x)), I(f(x), g(x)))
 		})[(cls x) => {tt.IEpqIpq(f(x), g(x))}]
@@ -448,7 +448,7 @@ rule syllV(pr f, pr g, pr h) {
 		(cls x) => { I(f(x), g(x)) },
 		(cls x) => { I(g(x), h(x)) }
 	)
-	~ mp[
+	~ mpa[
 		Vi_((cls x) => {
 			I(A(I(f(x), g(x)), I(g(x), h(x))), I(f(x), h(x)))
 		})[(cls x) => {tt.IAIpqIqrIpr(f(x), g(x), h(x))}]
@@ -468,7 +468,7 @@ rule syllVE(pr f, pr g, pr h) {
 		(cls w) => { E(f(w), g(w)) },
 		(cls w) => { E(g(w), h(w)) }
 	)
-	~ mp[
+	~ mpa[
 		Vi_((cls x) => {
 			I(A(E(f(x), g(x)), E(g(x), h(x))), E(f(x), h(x)))
 		})[(cls x) => {tt.IAEpqEqrEpr(f(x), g(x), h(x))}]
@@ -482,7 +482,7 @@ rule syllVE(pr f, pr g, pr h) {
 "[$\exists]과 [$\lor] 간의 분배법칙 같은 것. VA로부터 증명할 수 있다."
 rule XO(pr f, pr g) {
 	(VA(Nf(f), Nf(g)) ~
-	mp[tt.IEpAqrENpONqNr(
+	mpa[tt.IEpAqrENpONqNr(
 		V(Af(Nf(f), Nf(g))), V(Nf(f)), V(Nf(g))
 	)])
 	~ ((
@@ -494,7 +494,7 @@ rule XO(pr f, pr g) {
 			(cls x) => { A(N(f(x)), N(g(x))) }
 		)
 	)
-	~ mp[tt.IEpqENpNq(
+	~ mpa[tt.IEpqENpNq(
 		V((cls x) => { N(O(f(x), g(x))) }),
 		V((cls x) => { A(N(f(x)), N(g(x))) })
 	)])
@@ -548,7 +548,7 @@ rule AeX2(pr f, pr g) {
 }
 
 rule mpV(pr f, pr g) {
-	mp[VIm(f, g)]
+	mpa[VIm(f, g)]
 }
 
 rule mpVE(pr f, pr g) {
@@ -611,7 +611,7 @@ rule VI_Vgen_V2_Vi_VI_m(pr f, pr2 g) {
 	id(V2((cls z, cls w) => {
 		I(f(z), g(z, w))
 	})) ~
-	mp[VI_Vgen_V2_Vi_VI(f, g)]
+	mpa[VI_Vgen_V2_Vi_VI(f, g)]
 }
 
 "existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
@@ -636,8 +636,8 @@ rule Xinst1E(pr f, pr g) {
 "existential instantiation 같은 것 2. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정. Vgen으로부터 증명할 수 있다."
 rule Xinst2(st p) {
 	id(X((cls x) => {p})) ~
-	mp[cp[Vgen(N(p))]
-	~ mp[tt.IINpqINqp(p, V((cls x) => { N(p) }))]]
+	mpa[cp[Vgen(N(p))]
+	~ mpa[tt.IINpqINqp(p, V((cls x) => { N(p) }))]]
 }
 
 rule Xinst3(pr f, st p) {
@@ -797,11 +797,11 @@ rule swap_c(st p, st q, st r) {
 }
 
 rule swap(st p, st q, st r) {
-	mp[swap_c(p, q, r)]
+	mpa[swap_c(p, q, r)]
 }
 
 rule swap_m(st p, st q, st r) {
-	mp[swap(p, q, r)]
+	mpa[swap(p, q, r)]
 }
 
 rule swapV_1(pr f, pr g, pr h, cls w) {
@@ -819,7 +819,7 @@ rule swapV_c(pr f, pr g, pr h) {
 }
 
 rule swapV(pr f, pr g, pr h) {
-	mp[swapV_c(f, g, h)]
+	mpa[swapV_c(f, g, h)]
 }
 
 rule swapV2_1(pr2 f, pr2 g, pr2 h, cls z) {
@@ -860,7 +860,7 @@ rule swapV2_c(pr2 f, pr2 g, pr2 h) {
 }
 
 rule swapV2(pr2 f, pr2 g, pr2 h) {
-	mp[swapV2_c(f, g, h)]
+	mpa[swapV2_c(f, g, h)]
 }
 
 rule eq_Ae2_Vinst_Ee1_c_swap(cls x, cls y, cls z) {
@@ -1028,7 +1028,7 @@ axiomatic rule extensional(cls x, cls y) {
 }
 
 rule extensional_m(cls x, cls y) {
-	mp[extensional(x, y)]
+	mpa[extensional(x, y)]
 }
 
 rule eq_simple(cls x, cls y) {
@@ -1087,7 +1087,7 @@ rule setbuilder_def_Ve(pr f, cls z) {
 
 rule setbuilder_def_Ve_Ee(pr f, cls z) {
 	setbuilder_def_Ve(f, z)
-	~ mp[tt.IEpAqrIpr(
+	~ mpa[tt.IEpAqrIpr(
 		in(z, setbuilder(f)),
 		set(z),
 		f(z)
@@ -1103,11 +1103,15 @@ rule setbuilder_def_set_1(pr f, pr g, pr h) {
 		(cls x) => { E(f(x), A(g(x), h(x))) },
 		(cls x) => { I(h(x), g(x)) }
 	) ~
-	mp[Vi[(pr f, pr g, pr h, cls x) => {tt.IAEpAqrIrqEpr(f(x), g(x), h(x))}](f, g, h)
-	~ VIm(
-		(cls x) => { A(E(f(x), A(g(x), h(x))), I(h(x), g(x))) },
-		(cls x) => { E(f(x), h(x)) }
-	)]
+	mpa[
+		Vi_((cls x) => {
+			I(A(E(f(x), A(g(x), h(x))), I(h(x), g(x))), E(f(x), h(x)))
+		})[(cls x) => {tt.IAEpAqrIrqEpr(f(x), g(x), h(x))}]
+		~ VIm(
+			(cls x) => { A(E(f(x), A(g(x), h(x))), I(h(x), g(x))) },
+			(cls x) => { E(f(x), h(x)) }
+		)
+	]
 }
 
 rule setbuilder_def_set(pr f) {
@@ -1131,8 +1135,10 @@ rule set_Xgen_A_c(cls x, cls y, cls z) {
 	cp[set_Xgen_A(x, y, z)]
 }
 
-rule cap_vi(cls x, cls y) {
-	Vi[set_Xgen_A_c](x, y) ~
+rule cap_def_vi(cls x, cls y) {
+	Vi_((cls z) => {
+		I(A(in(z, x), in(z, y)), set(z))
+	})[(cls z) => { set_Xgen_A_c(x, y, z) }] ~
 	setbuilder_def_set((cls z) => {
 		A(in(z, x), in(z, y))
 	})
@@ -1144,14 +1150,14 @@ rule cap_vi(cls x, cls y) {
 	}))
 }
 
-rule cap(cls x, cls y, cls z) {
-	Ve[cap_vi](x, y, z)
+rule cap_def(cls x, cls y, cls z) {
+	Ve[cap_def_vi](x, y, z)
 }
 
 rule cap_commutative_1(cls x, cls y, cls z) {
-	cap(x, y, z)
+	cap_def(x, y, z)
 	~ tt.EApqAqp(in(z, x), in(z, y))
-	~ cap(y, x, z)
+	~ cap_def(y, x, z)
 	~ IEpqEqpm(
 		in(z, cap(y, x)),
 		A(in(z, y), in(z, x))
@@ -1165,7 +1171,9 @@ rule cap_commutative_1(cls x, cls y, cls z) {
 }
 
 rule cap_commutative_2(cls x, cls y) {
-	Vi[cap_commutative_1](x, y)
+	Vi_((cls z) => {
+		E(in(z, cap(x, y)), in(z, cap(y, x)))
+	})[(cls z) => { cap_commutative_1(x, y, z) }]
 	~ extensional_m(
 		cap(x, y),
 		cap(y, x)
@@ -1184,8 +1192,10 @@ rule set_Xgen_O_c(cls x, cls y, cls z) {
 	cp[set_Xgen_O(x, y, z)]
 }
 
-rule cup_vi(cls x, cls y) {
-	Vi[set_Xgen_O_c](x, y) ~
+rule cup_def_vi(cls x, cls y) {
+	Vi_((cls z) => {
+		I(O(in(z, x), in(z, y)), set(z))
+	})[(cls z) => { set_Xgen_O_c(x, y, z) }] ~
 	setbuilder_def_set((cls z) => {
 		O(in(z, x), in(z, y))
 	})
@@ -1197,8 +1207,8 @@ rule cup_vi(cls x, cls y) {
 	}))
 }
 
-rule cup(cls x, cls y, cls z) {
-	Ve[cup_vi](x, y, z)
+rule cup_def(cls x, cls y, cls z) {
+	Ve[cup_def_vi](x, y, z)
 }
 
 "empty class."
@@ -1212,7 +1222,9 @@ rule emptyset_1(cls z) {
 }
 
 rule emptyset_2() {
-	Vi[emptyset_1]()
+	Vi_((cls z) => {
+		I(I(in(z, emptyset()), F), N(in(z, emptyset())))
+	})[emptyset_1]
 }
 
 rule emptyset_3(cls x) {
@@ -1225,7 +1237,9 @@ rule emptyset_vi() {
 		(cls z) => { in(z, emptyset()) },
 		(cls z) => { A(set(z), F) }
 	)
-	~ Vi[emptyset_3]()
+	~ Vi_((cls x) => {
+		I(A(set(x), F), F)
+	})[emptyset_3]
 	~ syllV(
 		(cls z) => { in(z, emptyset()) },
 		(cls z) => { A(set(z), F) },
@@ -1283,7 +1297,7 @@ axiomatic rule specify(pr f) {
 }
 
 rule specify_vem(pr f, cls x) {
-	mp[Ve[specify](f, x)]
+	mpa[Ve[specify](f, x)]
 }
 
 rule cap_is_set_1(cls x, cls y) {
@@ -1303,7 +1317,7 @@ rule subset_cap_is_subset_1(cls x, cls y, cls z) {
 
 rule subset_cap_is_subset(cls x, cls y) {
 	id(subseteq(x, y)) ~
-	mp[Vi[subset_cap_is_subset_1](x, y)
+	mpa[Vi[subset_cap_is_subset_1](x, y)
 	~VIm(
 		(cls z) => { I(in(z, x), in(z, y)) },
 		(cls z) => {
@@ -1313,7 +1327,7 @@ rule subset_cap_is_subset(cls x, cls y) {
 			)
 		}
 	)] ~
-	cap_vi(x, y) ~ IVEpqVEqpfm(
+	cap_def_vi(x, y) ~ IVEpqVEqpfm(
 		(cls z) => { in(z, cap(x, y)) },
 		(cls z) => { A(in(z, x), in(z, y)) }
 	) ~
@@ -1358,7 +1372,7 @@ rule IAEpAqrIAsrqIsEprmAi(st p, st q, st r, st s) {
 		E(p, A(q, r)),
 		I(A(s, r), q)
 	) ~
-	mp[tt.IAEpAqrIAsrqIsEpr(p, q, r, s)]
+	mpa[tt.IAEpAqrIAsrqIsEpr(p, q, r, s)]
 }
 
 rule power_def_1(cls x, cls y) {
@@ -1377,13 +1391,13 @@ rule power_def_1(cls x, cls y) {
 "얘는 power_def보다 강력하다. 즉 power_def는 얘를
 유도할 수 없다. 아마?"
 rule power_def_Ve(cls x, cls y) {
-	mp[power_def_1(x, y)]
+	mpa[power_def_1(x, y)]
 }
 
 "생각해 보니 얘는 멱집합의 defining property라고 부를 만큼 강력하지 않다. 이름을 적당히 바꿔야 할지도 모른다."
 rule power_def(cls x) {
 	Vgen(set(x)) ~
-	mp[Vi[power_def_1](x)
+	mpa[Vi[power_def_1](x)
 	~ VIm(
 		(cls z) => { set(x) },
 		(cls z) => {
@@ -1416,7 +1430,7 @@ rule self_in_power_Vi_1(cls x, cls z) {
 
 rule self_in_power_Vi(cls x) {
 	Vgen(set(x)) ~
-	mp[Vi[self_in_power_Vi_1](x)
+	mpa[Vi[self_in_power_Vi_1](x)
 	~ VIm(
 		(cls z) => {set(x)},
 		(cls z) => {I(
@@ -1456,7 +1470,7 @@ rule singleton_subseteq_power_2(cls x, cls y) {
 
 rule singleton_subseteq_power(cls x) {
 	Vgen(set(x)) ~
-	mp[Vi[singleton_subseteq_power_2](x)
+	mpa[Vi[singleton_subseteq_power_2](x)
 	~ VIm(
 		(cls y) => {set(x)},
 		(cls y) => {
@@ -1489,7 +1503,7 @@ axiomatic rule ax_power() {
 }
 
 rule ax_power_vem(cls x) {
-	mp[Ve[ax_power](x)]
+	mpa[Ve[ax_power](x)]
 }
 
 rule power_is_set_1(cls x, cls y) {
@@ -1508,7 +1522,7 @@ rule power_is_set_1(cls x, cls y) {
 
 rule power_is_set_2(cls x, cls y) {
 	cp[power_is_set_1(x, y)]
-	~ mp[tt.IIpqIArpArq(
+	~ mpa[tt.IIpqIArpArq(
 		V((cls z) => {
 			I(
 				subseteq(z, x),
@@ -1528,7 +1542,7 @@ rule power_is_set_3(cls x, cls y) {
 rule power_is_set(cls x) {
 	(ax_power_vem(x)
 	~ Vgen(set(x)) ~
-	mp[Vi[power_is_set_3](x)
+	mpa[Vi[power_is_set_3](x)
 	~ VIm(
 		(cls y) => {set(x)},
 		(cls y) => {
