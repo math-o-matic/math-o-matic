@@ -42,7 +42,6 @@ function Type(o) {
 Type.prototype = Object.create(Node.prototype);
 Type.prototype.constructor = Type;
 Type.prototype._type = 'type';
-Type.prototype.order = 0;
 
 Type.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -54,7 +53,7 @@ Type.prototype.toSimpleString = function () {
 	var resolved = this.resolve();
 
 	return `[${resolved.from.map(e => e.toSimpleString()).join(', ')} -> ${resolved.to.toSimpleString()}]`;
-}
+};
 
 Type.prototype.toIndentedString = function (indent) {
 	if (this.isSimple) return this.name;

@@ -5,16 +5,15 @@ line =
 	typedef
 	/ defv
 	/ defun
-	/ defrule
 	/ defruleset
-	/ deflink
+	/ defschema
 
 typedef =
 	doc:(documentation __)?
 	base:("base" __)?
 	"type" __
 	origin:(o:ftype __ {return o})?
-	name:IDENT _ SEM
+	name:ident _ sem
 	{
 		doc = doc && doc[0];
 		
@@ -29,7 +28,7 @@ typedef =
 	}
 
 defv =
-	doc:(documentation __)? tex:(tex __)? type:type __ name:IDENT _ SEM
+	doc:(documentation __)? tex:(tex __)? type:type __ name:ident _ sem
 	{
 		return {
 			_type: 'defv',
@@ -42,7 +41,7 @@ defv =
 	}
 
 defparam =
-	type:type __ name:IDENT
+	type:type __ name:ident
 	{
 		return {
 			_type: 'defv',
@@ -56,7 +55,7 @@ defun =
 	doc:(documentation __)?
 	tex:(tex __)?
 	rettype:type __
-	name:IDENT _
+	name:ident _
 	params:(
 		"(" _
 		p:(
@@ -72,7 +71,7 @@ defun =
 		expr:expr0 _
 		"}"
 		{return expr}
-		/ SEM {return null}
+		/ sem {return null}
 	)
 	{
 		return {
@@ -87,17 +86,17 @@ defun =
 		}
 	}
 
-deflink =
-	// native links
+defschema =
+	// native schemata
 	doc:(documentation __)?
 	axiomatic:("axiomatic" __)?
 	"native" __
-	"link" __
-	name:IDENT _
-	SEM
+	"schema" __
+	name:ident _
+	sem
 	{
 		return {
-			_type: 'deflink',
+			_type: 'defschema',
 			doc: doc && doc[0],
 			axiomatic: !!axiomatic,
 			name,
@@ -106,11 +105,11 @@ deflink =
 		}
 	}
 	/
-	// non-native links
+	// non-native schemata
 	doc:(documentation __)?
 	axiomatic:("axiomatic" __)?
-	"link" __
-	name:IDENT _
+	"schema" __
+	name:ident _
 	params:(
 		"(" _
 		p:(
@@ -122,11 +121,11 @@ deflink =
 		{return p || []}
 	)
 	"{" _
-	expr:expr2 _
+	expr:metaexpr _
 	"}"
 	{
 		return {
-			_type: 'deflink',
+			_type: 'defschema',
 			doc: doc && doc[0],
 			axiomatic: !!axiomatic,
 			name,
@@ -142,8 +141,8 @@ defruleset =
 	axiomatic:("axiomatic" __)?
 	"native" __
 	"ruleset" __
-	name:IDENT _
-	SEM
+	name:ident _
+	sem
 	{
 		return {
 			_type: 'defruleset',
@@ -155,47 +154,19 @@ defruleset =
 		}
 	}
 
-defrule =
-	doc:(documentation __)?
-	axiomatic:("axiomatic" __)?
-	"rule" __
-	name:IDENT _
-	params:(
-		"(" _
-		p:(
-			head:defparam _
-			tail:("," _ tv:defparam _ {return tv})*
-			{return [head].concat(tail)}
-		)?
-		")" _
-		{return p || []}
-	)
-	"{" _
-	expr:expr1 _
-	"}"
-	{
-		return {
-			_type: 'defrule',
-			doc: doc && doc[0],
-			axiomatic: !!axiomatic,
-			name,
-			params,
-			expr,
-			location: location()
-		}
-	}
-
-// expr0... |- expr0
+// (metaexpr... |- metaexpr)
 tee =
+	"(" _
 	left:(
 		l:(
-			head:expr0 _
-			tail:("," _ e:expr0 _ {return e})*
+			head:metaexpr _
+			tail:("," _ e:metaexpr _ {return e})*
 			{return [head].concat(tail)}
 		)? {return l || []}
 	)
 	"|-" _
-	right:expr0
+	right:metaexpr _
+	")"
 	{
 		return {
 			_type: 'tee',
@@ -205,70 +176,23 @@ tee =
 		}
 	}
 
-// expr1... ||- expr1
-tee2 =
-	left:(
-		l:(
-			head:expr1 _
-			tail:(";" _ e:expr1 _ {return e})*
-			{return [head].concat(tail)}
-		)? {return l || []}
-	)
-	"||-" _
-	right:expr1
-	{
-		return {
-			_type: 'tee2',
-			left,
-			right,
-			location: location()
-		}
-	}
-
-linkname =
-	name:IDENT
-	{
-		return {
-			_type: 'linkname',
-			name
-		}
-	}
-
-rulename =
-	rulesetName:(id:IDENT _ "." _ {return id})?
-	name:IDENT
-	{
-		return rulesetName
-			? {
-				_type: 'rulename',
-				type: 'ruleset',
-				rulesetName,
-				name
-			}
-			: {
-				_type: 'rulename',
-				type: 'normal',
-				name
-			}
-	}
-
-// link[...]
-// linkcall[...]
-// (expr2)[...]
-reduction2 =
-	expr2:(
-		linkcall
-		/ linkname
+// var[...]
+// schemacall[...]
+// (metaexpr)[...]
+reduction =
+	subject:(
+		schemacall
+		/ var
 		/ "(" _
-		e:expr2 _
+		e:metaexpr _
 		")"
 		{return e}
 	) _
 	args:(
 		"[" _
 		a:(
-			head:expr1 _
-			tail:(";" _ e:expr1 _ {return e})*
+			head:metaexpr _
+			tail:("," _ e:metaexpr _ {return e})*
 			{return [head].concat(tail)}
 		)?
 		"]"
@@ -276,20 +200,20 @@ reduction2 =
 	)
 	{
 		return {
-			_type: 'reduction2',
-			expr2,
+			_type: 'reduction',
+			subject,
 			args,
 			location: location()
 		}
 	}
 
-// link(...)
-// (expr2)(...)
-linkcall =
-	link:(
-		linkname
+// var(...)
+// (metaexpr)(...)
+schemacall =
+	schema:(
+		var
 		/ "(" _
-		e:expr2 _
+		e:metaexpr _
 		")"
 		{return e}
 	) _
@@ -305,46 +229,15 @@ linkcall =
 	)
 	{
 		return {
-			_type: 'linkcall',
-			link,
-			args,
-			location: location()
-		}
-	}
-
-// rule(...)
-// reduction2(...)
-// (expr1)(...)
-rulecall =
-	rule:(
-		reduction2
-		/ rulename
-		/ "(" _
-		e:expr1 _
-		")"
-		{return e}
-	) _
-	args:(
-		"(" _
-		a:(
-			head:expr0 _
-			tail:("," _ e:expr0 _ {return e})*
-			{return [head].concat(tail)}
-		)?
-		")"
-		{return a || []}
-	)
-	{
-		return {
-			_type: 'rulecall',
-			rule,
+			_type: 'schemacall',
+			schema,
 			args,
 			location: location()
 		}
 	}
 
 // forall(f, g)
-// ((...) => ...)(f, g)
+// (expr0)(f, g)
 funcall =
 	fun:(
 		var
@@ -372,7 +265,7 @@ funcall =
 		}
 	}
 
-// (T t) => { f(t) }
+// (T t) => { expr0 }
 funexpr =
 	params:(
 		"(" _
@@ -395,8 +288,8 @@ funexpr =
 		}
 	}
 
-// (T t) => { expr1 }
-ruleexpr =
+// (T t) => { metaexpr }
+schemaexpr =
 	params:(
 		"(" _
 		p:(
@@ -408,10 +301,10 @@ ruleexpr =
 		{return p || []}
 	)
 	"=>" _
-	"{" _ expr:expr1 _ "}"
+	"{" _ expr:metaexpr _ "}"
 	{
 		return {
-			_type: 'ruleexpr',
+			_type: 'schemaexpr',
 			doc: false,
 			axiomatic: true,
 			name: null,
@@ -421,38 +314,41 @@ ruleexpr =
 		}
 	}
 
-expr2 =
-	tee2
-	/ linkcall
-	/ linkname
-
-expr1 =
+metaexpr =
 	// right associativity
 	a:(
-		expr1_dontusethis
-		/ "(" _ c:expr1 _ ")" {return c}
-	) _ "~" _ b:expr1
+		metaexpr_dontusethis
+		/ "(" _ c:metaexpr _ ")" {return c}
+	) _ "~" _ b:metaexpr
 	{
 		return {
-			_type: 'reduction2',
-			expr2: {
-				_type: 'linkname',
+			_type: 'reduction',
+			subject: {
+				_type: 'var',
+				type: 'normal',
 				name: 'cut'
 			},
 			args: [a, b],
 			location: location()
 		}
 	}
-	/ expr1_dontusethis
-	/ "(" _ a:expr1 _ ")" {return a}
+	/ metaexpr_dontusethis
+	/ "(" _ a:metaexpr _ ")" {return a}
 
-// expr1 외에서 사용하지 마시오.
-expr1_dontusethis =
-	tee
-	/ rulecall
-	/ ruleexpr
-	/ reduction2
-	/ rulename
+/*
+ * 다음이 성립하여야 한다.
+ *
+ * - reduction이 schemacall보다 앞이다.
+ * - schemacall이 var보다 앞이다.
+ *
+ * metaexpr 외에서 사용하지 마시오.
+ */
+metaexpr_dontusethis =
+	reduction
+	/ schemacall
+	/ var
+	/ schemaexpr
+	/ tee
 
 expr0 =
 	funcall
@@ -465,7 +361,7 @@ type =
 	/ ftype
 
 stype =
-	name:IDENT
+	name:ident
 	{
 		return {
 			_type: 'type',
@@ -504,24 +400,32 @@ ftype =
 	}
 
 var =
-	name:IDENT
+	rulesetName:(id:ident _ "." _ {return id})?
+	name:ident
 	{
-		return {
-			_type: 'var',
-			name
-		}
+		return rulesetName
+			? {
+				_type: 'var',
+				type: 'ruleset',
+				rulesetName,
+				name
+			}
+			: {
+				_type: 'var',
+				type: 'normal',
+				name
+			}
 	}
 
 keyword =
 	"axiomatic"
 	/ "base"
-	/ "link"
 	/ "native"
-	/ "rule"
 	/ "ruleset"
+	/ "schema"
 	/ "type";
 
-IDENT =
+ident =
 	!keyword id:[a-zA-Z0-9_]+ {return id.join('')}
 
 documentation =
@@ -550,5 +454,5 @@ _ =
 __ =
 	([ \t\n\r] / comment)+
 
-SEM =
+sem =
 	";"

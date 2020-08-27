@@ -27,7 +27,7 @@ Typevar.prototype.toString = function () {
 // pr f
 Typevar.prototype.toSimpleString = function () {
 	return this.type.toSimpleString() + ' ' + this.name;
-}
+};
 
 Typevar.prototype.toIndentedString = function (indent, root) {
 	return `${root ? this.type + ' ' : ''}${this.name}<${this._id}>`;

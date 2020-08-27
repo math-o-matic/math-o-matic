@@ -1,27 +1,22 @@
 var Node = require('./Node');
-var MetaType = require('./MetaType');
 var Typevar = require('./Typevar');
-var Link = require('./Link');
 
-function Linkcall({link, args}) {
+var ExpressionResolver = require('../ExpressionResolver');
+
+function Schemacall({schema, args}) {
 	Node.call(this);
 
-	if (!(link instanceof Link))
+	if (!schema) {
 		throw Error('Assertion failed');
-
-	if (!(args instanceof Array) || args.some(e => e.type.order != 0))
-		throw Error('Assertion failed');
-	
-	this.link = link;
-	this.args = args;
-
-	if (!(link.type._type == 'metatype'
-			&& link.type.isFunctional
-			&& link.type.order == 2)) {
-		throw Error('Link should be a second-order functional type');
 	}
 
-	var paramTypes = link.type.from,
+	if (!(args instanceof Array))
+		throw Error('Assertion failed');
+	
+	this.schema = schema;
+	this.args = args;
+
+	var paramTypes = schema.type.from,
 		argTypes = args.map(e => e.type);
 
 	if (paramTypes.length != argTypes.length)
@@ -32,18 +27,20 @@ function Linkcall({link, args}) {
 			throw Error('Assertion failed');
 	}
 
-	this.type = link.type.to;
+	this.type = schema.type.to;
+
+	this.expanded = ExpressionResolver.expandMetaAndFuncalls(this);
 }
 
-Linkcall.prototype = Object.create(Node.prototype);
-Linkcall.prototype.constructor = Linkcall;
-Linkcall.prototype._type = 'linkcall';
+Schemacall.prototype = Object.create(Node.prototype);
+Schemacall.prototype.constructor = Schemacall;
+Schemacall.prototype._type = 'schemacall';
 
-Linkcall.prototype.toString = function () {
+Schemacall.prototype.toString = function () {
 	return this.toIndentedString(0);
 };
 
-Linkcall.prototype.toIndentedString = function (indent) {
+Schemacall.prototype.toIndentedString = function (indent) {
 	var args = this.args.map(arg => {
 		if (arg instanceof Typevar) return arg.name;
 		return arg.toIndentedString(indent + 1);
@@ -58,7 +55,7 @@ Linkcall.prototype.toIndentedString = function (indent) {
 		args = args.join(', ');
 
 		return [
-			`${this.link.name}(`,
+			`${this.schema.name}(`,
 			args,
 			')'
 		].join('');
@@ -67,16 +64,19 @@ Linkcall.prototype.toIndentedString = function (indent) {
 		args = args.join(',\n' + '\t'.repeat(indent + 1));
 
 		return [
-			`${this.link.name}(`,
+			`${this.schema.name}(`,
 			'\t' + args,
 			')'
 		].join('\n' + '\t'.repeat(indent));
 	}
 };
 
-Linkcall.prototype.toTeXString = function (root) {
-	return `\\href{#link-${this.link.name}}{\\textsf{${this.escapeTeX(this.link.name)}}}`
-		+ `(${this.args.map(e => e.toTeXString()).join(', ')})`;
+Schemacall.prototype.toTeXString = function (root) {
+	return (
+		this.schema.name
+			? `\\href{#schema-${this.schema.name}}{\\textsf{${this.escapeTeX(this.schema.name)}}}`
+			: this.schema.toTeXString()
+	) + `(${this.args.map(e => e.toTeXString()).join(', ')})`;
 };
 
-module.exports = Linkcall;
+module.exports = Schemacall;

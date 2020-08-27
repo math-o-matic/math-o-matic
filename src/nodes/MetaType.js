@@ -10,40 +10,22 @@ function MetaType(o) {
 	this.isSimple = !o.functional;
 
 	if (!o.functional) {
-		if (typeof o.order != 'number' || !(o.order >= 1))
-			throw Error('order must be a positive integer');
-
-		this.order = o.order;
-
 		if (!(o.left instanceof Array))
 			throw Error('left should be an array');
-
-		if (o.order == 1) {
-			if ([...o.left, o.right].some(e => !(e instanceof Type))) {
-				throw Error('left & right should be Types if order == 1');
-			}
-		} else {
-			if ([...o.left, o.right].some(e => {
-				return !(e instanceof MetaType && e.order == o.order - 1);
-			})) {
-				throw Error('left & right should be MetaTypes of order (order - 1) if order > 1');
-			}
-		}
 
 		this.left = o.left;
 		this.right = o.right;
 	} else {
 		if (o.from.some(f => !(f instanceof Type)))
 			throw Error('o.from.some(f => !(f instanceof Type))');
-		if (!(o.to instanceof MetaType))
-			throw Error('!(o.to instanceof MetaType)');
+		// if (!(o.to instanceof MetaType))
+		// 	throw Error('!(o.to instanceof MetaType)');
 
 		if (o.to.isFunctional)
 			throw Error('Functional metatype in functional metatype is not supported');
 
 		this.from = o.from;
 		this.to = o.to;
-		this.order = o.to.order;
 	}
 }
 
@@ -52,7 +34,7 @@ MetaType.prototype.constructor = MetaType;
 MetaType.prototype._type = 'metatype';
 
 MetaType.prototype.toString = function () {
-	if (this.isSimple) return `[${this.left.join(', ')} |-(${this.order}) ${this.right}]`;
+	if (this.isSimple) return `[${this.left.join(', ')} |- ${this.right}]`;
 
 	return `[${this.from.join(', ')} -> ${this.to}]`;
 };
@@ -60,7 +42,6 @@ MetaType.prototype.toString = function () {
 MetaType.prototype.equals = function (t) {
 	if (!(t instanceof MetaType)) return false;
 
-	if (this.order != t.order) return false;
 	if (this.isSimple != t.isSimple) return false;
 
 	if (this.isSimple) {

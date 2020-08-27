@@ -156,21 +156,21 @@ native = {
 					right: funcall
 				});
 
-				var rule = new scope.Rule({
+				var schema = new scope.Schema({
 					name: 'tt.' + name,
 					params: typevars,
 					expr: tee
 				});
 
-				return rule;
+				return schema;
 			}
 		}
 	},
-	link: {
+	schema: {
 		Vi: {
 			get: (rules, scope, ER) => {
 				if (rules.length != 1) throw Error('wut');
-				var rule = ER.expand1(rules[0]);
+				var rule = ER.expandMeta(rules[0]);
 
 				if (!scope.baseType)
 					throw Error(`Base type not found`);
@@ -187,7 +187,7 @@ native = {
 
 				var last = rule.params[rule.params.length - 1];
 
-				var tee = ER.expand1(rule.expr);
+				var tee = ER.expandMeta(rule.expr);
 
 				if (tee._type != 'tee')
 					throw Error('wut');
@@ -211,7 +211,7 @@ native = {
 				})))
 					throw Error(`Wrong type for V`);
 
-				return new scope.Rule({
+				return new scope.Schema({
 					name: null,
 					params: rule.params.slice(0, rule.params.length - 1),
 					expr: new scope.Tee({
@@ -250,7 +250,7 @@ native = {
 
 				var cls = scope.getType('cls');
 
-				var tee = ER.expand1(rule.expr);
+				var tee = ER.expandMeta(rule.expr);
 
 				if (tee._type != 'tee')
 					throw Error('wut');
@@ -283,7 +283,7 @@ native = {
 					name: '$'
 				});
 
-				return new scope.Rule({
+				return new scope.Schema({
 					name: null,
 					params: rule.params.concat([newvar]),
 					expr: new scope.Tee({
@@ -298,7 +298,7 @@ native = {
 		},
 		cut: {
 			get: (rules, scope, ER) => {
-				return ER.chain(rules.map(ER.expand1));
+				return ER.chain(rules.map(ER.expandMeta));
 			}
 		},
 		mpa: {
@@ -311,7 +311,7 @@ native = {
 
 				var base = scope.baseType;
 
-				var tee = ER.expand1(rule);
+				var tee = ER.expandMeta(rule);
 
 				var right = ER.expand0Funcalls(tee.right);
 
@@ -352,7 +352,7 @@ native = {
 
 				var base = scope.baseType;
 
-				var tee = ER.expand1(rule);
+				var tee = ER.expandMeta(rule);
 
 				if (tee._type != 'tee')
 					throw Error('wut');
