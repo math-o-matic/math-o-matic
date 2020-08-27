@@ -1,17 +1,17 @@
 var Node = require('./Node');
 var MetaType = require('./MetaType');
-var Typevar = require('./Typevar');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
 function Tee({left, right}) {
 	Node.call(this);
 
-	if (!(left instanceof Array)
-			|| left.map(e => e.type.order == 0).some(e => !e))
+	if (!(left instanceof Array)) {
+		console.log(left);
 		throw Error('Assertion failed');
+	}
 
-	if (right.type.order != 0)
+	if (!right)
 		throw Error('Assertion failed');
 
 	// antecedent의 contraction
@@ -28,7 +28,6 @@ function Tee({left, right}) {
 
 	this.type = new MetaType({
 		functional: false,
-		order: 1,
 		left: left.map(e => e.type),
 		right: right.type
 	});
@@ -55,7 +54,7 @@ Tee.prototype.toIndentedString = function (indent) {
 };
 
 Tee.prototype.toTeXString = function (root) {
-	return `{${this.left.map(e => e.toTeXString()).join(', ')} \\vdash ${this.right.toTeXString()}}`;
+	return `\\left({${this.left.map(e => e.toTeXString()).join(', ')} \\vdash ${this.right.toTeXString()}}\\right)`;
 };
 
 module.exports = Tee;

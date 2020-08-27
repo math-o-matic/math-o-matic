@@ -4,32 +4,27 @@ var Type = require('./nodes/Type');
 var Typevar = require('./nodes/Typevar');
 var Fun = require('./nodes/Fun');
 var Funcall = require('./nodes/Funcall');
-var Rule = require('./nodes/Rule');
 var Tee = require('./nodes/Tee');
-var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
-var Link = require('./nodes/Link');
+var Schema = require('./nodes/Schema');
+var Schemacall = require('./nodes/Schemacall');
 
 var ExpressionResolver = require('./ExpressionResolver');
-
-var PegInterface = require('./PegInterface');
 
 function Scope(parent) {
 	this.typedefMap = {};
 	this.defMap = {};
-	this.ruleMap = {};
+	this.schemaMap = {};
 	this.rulesetMap = {};
-	this.linkMap = {};
 
 	this.Type = Type;
 	this.Typevar = Typevar;
 	this.Fun = Fun;
 	this.Funcall = Funcall;
-	this.Rule = Rule;
 	this.Tee = Tee;
-	this.Rulecall = Rulecall;
 	this.Ruleset = Ruleset;
-	this.Link = Link;
+	this.Schema = Schema;
+	this.Schemacall = Schemacall;
 
 	this.ExpressionResolver = ExpressionResolver;
 
@@ -189,33 +184,6 @@ Scope.prototype.getTypevar = function (name) {
 		(!!this.parent && this.parent.getTypevar(name));
 };
 
-Scope.prototype.hasOwnRule = function (name) {
-	return !!this.ruleMap[name];
-};
-
-Scope.prototype.hasRule = function (name) {
-	return this.hasOwnRule(name)
-		|| (!!this.parent && this.parent.hasRule(name));
-};
-
-Scope.prototype.addRule = function (rule) {
-	if (!(rule instanceof Rule))
-		throw Error('Illegal argument type');
-
-	if (this.hasOwnRule(rule.name))
-		throw Error(`Rule with name ${rule.name} already is there`);
-
-	return this.ruleMap[rule.name] = rule;
-};
-
-Scope.prototype.getRule = function (name) {
-	if (!this.hasRule(name))
-		throw Error(`Rule with name ${name} not found`);
-
-	return this.ruleMap[name] ||
-		(!!this.parent && this.parent.getRule(name));
-};
-
 Scope.prototype.hasOwnRuleset = function (name) {
 	return !!this.rulesetMap[name];
 };
@@ -243,31 +211,31 @@ Scope.prototype.getRuleset = function (name) {
 		(!!this.parent && this.parent.getRuleset(name));
 };
 
-Scope.prototype.hasOwnLink = function (name) {
-	return !!this.linkMap[name];
+Scope.prototype.hasOwnSchema = function (name) {
+	return !!this.schemaMap[name] || !!this.defMap[name];
 };
 
-Scope.prototype.hasLink = function (name) {
-	return this.hasOwnLink(name)
-		|| (!!this.parent && this.parent.hasLink(name));
+Scope.prototype.hasSchema = function (name) {
+	return this.hasOwnSchema(name)
+		|| (!!this.parent && this.parent.hasSchema(name));
 };
 
-Scope.prototype.addLink = function (link) {
-	if (!(link instanceof Link))
+Scope.prototype.addSchema = function (schema) {
+	if (!(schema instanceof Schema))
 		throw Error('Illegal argument type');
 
-	if (this.hasOwnLink(link.name))
-		throw Error(`Link with name ${link.name} already is there`);
+	if (this.hasOwnSchema(schema.name))
+		throw Error(`Schema with name ${schema.name} already is there`);
 
-	return this.linkMap[link.name] = link;
+	return this.schemaMap[schema.name] = schema;
 };
 
-Scope.prototype.getLink = function (name) {
-	if (!this.hasLink(name))
-		throw Error(`Link with name ${name} not found`);
+Scope.prototype.getSchema = function (name) {
+	if (!this.hasSchema(name))
+		throw Error(`Schema with name ${name} not found`);
 
-	return this.linkMap[name] ||
-		(!!this.parent && this.parent.getLink(name));
+	return this.schemaMap[name] || this.defMap[name] ||
+		(!!this.parent && this.parent.getSchema(name));
 };
 
 module.exports = Scope;

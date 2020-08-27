@@ -216,14 +216,14 @@
 
 				var ncols = (function recurse(expr) {
 					switch (expr._type) {
-						case 'reduction2':
+						case 'reduction':
 							return Math.max(
 								...expr.args.map(recurse),
 								1
 							);
-						case 'rulecall':
+						case 'schemacall':
 							return 1;
-						case 'rule':
+						case 'schema':
 							return recurse(expr.expr) + 1;
 						default:
 							return 1;
@@ -237,7 +237,7 @@
 					var padding = left.length;
 
 					switch (expr._type) {
-						case 'reduction2':
+						case 'reduction':
 							var hasArgs = !!expr.args.length;
 
 							var args = expr.args.map((arg, i) => {
@@ -250,13 +250,13 @@
 
 							return [
 								args.map(e => e[0]).join(''),
-								`<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.reduced.toTeXString())}</td><td>&#x25BC;</td><td>${ktx(expr.expr2.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
+								`<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.reduced.toTeXString())}</td><td>&#x25BC;</td><td>${ktx(expr.subject.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
 							].join('');
-						case 'rulecall':
+						case 'schemacall':
 							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
 
 							return `<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.expanded.toTeXString())}</td><td>&#x25C7;</td><td>${ktx(expr.toTeXString())}</td></tr>`;
-						case 'rule':
+						case 'schema':
 							return recurse(expr.expr, left.concat([expr.params]));
 						default:
 							console.error('Unknown type:', expr);
@@ -269,25 +269,28 @@
 				return html;
 			}
 
-			for (var k in program.scope.ruleMap) {
-				var v = program.scope.ruleMap[k];
+			for (var k in program.scope.schemaMap) {
+				var v = program.scope.schemaMap[k];
 
 				r = `<div class="block">`
-					+ `<p class="label"><a id="rule-${k}" href="#rule-${k}"><b>${
-						v.axiomatic ? 'axiomatic ' : ''
-					}rule</b> ${k}</a>(${v.params.map(p => p.toSimpleString()).join(', ')})</p>`
+					+ `<p class="label"><a id="schema-${k}" href="#schema-${k}"><b>${
+						(v.axiomatic ? 'axiomatic ' : '')
+						+ (v.native ? 'native ': '')
+					}schema</b> ${k}</a>${v.native ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 					
 
 					// + `<pre>${escapeHtml(v)}</pre>`
 
 					+ (
-						v.expr._type == 'tee'
-							? v.axiomatic
-								? ''
-								: '<p class="label"><b>not proved</b></p>'
-							: '<p class="label"><b>proof explorer</b></p>'
-								+ `<p>${generateExpressionTree(v.expr)}</p>`
+						v.expr
+							? v.expr._type == 'tee'
+								? v.axiomatic
+									? ''
+									: '<p class="label"><b>not proved</b></p>'
+								: '<p class="label"><b>proof explorer</b></p>'
+									+ `<p>${generateExpressionTree(v.expr)}</p>`
+							: ''
 					)
 
 					+ '<p class="label"><b>description</b></p>'
@@ -297,33 +300,6 @@
 						: '<p class="description"><i>No description provided.</i></p>'
 					)
 
-					+ `</div>`;
-
-				arr[v._id] = r;
-			}
-
-			for (var k in program.scope.linkMap) {
-				var v = program.scope.linkMap[k];
-
-				r = `<div class="block">`
-					+ `<p class="label"><a id="link-${k}" href="#link-${k}"><b>${
-						(v.axiomatic ? 'axiomatic ' : '')
-						+ (v.native ? 'native ': '')
-					}link</b> ${k}</a></p>`
-					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
-
-					+ (
-						v.axiomatic
-							? '' : '<p class="label"><b>not proved</b></p>'
-					)
-
-					+ '<p class="label"><b>description</b></p>'
-					+ (
-						v.doc
-						? `<p class="description">${m42kup.render(v.doc)}</p>`
-						: '<p class="description"><i>No description provided.</i></p>'
-					)
-					// + `<pre>${escapeHtml(v)}</pre>`
 					+ `</div>`;
 
 				arr[v._id] = r;

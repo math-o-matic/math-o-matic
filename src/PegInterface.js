@@ -7,14 +7,11 @@ var Type = require('./nodes/Type');
 var Typevar = require('./nodes/Typevar');
 var Fun = require('./nodes/Fun');
 var Funcall = require('./nodes/Funcall');
-var Rule = require('./nodes/Rule');
 var Tee = require('./nodes/Tee');
-var Tee2 = require('./nodes/Tee2');
-var Rulecall = require('./nodes/Rulecall');
 var Ruleset = require('./nodes/Ruleset');
-var Link = require('./nodes/Link');
-var Linkcall = require('./nodes/Linkcall');
-var Reduction2 = require('./nodes/Reduction2');
+var Schema = require('./nodes/Schema');
+var Schemacall = require('./nodes/Schemacall');
+var Reduction = require('./nodes/Reduction');
 
 var ExpressionResolver = require('./ExpressionResolver');
 
@@ -55,7 +52,7 @@ function typeObjToNestedArr(obj) {
 	}
 }
 
-function rulenameObjToString(obj) {
+function varObjToString(obj) {
 	switch (obj.type) {
 		case 'ruleset':
 			return `${obj.rulesetName}.${obj.name}`;
@@ -96,7 +93,7 @@ PI.type = function (obj, parentScope, trace) {
 	var base = obj.base;
 
 	if (base && origin) {
-		throw makeError(`Base type must be primitive`, trace);
+		throw makeError('Base type must be primitive', trace);
 	}
 
 	if (origin) {
@@ -243,27 +240,8 @@ PI.funcall = function (obj, parentScope, trace) {
 	return new Funcall({fun, args});
 };
 
-PI.expr2 = function (obj, parentScope, trace) {
-	if (!['tee2', 'linkcall', 'linkname'].includes(obj._type))
-		throw Error('Assertion failed');
-
-	// don't extend scope/trace
-	var scope = parentScope;
-
-	switch (obj._type) {
-		case 'tee2':
-			return PI.tee2(obj, scope, trace);
-		case 'linkcall':
-			return PI.linkcall(obj, scope, trace);
-		case 'linkname':
-			return PI.linkname(obj, scope, trace);
-		default:
-			throw Error('wut');
-	}
-};
-
-PI.expr1 = function (obj, parentScope, trace) {
-	if (!['tee', 'rulecall', 'ruleexpr', 'reduction2', 'rulename'].includes(obj._type))
+PI.metaexpr = function (obj, parentScope, trace) {
+	if (!['tee', 'reduction', 'schemacall', 'schemaexpr', 'var'].includes(obj._type))
 		throw Error('Assertion failed');
 
 	// don't extend scope/trace
@@ -272,22 +250,24 @@ PI.expr1 = function (obj, parentScope, trace) {
 	switch (obj._type) {
 		case 'tee':
 			return PI.tee(obj, scope, trace);
-		case 'rulecall':
-			return PI.rulecall(obj, scope, trace);
-		case 'ruleexpr':
-			return PI.rule(obj, scope, trace);
-		case 'reduction2':
-			return PI.reduction2(obj, scope, trace);
-		case 'rulename':
-			return PI.rulename(obj, scope, trace);
+		case 'reduction':
+			return PI.reduction(obj, scope, trace);
+		case 'schemacall':
+			return PI.schemacall(obj, scope, trace);
+		case 'schemaexpr':
+			return PI.schema(obj, scope, trace);
+		case 'var':
+			return PI.metavar(obj, scope, trace);
 		default:
 			throw Error('wut');
 	}
 };
 
 PI.expr0 = function (obj, parentScope, trace) {
-	if (!['funcall', 'funexpr', 'var'].includes(obj._type))
+	if (!['funcall', 'funexpr', 'var'].includes(obj._type)) {
+		console.log(obj);
 		throw Error('Assertion failed');
+	}
 
 	// don't extend scope/trace
 	var scope = parentScope;
@@ -306,21 +286,8 @@ PI.expr0 = function (obj, parentScope, trace) {
 	}
 };
 
-PI.linkname = function (obj, parentScope, trace) {
-	if (obj._type != 'linkname')
-		throw Error('Assertion failed');
-
-	// don't extend scope/trace
-	var scope = parentScope;
-
-	if (!scope.hasLink(obj.name))
-		throw makeError(`Link ${obj.name} is not defined`, trace);
-
-	return scope.getLink(obj.name);
-};
-
-PI.rulename = function (obj, parentScope, trace) {
-	if (obj._type != 'rulename')
+PI.metavar = function (obj, parentScope, trace) {
+	if (obj._type != 'var')
 		throw Error('Assertion failed');
 
 	// don't extend scope/trace
@@ -336,66 +303,20 @@ PI.rulename = function (obj, parentScope, trace) {
 			if (!ruleset.native)
 				throw Error('Behavior undefined for non-native rulesets');
 
-			var rule = ruleset.native.get(obj.name, scope);
+			var schema = ruleset.native.get(obj.name, scope);
 
-			if (!rule)
-				throw makeError(`Rule ${rulenameObjToString(obj)} not found`, trace);
+			if (!schema)
+				throw makeError(`Schema ${varObjToString(obj)} not found`, trace);
 			
-			return rule;
+			return schema;
 		case 'normal':
-			if (!scope.hasRule(obj.name))
-				throw makeError(`Rule ${obj.name} is not defined`, trace);
+			if (!scope.hasSchema(obj.name))
+				throw makeError(`Schema ${obj.name} is not defined`, trace);
 
-			return scope.getRule(obj.name);
+			return scope.getSchema(obj.name);
 		default:
 			throw makeError(`Unknown type ${obj.type}`, trace);
 	}
-};
-
-PI.rule = function (obj, parentScope, trace) {
-	if (obj._type != 'defrule' && obj._type != 'ruleexpr')
-		throw Error('Assertion failed');
-
-	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'rule', obj.name, obj.location);
-
-	var axiomatic = obj.axiomatic;
-	var name = obj.name;
-	var params = obj.params.map(tvo => {
-		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
-			throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
-
-		if (scope.hasOwnTypevar(tvo.name))
-			throw makeError(`Param name ${tvo.name} already is there`, trace);
-
-		var tv = PI.typevar(tvo, scope, trace);
-		return scope.addTypevar(tv);
-	});
-
-	var expr = PI.expr1(obj.expr, scope, trace);
-
-	if (!(expr.type._type == 'metatype'
-			&& expr.type.order == 1
-			&& expr.type.isSimple)) {
-		throw makeError('Expression should be a simple first-order type', trace);
-	}
-
-	return new Rule({axiomatic, name, params, expr, doc: obj.doc});
-};
-
-PI.tee2 = function (obj, parentScope, trace) {
-	if (obj._type != 'tee2')
-		throw Error('Assertion failed');
-
-	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'tee2', false, obj.location);
-
-	var left = obj.left.map(e => PI.expr1(e, scope, trace));
-	var right = PI.expr1(obj.right, scope, trace);
-
-	return new Tee2({left, right});
 };
 
 PI.tee = function (obj, parentScope, trace) {
@@ -406,20 +327,8 @@ PI.tee = function (obj, parentScope, trace) {
 
 	trace = extendTrace(trace, 'tee', false, obj.location);
 
-	if (!scope.baseType)
-		throw makeError('Base type is not defined', trace);
-
-	var base = scope.baseType;
-
 	var foo = obj => {
-		var ret = PI.expr0(obj, scope, trace);
-
-		if (!base.equals(ret.type)
-				&& !(ret.type.isFunctional && base.equals(ret.type.resolve().to))) {
-			throw makeError(`Type failed to match the base type: ${ret.type}`, trace);
-		}
-			
-
+		var ret = PI.metaexpr(obj, scope, trace);
 		return ret;
 	};
 
@@ -429,27 +338,30 @@ PI.tee = function (obj, parentScope, trace) {
 	return new Tee({left, right});
 };
 
-PI.linkcall = function (obj, parentScope, trace) {
-	if (obj._type != 'linkcall')
+PI.schemacall = function (obj, parentScope, trace) {
+	if (obj._type != 'schemacall')
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'linkcall', false, obj.location);
+	trace = extendTrace(trace, 'schemacall', false, obj.location);
 
-	var link = PI.expr2(obj.link, scope, trace);
+	var schema = PI.metaexpr(obj.schema, scope, trace);
 
-	if (!(link.type._type == 'metatype'
-			&& link.type.isFunctional
-			&& link.type.order == 2)) {
-		throw makeError('Link should be a second-order functional type', trace);
+	if (schema.type._type == 'type') {
+		return PI.funcall({
+			_type: 'funcall',
+			fun: obj.schema,
+			args: obj.args,
+			location: obj.location
+		}, parentScope, trace);
 	}
 
 	var args = obj.args.map(obj => {
 		return PI.expr0(obj, scope, trace);
 	});
 
-	var paramTypes = link.type.from,
+	var paramTypes = schema.type.from,
 		argTypes = args.map(e => e.type);
 
 	if (paramTypes.length != argTypes.length)
@@ -460,40 +372,8 @@ PI.linkcall = function (obj, parentScope, trace) {
 			throw makeError(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, trace);
 	}
 
-	return new Linkcall({
-		link,
-		args
-	});
-};
-
-PI.rulecall = function (obj, parentScope, trace) {
-	if (obj._type != 'rulecall')
-		throw Error('Assertion failed');
-
-	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'rulecall', false, obj.location);
-
-	var rule = PI.expr1(obj.rule, scope, trace);
-
-	if (rule.type.isSimple)
-		throw makeError('Rule is not callable', trace);
-
-	var args = obj.args.map(obj => {
-		return PI.expr0(obj, scope, trace);
-	});
-
-	var argTypes = rule.type.from;
-
-	if (argTypes.length != args.length)
-		throw makeError(`Invalid number of arguments (expected ${argTypes.length}): ${args.length}`, trace);
-
-	for (var i = 0; i < args.length; i++)
-		if (!args[i].type.equals(argTypes[i]))
-			throw makeError(`Illegal argument type (expected ${argTypes[i]}): ${args[i].type}`, trace);
-
-	return new Rulecall({
-		rule,
+	return new Schemacall({
+		schema,
 		args
 	});
 };
@@ -520,79 +400,70 @@ PI.ruleset = function (obj, parentScope, trace, nativeMap) {
 	return new Ruleset({axiomatic, name, native, doc: obj.doc});
 };
 
-PI.link = function (obj, parentScope, trace, nativeMap) {
-	if (obj._type != 'deflink')
+PI.schema = function (obj, parentScope, trace, nativeMap) {
+	if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'link', obj.name, obj.location);
+	trace = extendTrace(trace, 'schema', obj.name, obj.location);
 
 	var axiomatic = obj.axiomatic;
 	var name = obj.name;
 
 	if (obj.native) {
-		if (!nativeMap.link[name])
-			throw makeError(`Native code for native link ${name} not found`, trace);
+		if (!nativeMap.schema[name])
+			throw makeError(`Native code for native schema ${name} not found`, trace);
 
 		var native = {
-			get: args => nativeMap.link[name].get(args, scope, ExpressionResolver)
+			get: args => nativeMap.schema[name].get(args, scope, ExpressionResolver)
 		};
 
-		return new Link({axiomatic, name, native, doc: obj.doc});
-	} else {
-		var params = obj.params.map(tvo => {
-			if (!scope.hasType(typeObjToNestedArr(tvo.type)))
-				throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
-
-			if (scope.hasOwnTypevar(tvo.name))
-				throw makeError(`Param name ${tvo.name} already is there`, trace);
-
-			var tv = PI.typevar(tvo, scope, trace);
-			return scope.addTypevar(tv);
-		});
-
-		var expr = PI.expr2(obj.expr, scope, trace);
-
-		if (!(expr.type._type == 'metatype'
-				&& expr.type.order == 2
-				&& expr.type.isSimple)) {
-			throw makeError('Link expression should be a simple second-order type', trace);
-		}
-
-		return new Link({axiomatic, name, params, expr, doc: obj.doc});
+		return new Schema({axiomatic, name, native, doc: obj.doc});
 	}
+
+	var params = obj.params.map(tvo => {
+		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
+			throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
+
+		if (scope.hasOwnTypevar(tvo.name))
+			throw makeError(`Param name ${tvo.name} already is there`, trace);
+
+		var tv = PI.typevar(tvo, scope, trace);
+		return scope.addTypevar(tv);
+	});
+
+	var expr = PI.metaexpr(obj.expr, scope, trace);
+
+	if (!['type', 'metatype'].includes(expr.type._type)) {
+		throw makeError('Assertion failed', trace);
+	}
+
+	return new Schema({axiomatic, name, params, expr, doc: obj.doc});
 };
 
-PI.reduction2 = function (obj, parentScope, trace) {
-	if (obj._type != 'reduction2')
+PI.reduction = function (obj, parentScope, trace) {
+	if (obj._type != 'reduction')
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'reduction2', obj.expr2.name || false, obj.location);
+	trace = extendTrace(trace, 'reduction', obj.subject.name || false, obj.location);
 
-	var expr2 = PI.expr2(obj.expr2, scope, trace);
+	var subject = PI.metaexpr(obj.subject, scope, trace);
 
 	var args = obj.args.map(obj => {
-		return PI.expr1(obj, scope, trace);
+		return PI.metaexpr(obj, scope, trace);
 	});
 
-	// Skip type check for native links
-	if (expr2._type == 'link' && expr2.native) {
-		return new Reduction2({
-			expr2,
+	if (subject.native) {
+		return new Reduction({
+			subject,
 			args
 		});
 	}
 
-	if (!(expr2.type._type == 'metatype'
-			&& expr2.type.isSimple
-			&& expr2.type.order == 2)) {
-		throw makeError('expr2 is not reducible', trace);
-	}
-
-	var paramTypes = expr2.type.left,
+	var paramTypes = subject.type.left,
 		argTypes = args.map(e => e.type);
 
 	if (paramTypes.length != argTypes.length)
@@ -603,8 +474,8 @@ PI.reduction2 = function (obj, parentScope, trace) {
 			throw makeError(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, trace);
 	}
 
-	return new Reduction2({
-		expr2,
+	return new Reduction({
+		subject,
 		args
 	});
 };

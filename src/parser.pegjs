@@ -13,7 +13,7 @@ typedef =
 	base:("base" __)?
 	"type" __
 	origin:(o:ftype __ {return o})?
-	name:IDENT _ SEM
+	name:ident _ sem
 	{
 		doc = doc && doc[0];
 		
@@ -28,7 +28,7 @@ typedef =
 	}
 
 defv =
-	doc:(documentation __)? tex:(tex __)? type:type __ name:IDENT _ SEM
+	doc:(documentation __)? tex:(tex __)? type:type __ name:ident _ sem
 	{
 		return {
 			_type: 'defv',
@@ -41,7 +41,7 @@ defv =
 	}
 
 defparam =
-	type:type __ name:IDENT
+	type:type __ name:ident
 	{
 		return {
 			_type: 'defv',
@@ -55,7 +55,7 @@ defun =
 	doc:(documentation __)?
 	tex:(tex __)?
 	rettype:type __
-	name:IDENT _
+	name:ident _
 	params:(
 		"(" _
 		p:(
@@ -71,7 +71,7 @@ defun =
 		expr:expr0 _
 		"}"
 		{return expr}
-		/ SEM {return null}
+		/ sem {return null}
 	)
 	{
 		return {
@@ -92,8 +92,8 @@ defschema =
 	axiomatic:("axiomatic" __)?
 	"native" __
 	"schema" __
-	name:IDENT _
-	SEM
+	name:ident _
+	sem
 	{
 		return {
 			_type: 'defschema',
@@ -109,7 +109,7 @@ defschema =
 	doc:(documentation __)?
 	axiomatic:("axiomatic" __)?
 	"schema" __
-	name:IDENT _
+	name:ident _
 	params:(
 		"(" _
 		p:(
@@ -141,8 +141,8 @@ defruleset =
 	axiomatic:("axiomatic" __)?
 	"native" __
 	"ruleset" __
-	name:IDENT _
-	SEM
+	name:ident _
+	sem
 	{
 		return {
 			_type: 'defruleset',
@@ -237,7 +237,7 @@ schemacall =
 	}
 
 // forall(f, g)
-// ((...) => ...)(f, g)
+// (expr0)(f, g)
 funcall =
 	fun:(
 		var
@@ -265,7 +265,7 @@ funcall =
 		}
 	}
 
-// (T t) => { f(t) }
+// (T t) => { expr0 }
 funexpr =
 	params:(
 		"(" _
@@ -335,14 +335,20 @@ metaexpr =
 	/ metaexpr_dontusethis
 	/ "(" _ a:metaexpr _ ")" {return a}
 
-// metaexpr 외에서 사용하지 마시오.
-// reduction은 schemacall보다 앞이어야 한다.
+/*
+ * 다음이 성립하여야 한다.
+ *
+ * - reduction이 schemacall보다 앞이다.
+ * - schemacall이 var보다 앞이다.
+ *
+ * metaexpr 외에서 사용하지 마시오.
+ */
 metaexpr_dontusethis =
-	tee
-	/ reduction
+	reduction
 	/ schemacall
-	/ schemaexpr
 	/ var
+	/ schemaexpr
+	/ tee
 
 expr0 =
 	funcall
@@ -355,7 +361,7 @@ type =
 	/ ftype
 
 stype =
-	name:IDENT
+	name:ident
 	{
 		return {
 			_type: 'type',
@@ -394,8 +400,8 @@ ftype =
 	}
 
 var =
-	rulesetName:(id:IDENT _ "." _ {return id})?
-	name:IDENT
+	rulesetName:(id:ident _ "." _ {return id})?
+	name:ident
 	{
 		return rulesetName
 			? {
@@ -414,14 +420,12 @@ var =
 keyword =
 	"axiomatic"
 	/ "base"
-	/ "link"
 	/ "native"
-	/ "rule"
 	/ "ruleset"
 	/ "schema"
 	/ "type";
 
-IDENT =
+ident =
 	!keyword id:[a-zA-Z0-9_]+ {return id.join('')}
 
 documentation =
@@ -450,5 +454,5 @@ _ =
 __ =
 	([ \t\n\r] / comment)+
 
-SEM =
+sem =
 	";"
