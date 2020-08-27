@@ -6,11 +6,11 @@ code = String.raw`
 "문장 타입."
 base type st;
 
-"참. 이걸 만들어 내도 계에는 별 일이 생기지 않는다."
+"참."
 $<<\top>>$
 st T;
 
-"거짓. 이걸 만들어 낸다면 계를 말짱 도루묵으로 만들 수 있다."
+"거짓. 이것을 유도하면 계의 모순성(inconsistency)을 증명할 수 있을 것이다."
 $<<\bot>>$
 st F;
 
@@ -38,11 +38,7 @@ st I(st p, st q);
 $\left(#1<<\leftrightarrow>>#2\right)$
 st E(st p, st q);
 
-"truth table의 tt. 진리표를 만들어 봤을 때 값이 항상 참인 명제 [$P] 중 필요할 만한 대부분의 것들에 대해 [$\vdash P]를 포함하고 있다. 물론 배열로서 일일이 나열해 놓은 것이 아니고 논리적으로 그렇다는 것이다.
-
-Metamath처럼 Łukasiewicz의 공리계로 어떻게 해보려 했으나 예전부터 이 방식은 불필요하게 비효율적이라고 판단하였기에 손절하고 정규적인 추론 방식이 있는 진리표 기반으로 바꾼 것이다. 진리표가 Łukasiewicz의 공리를 전부 포함하고 있으므로 modus ponens와 같이 썼을 때 Łukasiewicz의 공리계보다 강력하거나 같다. 같다는 증명이 있는지는 모르겠음.
-
-어떤 규칙에 접근하려면 Polish notation으로 된 이름을 만들어야 한다.
+"진리표를 만들어 봤을 때 값이 항상 참인 명제 [$p]에 대하여 [$\vdash p]를 포함한다. 어떤 규칙에 접근하려면 Polish notation으로 된 이름을 만들어야 한다.
 
 [ul
 	[*] 말단
@@ -64,11 +60,13 @@ Metamath처럼 Łukasiewicz의 공리계로 어떻게 해보려 했으나 예전
 		]
 ]
 
-대소문자를 구분하고 괄호 따위는 쓰지 않으며 연산자를 맨 앞에 쓰고 인자를 이어 쓰면 된다.
+대소문자를 구분하고 괄호를 사용하지 않으며 연산자를 맨 앞에 쓰고 인자를 이어 쓴다.
 
 [> 예를 들어 [$\vdash p \land q]는 Apq, [$\vdash \neg (p \land q) \leftrightarrow (\neg p \lor \neg q)]는 ENApqONpNq가 된다.]
 
 tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없으므로, 뭔가를 좌변에 넣으려면 modus ponens를 적용해야 한다.
+
+이후 이것을 없애고 한정된 몇 가지의 규칙만을 사용하여 공리계를 구축하여야 할 것이다.
 
 [~(href=./tt.html)인터랙티브 페이지]"
 axiomatic native ruleset tt;
@@ -80,7 +78,7 @@ axiomatic native ruleset tt;
 1계층 reduction 구문을 도입한다면 그로부터 증명할 수 있다."
 axiomatic native link cut;
 
-"conditional proof. deduction theorem이라고도 하는 것 같으나 뭐가 뭔지 모르겠다. 즉
+"conditional proof. 힐베르트 체계(Hilbert system)에서는 메타정리(metatheorem)이며 deduction theorem이라 부른다. 즉
 [$$\frac{\Delta, p\vdash q}{\Delta\vdash p\to q}]
 에 해당한다. [$\Delta, p\vdash q]에서 [$p]는 맨 마지막에 있어야 한다. mp와는 역연산 관계가 있다고 할 수 있다."
 axiomatic native link cp;
@@ -205,7 +203,7 @@ rule syllE4(st p, st q, st r, st s) {
 	syllE(p, q, r) ~ syllE(p, r, s)
 }
 
-"아무것도 하지 않는 무언가. 표현형식을 바꾸는 데 쓰이고 있다."
+"sequent calculus의 I 규칙 같은 것. 표현형식을 바꾸는 데 쓰이고 있다."
 rule id(st p) {
 	mpa[tt.Ipp(p)]
 }
@@ -215,7 +213,7 @@ rule explode(st p, st q) {
 	mpa[Ne(p, q)]
 }
 
-"[$\bot]을 만들어 내는 방법. 계의 기본규칙으로부터 이걸 호출할 수 있다면 계를 파-괴할 수 있다. 계가 이것을 만들어내지 않음을 검증하는 것은 중요하다."
+"[$\bot]을 유도한다. 계의 모순성(inconsistency)을 증명할 때 사용할 수 있다."
 rule destroy(st p) {
 	explode(p, F)
 }
