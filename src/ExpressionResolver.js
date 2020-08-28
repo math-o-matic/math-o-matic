@@ -398,7 +398,14 @@ ER.chain = function (tees) {
 			}
 		}
 
-		throw Error(`Link failed:\n\n${l},\n\n${r}\n`);
+		throw Error(`Chaining failed:
+
+--- LEFT ---
+${l}
+--- RIGHT ---
+${r}
+--- END ---
+`);
 	}));
 };
 

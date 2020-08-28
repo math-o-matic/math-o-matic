@@ -44,10 +44,10 @@ Schema.prototype.toString = function () {
 
 Schema.prototype.toIndentedString = function (indent) {
 	if (this.native)
-		return `schema ${this.name} <native>`;
+		return `∫ ${this.name} <native>`;
 
 	return [
-		`schema ${this.name}(${this.params.join(', ')}) => {`,
+		`∫ ${this.name || ''}(${this.params.join(', ')}) => {`,
 		'\t' + this.expr.toIndentedString(indent + 1),
 		'}'
 	].join('\n' + '\t'.repeat(indent));

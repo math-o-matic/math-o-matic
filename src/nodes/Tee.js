@@ -47,7 +47,7 @@ Tee.prototype.toIndentedString = function (indent) {
 	}
 
 	return [
-		this.left.map(e => e.toIndentedString(indent)).join(',\n' + '\t'.repeat(indent)),
+		'\t' + this.left.map(e => e.toIndentedString(indent + 1)).join(',\n' + '\t'.repeat(indent + 1)),
 		'|-',
 		'\t' + this.right.toIndentedString(indent + 1)
 	].join('\n' + '\t'.repeat(indent));

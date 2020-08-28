@@ -338,6 +338,63 @@ PI.tee = function (obj, parentScope, trace) {
 	return new Tee({left, right});
 };
 
+PI.schema = function (obj, parentScope, trace, nativeMap) {
+	if (obj._type != 'defschema' && obj._type != 'schemaexpr')
+		throw Error('Assertion failed');
+
+	var scope = parentScope.extend();
+
+	trace = extendTrace(trace, 'schema', obj.name, obj.location);
+
+	var axiomatic = obj.axiomatic;
+	var name = obj.name;
+
+	if (obj.native) {
+		if (!nativeMap.schema[name])
+			throw makeError(`Native code for native schema ${name} not found`, trace);
+
+		var native = {
+			get: args => nativeMap.schema[name].get(args, scope, ExpressionResolver)
+		};
+
+		return new Schema({axiomatic, name, native, doc: obj.doc});
+	}
+
+	var params = obj.params.map(tvo => {
+		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
+			throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
+
+		if (scope.hasOwnTypevar(tvo.name))
+			throw makeError(`Param name ${tvo.name} already is there`, trace);
+
+		var tv = PI.typevar(tvo, scope, trace);
+		return scope.addTypevar(tv);
+	});
+
+	var expr = PI.metaexpr(obj.expr, scope, trace);
+
+	if (!['type', 'metatype'].includes(expr.type._type)) {
+		throw makeError('Assertion failed', trace);
+	}
+
+	if (obj._type == 'schemaexpr' && expr.type._type == 'type') {
+		return new Fun({
+			name,
+			type: new Type({
+				functional: true,
+				from: params.map(typevar => typevar.type),
+				to: expr.type
+			}),
+			params,
+			expr,
+			doc: obj.doc,
+			tex: null
+		});
+	}
+
+	return new Schema({axiomatic, name, params, expr, doc: obj.doc});
+};
+
 PI.schemacall = function (obj, parentScope, trace) {
 	if (obj._type != 'schemacall')
 		throw Error('Assertion failed');
@@ -398,48 +455,6 @@ PI.ruleset = function (obj, parentScope, trace, nativeMap) {
 	var native = nativeMap.ruleset[name];
 
 	return new Ruleset({axiomatic, name, native, doc: obj.doc});
-};
-
-PI.schema = function (obj, parentScope, trace, nativeMap) {
-	if (obj._type != 'defschema' && obj._type != 'schemaexpr')
-		throw Error('Assertion failed');
-
-	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'schema', obj.name, obj.location);
-
-	var axiomatic = obj.axiomatic;
-	var name = obj.name;
-
-	if (obj.native) {
-		if (!nativeMap.schema[name])
-			throw makeError(`Native code for native schema ${name} not found`, trace);
-
-		var native = {
-			get: args => nativeMap.schema[name].get(args, scope, ExpressionResolver)
-		};
-
-		return new Schema({axiomatic, name, native, doc: obj.doc});
-	}
-
-	var params = obj.params.map(tvo => {
-		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
-			throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
-
-		if (scope.hasOwnTypevar(tvo.name))
-			throw makeError(`Param name ${tvo.name} already is there`, trace);
-
-		var tv = PI.typevar(tvo, scope, trace);
-		return scope.addTypevar(tv);
-	});
-
-	var expr = PI.metaexpr(obj.expr, scope, trace);
-
-	if (!['type', 'metatype'].includes(expr.type._type)) {
-		throw makeError('Assertion failed', trace);
-	}
-
-	return new Schema({axiomatic, name, params, expr, doc: obj.doc});
 };
 
 PI.reduction = function (obj, parentScope, trace) {

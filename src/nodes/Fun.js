@@ -41,7 +41,7 @@ Fun.prototype.toIndentedString = function (indent) {
 		return `ƒ ${this.type.to} ${this.name}(${this.params.join(', ')});`;
 
 	return [
-		(this.name ? 'ƒ ' + this.type.to + ' ' + this.name : '')
+		(this.name ? 'ƒ ' + this.type.to + ' ' + this.name : 'ƒ ')
 			+ `(${this.params.join(', ')}) => {`,
 		`\t${this.expr.toIndentedString(indent + 1)}`,
 		'}'

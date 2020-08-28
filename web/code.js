@@ -91,13 +91,13 @@ axiomatic schema mp(st p, st q) {
 "규칙 mp의 링크 버전. 즉
 [$$\frac{\Delta\vdash p\to q}{\Delta, p\vdash q}]
 이다. 규칙 mp보다 적용하는 것이 간단하다. 규칙 mp로부터 증명할 수 있으나 아직 표현할 수 있는 방법이 없다."
-axiomatic native schema mpa;
+axiomatic native schema mpu;
 
 "conjunction introduction. [$ \vdash] 좌변의 [$p \land q]를 [$p, q]로 만들 수 있다.
 
 mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임을 보인 것이다."
 schema Ai(st p, st q) {
-	mpa[mpa[tt.IpIqApq(p, q)]]
+	mpu[mpu[tt.IpIqApq(p, q)]]
 }
 
 "conjunction introduction 2번."
@@ -107,22 +107,22 @@ schema A3i(st p, st q, st r) {
 
 "conjunction elimination 1."
 schema Ae1(st p, st q) {
-	mpa[tt.IApqp(p, q)]
+	mpu[tt.IApqp(p, q)]
 }
 
 "conjunction elimination 2."
 schema Ae2(st p, st q) {
-	mpa[tt.IApqq(p, q)]
+	mpu[tt.IApqq(p, q)]
 }
 
 "disjunction introduction 1."
 schema Oi1(st p, st q) {
-	mpa[tt.IpOpq(p, q)]
+	mpu[tt.IpOpq(p, q)]
 }
 
 "disjunction introduction 2."
 schema Oi2(st p, st q) {
-	mpa[tt.IqOpq(p, q)]
+	mpu[tt.IqOpq(p, q)]
 }
 
 "disjunction elimination."
@@ -132,7 +132,7 @@ schema Oe(st p, st q, st r) {
 		I(p, r),
 		I(q, r)
 	)
-	~ mpa[tt.IAAOpqIprIqrr(p, q, r)]
+	~ mpu[tt.IAAOpqIprIqrr(p, q, r)]
 }
 
 "negation introduction."
@@ -141,52 +141,57 @@ schema Ni(st p, st q) {
 		I(p, q),
 		I(p, N(q))
 	)
-	~ mpa[tt.IAIpqIpNqNp(p, q)]
+	~ mpu[tt.IAIpqIpNqNp(p, q)]
 }
 
 "negation elimination."
 schema Ne(st p, st q) {
-	mpa[tt.INpIpq(p, q)]
+	mpu[tt.INpIpq(p, q)]
+}
+
+"double negation introduction."
+schema NNi(st p) {
+	mpu[tt.IpNNp(p)]
 }
 
 "double negation elimination."
 schema NNe(st p) {
-	mpa[tt.INNpp(p)]
+	mpu[tt.INNpp(p)]
 }
 
 "biconditional introduction."
 schema Ei(st p, st q) {
 	Ai(I(p, q), I(q, p))
-	~ mpa[tt.IAIpqIqpEpq(p, q)]
+	~ mpu[tt.IAIpqIqpEpq(p, q)]
 }
 
 "biconditional elimination 1."
 schema Ee1(st p, st q) {
-	mpa[tt.IEpqIpq(p, q)]
+	mpu[tt.IEpqIpq(p, q)]
 }
 
 "biconditional elimination 2."
 schema Ee2(st p, st q) {
-	mpa[tt.IEpqIqp(p, q)]
+	mpu[tt.IEpqIqp(p, q)]
 }
 
 schema IEpqEqpm(st p, st q) {
-	mpa[tt.IEpqEqp(p, q)]
+	mpu[tt.IEpqEqp(p, q)]
 }
 
 schema IpIqpm(st p, st q) {
-	mpa[tt.IpIqp(p, q)]
+	mpu[tt.IpIqp(p, q)]
 }
 
 "E를 위한 mp."
 schema mpE(st p, st q) {
-	mpa[Ee1(p, q)]
+	mpu[Ee1(p, q)]
 }
 
 "cp 형을 위한 삼단논법."
 schema syll(st p, st q, st r) {
 	Ai(I(p, q), I(q, r))
-	~ mpa[tt.IAIpqIqrIpr(p, q, r)]
+	~ mpu[tt.IAIpqIqrIpr(p, q, r)]
 }
 
 schema syll4(st p, st q, st r, st s) {
@@ -196,7 +201,7 @@ schema syll4(st p, st q, st r, st s) {
 "E를 위한 syll."
 schema syllE(st p, st q, st r) {
 	Ai(E(p, q), E(q, r))
-	~ mpa[tt.IAEpqEqrEpr(p, q, r)]
+	~ mpu[tt.IAEpqEqrEpr(p, q, r)]
 }
 
 schema syllE4(st p, st q, st r, st s) {
@@ -205,12 +210,12 @@ schema syllE4(st p, st q, st r, st s) {
 
 "sequent calculus의 I 규칙 같은 것. 표현형식을 바꾸는 데 쓰이고 있다."
 schema id(st p) {
-	mpa[tt.Ipp(p)]
+	mpu[tt.Ipp(p)]
 }
 
 "푹발률(ex falso quodlibet)."
 schema explode(st p, st q) {
-	mpa[Ne(p, q)]
+	mpu[Ne(p, q)]
 }
 
 "[$\bot]을 유도한다. 계의 모순성(inconsistency)을 증명할 때 사용할 수 있다."
@@ -220,7 +225,16 @@ schema destroy(st p) {
 
 "귀류법(reductio ad absurdum)."
 schema contradict(st p) {
-	mpa[tt.IIpFNp(p)]
+	mpu[tt.IIpFNp(p)]
+}
+
+schema mt_c(st p, st q) {
+	mpu[tt.IIpqINqNp(p, q)]
+}
+
+"modus tollens."
+schema mt(st p, st q) {
+	mpu[mt_c(p, q)]
 }
 
 #################################
@@ -273,33 +287,6 @@ pr Nf(pr f) {
 $\left(<<\forall>>#1\right)$
 st V(pr f);
 
-"universal introduction. 즉
-[$$\frac{(x, \cdots, z, y)\mapsto(\vdash f(x, \cdots, z, y))}{(x, \cdots, z)\mapsto(\vdash \forall(y \mapsto f(x, \cdots, z, y)))}]
-이다. 매개변수 맨 마지막에 있는 cls 하나를 [$\forall]로 돌리는 방식이다.
-
-제약사항
-[ul
-	[*] 입력 규칙의 마지막 매개변수의 타입이 cls여야 함.
-	[*] [$\vdash]의 좌변에 아무것도 없어야 함.
-]"
-axiomatic native schema Vi;
-
-"Vi의 네이티브 하지 않은 버전."
-axiomatic schema Vi_(pr f) {
-	((cls x) => { (|- f(x)) } |- (|- V(f)))
-}
-
-"universal elimination. 즉
-[$$\frac{(x, \cdots, z)\mapsto(\vdash \forall(y \mapsto f(x, \cdots, z, y)))}{(x, \cdots, z, y)\mapsto(\vdash f(x, \cdots, z, y))}]
-이다. Vi의 역연산이라고 볼 수 있다. schema Vinst로부터 유도할 수 있을 것으로 추정된다.
-
-제약사항
-[ul
-	[*] [$\vdash]의 우변이 V여야 함.
-	[*] [$\vdash]의 좌변에 아무것도 없어야 함.
-]"
-axiomatic native schema Ve;
-
 "입력항이 두 개인 함수를 위한 보편 양화. V에 의존한다."
 $\left(<<\forall>>#1\right)$
 st V2(pr2 f) {
@@ -334,6 +321,35 @@ st X2(pr2 f) {
 	N(V2((cls x, cls y) => { N(f(x, y)) }))
 }
 
+"universal introduction."
+axiomatic schema Vi(pr f) {
+	(f |- V(f))
+}
+
+schema Vi_p(st p) {
+	(p |- (cls x) => { p })
+	~ Vi((cls x) => { p })
+}
+
+schema Vi_c(st p) {
+	cp[Vi_p(p)]
+}
+
+"universal elimination."
+axiomatic schema Ve(pr f, cls x) {
+	(V(f) |- f(x))
+}
+
+"universal introduction의 다른 버전."
+axiomatic schema Viu(pr f) {
+	((cls x) => { (|- f(x)) } |- (|- V(f)))
+}
+
+"universal elimination의 다른 버전."
+axiomatic schema Veu(pr f, cls x) {
+	((|- V(f)) |- (|- f(x)))
+}
+
 "[$\forall]과 [$\land] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VI만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
 axiomatic schema VA(pr f, pr g) {
 	(|- E(
@@ -357,7 +373,7 @@ axiomatic schema VO(pr f, pr g) {
 	))
 }
 
-"[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것. 특이하게도 Vi 및 Ve로부터 유도할 수 있는 것으로 보이나 아직 표현할 방식이 없다."
+"[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것. 특이하게도 Viu 및 Veu로부터 유도할 수 있는 것으로 보이나 아직 표현할 방식이 없다."
 axiomatic schema VV(pr2 f) {
 	(|- I(
 		V2((cls x, cls y) => { f(x, y) }),
@@ -367,7 +383,7 @@ axiomatic schema VV(pr2 f) {
 
 "VA의 m1형."
 schema VAm1(pr f, pr g) {
-	mpa[VA(f, g)
+	mpu[VA(f, g)
 	~ Ee1(
 		V(Af(f, g)),
 		A(V(f), V(g))
@@ -376,7 +392,7 @@ schema VAm1(pr f, pr g) {
 
 "VA의 m2형."
 schema VAm2(pr f, pr g) {
-	mpa[VA(f, g)
+	mpu[VA(f, g)
 	~ Ee2(
 		V(Af(f, g)),
 		A(V(f), V(g))
@@ -385,18 +401,18 @@ schema VAm2(pr f, pr g) {
 
 "VI의 m형."
 schema VIm(pr f, pr g) {
-	mpa[VI(f, g)]
+	mpu[VI(f, g)]
 }
 
 "VV의 m형."
 schema VVm(pr2 f) {
-	mpa[VV(f)]
+	mpu[VV(f)]
 }
 
 "IEpqEqpm의 V형."
 schema IVEpqVEqpfm(pr f, pr g) {
-	mpa[
-		Vi_((cls x) => {
+	mpu[
+		Viu((cls x) => {
 			I(E(f(x), g(x)), E(g(x), f(x)))
 		})[(cls x) => { tt.IEpqEqp(f(x), g(x)) }]
 		~ VIm(
@@ -408,8 +424,8 @@ schema IVEpqVEqpfm(pr f, pr g) {
 
 "Ee1의 V형."
 schema Ee1V(pr f, pr g) {
-	mpa[
-		Vi_((cls x) => {
+	mpu[
+		Viu((cls x) => {
 			I(E(f(x), g(x)), I(f(x), g(x)))
 		})[(cls x) => {tt.IEpqIpq(f(x), g(x))}]
 		~ VIm(
@@ -446,8 +462,8 @@ schema syllV(pr f, pr g, pr h) {
 		(cls x) => { I(f(x), g(x)) },
 		(cls x) => { I(g(x), h(x)) }
 	)
-	~ mpa[
-		Vi_((cls x) => {
+	~ mpu[
+		Viu((cls x) => {
 			I(A(I(f(x), g(x)), I(g(x), h(x))), I(f(x), h(x)))
 		})[(cls x) => {tt.IAIpqIqrIpr(f(x), g(x), h(x))}]
 		~ VIm(
@@ -466,8 +482,8 @@ schema syllVE(pr f, pr g, pr h) {
 		(cls w) => { E(f(w), g(w)) },
 		(cls w) => { E(g(w), h(w)) }
 	)
-	~ mpa[
-		Vi_((cls x) => {
+	~ mpu[
+		Viu((cls x) => {
 			I(A(E(f(x), g(x)), E(g(x), h(x))), E(f(x), h(x)))
 		})[(cls x) => {tt.IAEpqEqrEpr(f(x), g(x), h(x))}]
 		~ VIm(
@@ -477,14 +493,94 @@ schema syllVE(pr f, pr g, pr h) {
 	]
 }
 
+schema VI_Vi(st p, pr f) {
+	Vi_c(p) ~
+	VIm((cls z) => {p}, f)
+	~ syll(
+		p,
+		V((cls z) => {p}),
+		V(f)
+	)
+}
+
+schema VI_Vi_c(st p, pr f) {
+	cp[VI_Vi(p, f)]
+}
+
+schema VI_Vi_V2(pr f, pr2 g, cls z) {
+	VI_Vi_c(f(z), (cls w) => {g(z, w)})
+}
+
+schema VI_Vi_V2_Vi(pr f, pr2 g) {
+	Viu((cls z) => {
+		I(V((cls w) => {I(f(z), g(z, w))}), I(f(z), V((cls w) => {g(z, w)})))
+	})[(cls z) => {VI_Vi_V2(f, g, z)}]
+}
+
+schema VI_Vi_V2_Vi_VI(pr f, pr2 g) {
+	VI_Vi_V2_Vi(f, g)
+	~ VIm(
+		(cls z) => {
+			V((cls w) => {
+				I(f(z), g(z, w))
+			})
+		},
+		(cls z) => {
+			I(
+				f(z),
+				V((cls w) => {
+					g(z, w)
+				})
+			)
+		}
+	)
+}
+
+schema VI_Vi_V2_Vi_VI_m(pr f, pr2 g) {
+	id(V2((cls z, cls w) => {
+		I(f(z), g(z, w))
+	})) ~
+	mpu[VI_Vi_V2_Vi_VI(f, g)]
+}
+
+"existential introduction. Ve와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
+schema Xi(pr f, cls x) {
+	NNi(f(x)) ~
+	mpu[
+		cp[Ve(Nf(f), x)]
+		~ mt_c(V(Nf(f)), N(f(x)))
+	] ~ id(X(f))
+}
+
+"existential instantiation 같은 것 1. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정."
+schema Xinst1(pr f, pr g) {
+	(X(f), V(If(f, g)) |- X(g))
+}
+
+schema Xinst1E(pr f, pr g) {
+	Ee1V(f, g) ~ Xinst1(f, g)
+}
+
+"existential instantiation 같은 것 2. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정. Vi으로부터 증명할 수 있다."
+schema Xinst2(st p) {
+	id(X((cls x) => {p})) ~
+	mpu[cp[Vi_p(N(p))]
+	~ mpu[tt.IINpqINqp(p, V((cls x) => { N(p) }))]]
+}
+
+schema Xinst3(pr f, st p) {
+	Xinst1(f, (cls x) => { p })
+	~ Xinst2(p)
+}
+
 "[$\exists]과 [$\lor] 간의 분배법칙 같은 것. VA로부터 증명할 수 있다."
 schema XO(pr f, pr g) {
 	(VA(Nf(f), Nf(g)) ~
-	mpa[tt.IEpAqrENpONqNr(
+	mpu[tt.IEpAqrENpONqNr(
 		V(Af(Nf(f), Nf(g))), V(Nf(f)), V(Nf(g))
 	)])
 	~ ((
-		Vi_((cls x) => {
+		Viu((cls x) => {
 			E(N(O(f(x), g(x))), A(N(f(x)), N(g(x))))
 		})[(cls x) => {tt.ENOpqANpNq(f(x), g(x))}]
 		~ VEm(
@@ -492,7 +588,7 @@ schema XO(pr f, pr g) {
 			(cls x) => { A(N(f(x)), N(g(x))) }
 		)
 	)
-	~ mpa[tt.IEpqENpNq(
+	~ mpu[tt.IEpqENpNq(
 		V((cls x) => { N(O(f(x), g(x))) }),
 		V((cls x) => { A(N(f(x)), N(g(x))) })
 	)])
@@ -546,101 +642,11 @@ schema AeX2(pr f, pr g) {
 }
 
 schema mpV(pr f, pr g) {
-	mpa[VIm(f, g)]
+	mpu[VIm(f, g)]
 }
 
 schema mpVE(pr f, pr g) {
 	Ee1V(f, g) ~ mpV(f, g)
-}
-
-"universal generalization이 아니므로 이름을 바꿔야 할 것이다."
-axiomatic schema Vgen(st p) {
-	(p |- V((cls w) => { p }))
-}
-
-schema Vgen_c(st p) {
-	cp[Vgen(p)]
-}
-
-schema VI_Vgen(st p, pr f) {
-	Vgen_c(p) ~
-	VIm((cls z) => {p}, f)
-	~ syll(
-		p,
-		V((cls z) => {p}),
-		V(f)
-	)
-}
-
-schema VI_Vgen_c(st p, pr f) {
-	cp[VI_Vgen(p, f)]
-}
-
-schema VI_Vgen_V2(pr f, pr2 g, cls z) {
-	VI_Vgen_c(f(z), (cls w) => {g(z, w)})
-}
-
-schema VI_Vgen_V2_Vi(pr f, pr2 g) {
-	Vi_((cls z) => {
-		I(V((cls w) => {I(f(z), g(z, w))}), I(f(z), V((cls w) => {g(z, w)})))
-	})[(cls z) => {VI_Vgen_V2(f, g, z)}]
-}
-
-schema VI_Vgen_V2_Vi_VI(pr f, pr2 g) {
-	VI_Vgen_V2_Vi(f, g)
-	~ VIm(
-		(cls z) => {
-			V((cls w) => {
-				I(f(z), g(z, w))
-			})
-		},
-		(cls z) => {
-			I(
-				f(z),
-				V((cls w) => {
-					g(z, w)
-				})
-			)
-		}
-	)
-}
-
-schema VI_Vgen_V2_Vi_VI_m(pr f, pr2 g) {
-	id(V2((cls z, cls w) => {
-		I(f(z), g(z, w))
-	})) ~
-	mpa[VI_Vgen_V2_Vi_VI(f, g)]
-}
-
-"existential generalization. Vinst와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
-axiomatic schema Xgen(pr f, cls x) {
-	(f(x) |- X(f))
-}
-
-"universal instantiation."
-axiomatic schema Vinst(pr f, cls x) {
-	(V(f) |- f(x))
-}
-
-"existential instantiation 같은 것 1. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정."
-schema Xinst1(pr f, pr g) {
-	(X(f), V(If(f, g)) |- X(g))
-}
-
-schema Xinst1E(pr f, pr g) {
-	Ee1V(f, g) ~ Xinst1(f, g)
-}
-
-"existential instantiation 같은 것 2. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정. Vgen으로부터 증명할 수 있다."
-schema Xinst2(st p) {
-	id(X((cls x) => {p})) ~
-	mpa[cp[Vgen(N(p))]
-	~ mpa[tt.IINpqINqp(p, V((cls x) => { N(p) }))]]
-}
-
-schema Xinst3(pr f, st p) {
-	Xinst1(f, (cls x) => { p })
-	~ Xinst2(p)
 }
 
 ############################
@@ -674,7 +680,7 @@ schema VVin_m(cls a, pr2 f) {
 	})) ~
 	VVm((cls z, cls w) => {
 		I(in(w, a), f(z, w))
-	}) ~ VI_Vgen_V2_Vi_VI_m(
+	}) ~ VI_Vi_V2_Vi_VI_m(
 		(cls y) => {in(y, a)},
 		(cls y, cls x) => {f(x, y)}
 	) ~ id(Vin(a, (cls w) => {
@@ -706,19 +712,19 @@ st set(cls x) {
 	})
 }
 
-schema set_Xgen(cls x, cls y) {
-	Xgen((cls y) => { in(x, y) }, y)
+schema set_Xi(cls x, cls y) {
+	Xi((cls y) => { in(x, y) }, y)
 	~ id(set(x))
 }
 
-schema set_Xgen_A(cls x, cls y, cls z) {
+schema set_Xi_A(cls x, cls y, cls z) {
 	Ae1(in(z, x), in(z, y)) ~
-	set_Xgen(z, x)
+	set_Xi(z, x)
 }
 
-schema set_Xgen_O(cls x, cls y, cls z) {
-	cp[set_Xgen(z, x)]
-	~ cp[set_Xgen(z, y)]
+schema set_Xi_O(cls x, cls y, cls z) {
+	cp[set_Xi(z, x)]
+	~ cp[set_Xi(z, y)]
 	~ Oe(in(z, x), in(z, y), set(z))
 }
 
@@ -754,15 +760,15 @@ schema eq_Ae1(cls x, cls y) {
 	)
 }
 
-schema eq_Ae1_Vinst(cls x, cls y, cls z) {
+schema eq_Ae1_Ve(cls x, cls y, cls z) {
 	eq_Ae1(x, y)
-	~ Vinst((cls z) => {
+	~ Ve((cls z) => {
 		E(in(z, x), in(z, y))
 	}, z)
 }
 
-schema eq_Ae1_Vinst_Ee1(cls x, cls y, cls z) {
-	eq_Ae1_Vinst(x, y, z)
+schema eq_Ae1_Ve_Ee1(cls x, cls y, cls z) {
+	eq_Ae1_Ve(x, y, z)
 	~ Ee1(in(z, x), in(z, y))
 }
 
@@ -774,20 +780,20 @@ schema eq_Ae2(cls x, cls y) {
 	)
 }
 
-schema eq_Ae2_Vinst(cls x, cls y, cls z) {
+schema eq_Ae2_Ve(cls x, cls y, cls z) {
 	eq_Ae2(x, y)
-	~ Vinst((cls z) => {
+	~ Ve((cls z) => {
 		E(in(x, z), in(y, z))
 	}, z)
 }
 
-schema eq_Ae2_Vinst_Ee1(cls x, cls y, cls z) {
-	eq_Ae2_Vinst(x, y, z)
+schema eq_Ae2_Ve_Ee1(cls x, cls y, cls z) {
+	eq_Ae2_Ve(x, y, z)
 	~ Ee1(in(x, z), in(y, z))
 }
 
-schema eq_Ae2_Vinst_Ee1_c(cls x, cls y, cls z) {
-	cp[eq_Ae2_Vinst_Ee1(x, y, z)]
+schema eq_Ae2_Ve_Ee1_c(cls x, cls y, cls z) {
+	cp[eq_Ae2_Ve_Ee1(x, y, z)]
 }
 
 schema swap_c(st p, st q, st r) {
@@ -795,11 +801,11 @@ schema swap_c(st p, st q, st r) {
 }
 
 schema swap(st p, st q, st r) {
-	mpa[swap_c(p, q, r)]
+	mpu[swap_c(p, q, r)]
 }
 
 schema swap_m(st p, st q, st r) {
-	mpa[swap(p, q, r)]
+	mpu[swap(p, q, r)]
 }
 
 schema swapV_1(pr f, pr g, pr h, cls w) {
@@ -807,7 +813,7 @@ schema swapV_1(pr f, pr g, pr h, cls w) {
 }
 
 schema swapV_c(pr f, pr g, pr h) {
-	Vi_((cls w) => {
+	Viu((cls w) => {
 		I(I(f(w), I(g(w), h(w))), I(g(w), I(f(w), h(w))))
 	})[(cls w) => {swapV_1(f, g, h, w)}]
 	~ VIm(
@@ -817,7 +823,7 @@ schema swapV_c(pr f, pr g, pr h) {
 }
 
 schema swapV(pr f, pr g, pr h) {
-	mpa[swapV_c(f, g, h)]
+	mpu[swapV_c(f, g, h)]
 }
 
 schema swapV2_1(pr2 f, pr2 g, pr2 h, cls z) {
@@ -829,7 +835,7 @@ schema swapV2_1(pr2 f, pr2 g, pr2 h, cls z) {
 }
 
 schema swapV2_c(pr2 f, pr2 g, pr2 h) {
-	Vi_((cls z) => {
+	Viu((cls z) => {
 		I(
 			V((cls w) => {I(f(z, w), I(g(z, w), h(z, w)))}),
 			V((cls w) => {I(g(z, w), I(f(z, w), h(z, w)))})
@@ -858,11 +864,11 @@ schema swapV2_c(pr2 f, pr2 g, pr2 h) {
 }
 
 schema swapV2(pr2 f, pr2 g, pr2 h) {
-	mpa[swapV2_c(f, g, h)]
+	mpu[swapV2_c(f, g, h)]
 }
 
-schema eq_Ae2_Vinst_Ee1_c_swap(cls x, cls y, cls z) {
-	eq_Ae2_Vinst_Ee1_c(x, y, z)
+schema eq_Ae2_Ve_Ee1_c_swap(cls x, cls y, cls z) {
+	eq_Ae2_Ve_Ee1_c(x, y, z)
 	~ swap(
 		eq(x, y),
 		in(x, z),
@@ -879,10 +885,10 @@ schema eq_reflexive_tmp2(cls x, cls w) {
 }
 
 schema eq_reflexive(cls x) {
-	Vi_((cls z) => {
+	Viu((cls z) => {
 		E(in(z, x), in(z, x))
 	})[(cls z) => {eq_reflexive_tmp1(x, z)}]
-	~ Vi_((cls w) => {
+	~ Viu((cls w) => {
 		E(in(x, w), in(x, w))
 	})[(cls w) => {eq_reflexive_tmp2(x, w)}]
 	~ Ai(
@@ -1026,7 +1032,7 @@ axiomatic schema extensional(cls x, cls y) {
 }
 
 schema extensional_m(cls x, cls y) {
-	mpa[extensional(x, y)]
+	mpu[extensional(x, y)]
 }
 
 schema eq_simple(cls x, cls y) {
@@ -1080,12 +1086,14 @@ axiomatic schema setbuilder_def(pr f) {
 }
 
 schema setbuilder_def_Ve(pr f, cls z) {
-	(Ve[setbuilder_def])(f, z)
+	Veu((cls w) => {
+		E(in(w, setbuilder(f)), A(set(w), f(w)))
+	}, z)[setbuilder_def(f)]
 }
 
 schema setbuilder_def_Ve_Ee(pr f, cls z) {
 	setbuilder_def_Ve(f, z)
-	~ mpa[tt.IEpAqrIpr(
+	~ mpu[tt.IEpAqrIpr(
 		in(z, setbuilder(f)),
 		set(z),
 		f(z)
@@ -1101,8 +1109,8 @@ schema setbuilder_def_set_1(pr f, pr g, pr h) {
 		(cls x) => { E(f(x), A(g(x), h(x))) },
 		(cls x) => { I(h(x), g(x)) }
 	) ~
-	mpa[
-		Vi_((cls x) => {
+	mpu[
+		Viu((cls x) => {
 			I(A(E(f(x), A(g(x), h(x))), I(h(x), g(x))), E(f(x), h(x)))
 		})[(cls x) => {tt.IAEpAqrIrqEpr(f(x), g(x), h(x))}]
 		~ VIm(
@@ -1129,14 +1137,14 @@ cls cap(cls x, cls y) {
 	})
 }
 
-schema set_Xgen_A_c(cls x, cls y, cls z) {
-	cp[set_Xgen_A(x, y, z)]
+schema set_Xi_A_c(cls x, cls y, cls z) {
+	cp[set_Xi_A(x, y, z)]
 }
 
 schema cap_def_vi(cls x, cls y) {
-	Vi_((cls z) => {
+	Viu((cls z) => {
 		I(A(in(z, x), in(z, y)), set(z))
-	})[(cls z) => { set_Xgen_A_c(x, y, z) }] ~
+	})[(cls z) => { set_Xi_A_c(x, y, z) }] ~
 	setbuilder_def_set((cls z) => {
 		A(in(z, x), in(z, y))
 	})
@@ -1149,7 +1157,9 @@ schema cap_def_vi(cls x, cls y) {
 }
 
 schema cap_def(cls x, cls y, cls z) {
-	(Ve[cap_def_vi])(x, y, z)
+	Veu((cls z) => {
+		E(in(z, cap(x, y)), A(in(z, x), in(z, y)))
+	}, z)[cap_def_vi(x, y)]
 }
 
 schema cap_commutative_1(cls x, cls y, cls z) {
@@ -1169,7 +1179,7 @@ schema cap_commutative_1(cls x, cls y, cls z) {
 }
 
 schema cap_commutative_2(cls x, cls y) {
-	Vi_((cls z) => {
+	Viu((cls z) => {
 		E(in(z, cap(x, y)), in(z, cap(y, x)))
 	})[(cls z) => { cap_commutative_1(x, y, z) }]
 	~ extensional_m(
@@ -1186,14 +1196,14 @@ cls cup(cls x, cls y) {
 	})
 }
 
-schema set_Xgen_O_c(cls x, cls y, cls z) {
-	cp[set_Xgen_O(x, y, z)]
+schema set_Xi_O_c(cls x, cls y, cls z) {
+	cp[set_Xi_O(x, y, z)]
 }
 
 schema cup_def_vi(cls x, cls y) {
-	Vi_((cls z) => {
+	Viu((cls z) => {
 		I(O(in(z, x), in(z, y)), set(z))
-	})[(cls z) => { set_Xgen_O_c(x, y, z) }] ~
+	})[(cls z) => { set_Xi_O_c(x, y, z) }] ~
 	setbuilder_def_set((cls z) => {
 		O(in(z, x), in(z, y))
 	})
@@ -1206,7 +1216,9 @@ schema cup_def_vi(cls x, cls y) {
 }
 
 schema cup_def(cls x, cls y, cls z) {
-	(Ve[cup_def_vi])(x, y, z)
+	Veu((cls z) => {
+		E(in(z, cup(x, y)), O(in(z, x), in(z, y)))
+	}, z)[cup_def_vi(x, y)]
 }
 
 "empty class."
@@ -1220,7 +1232,7 @@ schema emptyset_1(cls z) {
 }
 
 schema emptyset_2() {
-	Vi_((cls z) => {
+	Viu((cls z) => {
 		I(I(in(z, emptyset()), F), N(in(z, emptyset())))
 	})[emptyset_1]
 }
@@ -1235,7 +1247,7 @@ schema emptyset_vi() {
 		(cls z) => { in(z, emptyset()) },
 		(cls z) => { A(set(z), F) }
 	)
-	~ Vi_((cls x) => {
+	~ Viu((cls x) => {
 		I(A(set(x), F), F)
 	})[emptyset_3]
 	~ syllV(
@@ -1252,7 +1264,9 @@ schema emptyset_vi() {
 
 "emptyset의 defining property."
 schema emptyset_def(cls z) {
-	(Ve[emptyset_vi])(z)
+	Veu((cls z) => {
+		Nin(z, emptyset())
+	}, z)[emptyset_vi()]
 }
 
 "universal class."
@@ -1295,7 +1309,9 @@ axiomatic schema specify(pr f) {
 }
 
 schema specify_vem(pr f, cls x) {
-	mpa[(Ve[specify])(f, x)]
+	mpu[Veu((cls x) => {
+		I(set(x), set(subsetbuilder(x, f)))
+	}, x)[specify(f)]]
 }
 
 schema cap_is_set_1(cls x, cls y) {
@@ -1309,13 +1325,13 @@ schema cap_is_set_2(cls x, cls y) {
 	~ set_is_set_1(cap(y, x), cap(x, y))
 }
 
-schema subset_cap_is_subset_1(cls x, cls y, cls z) {
-	tt.IIpqEpApq(in(z, x), in(z, y))
-}
-
 schema subset_cap_is_subset(cls x, cls y) {
 	id(subseteq(x, y)) ~
-	mpa[(Vi[subset_cap_is_subset_1])(x, y)
+	mpu[Viu((cls z) => {
+		I(I(in(z, x), in(z, y)), E(in(z, x), A(in(z, x), in(z, y))))
+	})[(cls z) => {
+		tt.IIpqEpApq(in(z, x), in(z, y))
+	}]
 	~VIm(
 		(cls z) => { I(in(z, x), in(z, y)) },
 		(cls z) => {
@@ -1354,7 +1370,9 @@ schema subset_is_set_ae_c(cls x, cls y) {
 }
 
 schema subset_is_set_ae_cvi(cls x) {
-	(Vi[subset_is_set_ae_c])(x)
+	Viu((cls y) => {
+		I(A(set(y), subseteq(x, y)), set(x))
+	})[(cls y) => { subset_is_set_ae_c(x, y) }]
 }
 
 "power class."
@@ -1370,7 +1388,7 @@ schema IAEpAqrIAsrqIsEprmAi(st p, st q, st r, st s) {
 		E(p, A(q, r)),
 		I(A(s, r), q)
 	) ~
-	mpa[tt.IAEpAqrIAsrqIsEpr(p, q, r, s)]
+	mpu[tt.IAEpAqrIAsrqIsEpr(p, q, r, s)]
 }
 
 schema power_def_1(cls x, cls y) {
@@ -1389,13 +1407,15 @@ schema power_def_1(cls x, cls y) {
 "얘는 power_def보다 강력하다. 즉 power_def는 얘를
 유도할 수 없다. 아마?"
 schema power_def_Ve(cls x, cls y) {
-	mpa[power_def_1(x, y)]
+	mpu[power_def_1(x, y)]
 }
 
 "생각해 보니 얘는 멱집합의 defining property라고 부를 만큼 강력하지 않다. 이름을 적당히 바꿔야 할지도 모른다."
 schema power_def(cls x) {
-	Vgen(set(x)) ~
-	mpa[(Vi[power_def_1])(x)
+	Vi_p(set(x)) ~
+	mpu[Viu((cls y) => {
+		I(set(x), E(in(y, power(x)), subseteq(y, x)))
+	})[(cls y) => { power_def_1(x, y) }]
 	~ VIm(
 		(cls z) => { set(x) },
 		(cls z) => {
@@ -1427,8 +1447,10 @@ schema self_in_power_Vi_1(cls x, cls z) {
 }
 
 schema self_in_power_Vi(cls x) {
-	Vgen(set(x)) ~
-	mpa[(Vi[self_in_power_Vi_1])(x)
+	Vi_p(set(x)) ~
+	mpu[Viu((cls z) => {
+		I(set(x), I(eq(z, x), in(z, power(x))))
+	})[(cls z) => { self_in_power_Vi_1(x, z) }]
 	~ VIm(
 		(cls z) => {set(x)},
 		(cls z) => {I(
@@ -1467,8 +1489,10 @@ schema singleton_subseteq_power_2(cls x, cls y) {
 }
 
 schema singleton_subseteq_power(cls x) {
-	Vgen(set(x)) ~
-	mpa[(Vi[singleton_subseteq_power_2])(x)
+	Vi_p(set(x)) ~
+	mpu[Viu((cls y) => {
+		I(set(x), I(in(y, singleton(x)), in(y, power(x))))
+	})[(cls y) => { singleton_subseteq_power_2(x, y) }]
 	~ VIm(
 		(cls y) => {set(x)},
 		(cls y) => {
@@ -1501,7 +1525,13 @@ axiomatic schema ax_power() {
 }
 
 schema ax_power_vem(cls x) {
-	mpa[(Ve[ax_power])(x)]
+	mpu[Veu((cls x) => {
+		I(set(x), X((cls y) => {
+			A(set(y), V((cls z) => {
+				I(subseteq(z, x), in(z, y))
+			}))
+		}))
+	}, x)[ax_power()]]
 }
 
 schema power_is_set_1(cls x, cls y) {
@@ -1520,7 +1550,7 @@ schema power_is_set_1(cls x, cls y) {
 
 schema power_is_set_2(cls x, cls y) {
 	cp[power_is_set_1(x, y)]
-	~ mpa[tt.IIpqIArpArq(
+	~ mpu[tt.IIpqIArpArq(
 		V((cls z) => {
 			I(
 				subseteq(z, x),
@@ -1539,8 +1569,12 @@ schema power_is_set_3(cls x, cls y) {
 "멱집합은 집합이다."
 schema power_is_set(cls x) {
 	(ax_power_vem(x)
-	~ Vgen(set(x)) ~
-	mpa[(Vi[power_is_set_3])(x)
+	~ Vi_p(set(x)) ~
+	mpu[Viu((cls y) => {
+		I(set(x), I(A(set(y), V((cls z) => {
+			I(subseteq(z, x), in(z, y))
+		})), A(set(y), subseteq(power(x), y))))
+	})[(cls y) => { power_is_set_3(x, y) }]
 	~ VIm(
 		(cls y) => {set(x)},
 		(cls y) => {
@@ -1645,7 +1679,7 @@ st graph(cls x) {
 }
 
 schema graph_forall_1_1(cls x, cls z, cls a, cls b) {
-	eq_Ae2_Vinst_Ee1_c_swap(z, v2(a, b), x)
+	eq_Ae2_Ve_Ee1_c_swap(z, v2(a, b), x)
 }
 
 "graph를 위한 forall.

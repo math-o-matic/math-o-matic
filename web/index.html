@@ -98,6 +98,14 @@
 				border-right: 3px black solid;
 				text-align: right;
 			}
+
+			tr:not(.csq) + tr.csq td.csq {
+				border-top: 3px black solid;
+			}
+
+			.red {
+				 color: #D32F2F;
+			}
 		</style>
 	</head>
 	<body>
@@ -225,6 +233,11 @@
 							return 1;
 						case 'schema':
 							return recurse(expr.expr) + 1;
+						case 'tee':
+							return Math.max(
+								...expr.left.map(recurse),
+								recurse(expr.right)
+							) + 1;
 						default:
 							return 1;
 					}
@@ -233,8 +246,14 @@
 				var html = '<table>';
 				html += `<tr><th>#</th><th colspan="${ncols}">expr</th><th colspan="2">rule</th></tr>`;
 
-				html += (function recurse(expr, left) {
+				html += (function recurse(expr, left, hyp, csq) {
 					var padding = left.length;
+
+					if (hyp) {
+						var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
+
+						return `<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.toTeXString())}</td><td colspan="2">assumption</td></tr>`;
+					}
 
 					switch (expr._type) {
 						case 'reduction':
@@ -250,17 +269,33 @@
 
 							return [
 								args.map(e => e[0]).join(''),
-								`<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.reduced.toTeXString())}</td><td>&#x25BC;</td><td>${ktx(expr.subject.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
+								`<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.reduced.toTeXString())}</td><td>&#x25BC;</td><td>${ktx(expr.subject.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
 							].join('');
 						case 'schemacall':
 							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
 
-							return `<tr><th>${++ctr}</th>${htmlLeft}<td colspan="${ncols-padding}">${ktx(expr.expanded.toTeXString())}</td><td>&#x25C7;</td><td>${ktx(expr.toTeXString())}</td></tr>`;
+							return `<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.expanded.toTeXString())}</td><td>&#x25C7;</td><td>${ktx(expr.toTeXString())}</td></tr>`;
 						case 'schema':
 							return recurse(expr.expr, left.concat([expr.params]));
+						case 'tee':
+							var start = ctr + 1;
+							var arr = [
+								...expr.left.map(e => recurse(e, left.concat([[]]), true)),
+								recurse(expr.right, left.concat([[]]), false, true)
+							];
+							var end = ctr;
+
+							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
+
+							return [
+								...arr,
+								`<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.toTeXString())}</td><td>&#x25B2;</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td></tr>`
+							].join('');
 						default:
 							console.error('Unknown type:', expr);
-							return ktx(expr.toTeXString());
+							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
+
+							return `<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.toTeXString())}</td><td colspan="2"><b class="red">not proved</b></td></tr>`;
 					}
 				})(expr, []);
 
@@ -284,10 +319,8 @@
 
 					+ (
 						v.expr
-							? v.expr._type == 'tee'
-								? v.axiomatic
-									? ''
-									: '<p class="label"><b>not proved</b></p>'
+							? v.axiomatic
+								? ''
 								: '<p class="label"><b>proof explorer</b></p>'
 									+ `<p>${generateExpressionTree(v.expr)}</p>`
 							: ''
