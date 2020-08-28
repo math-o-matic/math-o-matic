@@ -213,7 +213,7 @@ schema id(st p) {
 	mpu[tt.Ipp(p)]
 }
 
-"푹발률(ex falso quodlibet)."
+"폭발률(ex falso quodlibet)."
 schema explode(st p, st q) {
 	mpu[Ne(p, q)]
 }
