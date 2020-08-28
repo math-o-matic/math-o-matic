@@ -11,30 +11,8 @@ module.exports = {
 	render: text => m42kup.render(text),
 	list: [
 		{
-			name: '수학적 모형',
-			dir: 'theory',
-			list: [
-				{
-					name: '대강의 모형',
-					file: 'model'
-				},
-				{
-					name: 'D 함수와 증명연쇄에 관하여',
-					file: 'd'
-				},
-				{
-					name: 'U 함수에 관하여',
-					file: 'u'
-				},
-				{
-					name: 'E 함수???',
-					file: 'e'
-				},
-				{
-					name: '다계층 D 함수???',
-					file: 'multilayer'
-				}
-			]
+			name: '이론',
+			file: 'theory'
 		},
 		{
 			name: 'ExpressionResolver의 동작방식',

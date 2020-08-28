@@ -1,0 +1,32 @@
+[=이론]
+
+논리식(well-formed formula)을 위한 문맥 자유 언어(context-free language) [$\mathcal L]의 문법 [$G]의 시작 기호(start symbol)을 [$S_G]라 하였을 때, 다음과 같은 문법을 통해 메타언어 [$M(\mathcal L)]을 만들자.
+
+[$$\begin{aligned}
+	S&\to (S^\ast \vdash S) \\
+	S&\to S_G
+\end{aligned}]
+
+단 [$S]는 메타문법을 위한 시작 기호이다. 예를 들어 [$p, q, r]이 [$\mathcal L]의 문장이라면 [$(\vdash r)\vdash (p, q\vdash r)]이 메타언어의 문장이다. math-o-matic은 어떤 언어 [$\mathcal L]에 대해 그 메타언어 [$M(\mathcal L)]에 Fitch-style natural deduction을 행하며 [$\vdash]를 위한 변환 규칙은 다음과 같이 정해져 있다.
+
+[table
+	[~~()../assets/1.jpg] [*] [~~()../assets/2.jpg] [**]
+	⊢I 규칙[\]
+	단 [$p, q, \ldots, r]은 suppositional argument a[&ndash]d의 가정 전부이며 개수가 0이어도 된다. [*] ⊢E 규칙[\]
+	단 [$p, q, \ldots, r]의 개수는 0이어도 된다.
+]
+
+예를 들어 weakening의 일종인 [$(\vdash r)\vdash (p, q\vdash r)]은 임의의 공리계에서 다음과 같이 유도할 수 있다.
+
+[;;
+1 | |- r                   assumption
+  +------
+2 | | p                    assumption
+3 | | q                    assumption
+  | +------
+4 | | r                    |-E (1)
+5 | p, q |- r              |-I (2[&ndash]4)
+6 (|- r) |- (p, q |- r)    |-I (1[&ndash]5)
+]
+
+우리의 체계가 힐베르트 체계(Hilbert system)나 sequent calculus 등의 다른 체계들과 어떤 관계를 갖는지는 연구되지 않았다. 힐베르트 체계에 대한 표현력은 가질 것으로 보인다.
