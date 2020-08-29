@@ -3,18 +3,18 @@ var MetaType = require('./MetaType');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Tee({left, right}) {
-	Node.call(this);
+function Tee({left, right}, scope, trace) {
+	Node.call(this, trace);
 
 	if (!(left instanceof Array
 			&& left.every(l => ['type', 'metatype'].includes(l.type._type)))) {
 		console.log(left);
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 	}
 
 	if (!['type', 'metatype'].includes(right.type._type)) {
 		console.log(right);
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 	}
 
 	// antecedent의 contraction

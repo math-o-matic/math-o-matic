@@ -5,33 +5,33 @@ var Type = require('./Type');
  * name, expr 중 하나 이상 있어야 하고 type, expr 중
  * 한 개만 있어야 한다.
  */
-function Fun({name, type, params, expr, doc, tex}) {
-	Node.call(this);
+function Fun({name, type, params, expr, doc, tex}, scope, trace) {
+	Node.call(this, trace);
 
 	this.doc = doc;
 	this.tex = tex;
 
 	if (!name && !expr)
-		throw Error('Anonymous fun cannot be primitive');
+		throw this.error('Anonymous fun cannot be primitive');
 
 	if (type && expr)
-		throw Error('no');
+		throw this.error('no');
 
 	if (!type && !expr)
-		throw Error('Cannot guess the type of a primitive fun');
+		throw this.error('Cannot guess the type of a primitive fun');
 
 	if (name !== null && typeof name != 'string')
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	if (type && type._type != 'type')
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	if (!(params instanceof Array)
 			|| params.map(e => e instanceof Node).some(e => !e))
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	if (expr !== null && !(expr instanceof Node))
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	this.name = name;
 	this.type = type || new Type({

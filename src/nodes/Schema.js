@@ -3,13 +3,13 @@ var MetaType = require('./MetaType');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}) {
-	Node.call(this);
+function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, scope, trace) {
+	Node.call(this, trace);
 
 	this.doc = doc;
 
 	if (name !== null && typeof name != 'string')
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	this.axiomatic = axiomatic;
 	this.name = name;
@@ -21,7 +21,7 @@ function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}) {
 	} else {
 		if (!(params instanceof Array)
 				|| params.map(e => e._type == 'typevar').some(e => !e))
-			throw Error('Assertion failed');
+			throw this.error('Assertion failed');
 
 		this.params = params;
 		this.expr = expr;

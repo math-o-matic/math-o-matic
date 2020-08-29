@@ -116,7 +116,7 @@ PI.typevar = function (obj, parentScope, trace) {
 		name: obj.name,
 		doc: obj.doc,
 		tex: obj.tex
-	});
+	}, scope, trace);
 };
 
 PI.fun = function (obj, parentScope, trace) {
@@ -169,7 +169,7 @@ PI.fun = function (obj, parentScope, trace) {
 			throw Error('wut');
 	}
 
-	return new Fun({name, type, params, expr, doc, tex});
+	return new Fun({name, type, params, expr, doc, tex}, scope, trace);
 };
 
 PI.funcall = function (obj, parentScope, trace) {
@@ -197,7 +197,7 @@ PI.funcall = function (obj, parentScope, trace) {
 		if (!args[i].type.equals(funtype.from[i]))
 			throw trace.error(`Argument type mismatch: ${args[i].type}, ${funtype.from[i]}`);
 
-	return new Funcall({fun, args});
+	return new Funcall({fun, args}, scope, trace);
 };
 
 PI.metaexpr = function (obj, parentScope, trace) {
@@ -305,7 +305,7 @@ PI.tee = function (obj, parentScope, trace) {
 		throw trace.error('RHS of a rule cannot be a schema');
 	}
 
-	return new Tee({left, right});
+	return new Tee({left, right}, scope, trace);
 };
 
 PI.schema = function (obj, parentScope, trace, nativeMap) {
@@ -326,7 +326,7 @@ PI.schema = function (obj, parentScope, trace, nativeMap) {
 			get: args => nativeMap.schema[name].get(args, scope, ExpressionResolver)
 		};
 
-		return new Schema({axiomatic, name, native, doc: obj.doc});
+		return new Schema({axiomatic, name, native, doc: obj.doc}, scope, trace);
 	}
 
 	var params = obj.params.map(tvo => {
@@ -358,10 +358,10 @@ PI.schema = function (obj, parentScope, trace, nativeMap) {
 			expr,
 			doc: obj.doc,
 			tex: null
-		});
+		}, scope, trace);
 	}
 
-	return new Schema({axiomatic, name, params, expr, doc: obj.doc});
+	return new Schema({axiomatic, name, params, expr, doc: obj.doc}, scope, trace);
 };
 
 PI.schemacall = function (obj, parentScope, trace) {
@@ -400,7 +400,7 @@ PI.schemacall = function (obj, parentScope, trace) {
 	return new Schemacall({
 		schema,
 		args
-	});
+	}, scope, trace);
 };
 
 PI.ruleset = function (obj, parentScope, trace, nativeMap) {
@@ -421,7 +421,7 @@ PI.ruleset = function (obj, parentScope, trace, nativeMap) {
 
 	var native = nativeMap.ruleset[name];
 
-	return new Ruleset({axiomatic, name, native, doc: obj.doc});
+	return new Ruleset({axiomatic, name, native, doc: obj.doc}, scope, trace);
 };
 
 PI.reduction = function (obj, parentScope, trace) {
@@ -441,7 +441,7 @@ PI.reduction = function (obj, parentScope, trace) {
 		return new Reduction({
 			subject,
 			args
-		});
+		}, scope, trace);
 	}
 
 	var paramTypes = subject.type.left,
@@ -458,7 +458,7 @@ PI.reduction = function (obj, parentScope, trace) {
 	return new Reduction({
 		subject,
 		args
-	});
+	}, scope, trace);
 };
 
 module.exports = PI;

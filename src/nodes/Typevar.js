@@ -1,16 +1,16 @@
 var Node = require('./Node');
 
-function Typevar({type, name, doc, tex}) {
-	Node.call(this);
+function Typevar({type, name, doc, tex}, scope, trace) {
+	Node.call(this, trace);
 
 	this.doc = doc;
 	this.tex = tex;
 
 	if (type._type != 'type')
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	if (typeof name != 'string')
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	this.type = type;
 	this.name = name;

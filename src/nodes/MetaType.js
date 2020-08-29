@@ -5,25 +5,25 @@ function MetaType(o) {
 	Node.call(this);
 
 	if (typeof o.functional != 'boolean')
-		throw Error('typeof o.functional != \'boolean\'');
+		throw this.error('typeof o.functional != \'boolean\'');
 	
 	this.isFunctional = o.functional;
 	this.isSimple = !o.functional;
 
 	if (!o.functional) {
 		if (!(o.left instanceof Array))
-			throw Error('left should be an array');
+			throw this.error('left should be an array');
 
 		this.left = o.left;
 		this.right = o.right;
 	} else {
 		if (o.from.some(f => !(f instanceof Type)))
-			throw Error('o.from.some(f => !(f instanceof Type))');
+			throw this.error('o.from.some(f => !(f instanceof Type))');
 		// if (!(o.to instanceof MetaType))
-		// 	throw Error('!(o.to instanceof MetaType)');
+		// 	throw this.error('!(o.to instanceof MetaType)');
 
 		if (o.to.isFunctional)
-			throw Error('Functional metatype in functional metatype is not supported');
+			throw this.error('Functional metatype in functional metatype is not supported');
 
 		this.from = o.from;
 		this.to = o.to;

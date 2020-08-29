@@ -2,31 +2,31 @@ var Node = require('./Node');
 var Typevar = require('./Typevar');
 var Fun = require('./Fun');
 
-function Funcall({fun, args}) {
-	Node.call(this);
+function Funcall({fun, args}, scope, trace) {
+	Node.call(this, trace);
 
 	if (!(fun instanceof Node))
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	if (!['typevar', 'fun', 'funcall'].includes(fun._type))
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	if (!fun.type.isFunctional)
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	if (!(args instanceof Array) || args.map(e => e instanceof Node).some(e => !e))
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	var resolvedType = fun.type.resolve(),
 		paramTypes = resolvedType.from,
 		argTypes = args.map(e => e.type);
 
 	if (paramTypes.length != argTypes.length)
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	for (var i = 0; i < paramTypes.length; i++) {
 		if (!paramTypes[i].equals(argTypes[i]))
-			throw Error('Assertion failed');
+			throw this.error('Assertion failed');
 	}
 	
 	this.fun = fun;

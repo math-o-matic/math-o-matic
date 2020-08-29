@@ -8,30 +8,30 @@ function Type(o) {
 
 	if (o.origin) {
 		if (typeof o.name != 'string')
-			throw Error('typeof o.name != \'string\'');
+			throw this.error('typeof o.name != \'string\'');
 		this.name = o.name;
 
 		if (!(o.origin instanceof Type))
-			throw Error('!(o.origin instanceof Type)');
+			throw this.error('!(o.origin instanceof Type)');
 
 		this.isFunctional = o.origin.isFunctional;
 		this.isSimple = o.origin.isSimple;
 		this.origin = o.origin;
 	} else {
 		if (typeof o.functional != 'boolean')
-			throw Error('typeof o.functional != \'boolean\'');
+			throw this.error('typeof o.functional != \'boolean\'');
 		this.isFunctional = o.functional;
 		this.isSimple = !o.functional;
 
 		if (!o.functional) {
 			if (typeof o.name != 'string')
-				throw Error('typeof o.name != \'string\'');
+				throw this.error('typeof o.name != \'string\'');
 			this.name = o.name;
 		} else {
 			if (o.from.map(f => f instanceof Type).some(e => !e))
-				throw Error('o.from.map(f => f instanceof Type).some(e => !e)');
+				throw this.error('o.from.map(f => f instanceof Type).some(e => !e)');
 			if (!(o.to instanceof Type))
-				throw Error('!(o.to instanceof Type)');
+				throw this.error('!(o.to instanceof Type)');
 
 			this.from = o.from;
 			this.to = o.to;

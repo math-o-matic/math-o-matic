@@ -2,15 +2,15 @@ var Node = require('./Node');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Reduction({subject, args}) {
-	Node.call(this);
+function Reduction({subject, args}, scope, trace) {
+	Node.call(this, trace);
 
 	if (!(subject instanceof Node))
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	if (!(args instanceof Array)
 			|| args.map(e => e instanceof Node).some(e => !e))
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 	
 	this.subject = subject;
 	this.args = args;
@@ -23,11 +23,11 @@ function Reduction({subject, args}) {
 			argTypes = args.map(e => e.type);
 
 		if (paramTypes.length != argTypes.length)
-			throw Error('Assertion failed');
+			throw this.error('Assertion failed');
 
 		for (var i = 0; i < paramTypes.length; i++) {
 			if (!paramTypes[i].equals(argTypes[i]))
-				throw Error('Assertion failed');
+				throw this.error('Assertion failed');
 		}
 
 		this.type = subject.type.right;
@@ -35,12 +35,12 @@ function Reduction({subject, args}) {
 		var tee = ExpressionResolver.expandMeta(subject);
 
 		if (tee._type != 'tee') {
-			throw Error('Assertion failed');
+			throw this.error('Assertion failed');
 		}
 
 		for (var i = 0; i < tee.left.length; i++) {
 			if (!ExpressionResolver.equalsMeta(tee.left[i], args[i])) {
-				throw Error('Assertion failed');
+				throw this.error('Assertion failed');
 			}
 		}
 

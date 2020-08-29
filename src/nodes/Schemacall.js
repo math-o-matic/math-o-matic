@@ -3,15 +3,15 @@ var Typevar = require('./Typevar');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Schemacall({schema, args}) {
-	Node.call(this);
+function Schemacall({schema, args}, scope, trace) {
+	Node.call(this, trace);
 
 	if (!schema) {
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 	}
 
 	if (!(args instanceof Array))
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 	
 	this.schema = schema;
 	this.args = args;
@@ -20,11 +20,11 @@ function Schemacall({schema, args}) {
 		argTypes = args.map(e => e.type);
 
 	if (paramTypes.length != argTypes.length)
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	for (var i = 0; i < paramTypes.length; i++) {
 		if (!paramTypes[i].equals(argTypes[i]))
-			throw Error('Assertion failed');
+			throw this.error('Assertion failed');
 	}
 
 	this.type = schema.type.to;

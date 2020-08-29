@@ -1,7 +1,16 @@
 var ctr = 0;
 
-function Node() {
+function Node(trace) {
 	this._id = ++ctr;
+	this.trace = trace || null;
+}
+
+Node.prototype.error = function (message) {
+	if (this.trace) {
+		return this.trace.error(message);
+	} else {
+		return new Error(message);
+	}
 }
 
 Node.prototype.escapeTeX = function (s) {

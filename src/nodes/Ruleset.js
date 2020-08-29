@@ -1,15 +1,15 @@
 var Node = require('./Node');
 
-function Ruleset({axiomatic, name, native, doc}) {
-	Node.call(this);
+function Ruleset({axiomatic, name, native, doc}, scope, trace) {
+	Node.call(this, trace);
 
 	this.doc = doc;
 
 	if (typeof name != 'string')
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 
 	if (!native)
-		throw Error('Assertion failed');
+		throw this.error('Assertion failed');
 	
 	this.axiomatic = axiomatic;
 	this.name = name;
