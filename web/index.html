@@ -204,7 +204,7 @@
 				var v = program.scope.defMap[k];
 
 				r = `<div class="block">`
-					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a></p>`
+					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
 					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
 
 					+ '<p class="label"><b>description</b></p>'
