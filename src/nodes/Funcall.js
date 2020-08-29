@@ -11,8 +11,8 @@ function Funcall({fun, args}, scope, trace) {
 	if (!['typevar', 'fun', 'funcall'].includes(fun._type))
 		throw this.error('Assertion failed');
 
-	if (!fun.type.isFunctional)
-		throw this.error('Assertion failed');
+	if (fun.type.isSimple)
+		throw this.error(`${fun.name} is not callable`);
 
 	if (!(args instanceof Array) || args.map(e => e instanceof Node).some(e => !e))
 		throw this.error('Assertion failed');
@@ -22,11 +22,11 @@ function Funcall({fun, args}, scope, trace) {
 		argTypes = args.map(e => e.type);
 
 	if (paramTypes.length != argTypes.length)
-		throw this.error('Assertion failed');
+		throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
 
 	for (var i = 0; i < paramTypes.length; i++) {
 		if (!paramTypes[i].equals(argTypes[i]))
-			throw this.error('Assertion failed');
+			throw this.error(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
 	}
 	
 	this.fun = fun;

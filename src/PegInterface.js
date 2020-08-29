@@ -181,21 +181,9 @@ PI.funcall = function (obj, parentScope, trace) {
 
 	var fun = PI.expr0(obj.fun, scope, trace);
 
-	if (fun.type.isSimple)
-		throw trace.error(`${fun.name} is not callable`);
-
 	var args = obj.args.map(arg => {
 		return PI.expr0(arg, scope, trace);
 	});
-
-	var funtype = fun.type.resolve();
-
-	if (args.length != funtype.from.length)
-		throw trace.error(`Invalid number of arguments: ${obj.args.length}`);
-
-	for (var i = 0; i < args.length; i++)
-		if (!args[i].type.equals(funtype.from[i]))
-			throw trace.error(`Argument type mismatch: ${args[i].type}, ${funtype.from[i]}`);
 
 	return new Funcall({fun, args}, scope, trace);
 };
@@ -291,20 +279,6 @@ PI.tee = function (obj, parentScope, trace) {
 	var left = obj.left.map(foo);
 	var right = foo(obj.right);
 
-	if (!(left.every(l => ['type', 'metatype'].includes(l.type._type)))) {
-		console.log(left);
-		throw trace.error('Assertion failed');
-	}
-
-	if (!['type', 'metatype'].includes(right.type._type)) {
-		console.log(right);
-		throw trace.error('Assertion failed');
-	}
-
-	if (right.type.isFunctional) {
-		throw trace.error('RHS of a rule cannot be a schema');
-	}
-
 	return new Tee({left, right}, scope, trace);
 };
 
@@ -342,18 +316,9 @@ PI.schema = function (obj, parentScope, trace, nativeMap) {
 
 	var expr = PI.metaexpr(obj.expr, scope, trace);
 
-	if (!['type', 'metatype'].includes(expr.type._type)) {
-		throw trace.error('Assertion failed');
-	}
-
 	if (obj._type == 'schemaexpr' && expr.type._type == 'type') {
 		return new Fun({
 			name,
-			type: new Type({
-				functional: true,
-				from: params.map(typevar => typevar.type),
-				to: expr.type
-			}),
 			params,
 			expr,
 			doc: obj.doc,
@@ -385,17 +350,6 @@ PI.schemacall = function (obj, parentScope, trace) {
 	var args = obj.args.map(obj => {
 		return PI.expr0(obj, scope, trace);
 	});
-
-	var paramTypes = schema.type.from,
-		argTypes = args.map(e => e.type);
-
-	if (paramTypes.length != argTypes.length)
-		throw trace.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
-
-	for (var i = 0; i < paramTypes.length; i++) {
-		if (!paramTypes[i].equals(argTypes[i]))
-			throw trace.error(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
-	}
 
 	return new Schemacall({
 		schema,
@@ -442,17 +396,6 @@ PI.reduction = function (obj, parentScope, trace) {
 			subject,
 			args
 		}, scope, trace);
-	}
-
-	var paramTypes = subject.type.left,
-		argTypes = args.map(e => e.type);
-
-	if (paramTypes.length != argTypes.length)
-		throw trace.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
-
-	for (var i = 0; i < paramTypes.length; i++) {
-		if (!paramTypes[i].equals(argTypes[i]))
-			throw trace.error(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
 	}
 
 	return new Reduction({
