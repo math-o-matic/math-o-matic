@@ -36,7 +36,6 @@ ER.substitute = function (expr, map) {
 
 			return new Fun({
 				name: null,
-				type: expr.type,
 				params: expr.params,
 				expr: ER.substitute(expr.expr, map)
 			});
@@ -138,7 +137,6 @@ ER.expand0Funcalls = function (expr) {
 	} else if (expr._type == 'fun' && !expr.name) {
 		return new Fun({
 			name: null,
-			type: expr.type,
 			params: expr.params,
 			expr: ER.expand0Funcalls(expr.expr)
 		});

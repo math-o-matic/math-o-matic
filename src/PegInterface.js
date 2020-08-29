@@ -149,30 +149,21 @@ PI.fun = function (obj, parentScope, trace) {
 
 			var rettype = scope.getType(typeObjToNestedArr(obj.rettype));
 
-			type = new Type({
-				functional: true,
-				from: params.map(typevar => typevar.type),
-				to: rettype
-			});
-
 			if (obj.expr) {
 				expr = PI.expr0(obj.expr, scope, trace);
 				if (!rettype.equals(expr.type))
 					throw trace.error(`Expression type ${expr.type} failed to match the return type ${rettype} of fun ${name}`);
+			} else {
+				type = new Type({
+					functional: true,
+					from: params.map(typevar => typevar.type),
+					to: rettype
+				});
 			}
 			break;
 		case 'funexpr':
-			var rettype;
-
 			expr = PI.expr0(obj.expr, scope, trace);
-			rettype = expr.type;
-
-			type = new Type({
-				functional: true,
-				from: params.map(typevar => typevar.type),
-				to: rettype
-			});
-
+			type = null;
 			break;
 		default:
 			throw Error('wut');

@@ -1,6 +1,11 @@
 var Node = require('./Node');
+var Type = require('./Type');
 
-function Fun({/* nullable */ name, type, params, /* nullable */ expr, doc, tex}) {
+/*
+ * name, expr 중 하나 이상 있어야 하고 type, expr 중
+ * 한 개만 있어야 한다.
+ */
+function Fun({name, type, params, expr, doc, tex}) {
 	Node.call(this);
 
 	this.doc = doc;
@@ -9,10 +14,16 @@ function Fun({/* nullable */ name, type, params, /* nullable */ expr, doc, tex})
 	if (!name && !expr)
 		throw Error('Anonymous fun cannot be primitive');
 
+	if (type && expr)
+		throw Error('no');
+
+	if (!type && !expr)
+		throw Error('Cannot guess the type of a primitive fun');
+
 	if (name !== null && typeof name != 'string')
 		throw Error('Assertion failed');
 
-	if (type._type != 'type')
+	if (type && type._type != 'type')
 		throw Error('Assertion failed');
 
 	if (!(params instanceof Array)
@@ -23,7 +34,11 @@ function Fun({/* nullable */ name, type, params, /* nullable */ expr, doc, tex})
 		throw Error('Assertion failed');
 
 	this.name = name;
-	this.type = type;
+	this.type = type || new Type({
+		functional: true,
+		from: params.map(typevar => typevar.type),
+		to: expr.type
+	});
 	this.params = params;
 	this.expr = expr;
 }
