@@ -6,6 +6,7 @@ function MetaType(o) {
 
 	if (typeof o.functional != 'boolean')
 		throw Error('typeof o.functional != \'boolean\'');
+	
 	this.isFunctional = o.functional;
 	this.isSimple = !o.functional;
 

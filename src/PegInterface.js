@@ -15,6 +15,8 @@ var Reduction = require('./nodes/Reduction');
 
 var ExpressionResolver = require('./ExpressionResolver');
 
+var StackTrace = require('./StackTrace');
+
 var PI = {};
 
 function typeObjToString(obj) {
@@ -63,28 +65,12 @@ function varObjToString(obj) {
 	}
 }
 
-function extendTrace(trace, type, name, location) {
-	if (!location) throw 'no';
-	var ret = trace.slice();
-	ret.unshift([type, name, location]);
-	return ret;
-}
-
-function makeError(message, trace) {
-	return new Error(message + '\n\tat ' + trace
-		.map(e => {
-			var [type, name, location] = e;
-			return `${type} ${name || '<anonymous>'} (code.js:${location.start.line}:${location.start.column})`;
-		}).join('\n\tat '));
-}
-
 PI.type = function (obj, parentScope, trace) {
 	if (obj._type != 'typedef')
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'type', obj.name, obj.location);
+	trace = trace.extend('type', obj.name, obj.location);
 
 	var origin = obj.origin ? scope.getType(typeObjToNestedArr(obj.origin)) : null;
 
@@ -93,7 +79,7 @@ PI.type = function (obj, parentScope, trace) {
 	var base = obj.base;
 
 	if (base && origin) {
-		throw makeError('Base type must be primitive', trace);
+		throw trace.error('Base type should not be an alias');
 	}
 
 	if (origin) {
@@ -118,11 +104,10 @@ PI.typevar = function (obj, parentScope, trace) {
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'typevar', obj.name, obj.location);
+	trace = trace.extend('typevar', obj.name, obj.location);
 
 	if (!scope.hasType(typeObjToNestedArr(obj.type)))
-		throw makeError(`Type ${obj.type} not found`, trace);
+		throw trace.error(`Type ${obj.type} not found`);
 
 	var type = scope.getType(typeObjToNestedArr(obj.type));
 
@@ -138,36 +123,31 @@ PI.fun = function (obj, parentScope, trace) {
 	if (obj._type != 'defun' && obj._type != 'funexpr')
 		throw Error('Assertion failed');
 
-	var name = null;
-	var type = null;
-	var params = null;
-	var expr = null;
 	var scope = parentScope.extend();
+	trace = trace.extend('fun', obj.name || null, obj.location);
 
-	trace = extendTrace(trace, 'fun', obj.name || false, obj.location);
+	var name = obj.name || null;
+	var type = null;
+	var params = obj.params.map(tvo => {
+		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
+			throw trace.error(`Param type ${typeObjToString(tvo.type)} not found`);
 
+		if (scope.hasOwnTypevar(tvo.name))
+			throw trace.error(`Param name ${tvo.name} already is there`);
+
+		var tv = PI.typevar(tvo, scope, trace);
+		return scope.addTypevar(tv);
+	});
+	var expr = null;
 	var doc = obj.doc || null;
 	var tex = obj.tex || null;
 
 	switch (obj._type) {
 		case 'defun':
-			name = obj.name;
-
 			if (!scope.hasType(typeObjToNestedArr(obj.rettype)))
-				throw makeError(`Rettype ${typeObjToString(obj.rettype)} not found`, trace);
+				throw trace.error(`Rettype ${typeObjToString(obj.rettype)} not found`);
 
 			var rettype = scope.getType(typeObjToNestedArr(obj.rettype));
-
-			params = obj.params.map(tvo => {
-				if (!scope.hasType(typeObjToNestedArr(tvo.type)))
-					throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
-
-				if (scope.hasOwnTypevar(tvo.name))
-					throw makeError(`Param name ${tvo.name} already is there`, trace);
-
-				var tv = PI.typevar(tvo, scope, trace);
-				return scope.addTypevar(tv);
-			});
 
 			type = new Type({
 				functional: true,
@@ -178,21 +158,10 @@ PI.fun = function (obj, parentScope, trace) {
 			if (obj.expr) {
 				expr = PI.expr0(obj.expr, scope, trace);
 				if (!rettype.equals(expr.type))
-					throw makeError(`Expression type ${expr.type} failed to match the return type ${rettype} of fun ${name}`);
+					throw trace.error(`Expression type ${expr.type} failed to match the return type ${rettype} of fun ${name}`);
 			}
 			break;
 		case 'funexpr':
-			params = obj.params.map(tvo => {
-				if (!scope.hasType(typeObjToNestedArr(tvo.type)))
-					throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
-
-				if (scope.hasOwnTypevar(tvo.name))
-					throw makeError(`Param name ${tvo.name} already is there`, trace);
-
-				var tv = PI.typevar(tvo, scope, trace);
-				return scope.addTypevar(tv);
-			});
-
 			var rettype;
 
 			expr = PI.expr0(obj.expr, scope, trace);
@@ -215,14 +184,14 @@ PI.fun = function (obj, parentScope, trace) {
 PI.funcall = function (obj, parentScope, trace) {
 	if (obj._type != 'funcall')
 		throw Error('Assertion failed');
-	var scope = parentScope.extend();
 
-	trace = extendTrace(trace, 'funcall', obj.fun.name || false, obj.location);
+	var scope = parentScope.extend();
+	trace = trace.extend('funcall', obj.fun.name || null, obj.location);
 
 	var fun = PI.expr0(obj.fun, scope, trace);
 
 	if (fun.type.isSimple)
-		throw makeError(`${fun.name} is not callable`, trace);
+		throw trace.error(`${fun.name} is not callable`);
 
 	var args = obj.args.map(arg => {
 		return PI.expr0(arg, scope, trace);
@@ -231,11 +200,11 @@ PI.funcall = function (obj, parentScope, trace) {
 	var funtype = fun.type.resolve();
 
 	if (args.length != funtype.from.length)
-		throw makeError(`Invalid number of arguments: ${obj.args.length}`, trace);
+		throw trace.error(`Invalid number of arguments: ${obj.args.length}`);
 
 	for (var i = 0; i < args.length; i++)
 		if (!args[i].type.equals(funtype.from[i]))
-			throw makeError(`Argument type mismatch: ${args[i].type}, ${funtype.from[i]}`, trace);
+			throw trace.error(`Argument type mismatch: ${args[i].type}, ${funtype.from[i]}`);
 
 	return new Funcall({fun, args});
 };
@@ -279,7 +248,7 @@ PI.expr0 = function (obj, parentScope, trace) {
 			return PI.fun(obj, scope, trace);
 		case 'var':
 			if (!scope.hasTypevar(obj.name))
-				throw makeError(`Undefined identifier ${obj.name}`, trace);
+				throw trace.error(`Undefined identifier ${obj.name}`);
 			return scope.getTypevar(obj.name);
 		default:
 			throw Error('wut');
@@ -296,26 +265,26 @@ PI.metavar = function (obj, parentScope, trace) {
 	switch (obj.type) {
 		case 'ruleset':
 			if (!scope.hasRuleset(obj.rulesetName))
-				throw makeError(`Ruleset ${obj.rulesetName} is not defined`, trace);
+				throw trace.error(`Ruleset ${obj.rulesetName} is not defined`);
 
 			var ruleset = scope.getRuleset(obj.rulesetName);
 
 			if (!ruleset.native)
-				throw Error('Behavior undefined for non-native rulesets');
+				throw trace.error('Behavior undefined for non-native rulesets');
 
 			var schema = ruleset.native.get(obj.name, scope);
 
 			if (!schema)
-				throw makeError(`Schema ${varObjToString(obj)} not found`, trace);
+				throw trace.error(`Schema ${varObjToString(obj)} not found`);
 			
 			return schema;
 		case 'normal':
 			if (!scope.hasSchema(obj.name))
-				throw makeError(`Schema ${obj.name} is not defined`, trace);
+				throw trace.error(`Schema ${obj.name} is not defined`);
 
 			return scope.getSchema(obj.name);
 		default:
-			throw makeError(`Unknown type ${obj.type}`, trace);
+			throw trace.error(`Unknown type ${obj.type}`);
 	}
 };
 
@@ -324,16 +293,26 @@ PI.tee = function (obj, parentScope, trace) {
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
+	trace = trace.extend('tee', null, obj.location);
 
-	trace = extendTrace(trace, 'tee', false, obj.location);
-
-	var foo = obj => {
-		var ret = PI.metaexpr(obj, scope, trace);
-		return ret;
-	};
+	var foo = obj => PI.metaexpr(obj, scope, trace);
 
 	var left = obj.left.map(foo);
 	var right = foo(obj.right);
+
+	if (!(left.every(l => ['type', 'metatype'].includes(l.type._type)))) {
+		console.log(left);
+		throw trace.error('Assertion failed');
+	}
+
+	if (!['type', 'metatype'].includes(right.type._type)) {
+		console.log(right);
+		throw trace.error('Assertion failed');
+	}
+
+	if (right.type.isFunctional) {
+		throw trace.error('RHS of a rule cannot be a schema');
+	}
 
 	return new Tee({left, right});
 };
@@ -343,15 +322,14 @@ PI.schema = function (obj, parentScope, trace, nativeMap) {
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'schema', obj.name, obj.location);
+	trace = trace.extend('schema', obj.name, obj.location);
 
 	var axiomatic = obj.axiomatic;
 	var name = obj.name;
 
 	if (obj.native) {
 		if (!nativeMap.schema[name])
-			throw makeError(`Native code for native schema ${name} not found`, trace);
+			throw trace.error(`Native code for native schema ${name} not found`);
 
 		var native = {
 			get: args => nativeMap.schema[name].get(args, scope, ExpressionResolver)
@@ -362,10 +340,10 @@ PI.schema = function (obj, parentScope, trace, nativeMap) {
 
 	var params = obj.params.map(tvo => {
 		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
-			throw makeError(`Param type ${typeObjToString(tvo.type)} not found`, trace);
+			throw trace.error(`Param type ${typeObjToString(tvo.type)} not found`);
 
 		if (scope.hasOwnTypevar(tvo.name))
-			throw makeError(`Param name ${tvo.name} already is there`, trace);
+			throw trace.error(`Param name ${tvo.name} already is there`);
 
 		var tv = PI.typevar(tvo, scope, trace);
 		return scope.addTypevar(tv);
@@ -374,7 +352,7 @@ PI.schema = function (obj, parentScope, trace, nativeMap) {
 	var expr = PI.metaexpr(obj.expr, scope, trace);
 
 	if (!['type', 'metatype'].includes(expr.type._type)) {
-		throw makeError('Assertion failed', trace);
+		throw trace.error('Assertion failed');
 	}
 
 	if (obj._type == 'schemaexpr' && expr.type._type == 'type') {
@@ -400,8 +378,7 @@ PI.schemacall = function (obj, parentScope, trace) {
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'schemacall', false, obj.location);
+	trace = trace.extend('schemacall', obj.schema.name || null, obj.location);
 
 	var schema = PI.metaexpr(obj.schema, scope, trace);
 
@@ -422,11 +399,11 @@ PI.schemacall = function (obj, parentScope, trace) {
 		argTypes = args.map(e => e.type);
 
 	if (paramTypes.length != argTypes.length)
-		throw makeError(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`, trace);
+		throw trace.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
 
 	for (var i = 0; i < paramTypes.length; i++) {
 		if (!paramTypes[i].equals(argTypes[i]))
-			throw makeError(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, trace);
+			throw trace.error(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
 	}
 
 	return new Schemacall({
@@ -440,17 +417,16 @@ PI.ruleset = function (obj, parentScope, trace, nativeMap) {
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'ruleset', obj.name, obj.location);
+	trace = trace.extend('ruleset', obj.name, obj.location);
 
 	var axiomatic = obj.axiomatic;
 	var name = obj.name;
 
 	if (!obj.native)
-		throw makeError('Assertion failed', trace);
+		throw trace.error('Assertion failed');
 
 	if (!nativeMap.ruleset[name])
-		throw makeError(`Native code for native ruleset ${name} not found`, trace);
+		throw trace.error(`Native code for native ruleset ${name} not found`);
 
 	var native = nativeMap.ruleset[name];
 
@@ -462,8 +438,7 @@ PI.reduction = function (obj, parentScope, trace) {
 		throw Error('Assertion failed');
 
 	var scope = parentScope.extend();
-
-	trace = extendTrace(trace, 'reduction', obj.subject.name || false, obj.location);
+	trace = trace.extend('reduction', obj.subject.name || null, obj.location);
 
 	var subject = PI.metaexpr(obj.subject, scope, trace);
 
@@ -482,11 +457,11 @@ PI.reduction = function (obj, parentScope, trace) {
 		argTypes = args.map(e => e.type);
 
 	if (paramTypes.length != argTypes.length)
-		throw makeError(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`, trace);
+		throw trace.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
 
 	for (var i = 0; i < paramTypes.length; i++) {
 		if (!paramTypes[i].equals(argTypes[i]))
-			throw makeError(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, trace);
+			throw trace.error(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
 	}
 
 	return new Reduction({

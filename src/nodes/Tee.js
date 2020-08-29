@@ -6,13 +6,16 @@ var ExpressionResolver = require('../ExpressionResolver');
 function Tee({left, right}) {
 	Node.call(this);
 
-	if (!(left instanceof Array)) {
+	if (!(left instanceof Array
+			&& left.every(l => ['type', 'metatype'].includes(l.type._type)))) {
 		console.log(left);
 		throw Error('Assertion failed');
 	}
 
-	if (!right)
+	if (!['type', 'metatype'].includes(right.type._type)) {
+		console.log(right);
 		throw Error('Assertion failed');
+	}
 
 	// antecedent의 contraction
 	// 현재 antecedent를 집합처럼 생각하므로 contraction을 자동으로 한다.
