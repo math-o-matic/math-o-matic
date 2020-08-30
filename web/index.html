@@ -99,8 +99,8 @@
 				text-align: right;
 			}
 
-			tr:not(.csq) + tr.csq td.csq {
-				border-top: 3px black solid;
+			td.bbb {
+				border-bottom: 3px black solid;
 			}
 
 			.red {
@@ -246,15 +246,15 @@
 				var html = '<table>';
 				html += `<tr><th>#</th><th colspan="${ncols}">expr</th><th colspan="2">rule</th></tr>`;
 
-				html += (function recurse(expr, left, hyp, csq) {
+				function getHtml(left, h1, h2, bbb, noctr) {
 					var padding = left.length;
 
-					if (hyp) {
-						var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
+					var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
 
-						return `<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.toTeXString())}</td><td colspan="2">assumption</td></tr>`;
-					}
+					return `<tr><th>${noctr ? '' : ++ctr}</th>${htmlLeft}<td ${bbb ? 'class="bbb"' : ''} colspan="${ncols-padding}">${h1}</td>${h2}</tr>`;
+				}
 
+				html += (function recurse(expr, left) {
 					switch (expr._type) {
 						case 'reduction':
 							var hasArgs = !!expr.args.length;
@@ -265,37 +265,64 @@
 
 							left = hasArgs ? Array(left.length).fill([]) : left;
 
-							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
-
 							return [
 								args.map(e => e[0]).join(''),
-								`<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.reduced.toTeXString())}</td><td>&#x25BC;</td><td>${ktx(expr.subject.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td></tr>`
+								getHtml(
+									left,
+									ktx(expr.reduced.toTeXString()),
+									`<td>&#x25BC;</td><td>${ktx(expr.subject.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
+								)
 							].join('');
 						case 'schemacall':
-							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
-
-							return `<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.expanded.toTeXString())}</td><td>&#x25C7;</td><td>${ktx(expr.toTeXString())}</td></tr>`;
+							return getHtml(
+								left,
+								ktx(expr.expanded.toTeXString()),
+								`<td>&#x25C7;</td><td>${ktx(expr.toTeXString())}</td>`
+							);
 						case 'schema':
 							return recurse(expr.expr, left.concat([expr.params]));
 						case 'tee':
 							var start = ctr + 1;
 							var arr = [
-								...expr.left.map(e => recurse(e, left.concat([[]]), true)),
-								recurse(expr.right, left.concat([[]]), false, true)
+								...(
+									expr.left.length
+										? expr.left.map((e, i, a) => getHtml(
+											(i == 0 ? left.concat([[]]) : Array(left.length + 1).fill([])),
+											ktx(e.toTeXString()),
+											'<td colspan="2">assumption</td>',
+											i == a.length - 1
+										))
+										: [getHtml(
+											Array(left.length + 1).fill([]),
+											'',
+											'<td colspan="2"></td>',
+											true,
+											true
+										)]
+								),
+								recurse(
+									expr.right,
+									(expr.left.length == 0 ? left.concat([[]]) : Array(left.length + 1).fill([]))
+								)
 							];
 							var end = ctr;
 
-							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
-
 							return [
 								...arr,
-								`<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.toTeXString())}</td><td>&#x25B2;</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td></tr>`
+								getHtml(
+									Array(left.length).fill([]),
+									ktx(expr.toTeXString()),
+									`<td>&#x25B2;</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td>`
+								)
 							].join('');
 						default:
-							console.error('Unknown type:', expr);
-							var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
+							console.error(expr.error('Unknown type'));
 
-							return `<tr ${csq ? 'class="csq"' : ''}><th>${++ctr}</th>${htmlLeft}<td ${csq ? 'class="csq"' : ''} colspan="${ncols-padding}">${ktx(expr.toTeXString())}</td><td colspan="2"><b class="red">not proved</b></td></tr>`;
+							return getHtml(
+								left,
+								ktx(expr.toTeXString()),
+								'<td colspan="2"><b class="red">not proved</b></td>'
+							);
 					}
 				})(expr, []);
 
