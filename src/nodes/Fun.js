@@ -81,7 +81,7 @@ Fun.prototype.toTeXString = function (root) {
 		return this.funcallToTeXString(this.params);
 
 	return this.funcallToTeXString(this.params)
-			+ `:= ${this.expr.toTeXString()}`;
+			+ `\\coloneqq ${this.expr.toTeXString()}`;
 };
 
 Fun.prototype.funcallToTeXString = function (args) {
