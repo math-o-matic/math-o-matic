@@ -211,14 +211,14 @@ schema Fi(st p) {
 	Ne(p, F)
 }
 
-"modus tollens의 다른 버전."
-schema mt_c(st p, st q) {
+"대우명제(contrapositive)를 유도한다."
+schema contrapose(st p, st q) {
 	mpu[tt.IIpqINqNp(p, q)]
 }
 
-"modus tollens."
+"후건 부정(modus tollens)."
 schema mt(st p, st q) {
-	mpu[mt_c(p, q)]
+	mpu[contrapose(p, q)]
 }
 
 schema swap_c(st p, st q, st r) {
@@ -545,7 +545,7 @@ schema Xi(pr f, cls x) {
 	NNi(f(x)) ~
 	mpu[
 		cp[Ve(Nf(f), x)]
-		~ mt_c(V(Nf(f)), N(f(x)))
+		~ contrapose(V(Nf(f)), N(f(x)))
 	] ~ id(X(f))
 }
 
