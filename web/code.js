@@ -6,35 +6,31 @@ code = String.raw`
 "문장 타입."
 base type st;
 
-"참."
+"verum (T). 즉 임의의 항진명제를 표시한다."
 $<<\top>>$
 st T;
 
-"거짓. 이것을 유도하면 계의 모순성(inconsistency)을 증명할 수 있을 것이다."
+"falsum (F). 즉 임의의 모순명제를 표시한다."
 $<<\bot>>$
 st F;
 
-"nand(FTTT). Sheffer가 1913년 논문에서 다른 모든 논리 기호를 유도할 수 있음을 증명한 것 같다. nor(FFFT) 역시 같은 성질을 갖고 있다."
-$\left(#1<<\barwedge>>#2\right)$
-st NA(st p, st q);
-
-"not(FT)."
+"not (FT)."
 $\left(<<\neg>>#1\right)$
 st N(st p);
 
-"and(TFFF)."
+"and (TFFF)."
 $\left(#1<<\land>>#2\right)$
 st A(st p, st q);
 
-"or(TTTF)."
+"or (TTTF)."
 $\left(#1<<\lor>>#2\right)$
 st O(st p, st q);
 
-"implies(TFTT)."
+"implies (TFTT)."
 $\left(#1<<\to>>#2\right)$
 st I(st p, st q);
 
-"iff(TFFT)."
+"iff (TFFT)."
 $\left(#1<<\leftrightarrow>>#2\right)$
 st E(st p, st q);
 
@@ -78,54 +74,54 @@ axiomatic native ruleset tt;
 1계층 reduction 구문을 도입한다면 그로부터 증명할 수 있다."
 axiomatic native schema cut;
 
-"conditional proof. 힐베르트 체계(Hilbert system)에서는 메타정리(metatheorem)이며 deduction theorem이라 부른다. 즉
+"함의 도입(implication introduction). conditional proof를 가능케 한다. 힐베르트 체계(Hilbert system)에서는 메타정리(metatheorem)이며 연역 정리(deduction theorem)라 부른다. 즉
 [$$\frac{\Delta, p\vdash q}{\Delta\vdash p\to q}]
-에 해당한다. [$\Delta, p\vdash q]에서 [$p]는 맨 마지막에 있어야 한다. mp와는 역연산 관계가 있다고 할 수 있다."
+에 해당한다."
 axiomatic native schema cp;
 
-"modus ponens 추론 규칙. 추론 규칙은 이것만 있어도 적당히 되는 것 같다. cp와는 역연산 관계가 있다고 할 수 있다."
+"modus ponens. 함의 소거(implication elimination) 또는 전건 긍정이라고도 한다."
 axiomatic schema mp(st p, st q) {
 	(p, I(p, q) |- q)
 }
 
-"규칙 mp의 링크 버전. 즉
+"mp의 다른 버전. 즉
 [$$\frac{\Delta\vdash p\to q}{\Delta, p\vdash q}]
-이다. 규칙 mp보다 적용하는 것이 간단하다. 규칙 mp로부터 증명할 수 있으나 아직 표현할 수 있는 방법이 없다."
+이다. mp보다 적용하는 것이 간단하다. mp로부터 증명할 수 있으나 아직 표현할 수 있는 방법이 없다."
 axiomatic native schema mpu;
 
-"conjunction introduction. [$ \vdash] 좌변의 [$p \land q]를 [$p, q]로 만들 수 있다.
+"연언 도입(conjunction introduction). [$ \vdash] 좌변의 [$p \land q]를 [$p, q]로 만들 수 있다.
 
 mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임을 보인 것이다."
 schema Ai(st p, st q) {
 	mpu[mpu[tt.IpIqApq(p, q)]]
 }
 
-"conjunction introduction 2번."
+"연언 도입 2번."
 schema A3i(st p, st q, st r) {
 	Ai(p, q) ~ Ai(A(p, q), r)
 }
 
-"conjunction elimination 1."
+"연언 소거(conjunction elimination) 1."
 schema Ae1(st p, st q) {
 	mpu[tt.IApqp(p, q)]
 }
 
-"conjunction elimination 2."
+"연언 소거(conjunction elimination) 2."
 schema Ae2(st p, st q) {
 	mpu[tt.IApqq(p, q)]
 }
 
-"disjunction introduction 1."
+"선언 도입(disjunction introduction) 1."
 schema Oi1(st p, st q) {
 	mpu[tt.IpOpq(p, q)]
 }
 
-"disjunction introduction 2."
+"선언 도입(disjunction introduction) 2."
 schema Oi2(st p, st q) {
 	mpu[tt.IqOpq(p, q)]
 }
 
-"disjunction elimination."
+"선언 소거(disjunction elimination). proof by cases라고도 한다."
 schema Oe(st p, st q, st r) {
 	A3i(
 		O(p, q),
@@ -135,42 +131,38 @@ schema Oe(st p, st q, st r) {
 	~ mpu[tt.IAAOpqIprIqrr(p, q, r)]
 }
 
-"negation introduction."
-schema Ni(st p, st q) {
-	Ai(
-		I(p, q),
-		I(p, N(q))
-	)
-	~ mpu[tt.IAIpqIpNqNp(p, q)]
+"부정 도입(negation introduction). 귀류법(reductio ad absurdum)이라고도 한다."
+schema Ni(st p) {
+	mpu[tt.IIpFNp(p)]
 }
 
-"negation elimination."
+"부정 소거(negation elimination). 폭발률(ex falso quodlibet)이라고도 한다."
 schema Ne(st p, st q) {
-	mpu[tt.INpIpq(p, q)]
+	mpu[mpu[tt.IpINpq(p, q)]]
 }
 
-"double negation introduction."
+"이중부정 도입(double negation introduction)."
 schema NNi(st p) {
 	mpu[tt.IpNNp(p)]
 }
 
-"double negation elimination."
+"이중부정 소거(double negation elimination)."
 schema NNe(st p) {
 	mpu[tt.INNpp(p)]
 }
 
-"biconditional introduction."
+"쌍조건문 도입(biconditional introduction)."
 schema Ei(st p, st q) {
 	Ai(I(p, q), I(q, p))
 	~ mpu[tt.IAIpqIqpEpq(p, q)]
 }
 
-"biconditional elimination 1."
+"쌍조건문 소거(biconditional elimination) 1."
 schema Ee1(st p, st q) {
 	mpu[tt.IEpqIpq(p, q)]
 }
 
-"biconditional elimination 2."
+"쌍조건문 소거(biconditional elimination) 2."
 schema Ee2(st p, st q) {
 	mpu[tt.IEpqIqp(p, q)]
 }
@@ -188,12 +180,13 @@ schema mpE(st p, st q) {
 	mpu[Ee1(p, q)]
 }
 
-"cp 형을 위한 삼단논법."
+"가언적 삼단논법(hypothetical syllogism)."
 schema syll(st p, st q, st r) {
 	Ai(I(p, q), I(q, r))
 	~ mpu[tt.IAIpqIqrIpr(p, q, r)]
 }
 
+"syll을 두 번 적용한 것. 사단논법이라 해도 좋을 것이다."
 schema syll4(st p, st q, st r, st s) {
 	syll(p, q, r) ~ syll(p, r, s)
 }
@@ -213,21 +206,12 @@ schema id(st p) {
 	mpu[tt.Ipp(p)]
 }
 
-"폭발률(ex falso quodlibet)."
-schema explode(st p, st q) {
-	mpu[Ne(p, q)]
+"[$\bot]을 도입한다. falsum introduction이라 불러도 좋을 것이다. 계의 비일관성(inconsistency)을 증명할 때 사용할 수 있다."
+schema Fi(st p) {
+	Ne(p, F)
 }
 
-"[$\bot]을 유도한다. 계의 모순성(inconsistency)을 증명할 때 사용할 수 있다."
-schema destroy(st p) {
-	explode(p, F)
-}
-
-"귀류법(reductio ad absurdum)."
-schema contradict(st p) {
-	mpu[tt.IIpFNp(p)]
-}
-
+"modus tollens의 다른 버전."
 schema mt_c(st p, st q) {
 	mpu[tt.IIpqINqNp(p, q)]
 }
@@ -235,6 +219,18 @@ schema mt_c(st p, st q) {
 "modus tollens."
 schema mt(st p, st q) {
 	mpu[mt_c(p, q)]
+}
+
+schema swap_c(st p, st q, st r) {
+	tt.IIpIqrIqIpr(p, q, r)
+}
+
+schema swap(st p, st q, st r) {
+	mpu[swap_c(p, q, r)]
+}
+
+schema swap_m(st p, st q, st r) {
+	mpu[swap(p, q, r)]
 }
 
 #################################
@@ -253,41 +249,41 @@ type [(cls, cls) -> st] pr2;
 "class 세 개를 받는 술어 타입."
 type [(cls, cls, cls) -> st] pr3;
 
-"A의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
+"pr 타입을 위한 A."
 $\left(#1<<\land>>#2\right)$
 pr Af(pr f, pr g) {
 	(cls z) => { A(f(z), g(z)) }
 }
 
-"O의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
+"pr 타입을 위한 O."
 $\left(#1<<\lor>>#2\right)$
 pr Of(pr f, pr g) {
 	(cls z) => { O(f(z), g(z)) }
 }
 
-"I의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
+"pr 타입을 위한 I."
 $\left(#1<<\to>>#2\right)$
 pr If(pr f, pr g) {
 	(cls z) => { I(f(z), g(z)) }
 }
 
-"E의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
+"pr 타입을 위한 E."
 $\left(#1<<\leftrightarrow>>#2\right)$
 pr Ef(pr f, pr g) {
 	(cls z) => { E(f(z), g(z)) }
 }
 
-"N의 함수 작용소(operator) 버전 같은 것. 수식을 간결하게 해 준다."
+"pr 타입을 위한 N."
 $\left(<<\neg>>#1\right)$
 pr Nf(pr f) {
 	(cls z) => { N(f(z)) }
 }
 
-"보편 양화(universal quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다]."
+"보편 양화(universal quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다]."
 $\left(<<\forall>>#1\right)$
 st V(pr f);
 
-"입력항이 두 개인 함수를 위한 보편 양화. V에 의존한다."
+"pr2를 위한 보편 양화."
 $\left(<<\forall>>#1\right)$
 st V2(pr2 f) {
 	V((cls x) => {
@@ -297,7 +293,7 @@ st V2(pr2 f) {
 	})
 }
 
-"입력항이 세 개인 함수를 위한 보편 양화. V에 의존한다."
+"pr3을 위한 보편 양화."
 $\left(<<\forall>>#1\right)$
 st V3(pr3 f) {
 	V((cls x) => {
@@ -309,19 +305,19 @@ st V3(pr3 f) {
 	})
 }
 
-"존재 양화(existential quantification). 일반적인 표기법과는 다르게 함수를 입력으로 받으며 V에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다]."
+"존재 양화(existential quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받으며 V에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다]."
 $\left(<<\exists>>#1\right)$
 st X(pr f) {
 	N(V((cls x) => { N(f(x)) }))
 }
 
-"입력항이 두 개인 함수를 위한 존재 양화. V2에 의존한다."
+"pr2를 위한 존재 양화. V2에 의존한다."
 $\left(<<\exists>>#1\right)$
 st X2(pr2 f) {
 	N(V2((cls x, cls y) => { N(f(x, y)) }))
 }
 
-"universal introduction."
+"보편 양화 도입(universal introduction)."
 axiomatic schema Vi(pr f) {
 	(f |- V(f))
 }
@@ -336,17 +332,17 @@ schema Vi_c(st p) {
 	cp[Vi_p(p)]
 }
 
-"universal elimination."
+"보편 양화 소거(universal elimination)."
 axiomatic schema Ve(pr f, cls x) {
 	(V(f) |- f(x))
 }
 
-"universal introduction의 다른 버전."
+"Vi의 다른 버전."
 axiomatic schema Viu(pr f) {
 	((cls x) => { (|- f(x)) } |- (|- V(f)))
 }
 
-"universal elimination의 다른 버전."
+"Ve의 다른 버전."
 axiomatic schema Veu(pr f, cls x) {
 	((|- V(f)) |- (|- f(x)))
 }
@@ -544,7 +540,7 @@ schema VI_Vi_V2_Vi_VI_m(pr f, pr2 g) {
 	mpu[VI_Vi_V2_Vi_VI(f, g)]
 }
 
-"existential introduction. Ve와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
+"존재 양화 도입(existential introduction). Ve와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
 schema Xi(pr f, cls x) {
 	NNi(f(x)) ~
 	mpu[
@@ -553,7 +549,7 @@ schema Xi(pr f, cls x) {
 	] ~ id(X(f))
 }
 
-"existential instantiation 같은 것 1. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정."
+"존재 양화 소거(existential elimination) 같은 것 1."
 schema Xinst1(pr f, pr g) {
 	(X(f), V(If(f, g)) |- X(g))
 }
@@ -562,7 +558,7 @@ schema Xinst1E(pr f, pr g) {
 	Ee1V(f, g) ~ Xinst1(f, g)
 }
 
-"existential instantiation 같은 것 2. 사실 인스턴스를 만들지는 않으나 표현력은 같을 것으로 추정. Vi으로부터 증명할 수 있다."
+"존재 양화 소거(existential elimination) 같은 것 2."
 schema Xinst2(st p) {
 	id(X((cls x) => {p})) ~
 	mpu[cp[Vi_p(N(p))]
@@ -598,21 +594,6 @@ schema XO(pr f, pr g) {
 		N(V(Af(Nf(f), Nf(g)))),
 		O(X(f), X(g))
 	)
-}
-
-schema XI_(pr f, pr g) {
-	XO(Nf(f), g)
-}
-
-"[$\exists]과 [$\to] 간의 분배법칙 같은 것. 직관적으로 이해가 안 되지만 XO로부터 간단히 증명할 수 있는데 XI_로부터 증명하려고 하니 막막한 이유는 무엇인가..."
-schema XI(pr f, pr g) {
-	(|- E(
-		X(If(f, g)),
-		I(
-			V(f),
-			X(g)
-		)
-	))
 }
 
 schema XA(pr f, pr g) {
@@ -658,7 +639,7 @@ schema mpVE(pr f, pr g) {
 $\left(#1<<\in>>#2\right)$
 st in(cls x, cls y);
 
-"간단한 notin 함수."
+"not in 연산자."
 $\left(#1<<\notin>>#2\right)$
 st Nin(cls x, cls y) {
 	N(in(x, y))
@@ -795,18 +776,6 @@ schema eq_Ae2_Ve_Ee1(cls x, cls y, cls z) {
 
 schema eq_Ae2_Ve_Ee1_c(cls x, cls y, cls z) {
 	cp[eq_Ae2_Ve_Ee1(x, y, z)]
-}
-
-schema swap_c(st p, st q, st r) {
-	tt.IIpIqrIqIpr(p, q, r)
-}
-
-schema swap(st p, st q, st r) {
-	mpu[swap_c(p, q, r)]
-}
-
-schema swap_m(st p, st q, st r) {
-	mpu[swap(p, q, r)]
 }
 
 schema swapV_1(pr f, pr g, pr h, cls w) {
@@ -1229,7 +1198,7 @@ cls emptyset() {
 }
 
 schema emptyset_1(cls z) {
-	cp[contradict(in(z, emptyset()))]
+	cp[Ni(in(z, emptyset()))]
 }
 
 schema emptyset_2() {
