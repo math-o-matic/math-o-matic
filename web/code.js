@@ -74,7 +74,7 @@ axiomatic native ruleset tt;
 1계층 reduction 구문을 도입한다면 그로부터 증명할 수 있다."
 axiomatic native schema cut;
 
-"함의 도입(implication introduction). conditional proof를 가능케 한다. 힐베르트 체계(Hilbert system)에서는 메타정리(metatheorem)이며 연역 정리(deduction theorem)라 부른다. 즉
+"함의 도입(implication introduction). conditional proof를 가능케 한다. 특정 힐베르트 체계(Hilbert system)에서는 메타정리(metatheorem)이며 이를 연역 정리(deduction theorem)라 부른다. 즉
 [$$\frac{\Delta, p\vdash q}{\Delta\vdash p\to q}]
 에 해당한다."
 axiomatic native schema cp;
