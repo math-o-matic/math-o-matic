@@ -89,9 +89,7 @@ axiomatic schema mp(st p, st q) {
 이다. mp보다 적용하는 것이 간단하다. mp로부터 증명할 수 있으나 아직 표현할 수 있는 방법이 없다."
 axiomatic native schema mpu;
 
-"연언 도입(conjunction introduction). [$ \vdash] 좌변의 [$p \land q]를 [$p, q]로 만들 수 있다.
-
-mp에서 [$q] 자리에 [$p \land q]를 넣고 [$q \vdash p \to (p \land q)]임을 보인 것이다."
+"연언 도입(conjunction introduction)."
 schema Ai(st p, st q) {
 	mpu[mpu[tt.IpIqApq(p, q)]]
 }
@@ -206,9 +204,14 @@ schema id(st p) {
 	mpu[tt.Ipp(p)]
 }
 
-"[$\bot]을 도입한다. falsum introduction이라 불러도 좋을 것이다. 계의 비일관성(inconsistency)을 증명할 때 사용할 수 있다."
+"[$\bot]을 도입한다. falsum introduction이라 불러도 좋을 것이다."
 schema Fi(st p) {
 	Ne(p, F)
+}
+
+"[$\bot]을 소거한다. falsum elimination이라 불러도 좋을 것이다. Ne와 마찬가지로 폭발률을 나타낸다 할 수 있다."
+schema Fe(st p) {
+	mpu[tt.IFp(p)]
 }
 
 "대우명제(contrapositive)를 유도한다."
