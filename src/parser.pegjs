@@ -156,17 +156,15 @@ defruleset =
 
 // (metaexpr... |- metaexpr)
 tee =
-	"(" _
 	left:(
 		l:(
-			head:metaexpr _
-			tail:("," _ e:metaexpr _ {return e})*
+			head:metaexpr_par _
+			tail:("," _ e:metaexpr_par _ {return e})*
 			{return [head].concat(tail)}
 		)? {return l || []}
 	)
 	"|-" _
-	right:metaexpr _
-	")"
+	right:metaexpr_par
 	{
 		return {
 			_type: 'tee',
@@ -317,7 +315,7 @@ schemaexpr =
 metaexpr =
 	// right associativity
 	a:(
-		metaexpr_dontusethis
+		metaexpr_internal
 		/ "(" _ c:metaexpr _ ")" {return c}
 	) _ "~" _ b:metaexpr
 	{
@@ -332,7 +330,46 @@ metaexpr =
 			location: location()
 		}
 	}
-	/ metaexpr_dontusethis
+	/ metaexpr_internal
+	/ "(" _ a:metaexpr _ ")" {return a}
+
+/*
+ * 다음이 성립하여야 한다.
+ *
+ * - reduction이 schemacall보다 앞이다.
+ * - schemacall이 var보다 앞이다.
+ * - tee가 제일 앞이다.
+ *
+ * metaexpr 외에서 사용하지 마시오.
+ */
+metaexpr_internal =
+	tee
+	/ reduction
+	/ schemacall
+	/ var
+	/ schemaexpr
+
+metaexpr_par =
+	// right associativity
+	"(" _
+	a:(
+		metaexpr_internal
+		/ "(" _ c:metaexpr _ ")" {return c}
+	) _ "~" _ b:metaexpr
+	_ ")"
+	{
+		return {
+			_type: 'reduction',
+			subject: {
+				_type: 'var',
+				type: 'normal',
+				name: 'cut'
+			},
+			args: [a, b],
+			location: location()
+		}
+	}
+	/ metaexpr_par_internal
 	/ "(" _ a:metaexpr _ ")" {return a}
 
 /*
@@ -343,12 +380,12 @@ metaexpr =
  *
  * metaexpr 외에서 사용하지 마시오.
  */
-metaexpr_dontusethis =
-	reduction
+metaexpr_par_internal =
+	"(" _ e:tee _ ")" {return e}
+	/ reduction
 	/ schemacall
 	/ var
 	/ schemaexpr
-	/ tee
 
 expr0 =
 	funcall

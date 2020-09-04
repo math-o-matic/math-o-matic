@@ -81,7 +81,7 @@ axiomatic native schema cp;
 
 "modus ponens. 함의 소거(implication elimination) 또는 전건 긍정이라고도 한다."
 axiomatic schema mp(st p, st q) {
-	(p, I(p, q) |- q)
+	p, I(p, q) |- q
 }
 
 "mp의 다른 버전. 즉
@@ -322,13 +322,13 @@ st X2(pr2 f) {
 
 "보편 양화 도입(universal introduction)."
 axiomatic schema Vi(pr f) {
-	(f |- V(f))
+	f |- V(f)
 }
 
 schema Vi_p(st p) {
 	// 에러난다
-	// (p |- Vi((cls x) => { p })[(cls x) => { p }])
-	(p |- V((cls x) => { p }))
+	// p |- Vi((cls x) => { p })[(cls x) => { p }]
+	p |- V((cls x) => { p })
 }
 
 schema Vi_c(st p) {
@@ -337,48 +337,48 @@ schema Vi_c(st p) {
 
 "보편 양화 소거(universal elimination)."
 axiomatic schema Ve(pr f, cls x) {
-	(V(f) |- f(x))
+	V(f) |- f(x)
 }
 
 "Vi의 다른 버전."
 axiomatic schema Viu(pr f) {
-	((cls x) => { (|- f(x)) } |- (|- V(f)))
+	(cls x) => { |- f(x) } |- (|- V(f))
 }
 
 "Ve의 다른 버전."
 axiomatic schema Veu(pr f, cls x) {
-	((|- V(f)) |- (|- f(x)))
+	(|- V(f)) |- (|- f(x))
 }
 
 "[$\forall]과 [$\land] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VI만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
 axiomatic schema VA(pr f, pr g) {
-	(|- E(
+	|- E(
 		V(Af(f, g)),
 		A(V(f), V(g))
-	))
+	)
 }
 
 "[$\forall]과 [$\to] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VA만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
 axiomatic schema VI(pr f, pr g) {
-	(|- I(
+	|- I(
 		V(If(f, g)),
 		I(V(f), V(g))
-	))
+	)
 }
 
 axiomatic schema VO(pr f, pr g) {
-	(|- I(
+	|- I(
 		O(V(f), V(g)),
 		V(Of(f, g))
-	))
+	)
 }
 
 "[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것. 특이하게도 Viu 및 Veu로부터 유도할 수 있는 것으로 보이나 아직 표현할 방식이 없다."
 axiomatic schema VV(pr2 f) {
-	(|- I(
+	|- I(
 		V2((cls x, cls y) => { f(x, y) }),
 		V2((cls y, cls x) => { f(x, y) })
-	))
+	)
 }
 
 "VA의 m1형."
@@ -554,7 +554,7 @@ schema Xi(pr f, cls x) {
 
 "존재 양화 소거(existential elimination) 같은 것 1."
 schema Xinst1(pr f, pr g) {
-	(X(f), V(If(f, g)) |- X(g))
+	X(f), V(If(f, g)) |- X(g)
 }
 
 schema Xinst1E(pr f, pr g) {
@@ -600,10 +600,10 @@ schema XO(pr f, pr g) {
 }
 
 schema XA(pr f, pr g) {
-	(|- I(
+	|- I(
 		X(Af(f, g)),
 		A(X(f), X(g))
-	))
+	)
 }
 
 schema AeX1(pr f, pr g) {
@@ -993,7 +993,7 @@ schema subseteq_subseteq(cls x, cls y, cls z) {
 
 "axiom of extensionality."
 axiomatic schema extensional(cls x, cls y) {
-	(|- I(
+	|- I(
 		V((cls z) => {
 			E(
 				in(z, x),
@@ -1001,7 +1001,7 @@ axiomatic schema extensional(cls x, cls y) {
 			)
 		}),
 		eq(x, y)
-	))
+	)
 }
 
 schema extensional_m(cls x, cls y) {
@@ -1050,12 +1050,12 @@ cls setbuilder(pr f);
 
 "setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다."
 axiomatic schema setbuilder_def(pr f) {
-	(|- V((cls w) => {
+	|- V((cls w) => {
 		E(
 			in(w, setbuilder(f)),
 			A(set(w), f(w))
 		)
-	}))
+	})
 }
 
 schema setbuilder_def_Ve(pr f, cls z) {
@@ -1272,13 +1272,13 @@ cls subsetbuilder(cls x, pr f) {
 
 "axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
 axiomatic schema specify(pr f) {
-	(|-
+	|-
 	V((cls x) => {
 		I(
 			set(x),
 			set(subsetbuilder(x, f))
 		)
-	}))
+	})
 }
 
 schema specify_vem(pr f, cls x) {
@@ -1482,7 +1482,7 @@ schema singleton_subseteq_power(cls x) {
 
 "axiom of power set."
 axiomatic schema ax_power() {
-	(|- V((cls x) => {
+	|- V((cls x) => {
 		I(
 			set(x),
 			X((cls y) => {
@@ -1494,7 +1494,7 @@ axiomatic schema ax_power() {
 				)
 			})
 		)
-	}))
+	})
 }
 
 schema ax_power_vem(cls x) {
@@ -1599,7 +1599,7 @@ schema singleton_is_set(cls x) {
 
 "Axiom of infinity."
 axiomatic schema infinity() {
-	(|- X((cls x) => {
+	|- X((cls x) => {
 		A(
 			set(x),
 			A(
@@ -1612,7 +1612,7 @@ axiomatic schema infinity() {
 				})
 			)
 		)
-	}))
+	})
 }
 
 ############################
@@ -1624,17 +1624,17 @@ $\left(#1<<,>>#2\right)$
 cls v2(cls x, cls y);
 
 axiomatic schema v2_eq_def(cls x, cls y, cls z, cls w) {
-	(|- E(
+	|- E(
 		eq(v2(x, y), v2(z, w)),
 		A(eq(x, z), eq(y, w))
-	))
+	)
 }
 
 axiomatic schema v2_set_def(cls x, cls y) {
-	(|- E(
+	|- E(
 		set(v2(x, y)),
 		A(set(x), set(y))
-	))
+	)
 }
 
 "어떤 class가 graph다.
@@ -1659,7 +1659,7 @@ schema graph_forall_1_1(cls x, cls z, cls a, cls b) {
 
 [$G]가 그래프일 때, 임의의 [$(a, b)\in G]에 대해 [$f(a, b)]이면, 임의의 [$z\in G]에 대해 [$fz]이다."
 schema graph_forall(pr f, cls x) {
-	(graph(x) |- I(
+	graph(x) |- I(
 		V2((cls a, cls b) => {
 			I(
 				in(v2(a, b), x),
@@ -1667,7 +1667,7 @@ schema graph_forall(pr f, cls x) {
 			)
 		}),
 		Vin(x, f)
-	))
+	)
 }
 
 "graph의 역(inverse)."
@@ -1680,7 +1680,7 @@ cls graph_inverse(cls x);
 [$$\{z: (\exists a)(\exists b)(z = (b, a) \land (a, b) \in G)\}]
 라고 표현되었다."
 axiomatic schema graph_inverse_def(cls x) {
-	(graph(x) |- eq(
+	graph(x) |- eq(
 		graph_inverse(x),
 		setbuilder((cls z) => {
 			X2((cls a, cls b) => {
@@ -1690,7 +1690,7 @@ axiomatic schema graph_inverse_def(cls x) {
 				)
 			})
 		})
-	))
+	)
 }
 
 "graph의 합성(composition)."
@@ -1705,7 +1705,7 @@ cls graph_composite(cls x, cls y);
 [$$\{z: (\exists a)(\exists c)(z=(a, c) \land (\exists b)((a, b)\in H \land (b, c)\in G))\}]
 라고 표현되었다."
 axiomatic schema graph_composite_def(cls x, cls y) {
-	(graph(x), graph(y) |- eq(
+	graph(x), graph(y) |- eq(
 		graph_composite(x, y),
 		setbuilder((cls z) => {
 			X2((cls a, cls c) => {
@@ -1720,14 +1720,14 @@ axiomatic schema graph_composite_def(cls x, cls y) {
 				)
 			})
 		})
-	))
+	)
 }
 
 schema graph_composite_associative(cls x, cls y, cls z) {
-	(graph(x), graph(y), graph(z) |- eq(
+	graph(x), graph(y), graph(z) |- eq(
 		graph_composite(graph_composite(x, y), z),
 		graph_composite(x, graph_composite(y, z))
-	))
+	)
 }
 
 "graph의 정의역(domain)."
@@ -1738,14 +1738,14 @@ cls graph_dom(cls x);
 
 [$G]가 graph일 때, [$\{a: (\exists b)((a, b)\in G)\}]라는 뜻이다."
 axiomatic schema graph_dom_def(cls x) {
-	(graph(x) |- eq(
+	graph(x) |- eq(
 		graph_dom(x),
 		setbuilder((cls a) => {
 			X((cls b) => {
 				in(v2(a, b), x)
 			})
 		})
-	))
+	)
 }
 
 "graph의 치역(image)."
@@ -1756,14 +1756,14 @@ cls graph_im(cls x);
 
 [$G]가 graph일 때, [$\{b: (\exists a)((a, b)\in G)\}]라는 뜻이다."
 axiomatic schema graph_im_def(cls x) {
-	(graph(x) |- eq(
+	graph(x) |- eq(
 		graph_im(x),
 		setbuilder((cls b) => {
 			X((cls a) => {
 				in(v2(a, b), x)
 			})
 		})
-	))
+	)
 }
 
 "cartesian product."
@@ -1805,7 +1805,7 @@ schema cartesian_def(cls x, cls y) {
 }
 
 schema cartesian_is_graph(cls x, cls y) {
-	(|- graph(cartesian(x, y)))
+	|- graph(cartesian(x, y))
 }
 
 "어떤 [$\langle f, A, B\rangle]가 함수이다.
@@ -1831,10 +1831,10 @@ cls fcall(cls f, cls x);
 
 [$f(x)]는 [$\langle f, A, B\rangle]이 함수이고 [$x\in A]일 때만 정의되며, 이때 [$f(x) = y]는 [$(x, y)\in f]와 동치라는 뜻이다."
 axiomatic schema fcall_def(cls f, cls a, cls b, cls x, cls y) {
-	(function(f, a, b), in(x, a) |- E(
+	function(f, a, b), in(x, a) |- E(
 		eq(fcall(f, x), y),
 		in(v2(x, y), f)
-	))
+	)
 }
 
 `;
