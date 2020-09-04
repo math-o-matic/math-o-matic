@@ -315,13 +315,19 @@
 									`<td>&#x25B2;</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td>`
 								)
 							].join('');
-						default:
-							console.error(expr.error('Unknown type'));
-
+						case 'funcall':
 							return getHtml(
 								left,
 								ktx(expr.toTeXString()),
 								'<td colspan="2"><b class="red">not proved</b></td>'
+							);
+						default:
+							console.error(expr.error(`Unknown type ${expr._type}`));
+
+							return getHtml(
+								left,
+								ktx(expr.toTeXString()),
+								'<td colspan="2">?</td>'
 							);
 					}
 				})(expr, []);
