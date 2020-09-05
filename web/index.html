@@ -210,8 +210,13 @@
 				arr[v._id] = r;
 			}
 
-			function generateExpressionTree(expr) {
+			function getProofExplorer(expr) {
 				var ctr = 0;
+
+				var DIAMOND = '&#x25C7;',
+					DOWN = '&#x25BC;',
+					UP = '&#x25B2;';
+
 
 				var ncols = (function recurse(expr) {
 					switch (expr._type) {
@@ -221,8 +226,10 @@
 								1
 							);
 						case 'schemacall':
+						case 'funcall':
 							return 1;
 						case 'schema':
+						case 'fun':
 							return recurse(expr.expr) + 1;
 						case 'tee':
 							return Math.max(
@@ -245,13 +252,32 @@
 					return `<tr><th>${noctr ? '' : ++ctr}</th>${htmlLeft}<td ${bbb ? 'class="bbb"' : ''} colspan="${ncols-padding}">${h1}</td>${h2}</tr>`;
 				}
 
-				html += (function recurse(expr, left) {
+				html += (function recurse(expr, left, hyps) {
+					for (var i = 0; i < hyps.length; i++) {
+						var [hyp, lineno] = hyps[i];
+
+						if (program.ExpressionResolver.equalsMeta(hyp, expr)) {
+							return getHtml(
+								left,
+								ktx(expr.toTeXString()),
+								`<td>${DIAMOND}</td><td>[<b>${lineno}</b>]</td>`
+							);
+						}
+					}
+
 					switch (expr._type) {
 						case 'reduction':
 							var hasArgs = !!expr.args.length;
 
 							var args = expr.args.map((arg, i) => {
-								return [recurse(expr.args[i], i == 0 ? left : Array(left.length).fill([])), ctr];
+								return [
+									recurse(
+										expr.args[i],
+										i == 0 ? left : Array(left.length).fill([]),
+										hyps
+									),
+									ctr
+								];
 							});
 
 							left = hasArgs ? Array(left.length).fill([]) : left;
@@ -261,17 +287,28 @@
 								getHtml(
 									left,
 									ktx(expr.reduced.toTeXString()),
-									`<td>&#x25BC;</td><td>${ktx(expr.subject.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
+									`<td>${DOWN}</td><td>${ktx(expr.subject.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
 								)
 							].join('');
 						case 'schemacall':
 							return getHtml(
 								left,
 								ktx(expr.expanded.toTeXString()),
-								`<td>&#x25C7;</td><td>${ktx(expr.toTeXString())}</td>`
+								`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString())}</td>`
+							);
+						case 'funcall':
+							return getHtml(
+								left,
+								ktx(expr.toTeXString()),
+								'<td colspan="2"><b class="red">not proved</b></td>'
 							);
 						case 'schema':
-							return recurse(expr.expr, left.concat([expr.params]));
+						case 'fun':
+							return recurse(
+								expr.expr,
+								left.concat([expr.params]),
+								hyps
+							);
 						case 'tee':
 							var start = ctr + 1;
 							var arr = [
@@ -293,7 +330,8 @@
 								),
 								recurse(
 									expr.right,
-									(expr.left.length == 0 ? left.concat([[]]) : Array(left.length + 1).fill([]))
+									(expr.left.length == 0 ? left.concat([[]]) : Array(left.length + 1).fill([])),
+									expr.left.map((e, i) => [e, start + i])
 								)
 							];
 							var end = ctr;
@@ -303,15 +341,9 @@
 								getHtml(
 									Array(left.length).fill([]),
 									ktx(expr.toTeXString()),
-									`<td>&#x25B2;</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td>`
+									`<td>${UP}</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td>`
 								)
 							].join('');
-						case 'funcall':
-							return getHtml(
-								left,
-								ktx(expr.toTeXString()),
-								'<td colspan="2"><b class="red">not proved</b></td>'
-							);
 						default:
 							console.error(expr.error(`Unknown type ${expr._type}`));
 
@@ -321,7 +353,7 @@
 								'<td colspan="2">?</td>'
 							);
 					}
-				})(expr, []);
+				})(expr, [], []);
 
 				html += '</table>';
 
@@ -346,7 +378,7 @@
 							? v.axiomatic
 								? ''
 								: '<p class="label"><b>proof explorer</b></p>'
-									+ `<p>${generateExpressionTree(v.expr)}</p>`
+									+ `<p>${getProofExplorer(v.expr)}</p>`
 							: ''
 					)
 

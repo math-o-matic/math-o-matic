@@ -201,7 +201,7 @@ schema syllE4(st p, st q, st r, st s) {
 
 "sequent calculus의 I 규칙 같은 것. 표현형식을 바꾸는 데 쓰이고 있다."
 schema id(st p) {
-	mpu[tt.Ipp(p)]
+	p |- p
 }
 
 "[$\bot]을 도입한다. falsum introduction이라 불러도 좋을 것이다."
