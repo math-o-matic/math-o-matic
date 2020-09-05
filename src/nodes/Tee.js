@@ -61,7 +61,9 @@ Tee.prototype.toIndentedString = function (indent) {
 };
 
 Tee.prototype.toTeXString = function (root) {
-	return `\\left({${this.left.map(e => e.toTeXString()).join(', ')} \\vdash ${this.right.toTeXString()}}\\right)`;
+	var expanded = ExpressionResolver.expandMetaAndFuncalls(this);
+	
+	return `\\left({${expanded.left.map(e => e.toTeXString()).join(', ')} \\vdash ${expanded.right.toTeXString()}}\\right)`;
 };
 
 module.exports = Tee;

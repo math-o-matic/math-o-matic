@@ -302,7 +302,7 @@
 								...arr,
 								getHtml(
 									Array(left.length).fill([]),
-									ktx(program.ExpressionResolver.expandMetaAndFuncalls(expr).toTeXString()),
+									ktx(expr.toTeXString()),
 									`<td>&#x25B2;</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td>`
 								)
 							].join('');
