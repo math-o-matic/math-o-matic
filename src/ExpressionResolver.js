@@ -62,10 +62,13 @@ ER.substitute = function (expr, map) {
 				throw Error('Parameter collision');
 
 			return new Schema({
+				axiomatic: expr.axiomatic,
 				name: null,
 				params: expr.params,
 				expr: ER.substitute(expr.expr, map)
 			});
+		case 'reduction':
+			return ER.substitute(expr.reduced, map);
 		default:
 			throw Error(`Unknown type ${expr._type}`);
 	}
@@ -153,16 +156,20 @@ ER.expandMeta = function (expr) {
 
 	switch (expr._type) {
 		case 'tee':
-			return expr;
+			var left = expr.left.map(ER.expandMeta);
+			var right = ER.expandMeta(expr.right);
+
+			return new Tee({left, right});
 		case 'schemacall':
 			var schema = ER.expandMeta(expr.schema),
 				args = expr.args;
 
 			return ER.expandMeta(ER.callMeta(schema, args));
 		case 'reduction':
-			return ER.expandMeta(ER.reduce(expr));
+			return ER.expandMeta(expr.reduced);
 		case 'schema':
 			return new Schema({
+				axiomatic: expr.axiomatic,
 				name: null,
 				params: expr.params,
 				expr: ER.expandMeta(expr.expr)
@@ -181,8 +188,8 @@ ER.expandMeta = function (expr) {
 ER.expandMetaAndFuncalls = function (expr) {
 	switch (expr._type) {
 		case 'tee':
-			var left = expr.left.map(ER.expand0Funcalls);
-			var right = ER.expand0Funcalls(expr.right);
+			var left = expr.left.map(ER.expandMetaAndFuncalls);
+			var right = ER.expandMetaAndFuncalls(expr.right);
 
 			return new Tee({left, right});
 		case 'schemacall':
@@ -194,6 +201,7 @@ ER.expandMetaAndFuncalls = function (expr) {
 			return ER.expandMetaAndFuncalls(expr.reduced);
 		case 'schema':
 			return new Schema({
+				axiomatic: expr.axiomatic,
 				name: null,
 				params: expr.params,
 				expr: ER.expandMetaAndFuncalls(expr.expr)
@@ -300,6 +308,10 @@ ER.equals0 = function (a, b) {
 };
 
 ER.equalsMeta = function (a, b) {
+	if (a.type._type == 'type' && b.type._type == 'type') {
+		return ER.equals0(a, b);
+	}
+
 	return (function recurse(a, b) {
 		if (a == b) return true;
 		

@@ -69,7 +69,7 @@ Reduction.prototype.toIndentedString = function (indent) {
 		args = args.join(', ');
 
 		return [
-			`${this.subject}[`,
+			`${this.subject.toIndentedString(indent)}[`,
 			args,
 			']'
 		].join('');
@@ -78,7 +78,7 @@ Reduction.prototype.toIndentedString = function (indent) {
 		args = args.join(',\n' + '\t'.repeat(indent + 1));
 
 		return [
-			`${this.subject}[`,
+			`${this.subject.toIndentedString(indent)}[`,
 			'\t' + args,
 			']'
 		].join('\n' + '\t'.repeat(indent));

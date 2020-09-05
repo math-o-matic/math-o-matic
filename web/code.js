@@ -326,9 +326,7 @@ axiomatic schema Vi(pr f) {
 }
 
 schema Vi_p(st p) {
-	// 에러난다
-	// p |- Vi((cls x) => { p })[(cls x) => { p }]
-	p |- V((cls x) => { p })
+	p |- Vi((cls x) => { p })[(cls x) => { p }]
 }
 
 schema Vi_c(st p) {

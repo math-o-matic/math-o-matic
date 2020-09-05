@@ -18,6 +18,7 @@ ExpressionResolver.init({Type, Typevar, Fun, Funcall, Tee, Ruleset, Schema, Sche
 function Program() {
 	this.scope = new Scope(null);
 	this.trace = new StackTrace();
+	this.ExpressionResolver = ExpressionResolver;
 }
 
 Program.prototype.feed = function (lines, nativeMap) {

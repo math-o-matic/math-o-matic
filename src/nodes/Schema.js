@@ -8,10 +8,14 @@ function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, sco
 
 	this.doc = doc;
 
+	if (typeof axiomatic != 'boolean') {
+		throw this.error('Assertion failed');
+	}
+
 	if (name !== null && typeof name != 'string')
 		throw this.error('Assertion failed');
 
-	if (!native && !['type', 'metatype'].includes(expr.type._type)) {
+	if (!native && expr.type._type != 'metatype') {
 		throw this.error('Assertion failed');
 	}
 
@@ -51,7 +55,7 @@ Schema.prototype.toIndentedString = function (indent) {
 		return `∫ ${this.name} <native>`;
 
 	return [
-		`∫ ${this.name || ''}(${this.params.join(', ')}) => {`,
+		`∫ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
 		'\t' + this.expr.toIndentedString(indent + 1),
 		'}'
 	].join('\n' + '\t'.repeat(indent));

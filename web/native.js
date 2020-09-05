@@ -157,6 +157,7 @@ native = {
 				});
 
 				var schema = new scope.Schema({
+					axiomatic: true,
 					name: 'tt.' + name,
 					params: typevars,
 					expr: tee
