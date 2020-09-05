@@ -109,17 +109,16 @@
 		</style>
 	</head>
 	<body>
-		<script type="text/m42kup">
-[=math-o-matic]
-
-[~(href=https://github.com/logico-philosophical/math-o-matic)repo] [&middot] [~(href=../docs/build/index.html)docs]
-		</script>
+		<h1>math-o-matic</h1>
+		<a href="https://github.com/logico-philosophical/math-o-matic">repo</a> &middot; <a href="../docs/build/index.html">docs</a>
 		<h2>목록</h2>
 		<p>이하의 내용은
 			<a href="./code.js">code.js</a> 및
 			<a href="./native.js">native.js</a>에 있는 코드를 렌더링 한 것입니다.</p>
 		<div id="all"></div>
 		<script>
+			(() => {
+
 			$ = (q, n) => (n || document).querySelector(q);
 			$$ = (q, n) => (n || document).querySelectorAll(q);
 
@@ -137,14 +136,6 @@
 			    '&': '&amp;', '<': '&lt;', '>': '&gt;',
 			    '"': '&quot;', "'": '&#39;'
 			})[m]);
-
-			[].forEach.call($$('script[type="text/m42kup"]'), $script => {
-				var $div = document.createElement('div');
-				$div.innerHTML = m42kup.render($script.text);
-				$script.parentNode.insertBefore($div, $script);
-			});
-
-			(() => {
 
 			var start, end;
 
