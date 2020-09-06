@@ -23,7 +23,7 @@ $!<prec=596>#1<<\land>>#2$
 st A(st p, st q);
 
 "or (TTTF)."
-$!<prec=598>#1<<\lor>>#2$
+$!<prec=596>#1<<\lor>>#2$
 st O(st p, st q);
 
 "implies (TFTT)."
@@ -962,7 +962,7 @@ schema eq_transitive_13(cls x, cls y, cls z) {
 }
 
 "uniqueness quantification."
-$!<prec=550><<\exists!>>#1$
+$!<prec=249><<\exists!>>#1$
 st Q(pr f) {
 	X((cls x) => {
 		V((cls y) => {
@@ -1109,7 +1109,7 @@ schema setbuilder_def_set(pr f) {
 }
 
 "[$\cap]."
-$!<prec=250>#1<<\cap>>#2$
+$!<prec=300>#1<<\cap>>#2$
 cls cap(cls x, cls y) {
 	setbuilder((cls z) => {
 		A(in(z, x), in(z, y))
@@ -1168,7 +1168,7 @@ schema cap_commutative_2(cls x, cls y) {
 }
 
 "[$\cup]."
-$!<prec=250>#1<<\cup>>#2$
+$!<prec=300>#1<<\cup>>#2$
 cls cup(cls x, cls y) {
 	setbuilder((cls z) => {
 		O(in(z, x), in(z, y))

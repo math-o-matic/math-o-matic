@@ -15,6 +15,10 @@ module.exports = {
 			file: 'theory'
 		},
 		{
+			name: '우선순위',
+			file: 'precedence'
+		},
+		{
 			name: 'ExpressionResolver의 동작방식',
 			file: 'expression-resolver'
 		}

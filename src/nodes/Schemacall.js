@@ -75,7 +75,7 @@ Schemacall.prototype.toTeXString = function (prec, root) {
 	return (
 		this.schema.name
 			? `\\href{#schema-${this.schema.name}}{\\textsf{${this.escapeTeX(this.schema.name)}}}`
-			: this.schema.toTeXString(true)
+			: this.schema.toTeXString(false)
 	) + `(${this.args.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')})`;
 };
 

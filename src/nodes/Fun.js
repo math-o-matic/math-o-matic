@@ -93,13 +93,13 @@ Fun.prototype.toTeXString = function (prec, root) {
 	if (!this.expr)
 		return this.funcallToTeXString(this.params, prec);
 
-	return this.funcallToTeXString(this.params, prec)
+	return this.funcallToTeXString(this.params, this.PREC_COLONEQQ)
 			+ `\\coloneqq ${this.expr.toTeXString(this.PREC_COLONEQQ)}`;
 };
 
 Fun.prototype.funcallToTeXString = function (args, prec) {
 	args = args.map(arg => {
-		return arg.toTeXString(this.precedence);
+		return arg.toTeXString(this.tex ? this.precedence : this.PREC_COMMA);
 	});
 
 	if (this.tex) {
@@ -107,7 +107,7 @@ Fun.prototype.funcallToTeXString = function (args, prec) {
 	}
 
 	return `${!this.name
-			? this.toTeXString(prec)
+			? this.toTeXString(false)
 			: `\\href{#def-${this.name}}{${this.name.length == 1 ? this.escapeTeX(this.name) : `\\mathrm{${this.escapeTeX(this.name)}}`}}`}`
 		+ `(${args.join(', ')})`;
 };
