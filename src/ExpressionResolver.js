@@ -308,6 +308,14 @@ ER.equals0 = function (a, b) {
 };
 
 ER.equalsMeta = function (a, b) {
+	if (a._type == 'reduction') {
+		return ER.equalsMeta(a.reduced, b);
+	}
+
+	if (b._type == 'reduction') {
+		return ER.equalsMeta(a, b.reduced);
+	}
+
 	if (a.type._type == 'type' && b.type._type == 'type') {
 		return ER.equals0(a, b);
 	}

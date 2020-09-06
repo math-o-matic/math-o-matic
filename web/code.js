@@ -96,7 +96,7 @@ schema Ai(st p, st q) {
 
 "연언 도입 2번."
 schema A3i(st p, st q, st r) {
-	Ai(p, q) ~ Ai(A(p, q), r)
+	p, q, r |- Ai(A(p, q), r)[Ai(p, q)[p, q], r]
 }
 
 "연언 소거(conjunction elimination) 1."
@@ -224,12 +224,12 @@ schema mt(st p, st q) {
 	mpu[contrapose(p, q)]
 }
 
-schema swap_c(st p, st q, st r) {
-	tt.IIpIqrIqIpr(p, q, r)
+schema swap(st p, st q, st r) {
+	I(p, I(q, r)) |- (cp[q |- ((cp[p |- mp(q, r)[q, mp(p, I(q, r))[p, I(p, I(q, r))]]])[])])[]
 }
 
-schema swap(st p, st q, st r) {
-	mpu[swap_c(p, q, r)]
+schema swap_c(st p, st q, st r) {
+	cp[swap(p, q, r)]
 }
 
 schema swap_m(st p, st q, st r) {

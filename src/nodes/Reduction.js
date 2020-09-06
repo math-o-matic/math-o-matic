@@ -40,7 +40,15 @@ function Reduction({subject, args}, scope, trace) {
 
 		for (var i = 0; i < tee.left.length; i++) {
 			if (!ExpressionResolver.equalsMeta(tee.left[i], args[i])) {
-				throw this.error('Assertion failed');
+				throw this.error(`LHS #${i + 1} failed to match:
+
+--- EXPECTED ---
+${tee.left[i]}
+----------------
+
+--- RECEIVED ---
+${args[i]}
+----------------`);
 			}
 		}
 
