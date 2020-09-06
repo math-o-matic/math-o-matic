@@ -148,7 +148,7 @@ ER.expand0Funcalls = function (expr) {
 	}
 };
 
-// expand0은 하지 않는 듯하다.
+// expand0은 하지 않는다.
 ER.expandMeta = function (expr) {
 	if (expr.native) {
 		return expr;
@@ -184,7 +184,7 @@ ER.expandMeta = function (expr) {
 	}
 };
 
-// expr0의 funcall까지 풀음.
+// expr0의 이름 없는 funcall까지 풀음.
 ER.expandMetaAndFuncalls = function (expr) {
 	switch (expr._type) {
 		case 'tee':
@@ -222,6 +222,8 @@ ER.expandMetaAndFuncalls = function (expr) {
 ER.equals0 = function (a, b) {
 	function recurse(a, b, depth) {
 		if (a == b) return true;
+
+		if (!a.type.equals(b.type)) return false;
 
 		if (a._type == 'funcall' && b._type == 'funcall') {
 			if (a.fun._type == 'funcall') return recurseWrap(
@@ -271,8 +273,6 @@ ER.equals0 = function (a, b) {
 			);
 		}
 
-		if (!a.type.equals(b.type)) return false;
-
 		if (a.type.isFunctional) {
 			var placeholders = Array(a.type.resolve().from.length).fill().map((_, i) =>
 				new Typevar({
@@ -294,15 +294,17 @@ ER.equals0 = function (a, b) {
 			);
 		}
 
-		return a == b;
+		return false;
 	}
 
-	function recurseWrap(a, b, depth) {
-		// console.log(`${depth}\n${a}\n\n${b}`);
-		var ret = recurse(a, b, depth);
-		// console.log(`${depth}\n${a}\n\n${b}\n${ret}`);
-		return ret;
-	}
+	var recurseWrap = recurse;
+
+	// function recurseWrap(a, b, depth) {
+	// 	console.log(`${depth}\n${a}\n\n${b}`);
+	// 	var ret = recurse(a, b, depth);
+	// 	console.log(`${depth}\n${a}\n\n${b}\n${ret}`);
+	// 	return ret;
+	// }
 
 	return recurseWrap(a, b, 0);
 };
@@ -370,37 +372,6 @@ ER.equalsMeta = function (a, b) {
 	})(a, b);
 };
 
-ER.reduce = function (expr) {
-	if (expr._type != 'reduction') {
-		throw Error('Illegal type');
-	}
-
-	var tee = ER.expandMeta(expr.subject);
-
-	if (tee.native) {
-		return expr.reduced;
-	}
-
-	if (tee._type != 'tee') {
-		throw Error('no');
-	}
-
-	var left = tee.left;
-	var args = expr.args;
-
-	if (left.length != args.length) {
-		throw Error('Illegal argument length');
-	}
-
-	for (var i = 0; i < left.length; i++) {
-		if (!ER.equalsMeta(left[i], args[i])) {
-			throw Error(`Argument matching failed (expected ${left[i]}): ${ER.expandMeta(args[i])}`);
-		}
-	}
-
-	return tee.right;
-};
-
 ER.chain = function (tees) {
 	return ER.expandMetaAndFuncalls(tees.reduceRight((r, l) => {
 		for (var i = 0; i < r.left.length; i++) {
@@ -420,10 +391,11 @@ ER.chain = function (tees) {
 
 --- LEFT ---
 ${l}
+------------
+
 --- RIGHT ---
 ${r}
---- END ---
-`);
+-------------`);
 	}));
 };
 
