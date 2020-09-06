@@ -225,7 +225,15 @@ schema mt(st p, st q) {
 }
 
 schema swap(st p, st q, st r) {
-	I(p, I(q, r)) |- (cp[q |- ((cp[p |- mp(q, r)[q, mp(p, I(q, r))[p, I(p, I(q, r))]]])[])])[]
+	I(p, I(q, r)) |- cp[
+		q |- cp[
+			p |- mp(q, r)[
+				q, mp(p, I(q, r))[
+					p, I(p, I(q, r))
+				]
+			]
+		][]
+	][]
 }
 
 schema swap_c(st p, st q, st r) {

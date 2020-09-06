@@ -175,7 +175,8 @@ tee =
 	}
 
 // var[...]
-// schemacall[...]
+// foo(...)[...]
+// foo[...][...]
 // (metaexpr)[...]
 reduction =
 	subject:(
@@ -195,14 +196,25 @@ reduction =
 		)?
 		"]"
 		{return a || []}
-	)
+	)+
 	{
-		return {
+		var ret = {
 			_type: 'reduction',
 			subject,
-			args,
+			args: args[0],
 			location: location()
+		};
+
+		for (var i = 1; i < args.length; i++) {
+			ret = {
+				_type: 'reduction',
+				subject: ret,
+				args: args[i],
+				location: location()
+			};
 		}
+
+		return ret;
 	}
 
 // var(...)
