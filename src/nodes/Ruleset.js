@@ -29,7 +29,7 @@ Ruleset.prototype.toIndentedString = function (indent) {
 		+ (this.native ? ' <native>' : ' <error>');
 };
 
-Ruleset.prototype.toTeXString = function (root) {
+Ruleset.prototype.toTeXString = function (prec, root) {
 	return `\\href{#ruleset-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
 		+ (this.native ? '\\ (\\textrm{native})' : '\\ (\\textit{error})');
 };

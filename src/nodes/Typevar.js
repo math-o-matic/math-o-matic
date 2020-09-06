@@ -33,9 +33,9 @@ Typevar.prototype.toIndentedString = function (indent, root) {
 	return `${root ? this.type + ' ' : ''}${this.name}<${this._id}>`;
 };
 
-Typevar.prototype.toTeXString = function (root) {
+Typevar.prototype.toTeXString = function (prec, root) {
 	if (this.tex) {
-		return this.makeTeX('def-' + this.name);
+		return this.makeTeX('def-' + this.name, [], prec);
 	}
 
 	if (this.name.length == 1) {

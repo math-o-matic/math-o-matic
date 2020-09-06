@@ -209,7 +209,7 @@ ER.expandMetaAndFuncalls = function (expr) {
 		case 'funcall':
 		case 'fun':
 		case 'typevar':
-			return expr;
+			return ER.expand0Funcalls(expr);
 		default:
 			console.log(expr);
 			throw Error('Unknown metaexpr');

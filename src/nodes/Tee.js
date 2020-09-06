@@ -43,6 +43,7 @@ function Tee({left, right}, scope, trace) {
 Tee.prototype = Object.create(Node.prototype);
 Tee.prototype.constructor = Tee;
 Tee.prototype._type = 'tee';
+Tee.prototype.precedence = Node.prototype.PREC_COMMA;
 
 Tee.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -60,10 +61,14 @@ Tee.prototype.toIndentedString = function (indent) {
 	].join('\n' + '\t'.repeat(indent));
 };
 
-Tee.prototype.toTeXString = function (root) {
+Tee.prototype.toTeXString = function (prec, root) {
 	var expanded = ExpressionResolver.expandMetaAndFuncalls(this);
-	
-	return `\\left({${expanded.left.map(e => e.toTeXString()).join(', ')} \\vdash ${expanded.right.toTeXString()}}\\right)`;
+
+	return [
+		(this.shouldConsolidate(prec) ? '\\left(' : ''),
+		`{${expanded.left.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')} \\vdash ${expanded.right.toTeXString(this.PREC_COMMA)}}`,
+		(this.shouldConsolidate(prec) ? '\\right)' : '')
+	].join('');
 };
 
 module.exports = Tee;

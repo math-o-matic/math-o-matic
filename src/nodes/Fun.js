@@ -9,7 +9,16 @@ function Fun({name, type, params, expr, doc, tex}, scope, trace) {
 	Node.call(this, trace);
 
 	this.doc = doc;
-	this.tex = tex;
+
+	if (tex) {
+		var {precedence, code} = this.parseTeX(tex);
+
+		this.precedence = precedence;
+		this.tex = code;
+	} else {
+		this.precedence = false;
+		this.tex = false;
+	}
 
 	if (!name && !expr)
 		throw this.error('Anonymous fun cannot be primitive');
@@ -63,38 +72,42 @@ Fun.prototype.toIndentedString = function (indent) {
 	].join('\n' + '\t'.repeat(indent));
 };
 
-Fun.prototype.toTeXString = function (root) {
+Fun.prototype.toTeXString = function (prec, root) {
 	if (!this.name) {
-		return '\\left('
-			+ (
+		this.precedence = this.PREC_FUNEXPR;
+		return [
+			(this.shouldConsolidate(prec) ? '\\left(' : ''),
+			(
 				this.params.length == 1
-				? this.params[0].toTeXString()
-				: `\\left(${this.params.map(e => e.toTeXString()).join(', ')}\\right)`
-			)
-			+ `\\mapsto ${this.expr.toTeXString()}\\right)`;
+				? this.params[0].toTeXString(false)
+				: `\\left(${this.params.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}\\right)`
+			),
+			`\\mapsto ${this.expr.toTeXString(false)}`,
+			(this.shouldConsolidate(prec) ? '\\right)' : '')
+		].join('');
 	}
 
 	if (!root)
 		return `\\href{#def-${this.name}}\\mathrm{${this.escapeTeX(this.name)}}`;
 
 	if (!this.expr)
-		return this.funcallToTeXString(this.params);
+		return this.funcallToTeXString(this.params, prec);
 
-	return this.funcallToTeXString(this.params)
-			+ `\\coloneqq ${this.expr.toTeXString()}`;
+	return this.funcallToTeXString(this.params, prec)
+			+ `\\coloneqq ${this.expr.toTeXString(this.PREC_COLONEQQ)}`;
 };
 
-Fun.prototype.funcallToTeXString = function (args) {
+Fun.prototype.funcallToTeXString = function (args, prec) {
 	args = args.map(arg => {
-		return arg.toTeXString();
+		return arg.toTeXString(this.precedence);
 	});
 
 	if (this.tex) {
-		return this.makeTeX('def-' + this.name, args);
+		return this.makeTeX('def-' + this.name, args, prec);
 	}
 
 	return `${!this.name
-			? this.toTeXString()
+			? this.toTeXString(prec)
 			: `\\href{#def-${this.name}}{${this.name.length == 1 ? this.escapeTeX(this.name) : `\\mathrm{${this.escapeTeX(this.name)}}`}}`}`
 		+ `(${args.join(', ')})`;
 };

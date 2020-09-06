@@ -71,12 +71,12 @@ Schemacall.prototype.toIndentedString = function (indent) {
 	}
 };
 
-Schemacall.prototype.toTeXString = function (root) {
+Schemacall.prototype.toTeXString = function (prec, root) {
 	return (
 		this.schema.name
 			? `\\href{#schema-${this.schema.name}}{\\textsf{${this.escapeTeX(this.schema.name)}}}`
-			: this.schema.toTeXString()
-	) + `(${this.args.map(e => e.toTeXString()).join(', ')})`;
+			: this.schema.toTeXString(true)
+	) + `(${this.args.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')})`;
 };
 
 module.exports = Schemacall;

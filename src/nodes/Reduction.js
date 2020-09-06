@@ -93,8 +93,8 @@ Reduction.prototype.toIndentedString = function (indent) {
 	}
 };
 
-Reduction.prototype.toTeXString = function (root) {
-	return `${this.subject.toTeXString()}[${this.args.map(e => e.toTeXString()).join(', ')}]`;
+Reduction.prototype.toTeXString = function (prec, root) {
+	return `${this.subject.toTeXString(false)}[${this.args.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}]`;
 };
 
 module.exports = Reduction;

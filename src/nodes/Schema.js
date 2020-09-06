@@ -61,15 +61,19 @@ Schema.prototype.toIndentedString = function (indent) {
 	].join('\n' + '\t'.repeat(indent));
 };
 
-Schema.prototype.toTeXString = function (root) {
+Schema.prototype.toTeXString = function (prec, root) {
 	if (!this.name) {
-		return '\\left('
-			+ (
+		this.precedence = this.PREC_FUNEXPR;
+		return [
+			(this.shouldConsolidate(prec) ? '\\left(' : ''),
+			(
 				this.params.length == 1
 				? this.params[0].toTeXString()
-				: `\\left(${this.params.map(e => e.toTeXString()).join(', ')}\\right)`
-			)
-			+ `\\mapsto ${this.expr.toTeXString()}\\right)`;
+				: `\\left(${this.params.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}\\right)`
+			),
+			`\\mapsto ${this.expr.toTeXString(false)}`,
+			(this.shouldConsolidate(prec) ? '\\right)' : '')
+		].join('');
 	}
 
 	if (!root)
@@ -79,8 +83,8 @@ Schema.prototype.toTeXString = function (root) {
 		return `\\href{#schema-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
 			+ '\\ (\\textrm{native})';
 
-	return `\\href{#schema-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString()).join(', ')}):`
-				+ '\\\\\\quad' + this.expanded.toTeXString();
+	return `\\href{#schema-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}):`
+				+ '\\\\\\quad' + this.expanded.toTeXString(true);
 };
 
 module.exports = Schema;

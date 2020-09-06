@@ -15,23 +15,23 @@ $<<\bot>>$
 st F;
 
 "not (FT)."
-$\left(<<\neg>>#1\right)$
+$!<prec=250><<\neg>>#1$
 st N(st p);
 
 "and (TFFF)."
-$\left(#1<<\land>>#2\right)$
+$!<prec=596>#1<<\land>>#2$
 st A(st p, st q);
 
 "or (TTTF)."
-$\left(#1<<\lor>>#2\right)$
+$!<prec=598>#1<<\lor>>#2$
 st O(st p, st q);
 
 "implies (TFTT)."
-$\left(#1<<\to>>#2\right)$
+$!<prec=598>#1<<\to>>#2$
 st I(st p, st q);
 
 "iff (TFFT)."
-$\left(#1<<\leftrightarrow>>#2\right)$
+$!<prec=599>#1<<\leftrightarrow>>#2$
 st E(st p, st q);
 
 "진리표를 만들어 봤을 때 값이 항상 참인 명제 [$p]에 대하여 [$\vdash p]를 포함한다. 어떤 규칙에 접근하려면 Polish notation으로 된 이름을 만들어야 한다.
@@ -291,11 +291,11 @@ pr Nf(pr f) {
 }
 
 "보편 양화(universal quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다]."
-$\left(<<\forall>>#1\right)$
+$!<prec=249><<\forall>>#1$
 st V(pr f);
 
 "pr2를 위한 보편 양화."
-$\left(<<\forall>>#1\right)$
+$!<prec=249><<\forall>>#1$
 st V2(pr2 f) {
 	V((cls x) => {
 		V((cls y) => {
@@ -305,7 +305,7 @@ st V2(pr2 f) {
 }
 
 "pr3을 위한 보편 양화."
-$\left(<<\forall>>#1\right)$
+$!<prec=249><<\forall>>#1$
 st V3(pr3 f) {
 	V((cls x) => {
 		V((cls y) => {
@@ -317,13 +317,13 @@ st V3(pr3 f) {
 }
 
 "존재 양화(existential quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받으며 V에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다]."
-$\left(<<\exists>>#1\right)$
+$!<prec=249><<\exists>>#1$
 st X(pr f) {
 	N(V((cls x) => { N(f(x)) }))
 }
 
 "pr2를 위한 존재 양화. V2에 의존한다."
-$\left(<<\exists>>#1\right)$
+$!<prec=249><<\exists>>#1$
 st X2(pr2 f) {
 	N(V2((cls x, cls y) => { N(f(x, y)) }))
 }
@@ -645,17 +645,17 @@ schema mpVE(pr f, pr g) {
 ############################
 
 "집합론에서 정의하는 in 연산자."
-$\left(#1<<\in>>#2\right)$
+$!<prec=450>#1<<\in>>#2$
 st in(cls x, cls y);
 
 "not in 연산자."
-$\left(#1<<\notin>>#2\right)$
+$!<prec=450>#1<<\notin>>#2$
 st Nin(cls x, cls y) {
 	N(in(x, y))
 }
 
 "어떤 class 내에서의 forall."
-$\left(<<\forall>>_{#1}#2\right)$
+$!<prec=550><<\forall>>_{#1}#2$
 st Vin(cls a, pr f) {
 	V((cls z) => {
 		I(
@@ -685,7 +685,7 @@ schema VVin(cls a, pr2 f) {
 }
 
 "어떤 class 내에서의 exists. Vin과 달리 and로 연결된다."
-$\left(<<\exists>>_{#1}#2\right)$
+$!<prec=550><<\exists>>_{#1}#2$
 st Xin(cls a, pr f) {
 	X((cls z) => {
 		A(
@@ -696,7 +696,7 @@ st Xin(cls a, pr f) {
 }
 
 "어떤 class가 집합이라는 것. 어떤 class의 원소면 된다."
-$\left(<<\mathop\mathrm{set}>> #1\right)$
+$!<prec=450><<\mathop\mathrm{set}>> #1$
 st set(cls x) {
 	X((cls y) => {
 		in(x, y)
@@ -720,7 +720,7 @@ schema set_Xi_O(cls x, cls y, cls z) {
 }
 
 "[$\subseteq]."
-$\left(#1<<\subseteq>>#2\right)$
+$!<prec=350>#1<<\subseteq>>#2$
 st subseteq(cls x, cls y) {
 	V((cls z) => {
 		I(
@@ -731,7 +731,7 @@ st subseteq(cls x, cls y) {
 }
 
 "[$=] 연산자. [$\in]에 의존한다."
-$\left(#1<<=>>#2\right)$
+$!<prec=350>#1<<=>>#2$
 st eq(cls x, cls y) {
 	A(
 		V((cls z) => {
@@ -962,7 +962,7 @@ schema eq_transitive_13(cls x, cls y, cls z) {
 }
 
 "uniqueness quantification."
-$\left(<<\exists!>>#1\right)$
+$!<prec=550><<\exists!>>#1$
 st Q(pr f) {
 	X((cls x) => {
 		V((cls y) => {
@@ -1109,7 +1109,7 @@ schema setbuilder_def_set(pr f) {
 }
 
 "[$\cap]."
-$\left(#1<<\cap>>#2\right)$
+$!<prec=250>#1<<\cap>>#2$
 cls cap(cls x, cls y) {
 	setbuilder((cls z) => {
 		A(in(z, x), in(z, y))
@@ -1168,7 +1168,7 @@ schema cap_commutative_2(cls x, cls y) {
 }
 
 "[$\cup]."
-$\left(#1<<\cup>>#2\right)$
+$!<prec=250>#1<<\cup>>#2$
 cls cup(cls x, cls y) {
 	setbuilder((cls z) => {
 		O(in(z, x), in(z, y))
@@ -1440,7 +1440,7 @@ schema self_in_power_Vi(cls x) {
 }
 
 "singleton class."
-$\{<<=>>#1\}$
+$\left\{<<=>>#1\right\}$
 cls singleton(cls x) {
 	setbuilder((cls z) => {
 		eq(z, x)

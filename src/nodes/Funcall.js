@@ -72,21 +72,19 @@ Funcall.prototype.toIndentedString = function (indent) {
 	}
 };
 
-Funcall.prototype.toTeXString = function (root) {
+Funcall.prototype.toTeXString = function (prec, root) {
 	if (this.fun instanceof Fun)
-		return this.fun.funcallToTeXString(this.args);
+		return this.fun.funcallToTeXString(this.args, prec);
 
 	var args = this.args.map(arg => {
-		return arg.toTeXString();
+		return arg.toTeXString(this.PREC_COMMA);
 	});
 
-	return `${!this.fun.name
-			? this.fun.toTeXString()
-			: this.fun._type == 'typevar'
-				? this.fun.toTeXString()
-				: this.fun.name.length == 1
-					? this.escapeTeX(this.fun.name)
-					: `\\mathrm{${this.escapeTeX(this.fun.name)}}`}`
+	return `${!this.fun.name || this.fun._type == 'typevar'
+			? this.fun.toTeXString(false)
+			: this.fun.name.length == 1
+				? this.escapeTeX(this.fun.name)
+				: `\\mathrm{${this.escapeTeX(this.fun.name)}}`}`
 		+ `(${args.join(', ')})`;
 };
 

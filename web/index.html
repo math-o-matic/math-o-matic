@@ -135,7 +135,17 @@
 				}
 			}
 
-			var ktx = s => katex.renderToString(s, katexOpts);
+			var ktx = s => {
+				var ret = '';
+				try {
+					ret = katex.renderToString(s, katexOpts);
+				} catch (e) {
+					console.error(`Error parsing ${s}`);
+					throw Error(e);
+				}
+
+				return ret;
+			}
 
 			var escapeHtml = s => (s + '').replace(/[&<>"']/g, m => ({
 			    '&': '&amp;', '<': '&lt;', '>': '&gt;',
@@ -182,7 +192,7 @@
 					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>${
 						(v.isBaseType ? 'base ' : '')
 					}type</b> ${k}</a></p>`
-					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
+					+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
 
 					+ '<p class="label"><b>description</b></p>'
 					+ (
@@ -201,7 +211,7 @@
 
 				r = `<div class="block">`
 					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
-					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
+					+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
 
 					+ '<p class="label"><b>description</b></p>'
 					+ (
@@ -255,7 +265,7 @@
 				function getHtml(left, h1, h2, bbb, noctr) {
 					var padding = left.length;
 
-					var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString())).join(', ')}</td>`).join('');
+					var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString(true))).join(', ')}</td>`).join('');
 
 					return `<tr><th>${noctr ? '' : ++ctr}</th>${htmlLeft}<td ${bbb ? 'class="bbb"' : ''} colspan="${ncols-padding}">${h1}</td>${h2}</tr>`;
 				}
@@ -278,7 +288,7 @@
 					if (hypno) {
 						return getHtml(
 							left,
-							ktx(expr.toTeXString()),
+							ktx(expr.toTeXString(true)),
 							`<td>${DIAMOND}</td><td>[<b>${hypno}</b>]</td>`
 						);
 					}
@@ -320,8 +330,8 @@
 									args.map(e => e[0]).filter(e => e).join(''),
 									getHtml(
 										left,
-										ktx(expr.reduced.toTeXString()),
-										`<td>${DOWN}</td><td>${ktx(expr.subject.toTeXString())} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
+										ktx(expr.reduced.toTeXString(true)),
+										`<td>${DOWN}</td><td>${ktx(expr.subject.toTeXString(true))} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
 									)
 								].join('');
 							}
@@ -354,20 +364,20 @@
 								subject[0] || '',
 								getHtml(
 									left,
-									ktx(expr.reduced.toTeXString()),
+									ktx(expr.reduced.toTeXString(true)),
 									`<td>${DOWN}</td><td><b>${subject[1]}</b> [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
 								)
 							].join('');
 						case 'schemacall':
 							return getHtml(
 								left,
-								ktx(expr.expanded.toTeXString()),
-								`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString())}</td>`
+								ktx(expr.expanded.toTeXString(true)),
+								`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
 							);
 						case 'funcall':
 							return getHtml(
 								left,
-								ktx(expr.toTeXString()),
+								ktx(expr.toTeXString(true)),
 								'<td colspan="2"><b class="red">not proved</b></td>'
 							);
 						case 'schema':
@@ -384,7 +394,7 @@
 									expr.left.length
 										? expr.left.map((e, i, a) => getHtml(
 											(i == 0 ? left.concat([[]]) : Array(left.length + 1).fill([])),
-											ktx(e.toTeXString()),
+											ktx(e.toTeXString(true)),
 											'<td colspan="2">assumption</td>',
 											i == a.length - 1
 										))
@@ -408,7 +418,7 @@
 								...arr,
 								getHtml(
 									Array(left.length).fill([]),
-									ktx(expr.toTeXString()),
+									ktx(expr.toTeXString(true)),
 									`<td>${UP}</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td>`
 								)
 							].join('');
@@ -417,8 +427,8 @@
 
 							return getHtml(
 								left,
-								ktx(expr.toTeXString()),
-								'<td colspan="2">?</td>'
+								ktx(expr.toTeXString(true)),
+								'<td colspan="2">???</td>'
 							);
 					}
 				})(expr, [], []);
@@ -436,7 +446,7 @@
 						(v.axiomatic ? 'axiomatic ' : '')
 						+ (v.native ? 'native ': '')
 					}schema</b> ${k}</a>${v.native ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
-					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
+					+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
 					
 
 					// + `<pre>${escapeHtml(v)}</pre>`
@@ -470,7 +480,7 @@
 						(v.axiomatic ? 'axiomatic ' : '')
 						+ (v.native ? 'native ' : '')
 					}ruleset</b> ${k}</a></p>`
-					+ `<div class="math">${ktx(v.toTeXString(true))}</div>`
+					+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
 
 					+ (
 						v.axiomatic
