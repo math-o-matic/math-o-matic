@@ -332,6 +332,10 @@ ER.equalsMeta = function (a, b) {
 		return ER.equals0(a, b);
 	}
 
+	if (a.type._type != b.type._type) {
+		return false;
+	}
+
 	return (function recurse(a, b) {
 		if (a == b) return true;
 		
