@@ -696,7 +696,7 @@ st Xin(cls a, pr f) {
 }
 
 "어떤 class가 집합이라는 것. 어떤 class의 원소면 된다."
-$!<prec=248><<\mathop\mathrm{set}>> #1$
+$\left(<<\mathop\mathrm{set}>> #1\right)$
 st set(cls x) {
 	X((cls y) => {
 		in(x, y)
@@ -1621,9 +1621,9 @@ axiomatic schema infinity() {
 	})
 }
 
-############################
-########## GRAPHS ##########
-############################
+###########################
+######## RELATIONS ########
+###########################
 
 "ordered pair."
 $\left(#1<<,>>#2\right)$
@@ -1643,136 +1643,7 @@ axiomatic schema v2_set_def(cls x, cls y) {
 	)
 }
 
-"어떤 class가 graph다.
-
-[$G]가 그래프라 함은, [$z\in G]인 임의의 [$z]에 대하여, [$z = (a, b)]인 [$a, b]가 존재한다는 뜻이다.
-
-graph 개념은 모 집합론 교재에 나오는 것인데 통용되는지는 모르겠다."
-$\left(<<\mathop\mathrm{graph}>> #1\right)$
-st graph(cls x) {
-	Vin(x, (cls z) => {
-		X2((cls a, cls b) => {
-			eq(z, v2(a, b))
-		})
-	})
-}
-
-schema graph_forall_1_1(cls x, cls z, cls a, cls b) {
-	eq_Ae2_Ve_Ee1_c_swap(z, v2(a, b), x)
-}
-
-"graph를 위한 forall.
-
-[$G]가 그래프일 때, 임의의 [$(a, b)\in G]에 대해 [$f(a, b)]이면, 임의의 [$z\in G]에 대해 [$fz]이다."
-schema graph_forall(pr f, cls x) {
-	graph(x) |- I(
-		V2((cls a, cls b) => {
-			I(
-				in(v2(a, b), x),
-				f(v2(a, b))
-			)
-		}),
-		Vin(x, f)
-	)
-}
-
-"graph의 역(inverse)."
-$\left({#1}^{<<-1>>}\right)$
-cls graph_inverse(cls x);
-
-"graph_inverse의 defining property.
-
-[$G]가 graph일 때, [$G^{-1} = \{(b, a): (a, b)\in G\}]라는 뜻인데 더 엄밀하게
-[$$\{z: (\exists a)(\exists b)(z = (b, a) \land (a, b) \in G)\}]
-라고 표현되었다."
-axiomatic schema graph_inverse_def(cls x) {
-	graph(x) |- eq(
-		graph_inverse(x),
-		setbuilder((cls z) => {
-			X2((cls a, cls b) => {
-				A(
-					eq(z, v2(b, a)),
-					in(v2(a, b), x)
-				)
-			})
-		})
-	)
-}
-
-"graph의 합성(composition)."
-$\left(#1 <<\circ>> #2\right)$
-cls graph_composite(cls x, cls y);
-
-"graph_composite의 defining property.
-
-[$G], [$H]가 graph일 때,
-[$$G\circ H = \{(a, c): (\exists b)((a, b)\in H \land (b, c)\in G)\}]
-라는 뜻인데 더 엄밀하게
-[$$\{z: (\exists a)(\exists c)(z=(a, c) \land (\exists b)((a, b)\in H \land (b, c)\in G))\}]
-라고 표현되었다."
-axiomatic schema graph_composite_def(cls x, cls y) {
-	graph(x), graph(y) |- eq(
-		graph_composite(x, y),
-		setbuilder((cls z) => {
-			X2((cls a, cls c) => {
-				A(
-					eq(z, v2(a, c)),
-					X((cls b) => {
-						A(
-							in(v2(a, b), y),
-							in(v2(b, c), x)
-						)
-					})
-				)
-			})
-		})
-	)
-}
-
-schema graph_composite_associative(cls x, cls y, cls z) {
-	graph(x), graph(y), graph(z) |- eq(
-		graph_composite(graph_composite(x, y), z),
-		graph_composite(x, graph_composite(y, z))
-	)
-}
-
-"graph의 정의역(domain)."
-$\left(<<\operatorname{dom}>>#1\right)$
-cls graph_dom(cls x);
-
-"graph_dom의 defining property.
-
-[$G]가 graph일 때, [$\{a: (\exists b)((a, b)\in G)\}]라는 뜻이다."
-axiomatic schema graph_dom_def(cls x) {
-	graph(x) |- eq(
-		graph_dom(x),
-		setbuilder((cls a) => {
-			X((cls b) => {
-				in(v2(a, b), x)
-			})
-		})
-	)
-}
-
-"graph의 치역(image)."
-$\left(<<\operatorname{im}>>#1\right)$
-cls graph_im(cls x);
-
-"graph_im의 defining property.
-
-[$G]가 graph일 때, [$\{b: (\exists a)((a, b)\in G)\}]라는 뜻이다."
-axiomatic schema graph_im_def(cls x) {
-	graph(x) |- eq(
-		graph_im(x),
-		setbuilder((cls b) => {
-			X((cls a) => {
-				in(v2(a, b), x)
-			})
-		})
-	)
-}
-
-"cartesian product."
+"곱집합(cartesian product)."
 $\left(#1<<\times>>#2\right)$
 cls cartesian(cls x, cls y) {
 	setbuilder((cls z) => {
@@ -1810,8 +1681,131 @@ schema cartesian_def(cls x, cls y) {
 	}))
 }
 
-schema cartesian_is_graph(cls x, cls y) {
-	|- graph(cartesian(x, y))
+"어떤 class가 이항관계이다.
+
+[$R]이 이항관계라 함은 [$R]의 임의 원소가 순서쌍이라는 뜻이다. 정의역(domain)과 치역(image)에 관한 정보는 담지 않도록 한다."
+$\left(<<\mathop\mathrm{relation}>> #1\right)$
+st rel(cls x) {
+	Vin(x, (cls z) => {
+		X2((cls a, cls b) => {
+			eq(z, v2(a, b))
+		})
+	})
+}
+
+schema cartesian_is_rel(cls x, cls y) {
+	|- rel(cartesian(x, y))
+}
+
+schema rel_V_1_1(cls x, cls z, cls a, cls b) {
+	eq_Ae2_Ve_Ee1_c_swap(z, v2(a, b), x)
+}
+
+"이항관계를 위한 V.
+
+[$R]이 이항관계일 때 임의의 [$(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
+schema rel_V(pr f, cls x) {
+	rel(x) |- I(
+		V2((cls a, cls b) => {
+			I(
+				in(v2(a, b), x),
+				f(v2(a, b))
+			)
+		}),
+		Vin(x, f)
+	)
+}
+
+"이항관계의 역(inverse)."
+$\left({#1}^{<<-1>>}\right)$
+cls rel_inverse(cls x);
+
+"rel_inverse의 defining property.
+
+[$R]이 이항관계일 때 [$R^{-1} = \{(b, a): (a, b)\in R\}]라는 뜻이다."
+axiomatic schema rel_inverse_def(cls x) {
+	rel(x) |- eq(
+		rel_inverse(x),
+		setbuilder((cls z) => {
+			X2((cls a, cls b) => {
+				A(
+					eq(z, v2(b, a)),
+					in(v2(a, b), x)
+				)
+			})
+		})
+	)
+}
+
+"이항관계의 합성(composition)."
+$\left(#1 <<\circ>> #2\right)$
+cls rel_composite(cls x, cls y);
+
+"rel_composite의 defining property.
+
+[$R_1], [$R_2]가 이항관계일 때,
+[$$R_1\circ R_2 = \{(a, c): (\exists b)((a, b)\in R_2 \land (b, c)\in R_1)\}]
+라는 뜻이다."
+axiomatic schema rel_composite_def(cls x, cls y) {
+	rel(x), rel(y) |- eq(
+		rel_composite(x, y),
+		setbuilder((cls z) => {
+			X2((cls a, cls c) => {
+				A(
+					eq(z, v2(a, c)),
+					X((cls b) => {
+						A(
+							in(v2(a, b), y),
+							in(v2(b, c), x)
+						)
+					})
+				)
+			})
+		})
+	)
+}
+
+schema rel_composite_associative(cls x, cls y, cls z) {
+	rel(x), rel(y), rel(z) |- eq(
+		rel_composite(rel_composite(x, y), z),
+		rel_composite(x, rel_composite(y, z))
+	)
+}
+
+"이항관계의 정의역(domain)."
+$\left(<<\operatorname{dom}>>#1\right)$
+cls rel_dom(cls x);
+
+"rel_dom의 defining property.
+
+[$R]이 이항관계일 때, [$\{a: (\exists b)((a, b)\in R)\}]라는 뜻이다."
+axiomatic schema rel_dom_def(cls x) {
+	rel(x) |- eq(
+		rel_dom(x),
+		setbuilder((cls a) => {
+			X((cls b) => {
+				in(v2(a, b), x)
+			})
+		})
+	)
+}
+
+"이항관계의 치역(image)."
+$\left(<<\operatorname{im}>>#1\right)$
+cls rel_im(cls x);
+
+"rel_im의 defining property.
+
+[$R]이 이항관계일 때, [$\{b: (\exists a)((a, b)\in R)\}]라는 뜻이다."
+axiomatic schema rel_im_def(cls x) {
+	rel(x) |- eq(
+		rel_im(x),
+		setbuilder((cls b) => {
+			X((cls a) => {
+				in(v2(a, b), x)
+			})
+		})
+	)
 }
 
 "어떤 [$\langle f, A, B\rangle]가 함수이다.
