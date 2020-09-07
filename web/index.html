@@ -116,6 +116,10 @@
 	<body>
 		<h1>math-o-matic</h1>
 		<a href="https://github.com/logico-philosophical/math-o-matic">repo</a> &middot; <a href="../docs/build/index.html">docs</a>
+		<h2>연산자 우선순위</h2>
+		현재 연산자 우선순위는 다음과 같습니다.
+		<div id="precedence"></div>
+		위 표는 자동으로 생성되었습니다.
 		<h2>목록</h2>
 		<p>이하의 내용은
 			<a href="./code.js">code.js</a> 및
@@ -182,6 +186,30 @@
 			console.log(`Process ended in ${end - start} ms`);
 			console.log('--- HTML GENERATION START ---');
 			start = new Date();
+
+			var precedenceMap = new Map();
+
+			for (var k in program.scope.defMap) {
+				var prec = program.scope.defMap[k].precedence;
+				if (prec) {
+					if (precedenceMap.has(prec)) {
+						precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
+					} else {
+						precedenceMap.set(prec, [k]);
+					}	
+				}
+			}
+
+			precedenceMap = [...precedenceMap].sort((a, b) => a[0] - b[0]);
+
+			$('#precedence').innerHTML = `<table>
+				<tr><td>우선순위</td><td>연산자</td></tr>
+				${precedenceMap.map(([k, v]) => {
+					return `<tr><td>${k}</td><td>${v.map(w => {
+						return `<a href="#def-${w}">${w}</a>`;
+					}).join(', ')}</td></tr>`;
+				}).join('')}
+			</table>`;
 
 			var arr = {}, r;
 

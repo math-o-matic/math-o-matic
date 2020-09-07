@@ -655,7 +655,7 @@ st Nin(cls x, cls y) {
 }
 
 "어떤 class 내에서의 forall."
-$!<prec=550><<\forall>>_{#1}#2$
+$!<prec=249><<\forall>>_{#1}#2$
 st Vin(cls a, pr f) {
 	V((cls z) => {
 		I(
@@ -685,7 +685,7 @@ schema VVin(cls a, pr2 f) {
 }
 
 "어떤 class 내에서의 exists. Vin과 달리 and로 연결된다."
-$!<prec=550><<\exists>>_{#1}#2$
+$!<prec=249><<\exists>>_{#1}#2$
 st Xin(cls a, pr f) {
 	X((cls z) => {
 		A(
