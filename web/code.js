@@ -696,7 +696,7 @@ st Xin(cls a, pr f) {
 }
 
 "어떤 class가 집합이라는 것. 어떤 class의 원소면 된다."
-$!<prec=450><<\mathop\mathrm{set}>> #1$
+$!<prec=248><<\mathop\mathrm{set}>> #1$
 st set(cls x) {
 	X((cls y) => {
 		in(x, y)
