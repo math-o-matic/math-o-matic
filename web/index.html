@@ -120,14 +120,24 @@
 		현재 연산자 우선순위는 다음과 같습니다.
 		<div id="precedence"></div>
 		위 표는 자동으로 생성되었습니다.
+		<h2>우상단 reload 버튼에 관하여</h2>
+		<p>우상단 reload 버튼은 <a href="./code.js">code.js</a> 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.</p>
+
+		<p>그러나 로컬에서 file 스킴으로 페이지를 불러왔을 경우 CORS 정책에 의해 버튼이 작동하지 않을 수 있습니다. 이때 다음과 같은 해결책이 있습니다.</p>
+
+		<ul>
+			<li> 로컬 서버를 통해 접속하기. 이는 npm의 <a href="https://www.npmjs.com/package/http-server">http-server</a> 패키지를 사용하여 할 수 있습니다.
+			<li> Chrome의 경우 <code>--allow-file-access-from-files</code> 플래그를 통해 로컬 파일 로드를 가능하게 할 수 있습니다. <a href="https://stackoverflow.com/a/18137280">StackOverflow 링크</a>
+		</ul>
 		<h2>목록</h2>
 		<p>이하의 내용은
 			<a href="./code.js">code.js</a> 및
 			<a href="./native.js">native.js</a>에 있는 코드를 렌더링 한 것입니다.</p>
+		<div style="position:fixed;top:0;right:0">
+			<input id="reload" type="button" value="RELOAD">
+		</div>
 		<div id="all"></div>
 		<script>
-			(() => {
-
 			$ = (q, n) => (n || document).querySelector(q);
 			$$ = (q, n) => (n || document).querySelectorAll(q);
 
@@ -156,408 +166,445 @@
 			    '"': '&quot;', "'": '&#39;'
 			})[m]);
 
-			var start, end;
+			var loading = false;
 
-			console.log('--- PARSE START ---');
-			start = new Date();
-			var parsed;
-			try {
-				parsed = math.parser.parse(code);
-			} catch (e) {
-				console.error(e);
-				console.error(`Error: ${e.message}\n\tat code.js:${e.location.start.line}:${e.location.start.column}`);
-				console.log('--- PARSE FAILED ---');
-				return;
-			}
+			function load() {
+				if (loading) return;
+				loading = true;
 
-			end = new Date();
-			console.log(parsed);
-			console.log('--- PARSE END ---');
-			console.log(`Parse ended in ${end - start} ms`);
-			console.log('--- PROCESS START ---');
-			start = new Date();
+				try {
 
-			program = new math.Program();
-			program.feed(parsed, native);
+				var start, end;
 
-			end = new Date();
-			console.log(program);
-			console.log('--- PROCESS END ---');
-			console.log(`Process ended in ${end - start} ms`);
-			console.log('--- HTML GENERATION START ---');
-			start = new Date();
-
-			var precedenceMap = new Map();
-
-			for (var k in program.scope.defMap) {
-				var prec = program.scope.defMap[k].precedence;
-				if (prec) {
-					if (precedenceMap.has(prec)) {
-						precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
-					} else {
-						precedenceMap.set(prec, [k]);
-					}	
+				console.log('--- PARSE START ---');
+				start = new Date();
+				var parsed;
+				try {
+					parsed = math.parser.parse(code);
+				} catch (e) {
+					console.error(e);
+					console.error(`Error: ${e.message}\n\tat code.js:${e.location.start.line}:${e.location.start.column}`);
+					console.log('--- PARSE FAILED ---');
+					return;
 				}
-			}
 
-			precedenceMap = [...precedenceMap].sort((a, b) => a[0] - b[0]);
+				end = new Date();
+				console.log(parsed);
+				console.log('--- PARSE END ---');
+				console.log(`Parse ended in ${end - start} ms`);
+				console.log('--- PROCESS START ---');
+				start = new Date();
 
-			$('#precedence').innerHTML = `<table>
-				<tr><td>우선순위</td><td>연산자</td></tr>
-				${precedenceMap.map(([k, v]) => {
-					return `<tr><td>${k}</td><td>${v.map(w => {
-						return `<a href="#def-${w}">${w}</a>`;
-					}).join(', ')}</td></tr>`;
-				}).join('')}
-			</table>`;
+				program = new math.Program();
+				program.feed(parsed, native);
 
-			var arr = {}, r;
+				end = new Date();
+				console.log(program);
+				console.log('--- PROCESS END ---');
+				console.log(`Process ended in ${end - start} ms`);
+				console.log('--- HTML GENERATION START ---');
+				start = new Date();
 
-			for (var k in program.scope.typedefMap) {
-				var v = program.scope.typedefMap[k];
+				var precedenceMap = new Map();
 
-				r = `<div class="block">`
-					+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>${
-						(v.isBaseType ? 'base ' : '')
-					}type</b> ${k}</a></p>`
-					+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
-
-					+ '<p class="label"><b>description</b></p>'
-					+ (
-						v.doc
-						? `<p class="description">${m42kup.render(v.doc)}</p>`
-						: '<p class="description"><i>No description provided.</i></p>'
-					)
-					// + `<pre>${escapeHtml(v)}</pre>`
-					+ `</div>`;
-
-				arr[v._id] = r;
-			}
-
-			for (var k in program.scope.defMap) {
-				var v = program.scope.defMap[k];
-
-				r = `<div class="block">`
-					+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
-					+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
-
-					+ '<p class="label"><b>description</b></p>'
-					+ (
-						v.doc
-						? `<p class="description">${m42kup.render(v.doc)}</p>`
-						: '<p class="description"><i>No description provided.</i></p>'
-					)
-					// + `<pre>${escapeHtml(v)}</pre>`
-					+ `</div>`;
-
-				arr[v._id] = r;
-			}
-
-			function getProofExplorer(expr) {
-				var ctr = 0;
-
-				var DIAMOND = '&#x25C7;',
-					DOWN = '&#x25BC;',
-					UP = '&#x25B2;';
-
-
-				var ncols = (function recurse(expr) {
-					switch (expr._type) {
-						case 'reduction':
-							return Math.max(
-								...expr.args.map(recurse),
-								((expr.subject._type == 'schema' && expr.subject.name)
-									|| (expr.subject._type == 'schemacall' && expr.subject.schema.name)
-										? 0 : recurse(expr.subject)),
-								1
-							);
-						case 'schemacall':
-						case 'funcall':
-							return 1;
-						case 'schema':
-						case 'fun':
-							return recurse(expr.expr) + 1;
-						case 'tee':
-							return Math.max(
-								...expr.left.map(recurse),
-								recurse(expr.right)
-							) + 1;
-						default:
-							return 1;
+				for (var k in program.scope.defMap) {
+					var prec = program.scope.defMap[k].precedence;
+					if (prec) {
+						if (precedenceMap.has(prec)) {
+							precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
+						} else {
+							precedenceMap.set(prec, [k]);
+						}	
 					}
-				})(expr);
-
-				var html = '<table class="explorer">';
-				html += `<tr><th>#</th><th colspan="${ncols}">expr</th><th colspan="2">rule</th></tr>`;
-
-				function getHtml(left, h1, h2, bbb, noctr) {
-					var padding = left.length;
-
-					var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString(true))).join(', ')}</td>`).join('');
-
-					return `<tr><th>${noctr ? '' : ++ctr}</th>${htmlLeft}<td ${bbb ? 'class="bbb"' : ''} colspan="${ncols-padding}">${h1}</td>${h2}</tr>`;
 				}
 
-				function getHypNo(hyps, expr) {
-					for (var i = 0; i < hyps.length; i++) {
-						var [hyp, lineno] = hyps[i];
+				precedenceMap = [...precedenceMap].sort((a, b) => a[0] - b[0]);
 
-						if (program.ExpressionResolver.equalsMeta(hyp, expr)) {
-							return lineno;
+				$('#precedence').innerHTML = `<table>
+					<tr><td>우선순위</td><td>연산자</td></tr>
+					${precedenceMap.map(([k, v]) => {
+						return `<tr><td>${k}</td><td>${v.map(w => {
+							return `<a href="#def-${w}">${w}</a>`;
+						}).join(', ')}</td></tr>`;
+					}).join('')}
+				</table>`;
+
+				var arr = {}, r;
+
+				for (var k in program.scope.typedefMap) {
+					var v = program.scope.typedefMap[k];
+
+					r = `<div class="block">`
+						+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>${
+							(v.isBaseType ? 'base ' : '')
+						}type</b> ${k}</a></p>`
+						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+
+						+ '<p class="label"><b>description</b></p>'
+						+ (
+							v.doc
+							? `<p class="description">${m42kup.render(v.doc)}</p>`
+							: '<p class="description"><i>No description provided.</i></p>'
+						)
+						// + `<pre>${escapeHtml(v)}</pre>`
+						+ `</div>`;
+
+					arr[v._id] = r;
+				}
+
+				for (var k in program.scope.defMap) {
+					var v = program.scope.defMap[k];
+
+					r = `<div class="block">`
+						+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
+						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+
+						+ '<p class="label"><b>description</b></p>'
+						+ (
+							v.doc
+							? `<p class="description">${m42kup.render(v.doc)}</p>`
+							: '<p class="description"><i>No description provided.</i></p>'
+						)
+						// + `<pre>${escapeHtml(v)}</pre>`
+						+ `</div>`;
+
+					arr[v._id] = r;
+				}
+
+				function getProofExplorer(expr) {
+					var ctr = 0;
+
+					var DIAMOND = '&#x25C7;',
+						DOWN = '&#x25BC;',
+						UP = '&#x25B2;';
+
+
+					var ncols = (function recurse(expr) {
+						switch (expr._type) {
+							case 'reduction':
+								return Math.max(
+									...expr.args.map(recurse),
+									((expr.subject._type == 'schema' && expr.subject.name)
+										|| (expr.subject._type == 'schemacall' && expr.subject.schema.name)
+											? 0 : recurse(expr.subject)),
+									1
+								);
+							case 'schemacall':
+							case 'funcall':
+								return 1;
+							case 'schema':
+							case 'fun':
+								return recurse(expr.expr) + 1;
+							case 'tee':
+								return Math.max(
+									...expr.left.map(recurse),
+									recurse(expr.right)
+								) + 1;
+							default:
+								return 1;
 						}
+					})(expr);
+
+					var html = '<table class="explorer">';
+					html += `<tr><th>#</th><th colspan="${ncols}">expr</th><th colspan="2">rule</th></tr>`;
+
+					function getHtml(left, h1, h2, bbb, noctr) {
+						var padding = left.length;
+
+						var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString(true))).join(', ')}</td>`).join('');
+
+						return `<tr><th>${noctr ? '' : ++ctr}</th>${htmlLeft}<td ${bbb ? 'class="bbb"' : ''} colspan="${ncols-padding}">${h1}</td>${h2}</tr>`;
 					}
 
-					return false;
-				}
+					function getHypNo(hyps, expr) {
+						for (var i = 0; i < hyps.length; i++) {
+							var [hyp, lineno] = hyps[i];
 
-				html += (function recurse(expr, left, hyps) {
-					var hypno = getHypNo(hyps, expr);
+							if (program.ExpressionResolver.equalsMeta(hyp, expr)) {
+								return lineno;
+							}
+						}
 
-					if (hypno) {
-						return getHtml(
-							left,
-							ktx(expr.toTeXString(true)),
-							`<td>${DIAMOND}</td><td>[<b>${hypno}</b>]</td>`
-						);
+						return false;
 					}
 
-					switch (expr._type) {
-						case 'reduction':
-							var leftPrinted = false;
+					html += (function recurse(expr, left, hyps) {
+						var hypno = getHypNo(hyps, expr);
 
-							var args = expr.args.map(arg => {
-								var hypno = getHypNo(hyps, arg);
+						if (hypno) {
+							return getHtml(
+								left,
+								ktx(expr.toTeXString(true)),
+								`<td>${DIAMOND}</td><td>[<b>${hypno}</b>]</td>`
+							);
+						}
 
-								if (hypno) {
-									return [false, hypno];
-								}
+						switch (expr._type) {
+							case 'reduction':
+								var leftPrinted = false;
 
-								if (!leftPrinted) {
-									leftPrinted = true;
-								} else {
+								var args = expr.args.map(arg => {
+									var hypno = getHypNo(hyps, arg);
+
+									if (hypno) {
+										return [false, hypno];
+									}
+
+									if (!leftPrinted) {
+										leftPrinted = true;
+									} else {
+										left = Array(left.length).fill([]);
+									}
+
+									return [
+										recurse(
+											arg,
+											left,
+											hyps
+										),
+										ctr
+									];
+								});
+
+								if (leftPrinted) {
 									left = Array(left.length).fill([]);
 								}
 
-								return [
-									recurse(
-										arg,
-										left,
-										hyps
-									),
-									ctr
-								];
-							});
+								if ((expr.subject._type == 'schema' && expr.subject.name)
+										|| (expr.subject._type == 'schemacall' && expr.subject.schema.name)) {
+									return [
+										args.map(e => e[0]).filter(e => e).join(''),
+										getHtml(
+											left,
+											ktx(expr.reduced.toTeXString(true)),
+											`<td>${DOWN}</td><td>${ktx(expr.subject.toTeXString(true))} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
+										)
+									].join('');
+								}
 
-							if (leftPrinted) {
-								left = Array(left.length).fill([]);
-							}
+								var subject = (() => {
+									var hypno = getHypNo(hyps, expr.subject);
 
-							if ((expr.subject._type == 'schema' && expr.subject.name)
-									|| (expr.subject._type == 'schemacall' && expr.subject.schema.name)) {
+									if (hypno) {
+										return [false, hypno];
+									}
+
+									if (!leftPrinted) {
+										leftPrinted = true;
+									} else {
+										left = Array(left.length).fill([]);
+									}
+
+									return [
+										recurse(
+											expr.subject,
+											left,
+											hyps
+										),
+										ctr
+									];
+								})();
+
 								return [
 									args.map(e => e[0]).filter(e => e).join(''),
+									subject[0] || '',
 									getHtml(
 										left,
 										ktx(expr.reduced.toTeXString(true)),
-										`<td>${DOWN}</td><td>${ktx(expr.subject.toTeXString(true))} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
+										`<td>${DOWN}</td><td><b>${subject[1]}</b> [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
 									)
 								].join('');
-							}
-
-							var subject = (() => {
-								var hypno = getHypNo(hyps, expr.subject);
-
-								if (hypno) {
-									return [false, hypno];
-								}
-
-								if (!leftPrinted) {
-									leftPrinted = true;
-								} else {
-									left = Array(left.length).fill([]);
-								}
+							case 'schemacall':
+								return getHtml(
+									left,
+									ktx(expr.expanded.toTeXString(true)),
+									`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
+								);
+							case 'funcall':
+								return getHtml(
+									left,
+									ktx(expr.toTeXString(true)),
+									'<td colspan="2"><b class="red">not proved</b></td>'
+								);
+							case 'schema':
+							case 'fun':
+								return recurse(
+									expr.expr,
+									left.concat([expr.params]),
+									hyps
+								);
+							case 'tee':
+								var start = ctr + 1;
+								var arr = [
+									...(
+										expr.left.length
+											? expr.left.map((e, i, a) => getHtml(
+												(i == 0 ? left.concat([[]]) : Array(left.length + 1).fill([])),
+												ktx(e.toTeXString(true)),
+												'<td colspan="2">assumption</td>',
+												i == a.length - 1
+											))
+											: [getHtml(
+												Array(left.length + 1).fill([]),
+												'',
+												'<td colspan="2"></td>',
+												true,
+												true
+											)]
+									),
+									recurse(
+										expr.right,
+										(expr.left.length == 0 ? left.concat([[]]) : Array(left.length + 1).fill([])),
+										hyps.concat(expr.left.map((e, i) => [e, start + i]))
+									)
+								];
+								var end = ctr;
 
 								return [
-									recurse(
-										expr.subject,
-										left,
-										hyps
-									),
-									ctr
-								];
-							})();
+									...arr,
+									getHtml(
+										Array(left.length).fill([]),
+										ktx(expr.toTeXString(true)),
+										`<td>${UP}</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td>`
+									)
+								].join('');
+							default:
+								console.error(expr.error(`Unknown type ${expr._type}`));
 
-							return [
-								args.map(e => e[0]).filter(e => e).join(''),
-								subject[0] || '',
-								getHtml(
+								return getHtml(
 									left,
-									ktx(expr.reduced.toTeXString(true)),
-									`<td>${DOWN}</td><td><b>${subject[1]}</b> [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
-								)
-							].join('');
-						case 'schemacall':
-							return getHtml(
-								left,
-								ktx(expr.expanded.toTeXString(true)),
-								`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
-							);
-						case 'funcall':
-							return getHtml(
-								left,
-								ktx(expr.toTeXString(true)),
-								'<td colspan="2"><b class="red">not proved</b></td>'
-							);
-						case 'schema':
-						case 'fun':
-							return recurse(
-								expr.expr,
-								left.concat([expr.params]),
-								hyps
-							);
-						case 'tee':
-							var start = ctr + 1;
-							var arr = [
-								...(
-									expr.left.length
-										? expr.left.map((e, i, a) => getHtml(
-											(i == 0 ? left.concat([[]]) : Array(left.length + 1).fill([])),
-											ktx(e.toTeXString(true)),
-											'<td colspan="2">assumption</td>',
-											i == a.length - 1
-										))
-										: [getHtml(
-											Array(left.length + 1).fill([]),
-											'',
-											'<td colspan="2"></td>',
-											true,
-											true
-										)]
-								),
-								recurse(
-									expr.right,
-									(expr.left.length == 0 ? left.concat([[]]) : Array(left.length + 1).fill([])),
-									hyps.concat(expr.left.map((e, i) => [e, start + i]))
-								)
-							];
-							var end = ctr;
-
-							return [
-								...arr,
-								getHtml(
-									Array(left.length).fill([]),
 									ktx(expr.toTeXString(true)),
-									`<td>${UP}</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td>`
-								)
-							].join('');
-						default:
-							console.error(expr.error(`Unknown type ${expr._type}`));
+									'<td colspan="2">???</td>'
+								);
+						}
+					})(expr, [], []);
 
-							return getHtml(
-								left,
-								ktx(expr.toTeXString(true)),
-								'<td colspan="2">???</td>'
-							);
-					}
-				})(expr, [], []);
+					html += '</table>';
 
-				html += '</table>';
-
-				return html;
-			}
-
-			for (var k in program.scope.schemaMap) {
-				var v = program.scope.schemaMap[k];
-
-				r = `<div class="block">`
-					+ `<p class="label"><a id="schema-${k}" href="#schema-${k}"><b>${
-						(v.axiomatic ? 'axiomatic ' : '')
-						+ (v.native ? 'native ': '')
-					}schema</b> ${k}</a>${v.native ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
-					+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
-					
-
-					// + `<pre>${escapeHtml(v)}</pre>`
-
-					+ (
-						v.expr
-							? v.axiomatic
-								? ''
-								: '<p class="label"><b>proof explorer</b></p>'
-									+ `<p>${getProofExplorer(v.expr)}</p>`
-							: ''
-					)
-
-					+ '<p class="label"><b>description</b></p>'
-					+ (
-						v.doc
-						? `<p class="description">${m42kup.render(v.doc)}</p>`
-						: '<p class="description"><i>No description provided.</i></p>'
-					)
-
-					+ `</div>`;
-
-				arr[v._id] = r;
-			}
-
-			for (var k in program.scope.rulesetMap) {
-				var v = program.scope.rulesetMap[k];
-
-				r = `<div class="block">`
-					+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>${
-						(v.axiomatic ? 'axiomatic ' : '')
-						+ (v.native ? 'native ' : '')
-					}ruleset</b> ${k}</a></p>`
-					+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
-
-					+ (
-						v.axiomatic
-							? '' : '<p class="label"><b>not proved</b></p>'
-					)
-
-					+ '<p class="label"><b>description</b></p>'
-					+ (
-						v.doc
-						? `<p class="description">${m42kup.render(v.doc)}</p>`
-						: '<p class="description"><i>No description provided.</i></p>'
-					)
-					// + `<pre>${escapeHtml(v)}</pre>`
-					+ `</div>`;
-
-				arr[v._id] = r;
-			}
-
-			end = new Date();
-			console.log('--- HTML GENERATION END ---');
-			console.log(`HTML generation ended in ${end - start} ms`);
-			console.log('--- HTML RENDER START ---');
-			start = new Date();
-
-			$('#all').innerHTML +=
-				Object.keys(arr).sort((l, r) => l._id - r._id).map(k => arr[k]).join('');
-
-			[].forEach.call($$('.katex a'), a => {
-				var href = a.getAttribute('href');
-				var idMatch = href.match(/^#id-([0-9]+)$/);
-				var defMatch = href.match(/^#def-.+$/);
-
-				if (idMatch) {
-					a.dataset.orange = true;
-					a.title = 'id: ' + idMatch[1];
-				} else if (defMatch) {
-					a.dataset.blue = true;
-					a.title = a.getAttribute('href');
-				} else {
-					a.dataset.green = true;
-					a.title = a.getAttribute('href');
+					return html;
 				}
+
+				for (var k in program.scope.schemaMap) {
+					var v = program.scope.schemaMap[k];
+
+					r = `<div class="block">`
+						+ `<p class="label"><a id="schema-${k}" href="#schema-${k}"><b>${
+							(v.axiomatic ? 'axiomatic ' : '')
+							+ (v.native ? 'native ': '')
+						}schema</b> ${k}</a>${v.native ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
+						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+						
+
+						// + `<pre>${escapeHtml(v)}</pre>`
+
+						+ (
+							v.expr
+								? v.axiomatic
+									? ''
+									: '<p class="label"><b>proof explorer</b></p>'
+										+ `<p>${getProofExplorer(v.expr)}</p>`
+								: ''
+						)
+
+						+ '<p class="label"><b>description</b></p>'
+						+ (
+							v.doc
+							? `<p class="description">${m42kup.render(v.doc)}</p>`
+							: '<p class="description"><i>No description provided.</i></p>'
+						)
+
+						+ `</div>`;
+
+					arr[v._id] = r;
+				}
+
+				for (var k in program.scope.rulesetMap) {
+					var v = program.scope.rulesetMap[k];
+
+					r = `<div class="block">`
+						+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>${
+							(v.axiomatic ? 'axiomatic ' : '')
+							+ (v.native ? 'native ' : '')
+						}ruleset</b> ${k}</a></p>`
+						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+
+						+ (
+							v.axiomatic
+								? '' : '<p class="label"><b>not proved</b></p>'
+						)
+
+						+ '<p class="label"><b>description</b></p>'
+						+ (
+							v.doc
+							? `<p class="description">${m42kup.render(v.doc)}</p>`
+							: '<p class="description"><i>No description provided.</i></p>'
+						)
+						// + `<pre>${escapeHtml(v)}</pre>`
+						+ `</div>`;
+
+					arr[v._id] = r;
+				}
+
+				end = new Date();
+				console.log('--- HTML GENERATION END ---');
+				console.log(`HTML generation ended in ${end - start} ms`);
+				console.log('--- HTML RENDER START ---');
+				start = new Date();
+
+				$('#all').innerHTML =
+					Object.keys(arr).sort((l, r) => l._id - r._id).map(k => arr[k]).join('');
+
+				[].forEach.call($$('.katex a'), a => {
+					var href = a.getAttribute('href');
+					var idMatch = href.match(/^#id-([0-9]+)$/);
+					var defMatch = href.match(/^#def-.+$/);
+
+					if (idMatch) {
+						a.dataset.orange = true;
+						a.title = 'id: ' + idMatch[1];
+					} else if (defMatch) {
+						a.dataset.blue = true;
+						a.title = a.getAttribute('href');
+					} else {
+						a.dataset.green = true;
+						a.title = a.getAttribute('href');
+					}
+				});
+
+				end = new Date();
+				console.log('--- HTML RENDER END ---');
+				console.log(`HTML render ended in ${end - start} ms`);
+
+				} finally {
+					loading = false;
+				}
+			}
+
+			var reloading = false;
+
+			$('#reload').addEventListener('click', () => {
+				if (reloading) return;
+				reloading = true;
+
+				$('#reload').value = 'loading...';
+
+				var xhr = new XMLHttpRequest();
+				xhr.addEventListener('load', () => {
+					eval(xhr.responseText);
+					load();
+					$('#reload').value = 'RELOAD';
+					reloading = false;
+				});
+				xhr.addEventListener('error', () => {
+					console.log('LOAD FAILED');
+					$('#reload').value = 'RELOAD';
+					reloading = false;
+				});
+				xhr.open('GET', './code.js?new');
+				xhr.send();
 			});
 
-			end = new Date();
-			console.log('--- HTML RENDER END ---');
-			console.log(`HTML render ended in ${end - start} ms`);
-
-			})();
+			load();
 		</script>
 	</body>
 </html>
