@@ -7,11 +7,11 @@ code = String.raw`
 base type st;
 
 "verum (T). 즉 임의의 항진명제를 표시한다."
-$<<\top>>$
+$\top$
 st T;
 
 "falsum (F). 즉 임의의 모순명제를 표시한다."
-$<<\bot>>$
+$\bot$
 st F;
 
 "not (FT)."
