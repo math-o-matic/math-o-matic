@@ -428,6 +428,14 @@
 								);
 							case 'schema':
 							case 'fun':
+								if (expr.name) {
+									return getHtml(
+										left,
+										ktx(expr.toTeXString(true, true)),
+										`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
+									);
+								}
+
 								return recurse(
 									expr.expr,
 									left.concat([expr.params]),
