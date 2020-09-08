@@ -152,7 +152,7 @@ eval("\r\n\r\nvar Type = __webpack_require__(/*! ./nodes/Type */ \"./src/nodes/T
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\r\n\r\nfunction StackTrace(stack) {\r\n\tthis.stack = stack || [];\r\n}\r\n\r\nStackTrace.prototype.extend = function (type, name, location) {\r\n\treturn new StackTrace([[type, name, location]].concat(this.stack));\r\n}\r\n\r\nStackTrace.prototype.error = function (message) {\r\n\treturn new Error(\r\n\t\tmessage\r\n\t\t+ '\\n\\tat ' + this.stack.map(([type, name, location]) => {\r\n\t\t\treturn `${type} ${name || '<anonymous>'} (code.js:${location.start.line}:${location.start.column})`;\r\n\t\t}).join('\\n\\tat ')\r\n\t);\r\n}\r\n\r\nmodule.exports = StackTrace;\n\n//# sourceURL=webpack://math/./src/StackTrace.js?");
+eval("\r\n\r\nfunction StackTrace(stack) {\r\n\tthis.stack = stack || [];\r\n}\r\n\r\nStackTrace.prototype.extend = function (type, name, location) {\r\n\treturn new StackTrace([[type, name, location]].concat(this.stack));\r\n}\r\n\r\nStackTrace.prototype.error = function (message) {\r\n\treturn new Error(\r\n\t\tmessage\r\n\t\t+ '\\n\\tat ' + this.stack.map(([type, name, location]) => {\r\n\t\t\treturn `${type} ${name || '<anonymous>'} (code.math:${location.start.line}:${location.start.column})`;\r\n\t\t}).join('\\n\\tat ')\r\n\t);\r\n}\r\n\r\nmodule.exports = StackTrace;\n\n//# sourceURL=webpack://math/./src/StackTrace.js?");
 
 /***/ }),
 
