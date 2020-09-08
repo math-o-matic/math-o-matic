@@ -48,7 +48,7 @@ MetaType.prototype.equals = function (t) {
 	if (this.isSimple) {
 		if (this.left.length != t.left.length) return false;
 
-		for (var i = 0; i < this.left.length; i++) {
+		for (let i = 0; i < this.left.length; i++) {
 			if (!this.left[i].equals(t.left[i])) return false;
 		}
 
@@ -59,7 +59,7 @@ MetaType.prototype.equals = function (t) {
 
 	if (this.from.length != t.from.length) return false;
 
-	for (var i = 0; i < this.from.length; i++)
+	for (let i = 0; i < this.from.length; i++)
 		if (!this.from[i].equals(t.from[i])) return false;
 
 	return this.to.equals(t.to);

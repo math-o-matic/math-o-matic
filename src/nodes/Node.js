@@ -11,7 +11,7 @@ Node.prototype.error = function (message) {
 	} else {
 		return new Error(message);
 	}
-}
+};
 
 Node.prototype.escapeTeX = function (s) {
 	return s.replace(/&|%|\$|#|_|{|}|~|\^|\\/g, m => ({
@@ -33,7 +33,7 @@ Node.prototype.parseTeX = function (tex) {
 	});
 
 	return {precedence, code};
-}
+};
 
 Node.prototype.PREC_FUNEXPR = 1000;
 Node.prototype.PREC_COMMA = 1000;
@@ -63,13 +63,12 @@ Node.prototype.shouldConsolidate = function (prec) {
 	if (my[0] == 0 && my[1] == 0) return false;
 
 	return !(my[0] < your[0] || my[0] == your[0] && my[1] < your[1]);
-}
+};
 
 Node.prototype.makeTeX = function (id, args, prec) {
 	args = args || [];
 	prec = prec || false;
-
-	var myPrec = this.precedence;
+	
 	var ret = this.tex;
 
 	if (this.shouldConsolidate(prec)) {

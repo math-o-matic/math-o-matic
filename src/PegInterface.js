@@ -15,8 +15,6 @@ var Reduction = require('./nodes/Reduction');
 
 var ExpressionResolver = require('./ExpressionResolver');
 
-var StackTrace = require('./StackTrace');
-
 var PI = {};
 
 function typeObjToString(obj) {

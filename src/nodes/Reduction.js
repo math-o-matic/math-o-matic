@@ -26,7 +26,7 @@ function Reduction({subject, args}, scope, trace) {
 		if (paramTypes.length != argTypes.length)
 			throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
 
-		for (var i = 0; i < paramTypes.length; i++) {
+		for (let i = 0; i < paramTypes.length; i++) {
 			if (!paramTypes[i].equals(argTypes[i]))
 				throw this.error(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
 		}
@@ -39,7 +39,7 @@ function Reduction({subject, args}, scope, trace) {
 			throw this.error('Assertion failed');
 		}
 
-		for (var i = 0; i < tee.left.length; i++) {
+		for (let i = 0; i < tee.left.length; i++) {
 			if (!ExpressionResolver.equalsMeta(tee.left[i], args[i])) {
 				throw this.error(`LHS #${i + 1} failed to match:
 

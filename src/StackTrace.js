@@ -6,7 +6,7 @@ function StackTrace(stack) {
 
 StackTrace.prototype.extend = function (type, name, location) {
 	return new StackTrace([[type, name, location]].concat(this.stack));
-}
+};
 
 StackTrace.prototype.error = function (message) {
 	return new Error(
@@ -15,6 +15,6 @@ StackTrace.prototype.error = function (message) {
 			return `${type} ${name || '<anonymous>'} (code.math:${location.start.line}:${location.start.column})`;
 		}).join('\n\tat ')
 	);
-}
+};
 
 module.exports = StackTrace;
