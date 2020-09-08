@@ -1671,7 +1671,7 @@ axiomatic schema v2_set_def(cls x, cls y) {
 }
 
 "곱집합(cartesian product)."
-$\left(#1<<\times>>#2\right)$
+$!<prec=230>#1<<\times>>#2$
 cls cartesian(cls x, cls y) {
 	setbuilder((cls z) => {
 		X2((cls a, cls b) => {
@@ -1769,7 +1769,7 @@ schema rel_V(pr f, cls x) {
 }
 
 "이항관계의 역(inverse)."
-$\left({#1}^{<<-1>>}\right)$
+$!<prec=190>{#1}^{<<-1>>}$
 cls rel_inverse(cls x);
 
 "rel_inverse의 defining property.
@@ -1790,7 +1790,7 @@ axiomatic schema rel_inverse_def(cls x) {
 }
 
 "이항관계의 합성(composition)."
-$\left(#1 <<\circ>> #2\right)$
+$!<prec=230>#1 <<\circ>> #2$
 cls rel_composite(cls x, cls y);
 
 "rel_composite의 defining property.
@@ -1825,7 +1825,7 @@ schema rel_composite_associative(cls x, cls y, cls z) {
 }
 
 "이항관계의 정의역(domain)."
-$\left(<<\operatorname{dom}>>#1\right)$
+$!<prec=200><<\operatorname{dom}>>#1$
 cls rel_dom(cls x);
 
 "rel_dom의 defining property.
@@ -1843,7 +1843,7 @@ axiomatic schema rel_dom_def(cls x) {
 }
 
 "이항관계의 치역(image)."
-$\left(<<\operatorname{im}>>#1\right)$
+$!<prec=200><<\operatorname{im}>>#1$
 cls rel_im(cls x);
 
 "rel_im의 defining property.
@@ -1864,7 +1864,7 @@ axiomatic schema rel_im_def(cls x) {
 
 [$f\subseteq A\times B]이고 임의의 [$x\in A]에 대해 [$(x, y)\in f]를 만족하는 유일한 [$y]가 존재한다는 뜻이다."
 $\left(<<\mathop\mathrm{function}>> #1: #2 \to #3\right)$
-st function(cls f, cls a, cls b) {
+st function(cls f, $A$ cls a, $B$ cls b) {
 	A(
 		subseteq(f, cartesian(a, b)),
 		Vin(a, (cls x) => {
@@ -1882,7 +1882,7 @@ cls fcall(cls f, cls x);
 "fcall의 defining property.
 
 [$f(x)]는 [$\langle f, A, B\rangle]이 함수이고 [$x\in A]일 때만 정의되며, 이때 [$f(x) = y]는 [$(x, y)\in f]와 동치라는 뜻이다."
-axiomatic schema fcall_def(cls f, cls a, cls b, cls x, cls y) {
+axiomatic schema fcall_def(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 	function(f, a, b), in(x, a) |- E(
 		eq(fcall(f, x), y),
 		in(v2(x, y), f)

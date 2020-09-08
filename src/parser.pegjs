@@ -41,11 +41,13 @@ defv =
 	}
 
 defparam =
-	type:type __ name:ident
+	tex:(tex __)? type:type __ name:ident
 	{
 		return {
 			_type: 'defv',
+			isParam: true,
 			type,
+			tex: tex && tex[0],
 			name,
 			location: location()
 		}

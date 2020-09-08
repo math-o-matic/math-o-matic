@@ -1,10 +1,14 @@
 var Node = require('./Node');
 
-function Typevar({type, name, doc, tex}, scope, trace) {
+function Typevar({type, isParam, name, doc, tex}, scope, trace) {
 	Node.call(this, trace);
 
 	this.doc = doc;
 	this.tex = tex;
+
+	this.isParam = !!isParam;
+
+
 
 	if (type._type != 'type')
 		throw this.error('Assertion failed');
@@ -34,15 +38,16 @@ Typevar.prototype.toIndentedString = function (indent, root) {
 };
 
 Typevar.prototype.toTeXString = function (prec, root) {
-	if (this.tex) {
-		return this.makeTeX('def-' + this.name, [], prec);
-	}
+	var id = this.isParam ? `id-${this._id}` : `def-${this.name}`;
 
-	if (this.name.length == 1) {
-		return `\\href{#id-${this._id}}{${this.escapeTeX(this.name)}}`;
-	}
-
-	return `\\href{#id-${this._id}}{\\mathrm{${this.escapeTeX(this.name)}}}`;
+	var tex = this.tex
+		|| (
+			this.name.length == 1
+				? this.escapeTeX(this.name)
+				: `\\mathrm{${this.escapeTeX(this.name)}}`
+		);
+	
+	return `\\href{#${id}}{${tex}}`;
 };
 
 module.exports = Typevar;

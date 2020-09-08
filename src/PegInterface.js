@@ -113,6 +113,7 @@ PI.typevar = function (obj, parentScope, trace) {
 
 	return new Typevar({
 		type,
+		isParam: !!obj.isParam,
 		name: obj.name,
 		doc: obj.doc,
 		tex: obj.tex
