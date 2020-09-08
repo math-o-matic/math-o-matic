@@ -1233,20 +1233,6 @@ cls emptyset() {
 	setbuilder((cls z) => { F })
 }
 
-schema emptyset_1(cls z) {
-	cp[Ni(in(z, emptyset()))]
-}
-
-schema emptyset_2() {
-	Viu((cls z) => {
-		I(I(in(z, emptyset()), F), N(in(z, emptyset())))
-	})[emptyset_1]
-}
-
-schema emptyset_3(cls x) {
-	tt.IApFF(set(x))
-}
-
 schema emptyset_vi() {
 	setbuilder_def((cls z) => { F })
 	~ Ee1V(
@@ -1255,13 +1241,15 @@ schema emptyset_vi() {
 	)
 	~ Viu((cls x) => {
 		I(A(set(x), F), F)
-	})[emptyset_3]
+	})[(cls x) => { tt.IApFF(set(x)) }]
 	~ syllV(
 		(cls z) => { in(z, emptyset()) },
 		(cls z) => { A(set(z), F) },
 		(cls z) => { F }
 	)
-	~ emptyset_2()
+	~ Viu((cls z) => {
+		I(I(in(z, emptyset()), F), N(in(z, emptyset())))
+	})[(cls z) => { cp[Ni(in(z, emptyset()))] }]
 	~ mpV(
 		(cls z) => { I(in(z, emptyset()), F) },
 		(cls z) => { Nin(z, emptyset()) }
