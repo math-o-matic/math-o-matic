@@ -5,8 +5,9 @@ var ExpressionResolver = require('../ExpressionResolver');
 function Reduction({subject, args}, scope, trace) {
 	Node.call(this, trace);
 
-	if (!(subject instanceof Node))
-		throw this.error('Assertion failed');
+	if (!subject.native
+			&& !(subject.type._type == 'metatype' && subject.type.isSimple))
+		throw this.error('Subject is not reducible');
 
 	if (!(args instanceof Array)
 			|| args.map(e => e instanceof Node).some(e => !e))
