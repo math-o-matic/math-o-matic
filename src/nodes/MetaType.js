@@ -19,8 +19,8 @@ function MetaType(o) {
 	} else {
 		if (o.from.some(f => !(f instanceof Type)))
 			throw this.error('o.from.some(f => !(f instanceof Type))');
-		// if (!(o.to instanceof MetaType))
-		// 	throw this.error('!(o.to instanceof MetaType)');
+		if (!(o.to instanceof MetaType))
+			throw this.error('!(o.to instanceof MetaType)');
 
 		if (o.to.isFunctional)
 			throw this.error('Functional metatype in functional metatype is not supported');
