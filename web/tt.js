@@ -72,7 +72,8 @@ function tt(name, type) {
 			} else {
 				stack[stack.length - 1].push(token);
 
-				while (stack.length > 1 && lastIsFull()) {
+				while (stack.length > 1 && lastIsFull()
+						&& (stack[stack.length - 2] instanceof Array)) {
 					var p = stack.pop();
 					stack[stack.length - 1].push(p);
 				}
