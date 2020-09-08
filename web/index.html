@@ -133,7 +133,7 @@
 		<p>이하의 내용은
 			<a href="./code.js">code.js</a> 및
 			<a href="./native.js">native.js</a>에 있는 코드를 렌더링 한 것입니다.</p>
-		<div style="position:fixed;top:0;right:0">
+		<div style="position:fixed;top:0;right:0;z-index:10000;">
 			<input id="reload" type="button" value="RELOAD">
 		</div>
 		<div id="all"></div>
@@ -600,7 +600,7 @@
 					$('#reload').value = 'RELOAD';
 					reloading = false;
 				});
-				xhr.open('GET', './code.js?new');
+				xhr.open('GET', './code.js');
 				xhr.send();
 			});
 
