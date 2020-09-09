@@ -340,7 +340,7 @@ st X2(pr2 f) {
 }
 
 "보편 양화 도입(universal introduction)."
-axiomatic schema Vi(pr f) {
+axiomatic schema Vi(pr f: @1) {
 	f |- V(f)
 }
 
@@ -353,7 +353,7 @@ schema Vi_c(st p) {
 }
 
 "보편 양화 소거(universal elimination)."
-axiomatic schema Ve(pr f, cls x) {
+axiomatic schema Ve(pr f: @11, cls x) {
 	V(f) |- f(x)
 }
 
@@ -1012,11 +1012,19 @@ schema eq_transitive_13(cls x, cls y, cls z) {
 "uniqueness quantification."
 $!<prec=249><<\exists!>>#1$
 st Q(pr f) {
-	X((cls x) => {
-		V((cls y) => {
-			E(f(y), eq(y, x))
+	A(
+		X(f),
+		V2((cls x, cls y) => {
+			I(
+				A(f(x), f(y)),
+				eq(x, y)
+			)
 		})
-	})
+	)
+}
+
+schema IQX(pr f: @11) {
+	Q(f) |- Ae1[Q(f)]
 }
 
 schema set_is_set_1(cls x, cls y) {
@@ -1787,51 +1795,33 @@ schema rel_V(pr f, cls x) {
 
 "이항관계의 역(inverse)."
 $!<prec=190>{#1}^{<<-1>>}$
-cls rel_inverse(cls x);
-
-"rel_inverse의 defining property.
-
-[$R]이 이항관계일 때 [$R^{-1} = \{(b, a): (a, b)\in R\}]라는 뜻이다."
-axiomatic schema rel_inverse_def(cls x) {
-	rel(x) |- eq(
-		rel_inverse(x),
-		setbuilder((cls z) => {
-			X2((cls a, cls b) => {
-				A(
-					eq(z, v2(b, a)),
-					in(v2(a, b), x)
-				)
-			})
+cls rel_inverse(cls x) {
+	setbuilder((cls z) => {
+		X2((cls a, cls b) => {
+			A(
+				eq(z, v2(b, a)),
+				in(v2(a, b), x)
+			)
 		})
-	)
+	})
 }
 
 "이항관계의 합성(composition)."
 $!<prec=230>#1 <<\circ>> #2$
-cls rel_composite(cls x, cls y);
-
-"rel_composite의 defining property.
-
-[$R_1], [$R_2]가 이항관계일 때,
-[$$R_1\circ R_2 = \{(a, c): (\exists b)((a, b)\in R_2 \land (b, c)\in R_1)\}]
-라는 뜻이다."
-axiomatic schema rel_composite_def(cls x, cls y) {
-	rel(x), rel(y) |- eq(
-		rel_composite(x, y),
-		setbuilder((cls z) => {
-			X2((cls a, cls c) => {
-				A(
-					eq(z, v2(a, c)),
-					X((cls b) => {
-						A(
-							in(v2(a, b), y),
-							in(v2(b, c), x)
-						)
-					})
-				)
-			})
+cls rel_composite(cls x, cls y) {
+	setbuilder((cls z) => {
+		X2((cls a, cls c) => {
+			A(
+				eq(z, v2(a, c)),
+				X((cls b) => {
+					A(
+						in(v2(a, b), y),
+						in(v2(b, c), x)
+					)
+				})
+			)
 		})
-	)
+	})
 }
 
 schema rel_composite_associative(cls x, cls y, cls z) {
@@ -1843,38 +1833,22 @@ schema rel_composite_associative(cls x, cls y, cls z) {
 
 "이항관계의 정의역(domain)."
 $!<prec=200><<\operatorname{dom}>>#1$
-cls rel_dom(cls x);
-
-"rel_dom의 defining property.
-
-[$R]이 이항관계일 때, [$\{a: (\exists b)((a, b)\in R)\}]라는 뜻이다."
-axiomatic schema rel_dom_def(cls x) {
-	rel(x) |- eq(
-		rel_dom(x),
-		setbuilder((cls a) => {
+cls rel_dom(cls x) {
+	setbuilder((cls a) => {
 			X((cls b) => {
 				in(v2(a, b), x)
 			})
 		})
-	)
 }
 
 "이항관계의 치역(image)."
 $!<prec=200><<\operatorname{im}>>#1$
-cls rel_im(cls x);
-
-"rel_im의 defining property.
-
-[$R]이 이항관계일 때, [$\{b: (\exists a)((a, b)\in R)\}]라는 뜻이다."
-axiomatic schema rel_im_def(cls x) {
-	rel(x) |- eq(
-		rel_im(x),
-		setbuilder((cls b) => {
-			X((cls a) => {
-				in(v2(a, b), x)
-			})
+cls rel_im(cls x) {
+	setbuilder((cls b) => {
+		X((cls a) => {
+			in(v2(a, b), x)
 		})
-	)
+	})
 }
 
 "어떤 [$\langle f, A, B\rangle]가 함수이다.
@@ -1896,11 +1870,28 @@ schema fun_subseteq_cartesian(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	function(f, a, b) |- Ae1[function(f, a, b)]
 }
 
+schema fun_im_unique(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
+	function(f, a, b) |- Ae2[function(f, a, b)]
+}
+
+schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
+	function(f, a, b) |- Vi[(cls x) => {
+		cp[(
+			in(x, a) |-
+				IQX[mp[in(x, a), Ve(?, x)[fun_im_unique[function(f, a, b)]]]]
+		)][]
+	}] ~ id(Vin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))
+}
+
 schema fun_is_rel(cls f, $A$ cls a, $B$ cls b) {
 	function(f, a, b) |- rel_subset_is_rel[
 		fun_subseteq_cartesian(f, a, b)[function(f, a, b)],
 		cartesian_is_rel(a, b)[]
 	]
+}
+
+schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
+	function(f, a, b) |- eq(rel_dom(f), a)
 }
 
 "함수 호출."
