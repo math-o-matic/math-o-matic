@@ -166,11 +166,13 @@ schema Ee2(st p: @11, st q: @12) {
 }
 
 schema IEpqEqpm(st p: @11, st q: @12) {
-	mpu[tt.IEpqEqp(p, q)]
+	E(p, q) |- Ei[Ee2[E(p, q)], Ee1[E(p, q)]]
 }
 
 schema IpIqpm(st p: @1, st q) {
-	mpu[tt.IpIqp(p, q)]
+	p |- cp[
+		q |- p
+	][]
 }
 
 "E를 위한 mp."
@@ -180,8 +182,9 @@ schema mpE(st p: @11, st q: @12) {
 
 "가언적 삼단논법(hypothetical syllogism)."
 schema syll(st p: @11, st q: @12, st r: @22) {
-	Ai(I(p, q), I(q, r))
-	~ mpu[tt.IAIpqIqrIpr(p, q, r)]
+	I(p, q), I(q, r) |- cp[
+		p |- mp[mp[p, I(p, q)], I(q, r)]
+	][]
 }
 
 "syll을 두 번 적용한 것. 사단논법이라 해도 좋을 것이다."
@@ -191,8 +194,16 @@ schema syll4(st p: @11, st q: @21, st r: @31, st s: @32) {
 
 "E를 위한 syll."
 schema syllE(st p, st q, st r) {
-	Ai(E(p, q), E(q, r))
-	~ mpu[tt.IAEpqEqrEpr(p, q, r)]
+	E(p, q), E(q, r) |- Ei[
+		syll[
+			Ee1[E(p, q)],
+			Ee1[E(q, r)]
+		],
+		syll[
+			Ee2[E(q, r)],
+			Ee2[E(p, q)]
+		]
+	]
 }
 
 schema syllE4(st p, st q, st r, st s) {
@@ -406,7 +417,7 @@ schema VAm2(pr f, pr g) {
 }
 
 "VI의 m형."
-schema VIm(pr f, pr g) {
+schema VIm(pr f: @111, pr g: @112) {
 	mpu[VI(f, g)]
 }
 
