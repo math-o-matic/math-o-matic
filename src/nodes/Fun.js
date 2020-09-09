@@ -1,6 +1,8 @@
 var Node = require('./Node');
 var Type = require('./Type');
 
+var ExpressionResolver = require('../ExpressionResolver');
+
 /*
  * name, expr 중 하나 이상 있어야 하고 type, expr 중
  * 한 개만 있어야 한다.
@@ -82,7 +84,7 @@ Fun.prototype.toTeXString = function (prec, root) {
 				? this.params[0].toTeXString(false)
 				: `\\left(${this.params.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}\\right)`
 			),
-			`\\mapsto ${this.expr.toTeXString(false)}`,
+			`\\mapsto ${ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(false)}`,
 			(this.shouldConsolidate(prec) ? '\\right)' : '')
 		].join('');
 	}

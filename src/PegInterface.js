@@ -387,12 +387,19 @@ PI.reduction = function (obj, parentScope, trace) {
 
 	var subject = PI.metaexpr(obj.subject, scope, trace);
 
+	var guesses = !obj.guesses
+		? null
+		: obj.guesses.map(g => {
+			return g && PI.expr0(g, scope, trace);
+		});
+
 	var leftargs = obj.leftargs.map(obj => {
 		return PI.metaexpr(obj, scope, trace);
 	});
 
 	return new Reduction({
 		subject,
+		guesses,
 		leftargs
 	}, scope, trace);
 };

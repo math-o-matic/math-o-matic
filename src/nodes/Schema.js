@@ -38,7 +38,6 @@ function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, sco
 			from: params.map(typevar => typevar.type),
 			to: expr.type
 		});
-		this.expanded = ExpressionResolver.expandMetaAndFuncalls(expr);
 	}
 }
 
@@ -84,7 +83,7 @@ Schema.prototype.toTeXString = function (prec, root) {
 			+ '\\ (\\textrm{native})';
 
 	return `\\href{#schema-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}):`
-				+ '\\\\\\quad' + this.expanded.toTeXString(true);
+				+ '\\\\\\quad' + ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
 };
 
 module.exports = Schema;

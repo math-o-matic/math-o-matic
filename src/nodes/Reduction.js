@@ -3,20 +3,33 @@ var Schemacall = require('./Schemacall');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Reduction({subject, leftargs}, scope, trace) {
+function Reduction({subject, guesses, leftargs}, scope, trace) {
 	Node.call(this, trace);
 
 	if (!subject.native && subject._type == 'schema') {
-		if (subject.params.some(p => !p.guess)) {
-			throw this.error('Argument could not be guessed');
-		}
 
-		var derefs = subject.params.map(p => this.query(p.guess, ExpressionResolver.expandMeta(subject.expr).left, leftargs));
+		subject.params.forEach((p, i) => {
+			if (!(guesses && guesses[i]) && !p.guess) {
+				throw this.error(`Argument #${i + 1} could not be guessed`);
+			}
+		});
+
+		var derefs = subject.params.map((p, i) => {
+			if (guesses && guesses[i]) return guesses[i];
+
+			return this.query(
+				p.guess,
+				ExpressionResolver.expandMeta(subject.expr).left,
+				leftargs
+			);
+		});
 
 		subject = new Schemacall({
 			schema: subject,
 			args: derefs,
 		}, scope, trace);
+	} else if (guesses) {
+		throw this.error('Something\'s wrong');
 	}
 
 	if (!subject.native
@@ -47,7 +60,7 @@ function Reduction({subject, leftargs}, scope, trace) {
 
 		this.type = subject.type.right;
 
-		var tee = ExpressionResolver.expandMeta(subject);
+		var tee = ExpressionResolver.expandMetaAndFuncalls(subject);
 
 		if (tee._type != 'tee') {
 			throw this.error('Assertion failed');

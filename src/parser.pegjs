@@ -195,6 +195,7 @@ tee =
 // foo(...)[...]
 // foo[...][...]
 // (metaexpr)[...]
+// schema(?, ...)[...]
 reduction =
 	subject:(
 		schemacall
@@ -204,6 +205,16 @@ reduction =
 		")"
 		{return e}
 	) _
+	guesses:(
+		"(" _
+		a:(
+			head:('?' {return null} / expr0) _
+			tail:("," _ e:('?' {return null} / expr0) _ {return e})*
+			{return [head].concat(tail)}
+		)?
+		")"
+		{return a || []}
+	)?
 	leftargs:(
 		"[" _
 		a:(
@@ -218,6 +229,7 @@ reduction =
 		var ret = {
 			_type: 'reduction',
 			subject,
+			guesses,
 			leftargs: leftargs[0],
 			location: location()
 		};
@@ -226,6 +238,7 @@ reduction =
 			ret = {
 				_type: 'reduction',
 				subject: ret,
+				guesses: null,
 				leftargs: leftargs[i],
 				location: location()
 			};
