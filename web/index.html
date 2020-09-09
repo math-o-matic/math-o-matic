@@ -403,6 +403,10 @@
 									];
 								})();
 
+								if (leftPrinted) {
+									left = Array(left.length).fill([]);
+								}
+
 								return [
 									leftargs.map(e => e[0]).filter(e => e).join(''),
 									subject[0] || '',
