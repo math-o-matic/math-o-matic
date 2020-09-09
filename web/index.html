@@ -607,9 +607,12 @@
 				var xhr = new XMLHttpRequest();
 				xhr.addEventListener('load', () => {
 					eval(xhr.responseText);
-					load();
-					$('#reload').value = 'RELOAD';
-					reloading = false;
+					try {
+						load();
+					} finally {
+						$('#reload').value = 'RELOAD';
+						reloading = false;
+					}
 				});
 				xhr.addEventListener('error', () => {
 					console.log('LOAD FAILED');
