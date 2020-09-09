@@ -470,7 +470,7 @@ schema VE(pr f, pr g) {
 	cp[VEm(f, g)]
 }
 
-schema syllV(pr f, pr g, pr h) {
+schema syllV(pr f: @111, pr g: @112, pr h: @212) {
 	Ai(
 		V(If(f, g)),
 		V(If(g, h))
@@ -692,8 +692,32 @@ st Nin(cls x, cls y) {
 	N(in(x, y))
 }
 
+"[$\subseteq]."
+$!<prec=350>#1<<\subseteq>>#2$
+st subseteq(cls x, cls y) {
+	V((cls z) => {
+		I(
+			in(z, x),
+			in(z, y)
+		)
+	})
+}
+
+"[$=] 연산자. [$\in]에 의존한다."
+$!<prec=350>#1<<=>>#2$
+st eq(cls x, cls y) {
+	A(
+		V((cls z) => {
+			E(in(z, x), in(z, y))
+		}),
+		V((cls w) => {
+			E(in(x, w), in(y, w))
+		})
+	)
+}
+
 "어떤 class 내에서의 forall."
-$!<prec=249><<\forall>>_{#1}#2$
+$!<prec=249><<\forall>>_{\in #1}#2$
 st Vin(cls a, pr f) {
 	V((cls z) => {
 		I(
@@ -701,6 +725,16 @@ st Vin(cls a, pr f) {
 			f(z)
 		)
 	})
+}
+
+schema Vin_subset(cls a: @12, cls b: @11, pr f: @22) {
+	id(subseteq(a, b)) ~
+	id(Vin(b, f)) ~
+	syllV(
+		(cls z) => {in(z, a)},
+		(cls z) => {in(z, b)},
+		f
+	) ~ id(Vin(a, f))
 }
 
 schema VVin_m(cls a, pr2 f) {
@@ -755,30 +789,6 @@ schema set_Xi_O(cls x, cls y, cls z) {
 	cp[set_Xi(z, x)]
 	~ cp[set_Xi(z, y)]
 	~ Oe(in(z, x), in(z, y), set(z))
-}
-
-"[$\subseteq]."
-$!<prec=350>#1<<\subseteq>>#2$
-st subseteq(cls x, cls y) {
-	V((cls z) => {
-		I(
-			in(z, x),
-			in(z, y)
-		)
-	})
-}
-
-"[$=] 연산자. [$\in]에 의존한다."
-$!<prec=350>#1<<=>>#2$
-st eq(cls x, cls y) {
-	A(
-		V((cls z) => {
-			E(in(z, x), in(z, y))
-		}),
-		V((cls w) => {
-			E(in(x, w), in(y, w))
-		})
-	)
 }
 
 schema eq_Ae1(cls x, cls y) {
@@ -1720,7 +1730,7 @@ st rel(cls x) {
 }
 
 "곱집합은 이항관계이다."
-schema cartesian_is_rel(cls x, cls y, cls z) {
+schema cartesian_is_rel(cls x, cls y) {
 	Viu((cls z) => {
 		I(
 			in(z, cartesian(x, y)),
@@ -1746,6 +1756,14 @@ schema cartesian_is_rel(cls x, cls y, cls z) {
 		]
 	}]
 	~ id(rel(cartesian(x, y)))
+}
+
+schema rel_subset_is_rel(cls x: @11, cls y: @12) {
+	(subseteq(x, y), rel(y) |- Vin_subset(x, y, (cls z) => {
+		X2((cls a, cls b) => {
+			eq(z, v2(a, b))
+		})
+	})[subseteq(x, y), rel(y)]) ~ id(rel(x))
 }
 
 schema rel_V_1_1(cls x, cls z, cls a, cls b) {
@@ -1872,6 +1890,17 @@ st function(cls f, $A$ cls a, $B$ cls b) {
 			})
 		})
 	)
+}
+
+schema fun_subseteq_cartesian(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
+	function(f, a, b) |- Ae1[function(f, a, b)]
+}
+
+schema fun_is_rel(cls f, $A$ cls a, $B$ cls b) {
+	function(f, a, b) |- rel_subset_is_rel[
+		fun_subseteq_cartesian(f, a, b)[function(f, a, b)],
+		cartesian_is_rel(a, b)[]
+	]
 }
 
 "함수 호출."
