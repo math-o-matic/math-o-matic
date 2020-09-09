@@ -9,6 +9,8 @@
 		<string>^(.*\*/)?\s*\}.*$</string>
 		<key>increaseIndentPattern</key>
 		<string>^.*\{[^}"']*$</string>
+		<key>bracketIndentNextLinePattern</key>
+		<string>^.*\|-\s*$</string>
 
 		<key>shellVariables</key>
 		<array>
