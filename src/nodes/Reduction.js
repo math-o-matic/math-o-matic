@@ -11,7 +11,7 @@ function Reduction({subject, args}, scope, trace) {
 			throw this.error('Argument could not be guessed');
 		}
 
-		var derefs = subject.params.map(p => this.query(p.guess, args));
+		var derefs = subject.params.map(p => this.query(p.guess, ExpressionResolver.expandMeta(subject.expr).left, args));
 
 		subject = new Schemacall({
 			schema: subject,
@@ -75,17 +75,18 @@ Reduction.prototype = Object.create(Node.prototype);
 Reduction.prototype.constructor = Reduction;
 Reduction.prototype._type = 'reduction';
 
-Reduction.prototype.query = function (guess, args) {
+Reduction.prototype.query = function (guess, left, args) {
 	if (guess.length == 0) throw this.error('wut');
 
 	if (!(1 <= guess[0] * 1 && guess[0] * 1 <= args.length))
 		throw this.error(`Cannot dereference @${guess}`);
 
+	var lef = left[guess[0] * 1 - 1];
 	var ret = args[guess[0] * 1 - 1];
 
 	var that = this;
 
-	return (function recurse(guess, node, ptr) {
+	return (function recurse(guess, lef, node, ptr) {
 		node = ExpressionResolver.expandMetaAndFuncalls(node);
 		
 		if (guess.length <= ptr) return node;
@@ -93,14 +94,30 @@ Reduction.prototype.query = function (guess, args) {
 		if (/[0-9]/.test(guess[ptr])) {
 			var n = guess[ptr] * 1;
 
+			while (true) {
+				if (!lef.fun || !node.fun) {
+					throw that.error(`Cannot dereference @${guess}`);
+				}
+
+				if (ExpressionResolver.equals0(lef.fun, node.fun)) {
+					break;
+				}
+
+				if (!node.fun.expr) {
+					throw that.error(`Cannot dereference @${guess}`);
+				}
+
+				node = ExpressionResolver.expand0FuncallOnce(node);
+			}
+
 			if (!node.args || !(1 <= n && n <= node.args.length))
 				throw that.error(`Cannot dereference @${guess}`);
 
-			return recurse(guess, node.args[n - 1], ptr + 1);
+			return recurse(guess, lef.args[n - 1], node.args[n - 1], ptr + 1);
 		}
 
 		throw that.error(`Cannot dereference @${guess}`);
-	})(guess, ret, 1);
+	})(guess, lef, ret, 1);
 };
 
 Reduction.prototype.toString = function () {
