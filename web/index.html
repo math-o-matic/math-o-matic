@@ -417,10 +417,28 @@
 									)
 								].join('');
 							case 'schemacall':
+								if (expr.schema.name) {
+									return getHtml(
+										left,
+										ktx(expr.expanded.toTeXString(true)),
+										`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
+									);
+								}
+
+								var hypno = getHypNo(hyps, expr.schema);
+
+								if (hypno) {
+									return getHtml(
+										left,
+										ktx(expr.expanded.toTeXString(true)),
+										`<td>${DIAMOND}</td><td><b>${hypno}</b> (${expr.args.map(arg => ktx(arg.toTeXString(true))).join(', ')})</td>`
+									);
+								}
+
 								return getHtml(
 									left,
 									ktx(expr.expanded.toTeXString(true)),
-									`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
+									'<td colspan="2"><b class="red">not proved</b></td>'
 								);
 							case 'funcall':
 							case 'typevar':
