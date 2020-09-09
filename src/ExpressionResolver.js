@@ -387,6 +387,10 @@ ER.equalsMeta = function (a, b) {
 };
 
 ER.chain = function (tees) {
+	if (!tees.every(tee => tee._type == 'tee')) {
+		throw Error('no');
+	}
+
 	return ER.expandMetaAndFuncalls(tees.reduceRight((r, l) => {
 		for (var i = 0; i < r.left.length; i++) {
 			if (ER.equals0(l.right, r.left[i])) {
