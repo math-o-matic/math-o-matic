@@ -289,19 +289,19 @@ function peg$parse(input, options) {
       peg$c59 = "]",
       peg$c60 = peg$literalExpectation("]", false),
       peg$c61 = function(subject, a) {return a || []},
-      peg$c62 = function(subject, args) {
+      peg$c62 = function(subject, leftargs) {
       		var ret = {
       			_type: 'reduction',
       			subject,
-      			args: args[0],
+      			leftargs: leftargs[0],
       			location: location()
       		};
 
-      		for (var i = 1; i < args.length; i++) {
+      		for (var i = 1; i < leftargs.length; i++) {
       			ret = {
       				_type: 'reduction',
       				subject: ret,
-      				args: args[i],
+      				leftargs: leftargs[i],
       				location: location()
       			};
       		}
@@ -364,7 +364,7 @@ function peg$parse(input, options) {
       				type: 'normal',
       				name: 'cut'
       			},
-      			args: [a, b],
+      			leftargs: [a, b],
       			location: location()
       		}
       	},

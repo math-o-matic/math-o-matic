@@ -282,7 +282,7 @@
 						switch (expr._type) {
 							case 'reduction':
 								return Math.max(
-									...expr.args.map(recurse),
+									...expr.leftargs.map(recurse),
 									((expr.subject._type == 'schema' && expr.subject.name)
 										|| (expr.subject._type == 'schemacall' && expr.subject.schema.name)
 											? 0 : recurse(expr.subject)),
@@ -341,8 +341,8 @@
 							case 'reduction':
 								var leftPrinted = false;
 
-								var args = expr.args.map(arg => {
-									var hypno = getHypNo(hyps, arg);
+								var leftargs = expr.leftargs.map(leftarg => {
+									var hypno = getHypNo(hyps, leftarg);
 
 									if (hypno) {
 										return [false, hypno];
@@ -356,7 +356,7 @@
 
 									return [
 										recurse(
-											arg,
+											leftarg,
 											left,
 											hyps
 										),
@@ -371,11 +371,11 @@
 								if ((expr.subject._type == 'schema' && expr.subject.name)
 										|| (expr.subject._type == 'schemacall' && expr.subject.schema.name)) {
 									return [
-										args.map(e => e[0]).filter(e => e).join(''),
+										leftargs.map(e => e[0]).filter(e => e).join(''),
 										getHtml(
 											left,
 											ktx(expr.reduced.toTeXString(true)),
-											`<td>${DOWN}</td><td>${ktx(expr.subject.toTeXString(true))} [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
+											`<td>${DOWN}</td><td>${ktx(expr.subject.toTeXString(true))} [${leftargs.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
 										)
 									].join('');
 								}
@@ -404,12 +404,12 @@
 								})();
 
 								return [
-									args.map(e => e[0]).filter(e => e).join(''),
+									leftargs.map(e => e[0]).filter(e => e).join(''),
 									subject[0] || '',
 									getHtml(
 										left,
 										ktx(expr.reduced.toTeXString(true)),
-										`<td>${DOWN}</td><td><b>${subject[1]}</b> [${args.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
+										`<td>${DOWN}</td><td><b>${subject[1]}</b> [${leftargs.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
 									)
 								].join('');
 							case 'schemacall':

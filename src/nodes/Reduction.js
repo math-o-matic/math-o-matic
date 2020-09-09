@@ -3,7 +3,7 @@ var Schemacall = require('./Schemacall');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Reduction({subject, args}, scope, trace) {
+function Reduction({subject, leftargs}, scope, trace) {
 	Node.call(this, trace);
 
 	if (!subject.native && subject._type == 'schema') {
@@ -11,7 +11,7 @@ function Reduction({subject, args}, scope, trace) {
 			throw this.error('Argument could not be guessed');
 		}
 
-		var derefs = subject.params.map(p => this.query(p.guess, ExpressionResolver.expandMeta(subject.expr).left, args));
+		var derefs = subject.params.map(p => this.query(p.guess, ExpressionResolver.expandMeta(subject.expr).left, leftargs));
 
 		subject = new Schemacall({
 			schema: subject,
@@ -23,26 +23,26 @@ function Reduction({subject, args}, scope, trace) {
 			&& !(subject.type._type == 'metatype' && subject.type.isSimple))
 		throw this.error('Subject is not reducible');
 
-	if (!(args instanceof Array)
-			|| args.map(e => e instanceof Node).some(e => !e))
+	if (!(leftargs instanceof Array)
+			|| leftargs.map(e => e instanceof Node).some(e => !e))
 		throw this.error('Assertion failed');
 	
 	this.subject = subject;
-	this.args = args;
+	this.leftargs = leftargs;
 
 	if (subject.native) {
-		this.reduced = subject.native.get(args);
+		this.reduced = subject.native.get(leftargs);
 		this.type = this.reduced.type;
 	} else {
 		var paramTypes = subject.type.left,
-			argTypes = args.map(e => e.type);
+			leftargTypes = leftargs.map(e => e.type);
 
-		if (paramTypes.length != argTypes.length)
-			throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
+		if (paramTypes.length != leftargTypes.length)
+			throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${leftargTypes.length}`);
 
 		for (let i = 0; i < paramTypes.length; i++) {
-			if (!paramTypes[i].equals(argTypes[i]))
-				throw this.error(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
+			if (!paramTypes[i].equals(leftargTypes[i]))
+				throw this.error(`Illegal argument type (expected ${paramTypes[i]}): ${leftargTypes[i]}`);
 		}
 
 		this.type = subject.type.right;
@@ -54,7 +54,7 @@ function Reduction({subject, args}, scope, trace) {
 		}
 
 		for (let i = 0; i < tee.left.length; i++) {
-			if (!ExpressionResolver.equalsMeta(tee.left[i], args[i])) {
+			if (!ExpressionResolver.equalsMeta(tee.left[i], leftargs[i])) {
 				throw this.error(`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
@@ -62,7 +62,7 @@ ${tee.left[i]}
 ----------------
 
 --- RECEIVED ---
-${args[i]}
+${leftargs[i]}
 ----------------`);
 			}
 		}
@@ -75,14 +75,14 @@ Reduction.prototype = Object.create(Node.prototype);
 Reduction.prototype.constructor = Reduction;
 Reduction.prototype._type = 'reduction';
 
-Reduction.prototype.query = function (guess, left, args) {
+Reduction.prototype.query = function (guess, left, leftargs) {
 	if (guess.length == 0) throw this.error('wut');
 
-	if (!(1 <= guess[0] * 1 && guess[0] * 1 <= args.length))
+	if (!(1 <= guess[0] * 1 && guess[0] * 1 <= leftargs.length))
 		throw this.error(`Cannot dereference @${guess}`);
 
 	var lef = left[guess[0] * 1 - 1];
-	var ret = args[guess[0] * 1 - 1];
+	var ret = leftargs[guess[0] * 1 - 1];
 
 	var that = this;
 
@@ -125,36 +125,36 @@ Reduction.prototype.toString = function () {
 };
 
 Reduction.prototype.toIndentedString = function (indent) {
-	var args = this.args.map(arg => {
+	var leftargs = this.leftargs.map(arg => {
 		return arg.toIndentedString(indent + 1);
 	});
 
-	if (args.join('').length <= 50) {
-		args = this.args.map(arg => {
+	if (leftargs.join('').length <= 50) {
+		leftargs = this.leftargs.map(arg => {
 			return arg.toIndentedString(indent);
 		});
 
-		args = args.join(', ');
+		leftargs = leftargs.join(', ');
 
 		return [
 			`${this.subject.toIndentedString(indent)}[`,
-			args,
+			leftargs,
 			']'
 		].join('');
 	}
 	else {
-		args = args.join(',\n' + '\t'.repeat(indent + 1));
+		leftargs = leftargs.join(',\n' + '\t'.repeat(indent + 1));
 
 		return [
 			`${this.subject.toIndentedString(indent)}[`,
-			'\t' + args,
+			'\t' + leftargs,
 			']'
 		].join('\n' + '\t'.repeat(indent));
 	}
 };
 
 Reduction.prototype.toTeXString = function (prec, root) {
-	return `${this.subject.toTeXString(false)}[${this.args.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}]`;
+	return `${this.subject.toTeXString(false)}[${this.leftargs.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}]`;
 };
 
 module.exports = Reduction;

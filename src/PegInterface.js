@@ -387,20 +387,13 @@ PI.reduction = function (obj, parentScope, trace) {
 
 	var subject = PI.metaexpr(obj.subject, scope, trace);
 
-	var args = obj.args.map(obj => {
+	var leftargs = obj.leftargs.map(obj => {
 		return PI.metaexpr(obj, scope, trace);
 	});
 
-	if (subject.native) {
-		return new Reduction({
-			subject,
-			args
-		}, scope, trace);
-	}
-
 	return new Reduction({
 		subject,
-		args
+		leftargs
 	}, scope, trace);
 };
 

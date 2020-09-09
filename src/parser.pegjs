@@ -204,7 +204,7 @@ reduction =
 		")"
 		{return e}
 	) _
-	args:(
+	leftargs:(
 		"[" _
 		a:(
 			head:metaexpr _
@@ -218,15 +218,15 @@ reduction =
 		var ret = {
 			_type: 'reduction',
 			subject,
-			args: args[0],
+			leftargs: leftargs[0],
 			location: location()
 		};
 
-		for (var i = 1; i < args.length; i++) {
+		for (var i = 1; i < leftargs.length; i++) {
 			ret = {
 				_type: 'reduction',
 				subject: ret,
-				args: args[i],
+				leftargs: leftargs[i],
 				location: location()
 			};
 		}
@@ -355,7 +355,7 @@ metaexpr =
 				type: 'normal',
 				name: 'cut'
 			},
-			args: [a, b],
+			leftargs: [a, b],
 			location: location()
 		}
 	}
@@ -394,7 +394,7 @@ metaexpr_par =
 				type: 'normal',
 				name: 'cut'
 			},
-			args: [a, b],
+			leftargs: [a, b],
 			location: location()
 		}
 	}
