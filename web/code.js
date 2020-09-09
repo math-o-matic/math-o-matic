@@ -1,3 +1,4 @@
+code = String.raw`
 #####################################
 ######## PROPOSITIONAL LOGIC ########
 #####################################
@@ -79,7 +80,7 @@ axiomatic native schema cut;
 axiomatic native schema cp;
 
 "modus ponens. 함의 소거(implication elimination) 또는 전건 긍정이라고도 한다."
-axiomatic schema mp(st p, st q) {
+axiomatic schema mp(st p: @1, st q: @22) {
 	p, I(p, q) |- q
 }
 
@@ -89,37 +90,37 @@ axiomatic schema mp(st p, st q) {
 axiomatic native schema mpu;
 
 "연언 도입(conjunction introduction)."
-schema Ai(st p, st q) {
+schema Ai(st p: @1, st q: @2) {
 	mpu[mpu[tt.IpIqApq(p, q)]]
 }
 
 "연언 도입 2번."
-schema A3i(st p, st q, st r) {
-	p, q, r |- Ai(A(p, q), r)[Ai(p, q)[p, q], r]
+schema A3i(st p: @1, st q: @2, st r: @3) {
+	p, q, r |- Ai[Ai[p, q], r]
 }
 
 "연언 소거(conjunction elimination) 1."
-schema Ae1(st p, st q) {
+schema Ae1(st p: @11, st q: @12) {
 	mpu[tt.IApqp(p, q)]
 }
 
 "연언 소거(conjunction elimination) 2."
-schema Ae2(st p, st q) {
+schema Ae2(st p: @11, st q: @12) {
 	mpu[tt.IApqq(p, q)]
 }
 
 "선언 도입(disjunction introduction) 1."
-schema Oi1(st p, st q) {
+schema Oi1(st p: @1, st q) {
 	mpu[tt.IpOpq(p, q)]
 }
 
 "선언 도입(disjunction introduction) 2."
-schema Oi2(st p, st q) {
+schema Oi2(st p, st q: @1) {
 	mpu[tt.IqOpq(p, q)]
 }
 
 "선언 소거(disjunction elimination). proof by cases라고도 한다."
-schema Oe(st p, st q, st r) {
+schema Oe(st p: @11, st q: @12, st r: @22) {
 	A3i(
 		O(p, q),
 		I(p, r),
@@ -129,62 +130,62 @@ schema Oe(st p, st q, st r) {
 }
 
 "부정 도입(negation introduction). 귀류법(reductio ad absurdum)이라고도 한다."
-schema Ni(st p) {
+schema Ni(st p: @11) {
 	mpu[tt.IIpFNp(p)]
 }
 
 "부정 소거(negation elimination). 폭발률(ex falso quodlibet)이라고도 한다."
-schema Ne(st p, st q) {
+schema Ne(st p: @1, st q) {
 	mpu[mpu[tt.IpINpq(p, q)]]
 }
 
 "이중부정 도입(double negation introduction)."
-schema NNi(st p) {
+schema NNi(st p: @1) {
 	mpu[tt.IpNNp(p)]
 }
 
 "이중부정 소거(double negation elimination)."
-schema NNe(st p) {
+schema NNe(st p: @111) {
 	mpu[tt.INNpp(p)]
 }
 
 "쌍조건문 도입(biconditional introduction)."
-schema Ei(st p, st q) {
+schema Ei(st p: @11, st q: @12) {
 	Ai(I(p, q), I(q, p))
 	~ mpu[tt.IAIpqIqpEpq(p, q)]
 }
 
 "쌍조건문 소거(biconditional elimination) 1."
-schema Ee1(st p, st q) {
+schema Ee1(st p: @11, st q: @12) {
 	mpu[tt.IEpqIpq(p, q)]
 }
 
 "쌍조건문 소거(biconditional elimination) 2."
-schema Ee2(st p, st q) {
+schema Ee2(st p: @11, st q: @12) {
 	mpu[tt.IEpqIqp(p, q)]
 }
 
-schema IEpqEqpm(st p, st q) {
+schema IEpqEqpm(st p: @11, st q: @12) {
 	mpu[tt.IEpqEqp(p, q)]
 }
 
-schema IpIqpm(st p, st q) {
+schema IpIqpm(st p: @1, st q) {
 	mpu[tt.IpIqp(p, q)]
 }
 
 "E를 위한 mp."
-schema mpE(st p, st q) {
+schema mpE(st p: @11, st q: @12) {
 	mpu[Ee1(p, q)]
 }
 
 "가언적 삼단논법(hypothetical syllogism)."
-schema syll(st p, st q, st r) {
+schema syll(st p: @11, st q: @12, st r: @22) {
 	Ai(I(p, q), I(q, r))
 	~ mpu[tt.IAIpqIqrIpr(p, q, r)]
 }
 
 "syll을 두 번 적용한 것. 사단논법이라 해도 좋을 것이다."
-schema syll4(st p, st q, st r, st s) {
+schema syll4(st p: @11, st q: @21, st r: @31, st s: @32) {
 	syll(p, q, r) ~ syll(p, r, s)
 }
 
@@ -199,7 +200,7 @@ schema syllE4(st p, st q, st r, st s) {
 }
 
 "sequent calculus의 I 규칙 같은 것. 표현형식을 바꾸는 데 쓰이고 있다."
-schema id(st p) {
+schema id(st p: @1) {
 	p |- p
 }
 
@@ -226,8 +227,8 @@ schema mt(st p, st q) {
 schema swap(st p, st q, st r) {
 	I(p, I(q, r)) |- cp[
 		q |- cp[
-			p |- mp(q, r)[
-				q, mp(p, I(q, r))[
+			p |- mp[
+				q, mp[
 					p, I(p, I(q, r))
 				]
 			]
@@ -1875,3 +1876,4 @@ axiomatic schema fcall_def(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 		in(v2(x, y), f)
 	)
 }
+`

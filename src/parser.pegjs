@@ -53,6 +53,21 @@ defparam =
 		}
 	}
 
+defschemaparam =
+	tex:(tex __)? type:type __ name:ident
+	guess:(_ ':' _ '@' g:$[a-z0-9_]+ {return g})?
+	{
+		return {
+			_type: 'defv',
+			isParam: true,
+			guess,
+			type,
+			tex: tex && tex[0],
+			name,
+			location: location()
+		}
+	}
+ 
 defun =
 	doc:(documentation __)?
 	tex:(tex __)?
@@ -115,8 +130,8 @@ defschema =
 	params:(
 		"(" _
 		p:(
-			head:defparam _
-			tail:("," _ tv:defparam _ {return tv})*
+			head:defschemaparam _
+			tail:("," _ tv:defschemaparam _ {return tv})*
 			{return [head].concat(tail)}
 		)?
 		")" _
@@ -477,7 +492,7 @@ keyword =
 	/ "type";
 
 ident =
-	!keyword id:[a-zA-Z0-9_]+ {return id.join('')}
+	$(!keyword $[a-zA-Z0-9_]+)
 
 documentation =
 	'"' b:(!'"' a:. {return a})* '"' {
@@ -485,8 +500,8 @@ documentation =
 	}
 
 tex =
-	'$' b:(!'$' a:. {return a})* '$' {
-		return b.join('')
+	'$' b:$(!'$' a:. {return a})* '$' {
+		return b
 	}
 
 comment =

@@ -12,7 +12,7 @@ StackTrace.prototype.error = function (message) {
 	return new Error(
 		message
 		+ '\n\tat ' + this.stack.map(([type, name, location]) => {
-			return `${type} ${name || '<anonymous>'} (code.math:${location.start.line}:${location.start.column})`;
+			return `${type} ${name || '<anonymous>'} (code.js:${location.start.line}:${location.start.column})`;
 		}).join('\n\tat ')
 	);
 };

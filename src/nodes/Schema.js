@@ -15,7 +15,7 @@ function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, sco
 	if (name !== null && typeof name != 'string')
 		throw this.error('Assertion failed');
 
-	if (!native && expr.type._type != 'metatype') {
+	if (!native && !['type', 'metatype'].includes(expr.type._type)) {
 		throw this.error('Assertion failed');
 	}
 

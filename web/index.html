@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>math-o-matic</title>
 		<script src="../dist/math.js"></script>
+		<script src="./code.js"></script>
 		<script src="./native.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/m42kup@0.2.1/dist/m42kup.min.js"></script>
@@ -126,10 +127,10 @@
 			<li> Chrome의 경우 <code>--allow-file-access-from-files</code> 플래그를 통해 로컬 파일 로드를 가능하게 할 수 있습니다. <a href="https://stackoverflow.com/a/18137280">StackOverflow 링크</a>
 		</ul>
 		<h2>우상단 reload 버튼에 관하여</h2>
-		<p>우상단 reload 버튼은 <a href="./code.math">code.math</a> 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.</p>
+		<p>우상단 reload 버튼은 <a href="./code.js">code.js</a> 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.</p>
 		<h2>목록</h2>
 		<p>이하의 내용은
-			<a href="./code.math">code.math</a> 및
+			<a href="./code.js">code.js</a> 및
 			<a href="./native.js">native.js</a>에 있는 코드를 렌더링 한 것입니다.</p>
 		<div style="position:fixed;top:5px;right:5px;z-index:10000;">
 			<input id="reload" type="button" value="RELOAD">
@@ -166,7 +167,7 @@
 
 			var loading = false;
 
-			function load(code) {
+			function load() {
 				if (loading) return;
 				loading = true;
 
@@ -181,7 +182,7 @@
 					parsed = math.parser.parse(code);
 				} catch (e) {
 					console.error(e);
-					console.error(`Error: ${e.message}\n\tat code.math:${e.location.start.line}:${e.location.start.column}`);
+					console.error(`Error: ${e.message}\n\tat code.js:${e.location.start.line}:${e.location.start.column}`);
 					console.log('--- PARSE FAILED ---');
 					return;
 				}
@@ -287,9 +288,6 @@
 											? 0 : recurse(expr.subject)),
 									1
 								);
-							case 'schemacall':
-							case 'funcall':
-								return 1;
 							case 'schema':
 							case 'fun':
 								return recurse(expr.expr) + 1;
@@ -298,6 +296,8 @@
 									...expr.left.map(recurse),
 									recurse(expr.right)
 								) + 1;
+							case 'schemacall':
+							case 'funcall':
 							default:
 								return 1;
 						}
@@ -419,6 +419,7 @@
 									`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
 								);
 							case 'funcall':
+							case 'typevar':
 								return getHtml(
 									left,
 									ktx(expr.toTeXString(true)),
@@ -519,6 +520,15 @@
 							: '<p class="description"><i>No description provided.</i></p>'
 						)
 
+						+ (
+							v.native || v.params.every(p => !p.guess)
+								? ''
+								: '<p class="label"><b>guesses</b></p>'
+									+ `<ul>${v.params.filter(p => p.guess).map(p => {
+										return `<li>${p.name}: @${p.guess}</li>`;
+									}).join('')}</ul>`
+						)
+
 						+ `</div>`;
 
 					arr[v._id] = r;
@@ -586,17 +596,7 @@
 				}
 			}
 
-			var reloading = true;
-
-			(function init() {
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', './code.math', false);
-				xhr.send(null);
-
-				load(xhr.responseText);
-
-				reloading = false;
-			})();
+			var reloading = false;
 
 			$('#reload').addEventListener('click', () => {
 				if (reloading) return;
@@ -606,7 +606,8 @@
 
 				var xhr = new XMLHttpRequest();
 				xhr.addEventListener('load', () => {
-					load(xhr.responseText);
+					eval(xhr.responseText);
+					load();
 					$('#reload').value = 'RELOAD';
 					reloading = false;
 				});
@@ -615,9 +616,11 @@
 					$('#reload').value = 'RELOAD';
 					reloading = false;
 				});
-				xhr.open('GET', './code.math');
+				xhr.open('GET', './code.js');
 				xhr.send();
 			});
+
+			load();
 		</script>
 	</body>
 </html>

@@ -1,9 +1,23 @@
 var Node = require('./Node');
+var Schemacall = require('./Schemacall');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
 function Reduction({subject, args}, scope, trace) {
 	Node.call(this, trace);
+
+	if (!subject.native && subject._type == 'schema') {
+		if (subject.params.some(p => !p.guess)) {
+			throw this.error('Argument could not be guessed');
+		}
+
+		var derefs = subject.params.map(p => this.query(p.guess, args));
+
+		subject = new Schemacall({
+			schema: subject,
+			args: derefs,
+		}, scope, trace);
+	}
 
 	if (!subject.native
 			&& !(subject.type._type == 'metatype' && subject.type.isSimple))
@@ -60,6 +74,34 @@ ${args[i]}
 Reduction.prototype = Object.create(Node.prototype);
 Reduction.prototype.constructor = Reduction;
 Reduction.prototype._type = 'reduction';
+
+Reduction.prototype.query = function (guess, args) {
+	if (guess.length == 0) throw this.error('wut');
+
+	if (!(1 <= guess[0] * 1 && guess[0] * 1 <= args.length))
+		throw this.error(`Cannot dereference @${guess}`);
+
+	var ret = args[guess[0] * 1 - 1];
+
+	var that = this;
+
+	return (function recurse(guess, node, ptr) {
+		node = ExpressionResolver.expandMetaAndFuncalls(node);
+		
+		if (guess.length <= ptr) return node;
+
+		if (/[0-9]/.test(guess[ptr])) {
+			var n = guess[ptr] * 1;
+
+			if (!node.args || !(1 <= n && n <= node.args.length))
+				throw that.error(`Cannot dereference @${guess}`);
+
+			return recurse(guess, node.args[n - 1], ptr + 1);
+		}
+
+		throw that.error(`Cannot dereference @${guess}`);
+	})(guess, ret, 1);
+};
 
 Reduction.prototype.toString = function () {
 	return this.toIndentedString(0);
