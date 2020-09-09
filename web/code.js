@@ -344,6 +344,23 @@ axiomatic schema Vi(pr f: @1) {
 	f |- V(f)
 }
 
+"보편 양화 소거(universal elimination)."
+axiomatic schema Ve(pr f: @11, cls x) {
+	V(f) |- f(x)
+}
+
+"Vi의 다른 버전."
+schema Viu(pr f) {
+	(cls x) => { |- f(x) } |-
+		|- id(V(f))[Vi[(cls x) => {((cls x) => { |- f(x) })(x)[]}]]
+}
+
+"Ve의 다른 버전."
+schema Veu(pr f, cls x) {
+	(|- V(f)) |-
+		|- Ve(?, x)[(|- V(f))[]]
+}
+
 schema Vi_p(st p) {
 	p |- Vi((cls x) => { p })[(cls x) => { p }]
 }
@@ -352,27 +369,48 @@ schema Vi_c(st p) {
 	cp[Vi_p(p)]
 }
 
-"보편 양화 소거(universal elimination)."
-axiomatic schema Ve(pr f: @11, cls x) {
-	V(f) |- f(x)
+"VA의 m1형."
+schema VAm1(pr f: @111, pr g: @112) {
+	V(Af(f, g)) |-
+		Ai[
+			Vi[(cls x) => {
+				Ae1[id(A(f(x), g(x)))[Ve(?, x)[V(Af(f, g))]]]
+			}],
+			Vi[(cls x) => {
+				Ae2[id(A(f(x), g(x)))[Ve(?, x)[V(Af(f, g))]]]
+			}]
+		]
+	~ id(A(V(f), V(g)))
 }
 
-"Vi의 다른 버전."
-axiomatic schema Viu(pr f) {
-	(cls x) => { |- f(x) } |- (|- V(f))
+"VA의 m2형."
+schema VAm2(pr f: @111, pr g: @121) {
+	A(V(f), V(g)) |-
+		id(V(Af(f, g)))[
+			Vi[(cls x) => {
+				Ai[
+					Ve(?, x)[Ae1[A(V(f), V(g))]],
+					Ve(?, x)[Ae2[A(V(f), V(g))]]
+				]
+			}]
+		]
 }
 
-"Ve의 다른 버전."
-axiomatic schema Veu(pr f, cls x) {
-	(|- V(f)) |- (|- f(x))
+"[$\forall]과 [$\land] 간의 분배법칙 같은 것."
+schema VA(pr f, pr g) {
+	|- Ei[cp[VAm1(f, g)][], cp[VAm2(f, g)][]]
 }
 
-"[$\forall]과 [$\land] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VI만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
-axiomatic schema VA(pr f, pr g) {
-	|- E(
-		V(Af(f, g)),
-		A(V(f), V(g))
-	)
+schema mpV(pr f: @11, pr g: @212) {
+	V(f), V(If(f, g)) |-
+		id(V(g))[Vi[(cls x) => {
+			mp[Ve(?, x)[V(f)], Ve(?, x)[V((cls x) => { I(f(x), g(x)) })]]
+		}]]
+}
+
+schema VIm_(pr f, pr g) {
+	V(If(f, g)) |-
+		V(f) |- mpV[V(f), V(If(f, g))]
 }
 
 "[$\forall]과 [$\to] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VA만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
@@ -390,40 +428,25 @@ axiomatic schema VO(pr f, pr g) {
 	)
 }
 
-"[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것. 특이하게도 Viu 및 Veu로부터 유도할 수 있는 것으로 보이나 아직 표현할 방식이 없다."
-axiomatic schema VV(pr2 f) {
-	|- I(
-		V2((cls x, cls y) => { f(x, y) }),
-		V2((cls y, cls x) => { f(x, y) })
-	)
+"VV의 m형. 재미있게도 Vi 및 Ve로부터 유도할 수 있다."
+schema VVm(pr2 f) {
+	V2((cls x, cls y) => { f(x, y) }) |-
+		Vi[(cls y) => {
+			Vi[(cls x) => {
+				Ve(?, y)[Ve(?, x)[V2((cls x, cls y) => { f(x, y) })]]
+			}]
+		}]
+	~ id(V2((cls y, cls x) => { f(x, y) }))
 }
 
-"VA의 m1형."
-schema VAm1(pr f, pr g) {
-	mpu[VA(f, g)
-	~ Ee1(
-		V(Af(f, g)),
-		A(V(f), V(g))
-	)]
-}
-
-"VA의 m2형."
-schema VAm2(pr f, pr g) {
-	mpu[VA(f, g)
-	~ Ee2(
-		V(Af(f, g)),
-		A(V(f), V(g))
-	)]
+"[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것."
+schema VV(pr2 f) {
+	cp[VVm(f)]
 }
 
 "VI의 m형."
 schema VIm(pr f: @111, pr g: @112) {
 	mpu[VI(f, g)]
-}
-
-"VV의 m형."
-schema VVm(pr2 f) {
-	mpu[VV(f)]
 }
 
 "IEpqEqpm의 V형."
@@ -668,10 +691,6 @@ schema AeX2_2(pr2 f, pr2 g) {
 		A(X2(f), X2(g)),
 		X2(g)
 	)
-}
-
-schema mpV(pr f, pr g) {
-	mpu[VIm(f, g)]
 }
 
 schema mpVE(pr f, pr g) {
@@ -1669,7 +1688,7 @@ axiomatic schema infinity() {
 ######## RELATIONS ########
 ###########################
 
-"ordered pair."
+"순서쌍(ordered pair)."
 $\left(#1<<,>>#2\right)$
 cls v2(cls x, cls y);
 
@@ -1737,6 +1756,57 @@ st rel(cls x) {
 	})
 }
 
+"이항관계의 정의역(domain)."
+$!<prec=200><<\operatorname{dom}>>#1$
+cls rel_dom(cls x) {
+	setbuilder((cls a) => {
+		X((cls b) => {
+			in(v2(a, b), x)
+		})
+	})
+}
+
+"이항관계의 치역(image)."
+$!<prec=200><<\operatorname{im}>>#1$
+cls rel_im(cls x) {
+	setbuilder((cls b) => {
+		X((cls a) => {
+			in(v2(a, b), x)
+		})
+	})
+}
+
+"이항관계의 역(inverse)."
+$!<prec=190>{#1}^{<<-1>>}$
+cls rel_inverse(cls x) {
+	setbuilder((cls z) => {
+		X2((cls a, cls b) => {
+			A(
+				eq(z, v2(b, a)),
+				in(v2(a, b), x)
+			)
+		})
+	})
+}
+
+"이항관계의 합성(composition)."
+$!<prec=230>#1 <<\circ>> #2$
+cls rel_composite(cls x, cls y) {
+	setbuilder((cls z) => {
+		X2((cls a, cls c) => {
+			A(
+				eq(z, v2(a, c)),
+				X((cls b) => {
+					A(
+						in(v2(a, b), y),
+						in(v2(b, c), x)
+					)
+				})
+			)
+		})
+	})
+}
+
 "곱집합은 이항관계이다."
 schema cartesian_is_rel(cls x, cls y) {
 	Viu((cls z) => {
@@ -1793,62 +1863,11 @@ schema rel_V(pr f, cls x) {
 	)
 }
 
-"이항관계의 역(inverse)."
-$!<prec=190>{#1}^{<<-1>>}$
-cls rel_inverse(cls x) {
-	setbuilder((cls z) => {
-		X2((cls a, cls b) => {
-			A(
-				eq(z, v2(b, a)),
-				in(v2(a, b), x)
-			)
-		})
-	})
-}
-
-"이항관계의 합성(composition)."
-$!<prec=230>#1 <<\circ>> #2$
-cls rel_composite(cls x, cls y) {
-	setbuilder((cls z) => {
-		X2((cls a, cls c) => {
-			A(
-				eq(z, v2(a, c)),
-				X((cls b) => {
-					A(
-						in(v2(a, b), y),
-						in(v2(b, c), x)
-					)
-				})
-			)
-		})
-	})
-}
-
 schema rel_composite_associative(cls x, cls y, cls z) {
 	rel(x), rel(y), rel(z) |- eq(
 		rel_composite(rel_composite(x, y), z),
 		rel_composite(x, rel_composite(y, z))
 	)
-}
-
-"이항관계의 정의역(domain)."
-$!<prec=200><<\operatorname{dom}>>#1$
-cls rel_dom(cls x) {
-	setbuilder((cls a) => {
-			X((cls b) => {
-				in(v2(a, b), x)
-			})
-		})
-}
-
-"이항관계의 치역(image)."
-$!<prec=200><<\operatorname{im}>>#1$
-cls rel_im(cls x) {
-	setbuilder((cls b) => {
-		X((cls a) => {
-			in(v2(a, b), x)
-		})
-	})
 }
 
 "어떤 [$\langle f, A, B\rangle]가 함수이다.
