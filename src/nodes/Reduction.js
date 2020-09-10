@@ -71,11 +71,11 @@ function Reduction({subject, guesses, leftargs}, scope, trace) {
 				throw this.error(`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
-${tee.left[i]}
+${ExpressionResolver.expandMetaAndFuncalls(tee.left[i])}
 ----------------
 
 --- RECEIVED ---
-${leftargs[i]}
+${ExpressionResolver.expandMetaAndFuncalls(leftargs[i])}
 ----------------`);
 			}
 		}
@@ -92,7 +92,7 @@ Reduction.prototype.query = function (guess, left, leftargs) {
 	if (guess.length == 0) throw this.error('wut');
 
 	if (!(1 <= guess[0] * 1 && guess[0] * 1 <= leftargs.length))
-		throw this.error(`Cannot dereference @${guess}`);
+		throw this.error(`Cannot dereference @${guess}: antecedent index out of range`);
 
 	var lef = left[guess[0] * 1 - 1];
 	var ret = leftargs[guess[0] * 1 - 1];
@@ -106,6 +106,18 @@ Reduction.prototype.query = function (guess, left, leftargs) {
 
 		if (/[0-9]/.test(guess[ptr])) {
 			var n = guess[ptr] * 1;
+
+			if (lef._type == 'tee' && node._type == 'tee') {
+				if (lef.left.length != node.left.length) {
+					throw that.error(`Cannot dereference @${guess}: antecedent length mismatch`);
+				}
+
+				if (!(1 <= n && n <= node.left.length)) {
+					throw that.error(`Cannot dereference @${guess}: antecedent index out of range`);
+				}
+
+				return recurse(guess, lef.left[n - 1], node.left[n - 1], ptr + 1);
+			}
 
 			while (true) {
 				if (!lef.fun || !node.fun) {
@@ -127,6 +139,12 @@ Reduction.prototype.query = function (guess, left, leftargs) {
 				throw that.error(`Cannot dereference @${guess}`);
 
 			return recurse(guess, lef.args[n - 1], node.args[n - 1], ptr + 1);
+		} else if (guess[ptr] == 'r') {
+			if (lef._type == 'tee' && node._type == 'tee') {
+				return recurse(guess, lef.right, node.right, ptr + 1);
+			}
+
+			throw that.error(`Cannot dereference @${guess}`);
 		}
 
 		throw that.error(`Cannot dereference @${guess}`);
