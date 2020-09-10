@@ -79,6 +79,11 @@ axiomatic native schema cut;
 에 해당한다."
 axiomatic native schema cp;
 
+"cp의 네이티브 하지 않은 버전."
+axiomatic schema cpn(st p: @11, st q: @1r) {
+	(p |- q) |- I(p, q)
+}
+
 "modus ponens. 함의 소거(implication elimination) 또는 전건 긍정이라고도 한다."
 axiomatic schema mp(st p: @1, st q: @22) {
 	p, I(p, q) |- q
@@ -129,9 +134,22 @@ schema Oe(st p: @11, st q: @12, st r: @22) {
 	~ mpu[tt.IAAOpqIprIqrr(p, q, r)]
 }
 
+schema Oeu(st p: @11, st q: @12, st r: @2r) {
+	O(p, q), (p |- r), (q |- r) |- Oe[
+		O(p, q),
+		cpn[p |- r],
+		cpn[q |- r]
+	]
+}
+
 "부정 도입(negation introduction). 귀류법(reductio ad absurdum)이라고도 한다."
 schema Ni(st p: @11) {
 	mpu[tt.IIpFNp(p)]
+}
+
+schema Niu(st p: @11) {
+	(p |- F) |-
+		Ni[cpn[p |- F]]
 }
 
 "부정 소거(negation elimination). 폭발률(ex falso quodlibet)이라고도 한다."
@@ -216,8 +234,12 @@ schema id(st p: @1) {
 }
 
 "[$\bot]을 도입한다. falsum introduction이라 불러도 좋을 것이다."
-schema Fi(st p) {
+schema Fi(st p: @1) {
 	Ne(p, F)
+}
+
+schema Fi_c(st p: @11) {
+	N(p) |- cpn[p |- Fi[p, N(p)]]
 }
 
 "[$\bot]을 소거한다. falsum elimination이라 불러도 좋을 것이다. Ne와 마찬가지로 폭발률을 나타낸다 할 수 있다."
@@ -226,13 +248,71 @@ schema Fe(st p) {
 }
 
 "대우명제(contrapositive)를 유도한다."
-schema contrapose(st p, st q) {
+schema contrapose(st p: @11, st q: @12) {
 	mpu[tt.IIpqINqNp(p, q)]
+}
+
+"contrapose의 다른 버전."
+schema contrapose_u(st p: @11, st q: @1r) {
+	(p |- q) |- N(q) |- mp[N(q), contrapose[cpn[p |- q]]]
 }
 
 "후건 부정(modus tollens)."
 schema mt(st p, st q) {
 	mpu[contrapose(p, q)]
+}
+
+schema NO_to_AN(st p: @111, st q: @112) {
+	N(O(p, q)) |-
+		Ai[
+			Niu[
+				p |-
+					Fi[
+						Oi1(?, q)[p],
+						N(O(p, q))
+					]
+			],
+			Niu[
+				q |-
+					Fi[
+						Oi2(p, ?)[q],
+						N(O(p, q))
+					]
+			]
+		]
+}
+
+schema AN_to_NO(st p: @111, st q: @121) {
+	A(N(p), N(q)) |-
+		Niu[O(p, q) |- Oe[
+			O(p, q),
+			Fi_c[Ae1[A(N(p), N(q))]],
+			Fi_c[Ae2[A(N(p), N(q))]]
+		]]
+}
+
+schema NA_to_ON(st p: @111, st q: @112) {
+	N(A(p, q)) |-
+		NNe[Niu[N(O(N(p), N(q))) |- Fi[
+			Ai[
+				NNe[Ae1[NO_to_AN[N(O(N(p), N(q)))]]],
+				NNe[Ae2[NO_to_AN[N(O(N(p), N(q)))]]]
+			],
+			N(A(p, q))
+		]]]
+}
+
+schema ON_to_NA(st p: @111, st q: @112) {
+	O(N(p), N(q)) |-
+		Niu[A(p, q) |- Oeu[
+			O(N(p), N(q)),
+			(N(p) |- Fi[
+				Ae1[A(p, q)], N(p)
+			]),
+			(N(q) |- Fi[
+				Ae2[A(p, q)], N(q)
+			])
+		]]
 }
 
 schema swap(st p, st q, st r) {
@@ -254,6 +334,8 @@ schema swap_c(st p, st q, st r) {
 schema swap_m(st p, st q, st r) {
 	mpu[swap(p, q, r)]
 }
+
+
 
 #################################
 ######## PREDICATE LOGIC ########
@@ -306,7 +388,7 @@ $!<prec=249><<\forall>>#1$
 st V(pr f);
 
 "pr2를 위한 보편 양화."
-$!<prec=249><<\forall>>#1$
+$!<prec=249><<\forall^2>>#1$
 st V2(pr2 f) {
 	V((cls x) => {
 		V((cls y) => {
@@ -316,7 +398,7 @@ st V2(pr2 f) {
 }
 
 "pr3을 위한 보편 양화."
-$!<prec=249><<\forall>>#1$
+$!<prec=249><<\forall^3>>#1$
 st V3(pr3 f) {
 	V((cls x) => {
 		V((cls y) => {
@@ -334,9 +416,17 @@ st X(pr f) {
 }
 
 "pr2를 위한 존재 양화. V2에 의존한다."
-$!<prec=249><<\exists>>#1$
+$!<prec=249><<\exists^2>>#1$
 st X2(pr2 f) {
 	N(V2((cls x, cls y) => { N(f(x, y)) }))
+}
+
+schema NX_to_VN(pr f) {
+	N(X(f)) |- id(V(Nf(f)))[NNe[N(X(f))]]
+}
+
+schema VN_to_NX(pr f) {
+	V(Nf(f)) |- id(N(X(f)))[NNi[V(Nf(f))]]
 }
 
 "보편 양화 도입(universal introduction)."
@@ -367,6 +457,33 @@ schema Vi_p(st p) {
 
 schema Vi_c(st p) {
 	cp[Vi_p(p)]
+}
+
+"V를 위한 contrapose."
+schema contrapose_V(pr f: @111, pr g: @112) {
+	V(If(f, g)) |- Vi[(cls x) => {
+		contrapose(f(x), g(x))[Ve(?, x)[V(If(f, g))]]
+	}]
+}
+
+"V를 위한 mp."
+schema mpV(pr f: @11, pr g: @212) {
+	V(f), V(If(f, g)) |-
+		id(V(g))[Vi[(cls x) => {
+			mp[Ve(?, x)[V(f)], Ve(?, x)[V((cls x) => { I(f(x), g(x)) })]]
+		}]]
+}
+
+"V를 위한 mt."
+schema mtV(pr f: @111, pr g: @112) {
+	V(If(f, g)), N(V(g)) |-
+		Niu[
+			V(f) |-
+				Ne(?, F)[
+					mpV[V(f), V(If(f, g))],
+					N(V(g))
+				]
+		]
 }
 
 "VA의 m1형."
@@ -401,31 +518,48 @@ schema VA(pr f, pr g) {
 	|- Ei[cp[VAm1(f, g)][], cp[VAm2(f, g)][]]
 }
 
-schema mpV(pr f: @11, pr g: @212) {
-	V(f), V(If(f, g)) |-
-		id(V(g))[Vi[(cls x) => {
-			mp[Ve(?, x)[V(f)], Ve(?, x)[V((cls x) => { I(f(x), g(x)) })]]
-		}]]
-}
-
-schema VIm_(pr f, pr g) {
+"VI의 m형."
+schema VIm(pr f: @111, pr g: @112) {
 	V(If(f, g)) |-
-		V(f) |- mpV[V(f), V(If(f, g))]
+		cpn[V(f) |- mpV[V(f), V(If(f, g))]]
 }
 
-"[$\forall]과 [$\to] 간의 분배법칙 같은 것. 진리표를 그려 본 결과 이거랑 VA만 있으면 적당히 분배되는 것 같은데, 파고 들자면 복잡하다."
-axiomatic schema VI(pr f, pr g) {
-	|- I(
-		V(If(f, g)),
-		I(V(f), V(g))
-	)
+"[$\forall]과 [$\to] 간의 분배법칙 같은 것."
+schema VI(pr f, pr g) {
+	|- cpn[VIm(f, g)]
 }
 
-axiomatic schema VO(pr f, pr g) {
-	|- I(
-		O(V(f), V(g)),
-		V(Of(f, g))
-	)
+"V를 위한 Oi1."
+schema Oi1V(pr f, pr g) {
+	V(f) |-
+		id(V(Of(f, g)))[
+			Vi[(cls x) => {
+				Oi1(?, g(x))[Ve(?, x)[V(f)]]
+			}]
+		]
+}
+
+"V를 위한 Oi2."
+schema Oi2V(pr f, pr g) {
+	V(g) |-
+		id(V(Of(f, g)))[
+			Vi[(cls x) => {
+				Oi2(f(x), ?)[Ve(?, x)[V(g)]]
+			}]
+		]
+}
+
+schema VOm(pr f, pr g) {
+	O(V(f), V(g)) |-
+		Oe[
+			O(V(f), V(g)),
+			cpn[Oi1V(f, g)],
+			cpn[Oi2V(f, g)]
+		]
+}
+
+schema VO(pr f, pr g) {
+	|- cpn[VOm(f, g)]
 }
 
 "VV의 m형. 재미있게도 Vi 및 Ve로부터 유도할 수 있다."
@@ -444,11 +578,6 @@ schema VV(pr2 f) {
 	cp[VVm(f)]
 }
 
-"VI의 m형."
-schema VIm(pr f: @111, pr g: @112) {
-	mpu[VI(f, g)]
-}
-
 "IEpqEqpm의 V형."
 schema IVEpqVEqpfm(pr f, pr g) {
 	mpu[
@@ -463,7 +592,8 @@ schema IVEpqVEqpfm(pr f, pr g) {
 }
 
 "Ee1의 V형."
-schema Ee1V(pr f, pr g) {
+schema Ee1V(pr f: @111, pr g: @112) {
+	id(V(Ef(f, g))) ~
 	mpu[
 		Viu((cls x) => {
 			I(E(f(x), g(x)), I(f(x), g(x)))
@@ -473,6 +603,7 @@ schema Ee1V(pr f, pr g) {
 			(cls z) => { I(f(z), g(z)) }
 		)
 	]
+	~ id(V(If(f, g)))
 }
 
 "Ee2의 V형."
@@ -592,25 +723,44 @@ schema Xi(pr f, cls x) {
 	] ~ id(X(f))
 }
 
-"존재 양화 소거(existential elimination) 같은 것 1."
-schema Xinst1(pr f, pr g) {
-	X(f), V(If(f, g)) |- X(g)
+"X를 위한 mp."
+schema mpX(pr f: @11, pr g: @212) {
+	X(f), V(If(f, g)) |-
+		id(X(g))[mtV(Nf(g), Nf(f))[contrapose_V[V(If(f, g))], X(f)]]
 }
 
-schema Xinst1E(pr f, pr g) {
-	Ee1V(f, g) ~ Xinst1(f, g)
+"mpX의 더 강력한 버전."
+schema mpX_strong(pr f, pr g) {
+	X(f), V(If(f, g)) |-
+		mpX(?, Af(f, g))[
+			X(f),
+			Vi[(cls x) => {
+				cpn[
+					f(x) |-
+						Ai[
+							f(x),
+							mp(f(x), g(x))[f(x), Ve(?, x)[V(If(f, g))]]
+						]
+				]
+			}]
+		]
 }
 
-"존재 양화 소거(existential elimination) 같은 것 2."
-schema Xinst2(st p) {
+schema mpXE(pr f, pr g) {
+	X(f), V(Ef(f, g)) |-
+		mpX[X(f), Ee1V[V(Ef(f, g))]]
+}
+
+"st 타입을 위한 존재 양화 소거(existential elimination)."
+schema Xe_p(st p) {
 	id(X((cls x) => {p})) ~
 	mpu[cp[Vi_p(N(p))]
 	~ mpu[tt.IINpqINqp(p, V((cls x) => { N(p) }))]]
 }
 
-schema Xinst3(pr f, st p) {
-	Xinst1(f, (cls x) => { p })
-	~ Xinst2(p)
+schema mpX_Xe_p(pr f, st p) {
+	mpX(f, (cls x) => { p })
+	~ Xe_p(p)
 }
 
 "[$\exists]과 [$\lor] 간의 분배법칙 같은 것. VA로부터 증명할 수 있다."
@@ -639,11 +789,25 @@ schema XO(pr f, pr g) {
 	)
 }
 
+schema ON_to_NA_V(pr f, pr g) {
+	V(Of(Nf(f), Nf(g))) |-
+		Vi[(cls x) => {
+			ON_to_NA(f(x), g(x))[Ve(?, x)[V(Of(Nf(f), Nf(g)))]]
+		}]
+}
+
+"XA의 m형."
+schema XAm(pr f: @111, pr g: @112) {
+	X(Af(f, g)) |- id(A(X(f), X(g)))[
+		NO_to_AN[mp[
+			contrapose_u[ON_to_NA_V(f, g)][X(Af(f, g))],
+			contrapose[VO(Nf(f), Nf(g))[]]
+		]]
+	]
+}
+
 schema XA(pr f, pr g) {
-	|- I(
-		X(Af(f, g)),
-		A(X(f), X(g))
-	)
+	|- cpn[XAm(f, g)]
 }
 
 schema X2A(pr2 f, pr2 g) {
@@ -1049,7 +1213,7 @@ schema IQX(pr f: @11) {
 schema set_is_set_1(cls x, cls y) {
 	id(set(x)) ~
 	eq_Ae2(x, y)
-	~ Xinst1E(
+	~ mpXE(
 		(cls w) => { in(x, w) },
 		(cls w) => { in(y, w) }
 	)
@@ -1637,7 +1801,7 @@ schema power_is_set(cls x) {
 			)
 		}
 	)]
-	~ Xinst1(
+	~ mpX(
 		(cls y) => {
 			A(
 				set(y),
@@ -1651,7 +1815,7 @@ schema power_is_set(cls x) {
 		}
 	))
 	~ subset_is_set_ae_cvi(power(x))
-	~ Xinst3(
+	~ mpX_Xe_p(
 		(cls y) => {
 			A(set(y), subseteq(power(x), y))
 		},
