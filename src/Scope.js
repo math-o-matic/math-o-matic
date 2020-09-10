@@ -9,8 +9,6 @@ var Ruleset = require('./nodes/Ruleset');
 var Schema = require('./nodes/Schema');
 var Schemacall = require('./nodes/Schemacall');
 
-var ExpressionResolver = require('./ExpressionResolver');
-
 function Scope(parent) {
 	this.typedefMap = {};
 	this.defMap = {};
@@ -25,8 +23,6 @@ function Scope(parent) {
 	this.Ruleset = Ruleset;
 	this.Schema = Schema;
 	this.Schemacall = Schemacall;
-
-	this.ExpressionResolver = ExpressionResolver;
 
 	this.parent = parent;
 	this.root = parent ? parent.root : this;
