@@ -1318,36 +1318,30 @@ schema setbuilder_def_Ve_Ee(pr f, cls z) {
 	)]
 }
 
-schema setbuilder_def_set_1(pr f, pr g, pr h) {
-	Ai(
-		V((cls x) => { E(f(x), A(g(x), h(x))) }),
-		V((cls x) => { I(h(x), g(x)) })
-	) ~
-	VAm2(
-		(cls x) => { E(f(x), A(g(x), h(x))) },
-		(cls x) => { I(h(x), g(x)) }
-	) ~
-	mpu[
-		Viu((cls x) => {
-			I(A(E(f(x), A(g(x), h(x))), I(h(x), g(x))), E(f(x), h(x)))
-		})[(cls x) => {tt.IAEpAqrIrqEpr(f(x), g(x), h(x))}]
-		~ VIm(
-			(cls x) => { A(E(f(x), A(g(x), h(x))), I(h(x), g(x))) },
-			(cls x) => { E(f(x), h(x)) }
-		)
-	]
+schema setbuilder_def_set(pr f, cls x) {
+	I(f(x), set(x)) |-
+		Ei[
+			cpn[
+				in(x, setbuilder(f)) |-
+					Ae2[mp[
+						in(x, setbuilder(f)),
+						Ee1[Ve(?, x)[setbuilder_def(f)[]]]
+					]]
+			],
+			cpn[
+				f(x) |-
+					mp[
+						Ai[
+							mp[f(x), I(f(x), set(x))],
+							f(x)
+						],
+						Ee2[Ve(?, x)[setbuilder_def(f)[]]]
+					]
+			]
+		]
 }
 
-schema setbuilder_def_set(pr f) {
-	setbuilder_def(f) ~
-	setbuilder_def_set_1(
-		(cls z) => { in(z, setbuilder(f)) },
-		set,
-		f
-	)
-}
-
-"[$\cap]."
+"교집합."
 $!<prec=300>#1<<\cap>>#2$
 cls cap(cls x, cls y) {
 	setbuilder((cls z) => {
@@ -1359,25 +1353,16 @@ schema set_Xi_A_c(cls x, cls y, cls z) {
 	cp[set_Xi_A(x, y, z)]
 }
 
-schema cap_def_vi(cls x, cls y) {
-	Viu((cls z) => {
-		I(A(in(z, x), in(z, y)), set(z))
-	})[(cls z) => { set_Xi_A_c(x, y, z) }] ~
-	setbuilder_def_set((cls z) => {
-		A(in(z, x), in(z, y))
-	})
-	~ id(V((cls z) => {
-		E(
-			in(z, cap(x, y)),
+schema cap_def(cls x, cls y, cls z) {
+	|- id(E(in(z, cap(x, y)), A(in(z, x), in(z, y))))[
+		setbuilder_def_set((cls z) => {
 			A(in(z, x), in(z, y))
-		)
-	}))
+		}, z)[set_Xi_A_c(x, y, z)[]]
+	]
 }
 
-schema cap_def(cls x, cls y, cls z) {
-	Veu((cls z) => {
-		E(in(z, cap(x, y)), A(in(z, x), in(z, y)))
-	}, z)[cap_def_vi(x, y)]
+schema cap_def_vi(cls x, cls y) {
+	|- Vi[(cls z) => { cap_def(x, y, z)[] }]
 }
 
 schema cap_commutative_1(cls x, cls y, cls z) {
@@ -1406,7 +1391,7 @@ schema cap_commutative_2(cls x, cls y) {
 	)
 }
 
-"[$\cup]."
+"합집합."
 $!<prec=300>#1<<\cup>>#2$
 cls cup(cls x, cls y) {
 	setbuilder((cls z) => {
@@ -1418,25 +1403,16 @@ schema set_Xi_O_c(cls x, cls y, cls z) {
 	cp[set_Xi_O(x, y, z)]
 }
 
-schema cup_def_vi(cls x, cls y) {
-	Viu((cls z) => {
-		I(O(in(z, x), in(z, y)), set(z))
-	})[(cls z) => { set_Xi_O_c(x, y, z) }] ~
-	setbuilder_def_set((cls z) => {
-		O(in(z, x), in(z, y))
-	})
-	~ id(V((cls z) => {
-		E(
-			in(z, cup(x, y)),
+schema cup_def(cls x, cls y, cls z) {
+	|- id(E(in(z, cup(x, y)), O(in(z, x), in(z, y))))[
+		setbuilder_def_set((cls z) => {
 			O(in(z, x), in(z, y))
-		)
-	}))
+		}, z)[set_Xi_O_c(x, y, z)[]]
+	]
 }
 
-schema cup_def(cls x, cls y, cls z) {
-	Veu((cls z) => {
-		E(in(z, cup(x, y)), O(in(z, x), in(z, y)))
-	}, z)[cup_def_vi(x, y)]
+schema cup_def_vi(cls x, cls y) {
+	|- Vi[(cls z) => { cup_def(x, y, z)[] }]
 }
 
 "empty class."
@@ -1883,29 +1859,27 @@ cls cartesian(cls x, cls y) {
 	})
 }
 
-schema cartesian_def(cls x, cls y) {
-	setbuilder_def((cls z) => {
+schema cartesian_def_(cls x, cls y, cls z) {
+	setbuilder_def_set((cls z) => {
 		X2((cls a, cls b) => {
 			A(
 				eq(z, v2(a, b)),
 				A(in(a, x), in(b, y))
 			)
 		})
-	})
-	~ id(V((cls z) => {
-		E(
-			in(z, cartesian(x, y)),
+	}, z)
+}
+
+schema cartesian_def(cls x, cls y, cls z) {
+	|- E(
+		in(z, cartesian(x, y)),
+		X2((cls a, cls b) => {
 			A(
-				set(z),
-				X2((cls a, cls b) => {
-					A(
-						eq(z, v2(a, b)),
-						A(in(a, x), in(b, y))
-					)
-				})
+				eq(z, v2(a, b)),
+				A(in(a, x), in(b, y))
 			)
-		)
-	}))
+		})
+	)
 }
 
 "어떤 class가 이항관계이다.
