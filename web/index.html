@@ -255,7 +255,11 @@
 					var v = program.scope.defMap[k];
 
 					r = `<div class="block">`
-						+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
+						+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple
+								? ''
+								: `(${v.params.map(p => p.toSimpleString()).join(', ')})`
+									+ `: ${v.type.resolve().to}`
+						}</p>`
 						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
 
 						+ '<p class="label"><b>description</b></p>'
@@ -628,8 +632,8 @@
 
 				var xhr = new XMLHttpRequest();
 				xhr.addEventListener('load', () => {
-					eval(xhr.responseText);
 					try {
+						eval(xhr.responseText);
 						load();
 					} finally {
 						$('#reload').value = 'RELOAD';
