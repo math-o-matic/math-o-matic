@@ -1840,22 +1840,42 @@ schema singleton_is_set(cls x) {
 	~ subset_is_set(singleton(x), power(x))
 }
 
+"따름 순서수(successor ordinal)."
+$ {#1}^{<<+>>}$
+cls successor(cls x) {
+	cup(x, singleton(x))
+}
+
+"[$x]가 successor set이다."
+$\left(<<\operatorname{successor\ set}>> #1\right)$
+st is_successor_set(cls x) {
+	A(
+		in(emptyset(), x),
+		V((cls z) => {
+			I(
+				in(z ,x),
+				in(successor(z), x)
+			)
+		})
+	)
+}
+
 "Axiom of infinity."
 axiomatic schema infinity() {
 	|- X((cls x) => {
 		A(
 			set(x),
-			A(
-				in(emptyset(), x),
-				V((cls z) => {
-					I(
-						in(z ,x),
-						in(cup(z, singleton(z)), x)
-					)
-				})
-			)
+			is_successor_set(x)
 		)
 	})
+}
+
+"자연수 집합."
+$<<\omega>>$
+cls omega() {
+	bigcap(setbuilder((cls z) => {
+		is_successor_set(z)
+	}))
 }
 
 ###########################
