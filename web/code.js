@@ -1235,7 +1235,7 @@ schema subseteq_subseteq(cls x, cls y, cls z) {
 }
 
 "axiom of extensionality."
-axiomatic schema extensional() {
+axiomatic schema ax_extensional() {
 	|- V2((cls x, cls y) => {
 		I(
 			V((cls z) => {
@@ -1249,17 +1249,17 @@ axiomatic schema extensional() {
 	})
 }
 
-schema extensional_Ve(cls x, cls y) {
-	|- Ve(?, y)[Ve(?, x)[extensional()[]]]
+schema ax_extensional_Ve(cls x, cls y) {
+	|- Ve(?, y)[Ve(?, x)[ax_extensional()[]]]
 }
 
-schema extensional_m(cls x, cls y) {
-	mpu[extensional_Ve(x, y)]
+schema ax_extensional_m(cls x, cls y) {
+	mpu[ax_extensional_Ve(x, y)]
 }
 
 schema eq_simple(cls x, cls y) {
 	|- cp[eq_Ae1(x, y)]
-	~ extensional_Ve(x, y)
+	~ ax_extensional_Ve(x, y)
 	~ Ei(
 		eq(x, y),
 		V((cls z) => { E(in(z, x), in(z, y)) })
@@ -1413,7 +1413,7 @@ schema cap_commutative_2(cls x, cls y) {
 	Viu((cls z) => {
 		E(in(z, cap(x, y)), in(z, cap(y, x)))
 	})[(cls z) => { cap_commutative_1(x, y, z) }]
-	~ extensional_m(
+	~ ax_extensional_m(
 		cap(x, y),
 		cap(y, x)
 	)
@@ -1568,7 +1568,7 @@ cls subsetbuilder(cls x, pr f) {
 }
 
 "axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
-axiomatic schema specify(pr f) {
+axiomatic schema ax_specify(pr f) {
 	|-
 	V((cls x) => {
 		I(
@@ -1578,19 +1578,19 @@ axiomatic schema specify(pr f) {
 	})
 }
 
-schema specify_m(pr f, cls x) {
+schema ax_specify_m(pr f, cls x) {
 	mpu[Veu((cls x) => {
 		I(set(x), set(subsetbuilder(x, f)))
-	}, x)[specify(f)]]
+	}, x)[ax_specify(f)]]
 }
 
 schema cap_is_set_1(cls x, cls y) {
-	specify_m((cls z) => { in(z, y) }, x)
+	ax_specify_m((cls z) => { in(z, y) }, x)
 	~ id(set(cap(x, y)))
 }
 
 schema cap_is_set_2(cls x, cls y) {
-	specify_m((cls z) => { in(z, x) }, y)
+	ax_specify_m((cls z) => { in(z, x) }, y)
 	~ cap_commutative_2(y, x)
 	~ set_is_set_1(cap(y, x), cap(x, y))
 }
@@ -1624,7 +1624,7 @@ schema subset_cap_is_subset(cls x, cls y) {
 		(cls z) => { A(in(z, x), in(z, y)) },
 		(cls z) => { in(z, cap(x, y)) }
 	)
-	~ extensional_m(x, cap(x, y))
+	~ ax_extensional_m(x, cap(x, y))
 }
 
 schema subset_is_set(cls x: @21, cls y: @22) {
