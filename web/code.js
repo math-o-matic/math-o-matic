@@ -753,7 +753,7 @@ schema Xe_p(st p) {
 	~ mpu[tt.IINpqINqp(p, V((cls x) => { N(p) }))]]
 }
 
-schema mpX_Xe_p(pr f, st p) {
+schema mpX_Xe_p(pr f: @11, st p) {
 	mpX(f, (cls x) => { p })
 	~ Xe_p(p)
 }
@@ -1313,13 +1313,37 @@ schema setbuilder_def_Ve(pr f, cls z) {
 	}, z)[setbuilder_def(f)]
 }
 
-schema setbuilder_def_Ve_Ee(pr f, cls z) {
+schema setbuilder_def_1(pr f: @121, cls z: @11) {
+	in(z, setbuilder(f)) |-
+		Ae2[mp[
+			in(z, setbuilder(f)),
+			Ee1[setbuilder_def_Ve(f, z)[]]
+		]]
+}
+
+schema setbuilder_def_1c(pr f, cls z) {
 	setbuilder_def_Ve(f, z)
 	~ mpu[tt.IEpAqrIpr(
 		in(z, setbuilder(f)),
 		set(z),
 		f(z)
 	)]
+}
+
+schema setbuilder_def_2(pr f, cls z: @11) {
+	set(z), f(z) |-
+		mp[
+			Ai[set(z), f(z)],
+			Ee2[setbuilder_def_Ve(f, z)[]]
+		]
+}
+
+schema setbuilder_def_2a(pr f, cls z: @111) {
+	A(set(z), f(z)) |-
+		mp[
+			A(set(z), f(z)),
+			Ee2[setbuilder_def_Ve(f, z)[]]
+		]
 }
 
 schema setbuilder_def_set(pr f, cls x) {
@@ -1439,10 +1463,50 @@ cls bigcup($A$ cls a) {
 	})
 }
 
+schema bigcap_1($A$ cls a, cls z) {
+	in(z, bigcap(a)) |-
+		setbuilder_def_1((cls z) => {
+				Vin(a, (cls x) => {
+					in(z, x)
+				})
+			}, z)[in(z, bigcap(a))]
+}
+
+schema bigcap_2($A$ cls a, cls z) {
+	set(z), Vin(a, (cls x) => {
+		in(z, x)
+	}) |-
+		id(in(z, bigcap(a)))[setbuilder_def_2((cls z) => {
+			Vin(a, (cls x) => {
+				in(z, x)
+			})
+		}, z)[set(z), Vin(a, (cls x) => {
+			in(z, x)
+		})]]
+}
+
+schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
+	in(x, a) |-
+		id(subseteq(bigcap(a), x))[Vi[(cls z) => {
+			cp[
+				in(z, bigcap(a)) |-
+					mp[
+						in(x, a),
+						Ve(?, x)[bigcap_1(a, z)[in(z, bigcap(a))]]
+					]
+			]
+		}]]
+}
+
 "empty class."
 $<<\varnothing>>$
 cls emptyset() {
 	setbuilder((cls z) => { F })
+}
+
+"axiom of empty set."
+axiomatic schema ax_emptyset() {
+	|- set(emptyset())
 }
 
 schema emptyset_vi() {
@@ -1531,6 +1595,10 @@ schema cap_is_set_2(cls x, cls y) {
 	~ set_is_set_1(cap(y, x), cap(x, y))
 }
 
+schema cup_is_set(cls x: @11, cls y: @21) {
+	set(x), set(y) |- set(cup(x, y))
+}
+
 schema subset_cap_is_subset(cls x, cls y) {
 	id(subseteq(x, y)) ~
 	mpu[Viu((cls z) => {
@@ -1559,7 +1627,7 @@ schema subset_cap_is_subset(cls x, cls y) {
 	~ extensional_m(x, cap(x, y))
 }
 
-schema subset_is_set(cls x, cls y) {
+schema subset_is_set(cls x: @21, cls y: @22) {
 	subset_cap_is_subset(x, y)
 	~ cap_is_set_2(x, y)
 	~ set_is_set_2(cap(x, y), x)
@@ -1683,7 +1751,7 @@ cls doubleton(cls x, cls y) {
 }
 
 schema singleton_subseteq_power_1(cls x, cls y) {
-	setbuilder_def_Ve_Ee((cls z) => {eq(z, x)}, y) ~
+	setbuilder_def_1c((cls z) => {eq(z, x)}, y) ~
 	eq_then_subseteq(y, x) ~
 	power_def_Ve(x, y)
 	~ Ee2(
@@ -1764,7 +1832,7 @@ schema power_is_set(cls x) {
 							}))],
 							id(subseteq(power(x), y))[Vi[(cls z) => {
 								syll[
-									setbuilder_def_Ve_Ee((cls z) => {
+									setbuilder_def_1c((cls z) => {
 										subseteq(z, x)
 									}, z)[],
 									Ve(?, z)[Ae2[A(set(y), V((cls z) => {
@@ -1779,7 +1847,7 @@ schema power_is_set(cls x) {
 }
 
 "싱글턴은 집합이다."
-schema singleton_is_set(cls x) {
+schema singleton_is_set(cls x: @11) {
 	singleton_subseteq_power(x)
 	~ power_is_set(x)
 	~ subset_is_set(singleton(x), power(x))
@@ -1789,6 +1857,14 @@ schema singleton_is_set(cls x) {
 $ {#1}^{<<+>>}$
 cls successor(cls x) {
 	cup(x, singleton(x))
+}
+
+"따름 순서수는 집합이다."
+schema successor_is_set(cls x: @11) {
+	set(x) |- id(set(successor(x)))[cup_is_set[
+		set(x),
+		singleton_is_set[set(x)]
+	]]
 }
 
 "[$x]가 successor set이다."
@@ -1805,8 +1881,8 @@ st is_successor_set(cls x) {
 	)
 }
 
-"Axiom of infinity."
-axiomatic schema infinity() {
+"무한 공리(axiom of infinity). 즉 successor set 중에는 집합인 것이 있다."
+axiomatic schema ax_infinity() {
 	|- X((cls x) => {
 		A(
 			set(x),
@@ -1815,12 +1891,79 @@ axiomatic schema infinity() {
 	})
 }
 
-"자연수 집합."
+"자연수 집합. 즉 모든 successor set을 교집합한 것이다."
 $<<\omega>>$
 cls omega() {
 	bigcap(setbuilder((cls z) => {
 		is_successor_set(z)
 	}))
+}
+
+schema emptyset_in_omega() {
+	|- id(in(emptyset(), omega()))[bigcap_2(setbuilder((cls z) => {
+		is_successor_set(z)
+	}), emptyset())[
+		ax_emptyset()[],
+		Vi[(cls z) => {
+			cp[
+				in(z, setbuilder((cls z) => {is_successor_set(z)})) |-
+					Ae1[setbuilder_def_1[in(z, setbuilder((cls z) => {
+						is_successor_set(z)
+					}))]]
+			]
+		}]
+	]]
+}
+
+schema successor_in_omega(cls z) {
+	in(z, omega()) |-
+		id(in(successor(z), omega()))[bigcap_2(setbuilder((cls z) => {is_successor_set(z)}), successor(z))[
+			successor_is_set(z)[Xi((cls x) => {in(z, x)}, omega())[in(z, omega())]],
+			Vi[(cls x) => {
+				cp[
+					in(x, setbuilder((cls z) => {is_successor_set(z)})) |-
+						mp[
+							mp[
+								in(x, setbuilder((cls z) => {is_successor_set(z)})),
+								Ve(?, x)[bigcap_1(setbuilder((cls z) => {
+									is_successor_set(z)
+								}), z)[in(z, omega())]]
+							],
+							Ve(?, z)[Ae2[setbuilder_def_1((cls z) => {is_successor_set(z)}, x)[
+								in(x, setbuilder((cls z) => {is_successor_set(z)}))
+							]]]
+						]
+				]
+			}]
+		]]
+}
+
+"[$\omega]는 successor set이다."
+schema omega_is_successor_set() {
+	|- id(is_successor_set(omega()))[Ai[
+		emptyset_in_omega()[],
+		Vi[(cls z) => {
+			cp[successor_in_omega(z)]
+		}]
+	]]
+}
+
+"자연수 집합은 집합이다. ax_infinity로부터 유도된다."
+schema omega_is_set() {
+	|- mpX_Xe_p(?, set(omega()))[
+		ax_infinity()[],
+		Vi[(cls x) => {
+			cp[
+				A(set(x), is_successor_set(x)) |-
+					id(set(omega()))[subset_is_set[
+						Ae1[A(set(x), is_successor_set(x)) ],
+						bigcap_is_smaller[setbuilder_def_2a((cls z) => {is_successor_set(z)}, ?)[
+							A(set(x), is_successor_set(x))
+						]]
+					]]
+			]
+		}]
+	]
 }
 
 ###########################
@@ -1931,7 +2074,7 @@ schema cartesian_is_rel(cls x, cls y) {
 	})[(cls z) => {
 		|- cp[
 			id(in(z, cartesian(x, y)))
-			~ mpu[setbuilder_def_Ve_Ee((cls z) => {
+			~ mpu[setbuilder_def_1c((cls z) => {
 				X2((cls a, cls b) => {
 					A(
 						eq(z, v2(a, b)),
