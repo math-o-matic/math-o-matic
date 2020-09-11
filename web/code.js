@@ -725,7 +725,7 @@ schema mpX(pr f: @11, pr g: @212) {
 }
 
 "mpX의 더 강력한 버전."
-schema mpX_strong(pr f, pr g) {
+schema mpX_strong(pr f: @11, pr g: @212) {
 	X(f), V(If(f, g)) |-
 		mpX(?, Af(f, g))[
 			X(f),
@@ -1187,22 +1187,25 @@ schema eq_transitive_13(cls x, cls y, cls z) {
 	~ eq_symmetric(x, z)
 }
 
-"uniqueness quantification."
-$!<prec=249><<\exists!>>#1$
+"[$f]를 만족하는 것들이 서로 같다."
+$!<prec=249><<\exists_{\leq 1}>>#1$
 st Q(pr f) {
-	A(
-		X(f),
-		V2((cls x, cls y) => {
-			I(
-				A(f(x), f(y)),
-				eq(x, y)
-			)
-		})
-	)
+	V2((cls x, cls y) => {
+		I(
+			A(f(x), f(y)),
+			eq(x, y)
+		)
+	})
 }
 
-schema IQX(pr f: @11) {
-	Q(f) |- Ae1[Q(f)]
+"유일 존재 양화(unique existential quantification)."
+$!<prec=249><<\exists!>>#1$
+st Xq(pr f) {
+	A(X(f), Q(f))
+}
+
+schema Xq_to_X(pr f: @11) {
+	Xq(f) |- Ae1[Xq(f)]
 }
 
 schema set_is_set_1(cls x, cls y) {
@@ -1232,25 +1235,31 @@ schema subseteq_subseteq(cls x, cls y, cls z) {
 }
 
 "axiom of extensionality."
-axiomatic schema extensional(cls x, cls y) {
-	|- I(
-		V((cls z) => {
-			E(
-				in(z, x),
-				in(z, y)
-			)
-		}),
-		eq(x, y)
-	)
+axiomatic schema extensional() {
+	|- V2((cls x, cls y) => {
+		I(
+			V((cls z) => {
+				E(
+					in(z, x),
+					in(z, y)
+				)
+			}),
+			eq(x, y)
+		)
+	})
+}
+
+schema extensional_Ve(cls x, cls y) {
+	|- Ve(?, y)[Ve(?, x)[extensional()[]]]
 }
 
 schema extensional_m(cls x, cls y) {
-	mpu[extensional(x, y)]
+	mpu[extensional_Ve(x, y)]
 }
 
 schema eq_simple(cls x, cls y) {
 	|- cp[eq_Ae1(x, y)]
-	~ extensional(x, y)
+	~ extensional_Ve(x, y)
 	~ Ei(
 		eq(x, y),
 		V((cls z) => { E(in(z, x), in(z, y)) })
@@ -1505,19 +1514,19 @@ axiomatic schema specify(pr f) {
 	})
 }
 
-schema specify_vem(pr f, cls x) {
+schema specify_m(pr f, cls x) {
 	mpu[Veu((cls x) => {
 		I(set(x), set(subsetbuilder(x, f)))
 	}, x)[specify(f)]]
 }
 
 schema cap_is_set_1(cls x, cls y) {
-	specify_vem((cls z) => { in(z, y) }, x)
+	specify_m((cls z) => { in(z, y) }, x)
 	~ id(set(cap(x, y)))
 }
 
 schema cap_is_set_2(cls x, cls y) {
-	specify_vem((cls z) => { in(z, x) }, y)
+	specify_m((cls z) => { in(z, x) }, y)
 	~ cap_commutative_2(y, x)
 	~ set_is_set_1(cap(y, x), cap(x, y))
 }
@@ -1556,7 +1565,7 @@ schema subset_is_set(cls x, cls y) {
 	~ set_is_set_2(cap(x, y), x)
 }
 
-schema subset_is_set_ae(cls x, cls y) {
+schema subset_is_set_ae(cls x: @121, cls y: @111) {
 	Ae1(set(y), subseteq(x, y))
 	~ Ae2(set(y), subseteq(x, y))
 	~ subset_is_set(x, y)
@@ -1729,7 +1738,7 @@ axiomatic schema ax_power() {
 	})
 }
 
-schema ax_power_vem(cls x) {
+schema ax_power_m(cls x) {
 	mpu[Veu((cls x) => {
 		I(set(x), X((cls y) => {
 			A(set(y), V((cls z) => {
@@ -1739,98 +1748,34 @@ schema ax_power_vem(cls x) {
 	}, x)[ax_power()]]
 }
 
-schema power_is_set_1(cls x, cls y) {
-	power_def(x)
-	~ Ee1V(
-		(cls z) => { in(z, power(x)) },
-		(cls z) => { subseteq(z, x) }
-	)
-	~ syllV(
-		(cls z) => { in(z, power(x)) },
-		(cls z) => { subseteq(z, x) },
-		(cls z) => { in(z, y) }
-	)
-	~ id(subseteq(power(x), y))
-}
-
-schema power_is_set_2(cls x, cls y) {
-	set(x) |-
-		cp[
-			V((cls z) => {
-				I(subseteq(z, x), in(z, y))
-			}) |-
-				power_is_set_1(x, y)[
-					set(x),
-					V((cls z) => {
-						I(subseteq(z, x), in(z, y))
-					})
-				]
-		]
-	~ mpu[tt.IIpqIArpArq(
-		V((cls z) => {
-			I(
-				subseteq(z, x),
-				in(z, y)
-			)
-		}),
-		subseteq(power(x), y),
-		set(y)
-	)]
-}
-
-schema power_is_set_3(cls x, cls y) {
-	|- cp[power_is_set_2(x, y)]
-}
-
 "멱집합은 집합이다."
 schema power_is_set(cls x) {
-	(ax_power_vem(x)
-	~ Vi_p(set(x)) ~
-	mpu[Viu((cls y) => {
-		I(set(x), I(A(set(y), V((cls z) => {
-			I(subseteq(z, x), in(z, y))
-		})), A(set(y), subseteq(power(x), y))))
-	})[(cls y) => { power_is_set_3(x, y) }]
-	~ VIm(
-		(cls y) => {set(x)},
-		(cls y) => {
-			I(
-				A(
-					set(y),
-					V((cls z) => {
-						I(
-							subseteq(z, x),
-							in(z, y)
-						)
-					})
-				),
-				A(
-					set(y),
-					subseteq(power(x), y)
-				)
-			)
-		}
-	)]
-	~ mpX(
-		(cls y) => {
-			A(
-				set(y),
-				V((cls z) => {
-					I(subseteq(z, x), in(z, y))
-				})
-			)
-		},
-		(cls y) => {
-			A(set(y), subseteq(power(x), y))
-		}
-	))
-	~ subset_is_set_ae_cvi(power(x))
-	~ mpX_Xe_p(
-		(cls y) => {
-			A(set(y), subseteq(power(x), y))
-		},
-		set(power(x))
-	)
+	set(x) |-
+		Xe_p(set(power(x)))[mpX(?, (cls y) => {set(power(x))})[
+			ax_power_m(x)[set(x)],
+			Vi[(cls y) => {
+				cp[
+					A(set(y), V((cls z) => {
+						I(subseteq(z, x), in(z, y))
+					})) |-
+						subset_is_set_ae[Ai[
+							Ae1[A(set(y), V((cls z) => {
+								I(subseteq(z, x), in(z, y))
+							}))],
+							id(subseteq(power(x), y))[Vi[(cls z) => {
+								syll[
+									setbuilder_def_Ve_Ee((cls z) => {
+										subseteq(z, x)
+									}, z)[],
+									Ve(?, z)[Ae2[A(set(y), V((cls z) => {
+										I(subseteq(z, x), in(z, y))
+									}))]]
+								]
+							}]]
+						]]
+				]
+			}]
+		]]
 }
 
 "싱글턴은 집합이다."
@@ -2045,7 +1990,7 @@ st function(cls f, $A$ cls a, $B$ cls b) {
 	A(
 		subseteq(f, cartesian(a, b)),
 		Vin(a, (cls x) => {
-			Q((cls y) => {
+			Xq((cls y) => {
 				in(v2(x, y), f)
 			})
 		})
@@ -2064,7 +2009,7 @@ schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	function(f, a, b) |- Vi[(cls x) => {
 		cp[(
 			in(x, a) |-
-				IQX[mp[in(x, a), Ve(?, x)[fun_im_unique[function(f, a, b)]]]]
+				Xq_to_X[mp[in(x, a), Ve(?, x)[fun_im_unique[function(f, a, b)]]]]
 		)]
 	}] ~ id(Vin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))
 }
