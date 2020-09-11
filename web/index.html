@@ -9,16 +9,21 @@
 		<script src="./native.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/m42kup@0.2.1/dist/m42kup.min.js"></script>
+		<script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 		<script>
 			m42kup.set({
 				katex
 			});
+
+			$ = (q, n) => (n || document).querySelector(q);
+			$$ = (q, n) => (n || document).querySelectorAll(q);
 		</script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css">
 		<style>
 			* {
 				tab-size: 4;
+				box-sizing: border-box;
 			}
 
 			body {
@@ -56,6 +61,27 @@
 			table tr td, table tr th {
 				padding: .2em .5em;
 				border: 1px #ccc solid;
+			}
+
+			input[type=button], input[type=submit], button {
+				background: none;
+				border: none;
+				border-radius: 3px;
+				padding: 1ex 1em;
+				cursor: pointer;
+			}
+
+			kbd {
+				font: .85em 'Roboto Mono', monospace;
+				color: #202124;
+				border: 1px #ccc solid;
+				padding: .1em .3em;
+				border-radius: .2em;
+			}
+
+			.colored {
+				background-color: #202124!important;
+				color: #eee;
 			}
 
 			.block {
@@ -111,35 +137,239 @@
 			.red {
 				 color: #D32F2F;
 			}
+
+			#search {
+				height: 30px;
+				vertical-align: middle;
+				font: .85em Roboto, sans-serif;
+			}
+
+			#reload {
+				height: 30px;
+				vertical-align: middle;
+			}
+
+			#search-dropdown {
+				background-color: white;
+			}
+
+			#search-dropdown ul {
+				margin: 0;
+				margin-top: .3em;
+				padding: 0;
+				border: 1px #666 solid;
+			}
+
+			#search-dropdown ul li {
+				list-style: none;
+			}
+
+			#search-dropdown ul li:hover {
+				background-color: #eee;
+			}
+
+			#search-dropdown ul li + li {
+				border-top: 1px #666 solid;
+			}
+
+			#search-dropdown ul li.selected a::before {
+				content: '> ';
+				display: inline;
+				font-weight: bold;
+			}
+
+			#search-dropdown ul li a {
+				display: block;
+				padding: .3em;
+				color: #5f6368;
+				text-decoration: none;
+			}
 		</style>
 	</head>
 	<body>
 		<h1>math-o-matic</h1>
 		<a href="https://github.com/logico-philosophical/math-o-matic">repo</a> &middot; <a href="../docs/build/index.html">docs</a>
-		<h2>연산자 우선순위</h2>
-		현재 연산자 우선순위는 다음과 같습니다.
-		<div id="precedence"></div>
-		위 표는 자동으로 생성되었습니다.
+		<h2>개요</h2>
+		이 페이지는 math-o-matic으로 만들고 있는 공리계를 보여 줍니다.
 		<h2>로컬에서 실행하는 방법</h2>
 		<p>로컬에서 file 스킴으로 페이지를 불러왔을 경우 CORS 정책에 의해 페이지가 작동하지 않을 수 있습니다. 이때 다음과 같은 해결책이 있습니다.</p>
 		<ul>
 			<li> 로컬 서버를 통해 접속하기. 이는 npm의 <a href="https://www.npmjs.com/package/http-server">http-server</a> 패키지를 사용하여 할 수 있습니다.
 			<li> Chrome의 경우 <code>--allow-file-access-from-files</code> 플래그를 통해 로컬 파일 로드를 가능하게 할 수 있습니다. <a href="https://stackoverflow.com/a/18137280">StackOverflow 링크</a>
 		</ul>
-		<h2>우상단 reload 버튼에 관하여</h2>
-		<p>우상단 reload 버튼은 <a href="./code.js">code.js</a> 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.</p>
+		<h2>핫키</h2>
+		<ul>
+			<li><kbd>S</kbd>: 검색
+			<li><kbd>R</kbd>: 다시 로드
+			<li><kbd>&larr;</kbd>, <kbd>J</kbd>: 뒤로가기
+			<li><kbd>K</kbd>: 앞으로 가기
+		</ul>
+		<h2>우상단 컨트롤에 관하여</h2>
+		<ul>
+			<li>검색창은 <kbd>S</kbd> 키를 눌러 활성화시킬 수 있으며 정의 및 스키마의 검색을 가능하게 합니다. <kbd>Tab</kbd> 및 <kbd>Shift</kbd> + <kbd>Tab</kbd> 및 <kbd>&darr;</kbd> 및 <kbd>&uarr;</kbd> 및 <kbd>Enter</kbd> 및 <kbd>Esc</kbd>를 써서 조작할 수 있으니 시도해 보세요.
+			<li>reload 버튼은 <kbd>R</kbd> 키를 눌러 클릭할 수 있으며 <a href="./code.js">code.js</a> 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.
+		</ul>
+		<h2>연산자 우선순위</h2>
+		<div id="precedence">...</div>
 		<h2>목록</h2>
 		<p>이하의 내용은
 			<a href="./code.js">code.js</a> 및
 			<a href="./native.js">native.js</a>에 있는 코드를 렌더링 한 것입니다.</p>
+		<div id="search-background" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index:5000;display:none;"></div>
 		<div style="position:fixed;top:5px;right:5px;z-index:10000;">
-			<input id="reload" type="button" value="RELOAD">
+			<div>
+				<input id="search" type="text" placeholder="search">
+				<input id="reload" type="button" class="colored" value="reload" style="text-transform: uppercase;">
+			</div>
+			<div id="search-dropdown" style="display: none;">
+				<ul></ul>
+			</div>
+			<script>
+				(() => {
+					hotkeys('s', (evt, handler) => {
+						evt.preventDefault();
+						$('#search').focus();
+					});
+
+					function getList(value) {
+						value = value.toLowerCase();
+
+						if (!program) return [];
+
+						return Object.keys(program.scope.defMap).map(n => [n, 'def'])
+							.concat(Object.keys(program.scope.schemaMap).map(n => [n, 'schema']))
+							.map(([name, type]) => {
+								var lowername = name.toLowerCase();
+
+								var pname = 0;
+								var matchptrs = [];
+
+								for (var pval = 0; pval < value.length; pval++) {
+									while (lowername[pname] != value[pval]) {
+										pname++;
+										if (pname >= name.length) return false;
+									}
+
+									matchptrs.push(pname);
+								}
+
+								return {name, type, match: matchptrs};
+							}).filter(e => e).sort((a, b) => {
+								for (var i = 0; i < a.match.length; i++) {
+									if (a.match[i] != b.match[i])
+										return a.match[i] - b.match[i];
+								}
+
+								return a.name.localeCompare(b.name);
+							});
+					}
+
+					var listIndex = -1;
+					var listlen = 10;
+					var list = null;
+
+					$('#search').addEventListener('keydown', evt => {
+						if (evt.key == 'Tab'
+								|| evt.key == 'ArrowDown'
+								|| evt.key == 'ArrowUp') {
+							evt.preventDefault();
+
+							var len = Math.min(list.length, listlen);
+							var downward = evt.key == 'ArrowDown'
+								|| evt.key == 'Tab' && !evt.shiftKey;
+
+							listIndex = !list
+								? -1
+								: listIndex >= 0
+									? (listIndex + (downward ? 1 : len - 1)) % len
+									: downward ? 0 : len - 1;
+
+							[].map.call($$('#search-dropdown ul li'), (e, i) => {
+								if (listIndex == i) {
+									e.classList.add('selected');
+								} else {
+									e.classList.remove('selected');
+								}
+							});
+						}
+
+						if (evt.key == 'Enter') {
+							evt.preventDefault();
+
+							if (listIndex >= 0) {
+								var {type, name} = list[listIndex];
+								destroy();
+								location.href = `#${type}-${name}`;
+							}
+						}
+
+						if (evt.key == 'Escape') {
+							destroy();
+						}
+					});
+
+					function show() {
+						$('#search-dropdown').style.display = 'block';
+						$('#search-background').style.display = 'block';
+
+						listIndex = -1;
+						[].map.call($$('#search-dropdown ul li'), (e, i) => {
+							e.classList.remove('selected');
+						});
+
+						update($('#search').value);
+					}
+
+					function update(v) {
+						listIndex = -1;
+
+						$('#search-dropdown ul').innerHTML =
+							!v ? ''
+							: (list = getList(v)).slice(0, listlen).map(({name, type, match}) => {
+								return `<li><a href="#${type}-${name}">${name.split('').map((n, i) => {
+									if (match.includes(i)) return `<b>${n}</b>`;
+									return n;
+								}).join('')}</a></li>`;
+							}).join('');
+
+						$$('#search-dropdown ul li a').forEach(e => e.addEventListener('click', () => {
+							$('#search').value = '';
+							$('#search-dropdown ul').innerHTML = '';
+							$('#search-dropdown').style.display = 'none';
+							$('#search-background').style.display = 'none';
+						}));
+					}
+
+					function dismiss() {
+						$('#search-dropdown').style.display = 'none';
+						$('#search-background').style.display = 'none';
+
+						listIndex = -1;
+						[].map.call($$('#search-dropdown ul li'), (e, i) => {
+							e.classList.remove('selected');
+						});
+					}
+
+					function destroy() {
+						$('#search').value = '';
+						$('#search-dropdown ul').innerHTML = '';
+						$('#search-dropdown').style.display = 'none';
+						$('#search-background').style.display = 'none';
+						$('#search').blur();
+						listIndex = -1;
+						list = null;
+					}
+
+					$('#search').addEventListener('input', () => {
+						update($('#search').value);
+					});
+					$('#search').addEventListener('focus', show);
+					$('#search-background').addEventListener('click', dismiss);
+				})();
+			</script>
 		</div>
 		<div id="all"></div>
 		<script>
-			$ = (q, n) => (n || document).querySelector(q);
-			$$ = (q, n) => (n || document).querySelectorAll(q);
-
 			var katexOpts = {
 				trust: context => {
 					if (context.command != '\\href') return false;
@@ -219,14 +449,19 @@
 
 				precedenceMap = [...precedenceMap].sort((a, b) => a[0] - b[0]);
 
-				$('#precedence').innerHTML = `<table>
+				$('#precedence').innerHTML = `
+				<p>현재 연산자 우선순위는 다음과 같습니다.</p>
+
+				<table>
 					<tr><td>우선순위</td><td>연산자</td></tr>
 					${precedenceMap.map(([k, v]) => {
 						return `<tr><td>${k}</td><td>${v.map(w => {
 							return `<a href="#def-${w}">${w}</a>`;
 						}).join(', ')}</td></tr>`;
 					}).join('')}
-				</table>`;
+				</table>
+
+				<p>위 표는 자동으로 생성되었습니다.</p>`;
 
 				var arr = {}, r;
 
@@ -624,11 +859,26 @@
 
 			var reloading = false;
 
-			$('#reload').addEventListener('click', () => {
+			hotkeys('r', (evt, handler) => {
+				evt.preventDefault();
+				reload();
+			});
+
+			hotkeys('backspace,j', (evt, handler) => {
+				evt.preventDefault();
+				history.back();
+			});
+
+			hotkeys('k', (evt, handler) => {
+				evt.preventDefault();
+				history.forward();
+			});
+
+			function reload() {
 				if (reloading) return;
 				reloading = true;
 
-				$('#reload').value = 'loading...';
+				$('#reload').value = 'reloading...';
 
 				var xhr = new XMLHttpRequest();
 				xhr.addEventListener('load', () => {
@@ -647,7 +897,9 @@
 				});
 				xhr.open('GET', './code.js');
 				xhr.send();
-			});
+			}
+
+			$('#reload').addEventListener('click', reload);
 
 			load();
 		</script>
