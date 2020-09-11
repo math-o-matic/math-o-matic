@@ -1297,7 +1297,7 @@ schema subseteq_eq(cls x, cls y, cls z) {
 $\left\{<<:>>#1\right\}$
 cls setbuilder(pr f);
 
-"setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다."
+"setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다. [&lbrack]Pinter[&rbrack]에서는 axiom of class construction이라 부르는 것 같다."
 axiomatic schema setbuilder_def(pr f) {
 	|- V((cls w) => {
 		E(
