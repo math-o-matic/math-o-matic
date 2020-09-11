@@ -296,8 +296,8 @@
 						if (evt.key == 'Enter') {
 							evt.preventDefault();
 
-							if (listIndex >= 0) {
-								var {type, name} = list[listIndex];
+							if (listIndex >= 0 || list.length == 1) {
+								var {type, name} = list[list.length == 1 ? 0 : listIndex];
 								destroy();
 								location.href = `#${type}-${name}`;
 							}
