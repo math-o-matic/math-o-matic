@@ -74,13 +74,8 @@ axiomatic native ruleset tt;
 1계층 reduction 구문을 도입한다면 그로부터 증명할 수 있다."
 axiomatic native schema cut;
 
-"함의 도입(implication introduction). conditional proof를 가능케 한다. 특정 힐베르트 체계(Hilbert system)에서는 메타정리(metatheorem)이며 이를 연역 정리(deduction theorem)라 부른다. 즉
-[$$\frac{\Delta, p\vdash q}{\Delta\vdash p\to q}]
-에 해당한다."
-axiomatic native schema cp;
-
-"cp의 네이티브 하지 않은 버전."
-axiomatic schema cpn(st p: @11, st q: @1r) {
+"함의 도입(implication introduction). conditional proof를 가능케 한다. 특정 힐베르트 체계(Hilbert system)에서는 메타정리(metatheorem)이며 이를 연역 정리(deduction theorem)라 부른다."
+axiomatic schema cp(st p: @11, st q: @1r) {
 	(p |- q) |- I(p, q)
 }
 
@@ -137,8 +132,8 @@ schema Oe(st p: @11, st q: @12, st r: @22) {
 schema Oeu(st p: @11, st q: @12, st r: @2r) {
 	O(p, q), (p |- r), (q |- r) |- Oe[
 		O(p, q),
-		cpn[p |- r],
-		cpn[q |- r]
+		cp[p |- r],
+		cp[q |- r]
 	]
 }
 
@@ -149,7 +144,7 @@ schema Ni(st p: @11) {
 
 schema Niu(st p: @11) {
 	(p |- F) |-
-		Ni[cpn[p |- F]]
+		Ni[cp[p |- F]]
 }
 
 "부정 소거(negation elimination). 폭발률(ex falso quodlibet)이라고도 한다."
@@ -190,7 +185,7 @@ schema IEpqEqpm(st p: @11, st q: @12) {
 schema IpIqpm(st p: @1, st q) {
 	p |- cp[
 		q |- p
-	][]
+	]
 }
 
 "E를 위한 mp."
@@ -202,7 +197,7 @@ schema mpE(st p: @11, st q: @12) {
 schema syll(st p: @11, st q: @12, st r: @22) {
 	I(p, q), I(q, r) |- cp[
 		p |- mp[mp[p, I(p, q)], I(q, r)]
-	][]
+	]
 }
 
 "syll을 두 번 적용한 것. 사단논법이라 해도 좋을 것이다."
@@ -239,7 +234,7 @@ schema Fi(st p: @1) {
 }
 
 schema Fi_c(st p: @11) {
-	N(p) |- cpn[p |- Fi[p, N(p)]]
+	N(p) |- cp[p |- Fi[p, N(p)]]
 }
 
 "[$\bot]을 소거한다. falsum elimination이라 불러도 좋을 것이다. Ne와 마찬가지로 폭발률을 나타낸다 할 수 있다."
@@ -254,7 +249,7 @@ schema contrapose(st p: @11, st q: @12) {
 
 "contrapose의 다른 버전."
 schema contrapose_u(st p: @11, st q: @1r) {
-	(p |- q) |- N(q) |- mp[N(q), contrapose[cpn[p |- q]]]
+	(p |- q) |- N(q) |- mp[N(q), contrapose[cp[p |- q]]]
 }
 
 "후건 부정(modus tollens)."
@@ -323,12 +318,12 @@ schema swap(st p, st q, st r) {
 					p, I(p, I(q, r))
 				]
 			]
-		][]
-	][]
+		]
+	]
 }
 
 schema swap_c(st p, st q, st r) {
-	cp[swap(p, q, r)]
+	|- cp[swap(p, q, r)]
 }
 
 schema swap_m(st p, st q, st r) {
@@ -456,7 +451,7 @@ schema Vi_p(st p) {
 }
 
 schema Vi_c(st p) {
-	cp[Vi_p(p)]
+	|- cp[Vi_p(p)]
 }
 
 "V를 위한 contrapose."
@@ -515,18 +510,18 @@ schema VAm2(pr f: @111, pr g: @121) {
 
 "[$\forall]과 [$\land] 간의 분배법칙 같은 것."
 schema VA(pr f, pr g) {
-	|- Ei[cp[VAm1(f, g)][], cp[VAm2(f, g)][]]
+	|- Ei[cp[VAm1(f, g)], cp[VAm2(f, g)]]
 }
 
 "VI의 m형."
 schema VIm(pr f: @111, pr g: @112) {
 	V(If(f, g)) |-
-		cpn[V(f) |- mpV[V(f), V(If(f, g))]]
+		cp[V(f) |- mpV[V(f), V(If(f, g))]]
 }
 
 "[$\forall]과 [$\to] 간의 분배법칙 같은 것."
 schema VI(pr f, pr g) {
-	|- cpn[VIm(f, g)]
+	|- cp[VIm(f, g)]
 }
 
 "V를 위한 Oi1."
@@ -553,13 +548,13 @@ schema VOm(pr f, pr g) {
 	O(V(f), V(g)) |-
 		Oe[
 			O(V(f), V(g)),
-			cpn[Oi1V(f, g)],
-			cpn[Oi2V(f, g)]
+			cp[Oi1V(f, g)],
+			cp[Oi2V(f, g)]
 		]
 }
 
 schema VO(pr f, pr g) {
-	|- cpn[VOm(f, g)]
+	|- cp[VOm(f, g)]
 }
 
 "VV의 m형. 재미있게도 Vi 및 Ve로부터 유도할 수 있다."
@@ -575,7 +570,7 @@ schema VVm(pr2 f) {
 
 "[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것."
 schema VV(pr2 f) {
-	cp[VVm(f)]
+	|- cp[VVm(f)]
 }
 
 "IEpqEqpm의 V형."
@@ -621,7 +616,7 @@ schema VEm(pr f, pr g) {
 }
 
 schema VE(pr f, pr g) {
-	cp[VEm(f, g)]
+	|- cp[VEm(f, g)]
 }
 
 schema syllV(pr f: @111, pr g: @112, pr h: @212) {
@@ -675,7 +670,7 @@ schema VI_Vi(st p, pr f) {
 }
 
 schema VI_Vi_c(st p, pr f) {
-	cp[VI_Vi(p, f)]
+	|- cp[VI_Vi(p, f)]
 }
 
 schema VI_Vi_V2(pr f, pr2 g, cls z) {
@@ -718,7 +713,7 @@ schema VI_Vi_V2_Vi_VI_m(pr f, pr2 g) {
 schema Xi(pr f, cls x) {
 	NNi(f(x)) ~
 	mpu[
-		cp[Ve(Nf(f), x)]
+		|- cp[Ve(Nf(f), x)]
 		~ contrapose(V(Nf(f)), N(f(x)))
 	] ~ id(X(f))
 }
@@ -735,7 +730,7 @@ schema mpX_strong(pr f, pr g) {
 		mpX(?, Af(f, g))[
 			X(f),
 			Vi[(cls x) => {
-				cpn[
+				cp[
 					f(x) |-
 						Ai[
 							f(x),
@@ -754,7 +749,7 @@ schema mpXE(pr f, pr g) {
 "st 타입을 위한 존재 양화 소거(existential elimination)."
 schema Xe_p(st p) {
 	id(X((cls x) => {p})) ~
-	mpu[cp[Vi_p(N(p))]
+	mpu[|- cp[Vi_p(N(p))]
 	~ mpu[tt.IINpqINqp(p, V((cls x) => { N(p) }))]]
 }
 
@@ -807,7 +802,7 @@ schema XAm(pr f: @111, pr g: @112) {
 }
 
 schema XA(pr f, pr g) {
-	|- cpn[XAm(f, g)]
+	|- cp[XAm(f, g)]
 }
 
 schema X2A(pr2 f, pr2 g) {
@@ -936,11 +931,11 @@ schema VVin_m(cls a, pr2 f) {
 
 "V와 Vin은 순서를 바꿀 수 있다."
 schema VVin(cls a, pr2 f) {
-	cp[VVin_m(a, f)]
+	|- cp[VVin_m(a, f)]
 }
 
 "어떤 class 내에서의 exists. Vin과 달리 and로 연결된다."
-$!<prec=249><<\exists>>_{#1}#2$
+$!<prec=249><<\exists>>_{\in #1}#2$
 st Xin(cls a, pr f) {
 	X((cls z) => {
 		A(
@@ -951,7 +946,7 @@ st Xin(cls a, pr f) {
 }
 
 "어떤 class가 집합이라는 것. 어떤 class의 원소면 된다."
-$\left(<<\mathop\mathrm{set}>> #1\right)$
+$\left(<<\mathfrak M>> #1\right)$
 st set(cls x) {
 	X((cls y) => {
 		in(x, y)
@@ -969,8 +964,8 @@ schema set_Xi_A(cls x, cls y, cls z) {
 }
 
 schema set_Xi_O(cls x, cls y, cls z) {
-	cp[set_Xi(z, x)]
-	~ cp[set_Xi(z, y)]
+	|- cp[set_Xi(z, x)]
+	~ |- cp[set_Xi(z, y)]
 	~ Oe(in(z, x), in(z, y), set(z))
 }
 
@@ -1015,7 +1010,7 @@ schema eq_Ae2_Ve_Ee1(cls x, cls y, cls z) {
 }
 
 schema eq_Ae2_Ve_Ee1_c(cls x, cls y, cls z) {
-	cp[eq_Ae2_Ve_Ee1(x, y, z)]
+	|- cp[eq_Ae2_Ve_Ee1(x, y, z)]
 }
 
 schema swapV_1(pr f, pr g, pr h, cls w) {
@@ -1254,7 +1249,7 @@ schema extensional_m(cls x, cls y) {
 }
 
 schema eq_simple(cls x, cls y) {
-	cp[eq_Ae1(x, y)]
+	|- cp[eq_Ae1(x, y)]
 	~ extensional(x, y)
 	~ Ei(
 		eq(x, y),
@@ -1276,7 +1271,7 @@ schema eq_then_subseteq_m(cls x, cls y) {
 }
 
 schema eq_then_subseteq(cls x, cls y) {
-	cp[eq_then_subseteq_m(x, y)]
+	|- cp[eq_then_subseteq_m(x, y)]
 }
 
 schema eq_subseteq(cls x, cls y, cls z) {
@@ -1321,14 +1316,14 @@ schema setbuilder_def_Ve_Ee(pr f, cls z) {
 schema setbuilder_def_set(pr f, cls x) {
 	I(f(x), set(x)) |-
 		Ei[
-			cpn[
+			cp[
 				in(x, setbuilder(f)) |-
 					Ae2[mp[
 						in(x, setbuilder(f)),
 						Ee1[Ve(?, x)[setbuilder_def(f)[]]]
 					]]
 			],
-			cpn[
+			cp[
 				f(x) |-
 					mp[
 						Ai[
@@ -1350,7 +1345,7 @@ cls cap(cls x, cls y) {
 }
 
 schema set_Xi_A_c(cls x, cls y, cls z) {
-	cp[set_Xi_A(x, y, z)]
+	|- cp[set_Xi_A(x, y, z)]
 }
 
 schema cap_def(cls x, cls y, cls z) {
@@ -1400,7 +1395,7 @@ cls cup(cls x, cls y) {
 }
 
 schema set_Xi_O_c(cls x, cls y, cls z) {
-	cp[set_Xi_O(x, y, z)]
+	|- cp[set_Xi_O(x, y, z)]
 }
 
 schema cup_def(cls x, cls y, cls z) {
@@ -1413,6 +1408,26 @@ schema cup_def(cls x, cls y, cls z) {
 
 schema cup_def_vi(cls x, cls y) {
 	|- Vi[(cls z) => { cup_def(x, y, z)[] }]
+}
+
+"일반화된 교집합."
+$<<\bigcap>>#1$
+cls bigcap($A$ cls a) {
+	setbuilder((cls z) => {
+		Vin(a, (cls x) => {
+			in(z, x)
+		})
+	})
+}
+
+"일반화된 합집합."
+$<<\bigcup>>#1$
+cls bigcup($A$ cls a) {
+	setbuilder((cls z) => {
+		Xin(a, (cls x) => {
+			in(z, x)
+		})
+	})
 }
 
 "empty class."
@@ -1437,7 +1452,7 @@ schema emptyset_vi() {
 	)
 	~ Viu((cls z) => {
 		I(I(in(z, emptyset()), F), N(in(z, emptyset())))
-	})[(cls z) => { cp[Ni(in(z, emptyset()))] }]
+	})[(cls z) => { |- cp[Ni(in(z, emptyset()))] }]
 	~ mpV(
 		(cls z) => { I(in(z, emptyset()), F) },
 		(cls z) => { Nin(z, emptyset()) }
@@ -1548,7 +1563,7 @@ schema subset_is_set_ae(cls x, cls y) {
 }
 
 schema subset_is_set_ae_c(cls x, cls y) {
-	cp[subset_is_set_ae(x, y)]
+	|- cp[subset_is_set_ae(x, y)]
 }
 
 schema subset_is_set_ae_cvi(cls x) {
@@ -1625,7 +1640,7 @@ schema self_in_power(cls x, cls z) {
 }
 
 schema self_in_power_Vi_1(cls x, cls z) {
-	cp[self_in_power(x, z)]
+	|- cp[self_in_power(x, z)]
 }
 
 schema self_in_power_Vi(cls x) {
@@ -1650,6 +1665,14 @@ cls singleton(cls x) {
 	})
 }
 
+"doubleton class."
+$\left\{#1<<,>> #2\right\}$
+cls doubleton(cls x, cls y) {
+	setbuilder((cls z) => {
+		O(eq(z, x), eq(z, y))
+	})
+}
+
 schema singleton_subseteq_power_1(cls x, cls y) {
 	setbuilder_def_Ve_Ee((cls z) => {eq(z, x)}, y) ~
 	eq_then_subseteq(y, x) ~
@@ -1667,7 +1690,7 @@ schema singleton_subseteq_power_1(cls x, cls y) {
 }
 
 schema singleton_subseteq_power_2(cls x, cls y) {
-	cp[singleton_subseteq_power_1(x, y)]
+	|- cp[singleton_subseteq_power_1(x, y)]
 }
 
 schema singleton_subseteq_power(cls x) {
@@ -1731,7 +1754,18 @@ schema power_is_set_1(cls x, cls y) {
 }
 
 schema power_is_set_2(cls x, cls y) {
-	cp[power_is_set_1(x, y)]
+	set(x) |-
+		cp[
+			V((cls z) => {
+				I(subseteq(z, x), in(z, y))
+			}) |-
+				power_is_set_1(x, y)[
+					set(x),
+					V((cls z) => {
+						I(subseteq(z, x), in(z, y))
+					})
+				]
+		]
 	~ mpu[tt.IIpqIArpArq(
 		V((cls z) => {
 			I(
@@ -1745,7 +1779,7 @@ schema power_is_set_2(cls x, cls y) {
 }
 
 schema power_is_set_3(cls x, cls y) {
-	cp[power_is_set_2(x, y)]
+	|- cp[power_is_set_2(x, y)]
 }
 
 "멱집합은 집합이다."
@@ -1828,22 +1862,10 @@ axiomatic schema infinity() {
 ######## RELATIONS ########
 ###########################
 
-"순서쌍(ordered pair)."
+"순서쌍(ordered pair). Kuratowski의 정의이다."
 $\left(#1<<,>>#2\right)$
-cls v2(cls x, cls y);
-
-axiomatic schema v2_eq_def(cls x, cls y, cls z, cls w) {
-	|- E(
-		eq(v2(x, y), v2(z, w)),
-		A(eq(x, z), eq(y, w))
-	)
-}
-
-axiomatic schema v2_set_def(cls x, cls y) {
-	|- E(
-		set(v2(x, y)),
-		A(set(x), set(y))
-	)
+cls v2(cls x, cls y) {
+	doubleton(singleton(x), doubleton(x, y))
 }
 
 "곱집합(cartesian product)."
@@ -1859,58 +1881,45 @@ cls cartesian(cls x, cls y) {
 	})
 }
 
-schema cartesian_def_(cls x, cls y, cls z) {
-	setbuilder_def_set((cls z) => {
-		X2((cls a, cls b) => {
-			A(
-				eq(z, v2(a, b)),
-				A(in(a, x), in(b, y))
-			)
-		})
-	}, z)
-}
-
-schema cartesian_def(cls x, cls y, cls z) {
-	|- E(
-		in(z, cartesian(x, y)),
-		X2((cls a, cls b) => {
-			A(
-				eq(z, v2(a, b)),
-				A(in(a, x), in(b, y))
-			)
-		})
-	)
-}
-
 "어떤 class가 이항관계이다.
 
-[$R]이 이항관계라 함은 [$R]의 임의 원소가 순서쌍이라는 뜻이다. 정의역(domain)과 치역(image)에 관한 정보는 담지 않도록 한다."
+[$R]이 이항관계라 함은 [$R]의 임의 원소가 순서쌍이라는 뜻이다. 정의역(domain)과 치역(image)에 관한 정보는 담지 않도록 한다.
+
+[$V\times V]의 임의 부분집합으로 정의해도 좋을 것이다."
 $\left(<<\mathop\mathrm{relation}>> #1\right)$
-st rel(cls x) {
-	Vin(x, (cls z) => {
-		X2((cls a, cls b) => {
-			eq(z, v2(a, b))
+st rel($R$ cls r) {
+	Vin(r, (cls z) => {
+		X2((cls x, cls y) => {
+			eq(z, v2(x, y))
 		})
 	})
 }
 
 "이항관계의 정의역(domain)."
 $!<prec=200><<\operatorname{dom}>>#1$
-cls rel_dom(cls x) {
-	setbuilder((cls a) => {
-		X((cls b) => {
-			in(v2(a, b), x)
+cls rel_dom($R$ cls r) {
+	setbuilder((cls x) => {
+		X((cls y) => {
+			in(v2(x, y), r)
 		})
 	})
 }
 
 "이항관계의 치역(image)."
 $!<prec=200><<\operatorname{im}>>#1$
-cls rel_im(cls x) {
-	setbuilder((cls b) => {
-		X((cls a) => {
-			in(v2(a, b), x)
+cls rel_im($R$ cls r) {
+	setbuilder((cls y) => {
+		X((cls x) => {
+			in(v2(x, y), r)
 		})
+	})
+}
+
+"어떤 집합에 의한 상(image)."
+$#1\left[#2\right]$
+cls rel_im_set($R$ cls r, cls x) {
+	setbuilder((cls y) => {
+		in(v2(x, y), r)
 	})
 }
 
@@ -1955,7 +1964,7 @@ schema cartesian_is_rel(cls x, cls y) {
 			})
 		)
 	})[(cls z) => {
-		cp[
+		|- cp[
 			id(in(z, cartesian(x, y)))
 			~ mpu[setbuilder_def_Ve_Ee((cls z) => {
 				X2((cls a, cls b) => {
@@ -2036,7 +2045,7 @@ schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 		cp[(
 			in(x, a) |-
 				IQX[mp[in(x, a), Ve(?, x)[fun_im_unique[function(f, a, b)]]]]
-		)][]
+		)]
 	}] ~ id(Vin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))
 }
 
@@ -2053,15 +2062,8 @@ schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
 
 "함수 호출."
 $\left({#1}<<(>>#2)\right)$
-cls fcall(cls f, cls x);
-
-"fcall의 defining property.
-
-[$f(x)]는 [$\langle f, A, B\rangle]이 함수이고 [$x\in A]일 때만 정의되며, 이때 [$f(x) = y]는 [$(x, y)\in f]와 동치라는 뜻이다."
-axiomatic schema fcall_def(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
-	function(f, a, b), in(x, a) |- E(
-		eq(fcall(f, x), y),
-		in(v2(x, y), f)
-	)
+cls fcall(cls f, cls x) {
+	bigcup(rel_im_set(f, singleton(x)))
 }
-`
+
+`;

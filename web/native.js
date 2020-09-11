@@ -214,48 +214,6 @@ native = {
 					right: right.args[1]
 				});
 			}
-		},
-		cp: {
-			get: (rules, scope, ER) => {
-				if (rules.length != 1) throw Error('wut');
-				var rule = rules[0];
-
-				if (!scope.baseType)
-					throw Error(`Base type not found`);
-
-				var base = scope.baseType;
-
-				var tee = ER.expandMeta(rule);
-
-				if (tee._type != 'tee')
-					throw Error('wut');
-
-				if (!tee.left.length)
-					throw Error('wut');
-
-				if (!scope.hasTypevar('I'))
-					throw Error(`Typevar I not found`);
-
-				var I = scope.getTypevar('I');
-
-				if (!I.type.equals(new scope.Type({
-					functional: true,
-					from: [base, base],
-					to: base
-				})))
-					throw Error(`Wrong type for I`);
-
-				return new scope.Tee({
-					left: tee.left.slice(0, tee.left.length - 1),
-					right: new scope.Funcall({
-						fun: I,
-						args: [
-							tee.left[tee.left.length - 1],
-							tee.right
-						]
-					})
-				});
-			}
 		}
 	}
 };
