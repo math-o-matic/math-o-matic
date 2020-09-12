@@ -358,7 +358,8 @@ function peg$parse(input, options) {
       			subject: {
       				_type: 'var',
       				type: 'normal',
-      				name: 'cut'
+      				name: 'cut',
+      				location: location()
       			},
       			leftargs: [a, b],
       			location: location()
@@ -407,12 +408,14 @@ function peg$parse(input, options) {
       				_type: 'var',
       				type: 'ruleset',
       				rulesetName,
-      				name
+      				name,
+      				location: location()
       			}
       			: {
       				_type: 'var',
       				type: 'normal',
-      				name
+      				name,
+      				location: location()
       			}
       	},
       peg$c98 = /^[a-zA-Z0-9_]/,

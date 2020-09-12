@@ -345,7 +345,8 @@ metaexpr =
 			subject: {
 				_type: 'var',
 				type: 'normal',
-				name: 'cut'
+				name: 'cut',
+				location: location()
 			},
 			leftargs: [a, b],
 			location: location()
@@ -445,12 +446,14 @@ var =
 				_type: 'var',
 				type: 'ruleset',
 				rulesetName,
-				name
+				name,
+				location: location()
 			}
 			: {
 				_type: 'var',
 				type: 'normal',
-				name
+				name,
+				location: location()
 			}
 	}
 

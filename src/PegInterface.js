@@ -98,11 +98,18 @@ PI.type = function (obj, parentScope, trace) {
 };
 
 PI.typevar = function (obj, parentScope, trace) {
-	if (obj._type != 'defv')
+	if (!['defv', 'var'].includes(obj._type)) {
 		throw Error('Assertion failed');
+	}
 
 	var scope = parentScope.extend();
 	trace = trace.extend('typevar', obj.name, obj.location);
+
+	if (obj._type == 'var') {
+		if (!scope.hasTypevar(obj.name))
+			throw trace.error(`Undefined identifier ${obj.name}`);
+		return scope.getTypevar(obj.name);
+	}
 
 	if (!scope.hasType(typeObjToNestedArr(obj.type)))
 		throw trace.error(`Type ${obj.type} not found`);
@@ -226,9 +233,7 @@ PI.expr0 = function (obj, parentScope, trace) {
 		case 'funexpr':
 			return PI.fun(obj, scope, trace);
 		case 'var':
-			if (!scope.hasTypevar(obj.name))
-				throw trace.error(`Undefined identifier ${obj.name}`);
-			return scope.getTypevar(obj.name);
+			return PI.typevar(obj, scope, trace);
 		default:
 			throw Error('wut');
 	}
