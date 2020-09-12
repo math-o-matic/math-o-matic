@@ -38,8 +38,10 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
-jspm_packages/
+# Note: npm may fail to ignore docs/node_modules when
+# the trailing slash is present.
+node_modules
+jspm_packages
 
 # TypeScript v1 declaration files
 typings/

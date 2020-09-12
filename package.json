@@ -2,6 +2,14 @@
   "name": "math-o-matic",
   "version": "0.1.0",
   "description": "Computerized axiomatic system in JavaScript",
+  "keywords": [
+  	"math"
+  ],
+  "author": {
+    "name": "logico-philosophical",
+    "url": "http://github.com/logico-philosophical",
+    "email": "ossia@korea.ac.kr"
+  },
   "repository": {
     "type": "git",
     "url": "http://github.com/logico-philosophical/math-o-matic.git"
@@ -15,11 +23,6 @@
     "nodemon": "nodemon -e * --watch src/ --exec \"npm run build\"",
     "build": "pegjs --cache -o dist/parser.js src/parser.pegjs && webpack",
     "lint": "eslint src/**/*.js"
-  },
-  "keywords": [],
-  "author": {
-    "name": "logico-philosophical",
-    "url": "http://github.com/logico-philosophical"
   },
   "license": "MIT",
   "dependencies": {},
