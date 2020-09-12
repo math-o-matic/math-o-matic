@@ -10,7 +10,7 @@ if (!process.argv[2]) {
 function formatError(e) {
 	var obj = esp.parse(e);
 	if (e.location) {
-		return `Error at <anonymous> (${process.argv[2]}:${e.location.start.line}:${e.location.start.column}): ${e.message}`;
+		return `Error at (${process.argv[2]}:${e.location.start.line}:${e.location.start.column}): ${e.message}`;
 	}
 
 	return `Error at ${obj[0].functionName} (${obj[0].fileName}:${obj[0].lineNumber}:${obj[0].columnNumber}): ${e.message}`;

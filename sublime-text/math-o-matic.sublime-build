@@ -2,5 +2,5 @@
 	"selector": "source.math-o-matic",
 	"file_patterns": ["*.math"],
 	"cmd": "node ../build.js $file",
-	"file_regex": "^Error at [^(]+?\\(((?:.:)?.+?):(.+?):(.+?)\\)(?:: )?(.*)$"
+	"file_regex": "^Error at[^(]*\\(((?:.:)?.+?):(.+?):(.+?)\\)(?:: )?(.*)$"
 }
