@@ -1298,11 +1298,24 @@ schema subseteq_eq(cls x, cls y, cls z) {
 	~ subseteq_subseteq(x, y, z)
 }
 
-"술어를 만족하는 set들의 class를 만든다. 일반적으로는 [$\{z: f(z)\}]라고 쓰는 것."
+"술어를 만족하는 set들의 class를 만든다. 일반적으로는 [$\{z: f(z)\}]라고 쓰는 것이다."
 $\left\{<<:>>#1\right\}$
 cls setbuilder(pr f);
 
-"setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다. [&lbrack]Pinter[&rbrack]에서는 axiom of class construction이라 부르는 것 같다."
+"술어를 만족하는 집합 [$z]에 대해 [$f(z)]를 포함하는 클래스를 만든다. 일반적으로 [$\{f(z): g(z)\}]라고 쓰는 것이다."
+$\left\{#1<<:>>#2\right\}$
+cls setbuilder2([cls -> cls] f, pr g) {
+	setbuilder((cls z) => {
+		X((cls w) => {
+			A(
+				eq(w, f(z)),
+				g(w)
+			)
+		})
+	})
+}
+
+"setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다. `[Pinter]`에서는 axiom of class construction이라 부르는 것 같다."
 axiomatic schema setbuilder_def(pr f) {
 	|- V((cls w) => {
 		E(
@@ -1858,137 +1871,6 @@ schema singleton_is_set(cls x: @11) {
 	~ subset_is_set(singleton(x), power(x))
 }
 
-"따름 순서수(successor ordinal)."
-$ {#1}^{<<+>>}$
-cls successor(cls x) {
-	cup(x, singleton(x))
-}
-
-"순서수(ordinal number)로서의 0."
-$<<0>>_\text{ord}$
-cls ord_zero() {
-	emptyset()
-}
-
-"순서수(ordinal number)로서의 1. 0의 따름 순서수이다."
-$<<1>>_\text{ord}$
-cls ord_one() {
-	successor(ord_zero())
-}
-
-"따름 순서수는 집합이다."
-schema successor_is_set(cls x: @11) {
-	set(x) |- id(set(successor(x)))[cup_is_set[
-		set(x),
-		singleton_is_set[set(x)]
-	]]
-}
-
-"[$x]가 successor set이다."
-$\left(<<\operatorname{successor\ set}>> #1\right)$
-st is_successor_set(cls x) {
-	A(
-		in(emptyset(), x),
-		V((cls z) => {
-			I(
-				in(z ,x),
-				in(successor(z), x)
-			)
-		})
-	)
-}
-
-"무한 공리(axiom of infinity). 즉 successor set 중에는 집합인 것이 있다."
-axiomatic schema ax_infinity() {
-	|- X((cls x) => {
-		A(
-			set(x),
-			is_successor_set(x)
-		)
-	})
-}
-
-"자연수 집합. 즉 모든 successor set을 교집합한 것이다."
-$<<\omega>>$
-cls omega() {
-	bigcap(setbuilder((cls z) => {
-		is_successor_set(z)
-	}))
-}
-
-"자연수 집합은 0을 포함한다."
-schema zero_in_omega() {
-	|- id(in(ord_zero(), omega()))[bigcap_2(setbuilder((cls z) => {
-		is_successor_set(z)
-	}), ord_zero())[
-		ax_emptyset()[],
-		Vi[(cls z) => {
-			cp[
-				in(z, setbuilder((cls z) => {is_successor_set(z)})) |-
-					Ae1[setbuilder_def_1[in(z, setbuilder((cls z) => {
-						is_successor_set(z)
-					}))]]
-			]
-		}]
-	]]
-}
-
-schema successor_in_omega(cls z) {
-	in(z, omega()) |-
-		id(in(successor(z), omega()))[bigcap_2(setbuilder((cls z) => {is_successor_set(z)}), successor(z))[
-			successor_is_set(z)[Xi((cls x) => {in(z, x)}, omega())[in(z, omega())]],
-			Vi[(cls x) => {
-				cp[
-					in(x, setbuilder((cls z) => {is_successor_set(z)})) |-
-						mp[
-							mp[
-								in(x, setbuilder((cls z) => {is_successor_set(z)})),
-								Ve(?, x)[bigcap_1(setbuilder((cls z) => {
-									is_successor_set(z)
-								}), z)[in(z, omega())]]
-							],
-							Ve(?, z)[Ae2[setbuilder_def_1((cls z) => {is_successor_set(z)}, x)[
-								in(x, setbuilder((cls z) => {is_successor_set(z)}))
-							]]]
-						]
-				]
-			}]
-		]]
-}
-
-"[$\omega]는 successor set이다."
-schema omega_is_successor_set() {
-	|- id(is_successor_set(omega()))[Ai[
-		zero_in_omega()[],
-		Vi[(cls z) => {
-			cp[successor_in_omega(z)]
-		}]
-	]]
-}
-
-"자연수 집합은 집합이다. ax_infinity로부터 유도된다."
-schema omega_is_set() {
-	|- mpX_Xe_p(?, set(omega()))[
-		ax_infinity()[],
-		Vi[(cls x) => {
-			cp[
-				A(set(x), is_successor_set(x)) |-
-					id(set(omega()))[subset_is_set[
-						Ae1[A(set(x), is_successor_set(x)) ],
-						bigcap_is_smaller[setbuilder_def_2a((cls z) => {is_successor_set(z)}, ?)[
-							A(set(x), is_successor_set(x))
-						]]
-					]]
-			]
-		}]
-	]
-}
-
-"[&lbrack]Pinter[&rbrack]의 정리 6.2."
-schema successor_is_not_zero(cls n) {
-	in(n, omega()) |- neq(successor(n), ord_zero())
-}
-
 ###########################
 ######## RELATIONS ########
 ###########################
@@ -1999,16 +1881,24 @@ cls v2(cls x, cls y) {
 	doubleton(singleton(x), doubleton(x, y))
 }
 
-"곱집합(cartesian product)."
-$!<prec=230>#1<<\times>>#2$
-cls cartesian(cls x, cls y) {
+"순서쌍을 위한 setbuilder."
+$\left\{<<:>>#1\right\}$
+cls setbuilder_v2(pr2 f) {
 	setbuilder((cls z) => {
 		X2((cls a, cls b) => {
 			A(
 				eq(z, v2(a, b)),
-				A(in(a, x), in(b, y))
+				f(a, b)
 			)
 		})
+	})
+}
+
+"곱집합(cartesian product)."
+$!<prec=230>#1<<\times>>#2$
+cls cartesian(cls x, cls y) {
+	setbuilder_v2((cls a, cls b) => {
+		A(in(a, x), in(b, y))
 	})
 }
 
@@ -2057,29 +1947,19 @@ cls rel_im_set($R$ cls r, cls x) {
 "이항관계의 역(inverse)."
 $!<prec=190>{#1}^{<<-1>>}$
 cls rel_inverse(cls x) {
-	setbuilder((cls z) => {
-		X2((cls a, cls b) => {
-			A(
-				eq(z, v2(b, a)),
-				in(v2(a, b), x)
-			)
-		})
+	setbuilder_v2((cls a, cls b) => {
+		in(v2(b, a), x)
 	})
 }
 
 "이항관계의 합성(composition)."
 $!<prec=230>#1 <<\circ>> #2$
 cls rel_composite(cls x, cls y) {
-	setbuilder((cls z) => {
-		X2((cls a, cls c) => {
+	setbuilder_v2((cls a, cls c) => {
+		X((cls b) => {
 			A(
-				eq(z, v2(a, c)),
-				X((cls b) => {
-					A(
-						in(v2(a, b), y),
-						in(v2(b, c), x)
-					)
-				})
+				in(v2(a, b), y),
+				in(v2(b, c), x)
 			)
 		})
 	})
@@ -2163,6 +2043,18 @@ st function(cls f, $A$ cls a, $B$ cls b) {
 	)
 }
 
+"메타함수로 함수를 만든다."
+cls make_fun($A$ cls a, [cls -> cls] f) {
+	setbuilder2(
+		(cls z) => {
+			v2(z, f(z))
+		},
+		(cls z) => {
+			in(z, a)
+		}
+	)
+}
+
 schema fun_subseteq_cartesian(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	function(f, a, b) |- Ae1[function(f, a, b)]
 }
@@ -2172,12 +2064,14 @@ schema fun_im_unique(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 }
 
 schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	function(f, a, b) |- Vi[(cls x) => {
-		cp[(
-			in(x, a) |-
-				Xq_to_X[mp[in(x, a), Ve(?, x)[fun_im_unique[function(f, a, b)]]]]
-		)]
-	}] ~ id(Vin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))
+	function(f, a, b) |- id(Vin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))[
+		Vi[(cls x) => {
+			cp[(
+				in(x, a) |-
+					Xq_to_X[mp[in(x, a), Ve(?, x)[fun_im_unique[function(f, a, b)]]]]
+			)]
+		}]
+	]
 }
 
 schema fun_is_rel(cls f, $A$ cls a, $B$ cls b) {
@@ -2200,4 +2094,184 @@ schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
 $#1<<(>>#2)$
 cls fcall(cls f, cls x) {
 	bigcup(rel_im_set(f, singleton(x)))
+}
+
+###########################
+##### NATURAL NUMBERS #####
+###########################
+
+"따름 순서수(successor ordinal)."
+${#1}^{<<+>>}$
+cls successor(cls x) {
+	cup(x, singleton(x))
+}
+
+"순서수(ordinal number)로서의 0."
+$<<0_\text{ord}>>$
+cls ord_zero() {
+	emptyset()
+}
+
+"순서수(ordinal number)로서의 1. 0의 따름 순서수이다."
+$<<1_\text{ord}>>$
+cls ord_one() {
+	successor(ord_zero())
+}
+
+"따름 순서수는 집합이다."
+schema successor_is_set(cls x: @11) {
+	set(x) |- id(set(successor(x)))[cup_is_set[
+		set(x),
+		singleton_is_set[set(x)]
+	]]
+}
+
+"[$x]가 successor set이다."
+$\left(<<\operatorname{successor\ set}>> #1\right)$
+st is_successor_set(cls x) {
+	A(
+		in(emptyset(), x),
+		V((cls z) => {
+			I(
+				in(z ,x),
+				in(successor(z), x)
+			)
+		})
+	)
+}
+
+"무한 공리(axiom of infinity). 즉 successor set 중에는 집합인 것이 있다."
+axiomatic schema ax_infinity() {
+	|- X((cls x) => {
+		A(
+			set(x),
+			is_successor_set(x)
+		)
+	})
+}
+
+"자연수 집합. 즉 모든 successor set을 교집합한 것이다."
+$<<\omega>>$
+cls omega() {
+	bigcap(setbuilder((cls z) => {
+		is_successor_set(z)
+	}))
+}
+
+"자연수 집합은 0을 포함한다. `[Pinter]`에 따르면 페아노 공리계 제1공리이다."
+schema zero_in_omega() {
+	|- id(in(ord_zero(), omega()))[bigcap_2(setbuilder((cls z) => {
+		is_successor_set(z)
+	}), ord_zero())[
+		ax_emptyset()[],
+		Vi[(cls z) => {
+			cp[
+				in(z, setbuilder((cls z) => {is_successor_set(z)})) |-
+					Ae1[setbuilder_def_1[in(z, setbuilder((cls z) => {
+						is_successor_set(z)
+					}))]]
+			]
+		}]
+	]]
+}
+
+"`[Pinter]`에 따르면 페아노 공리계 제2공리인 것."
+schema successor_in_omega(cls z) {
+	in(z, omega()) |-
+		id(in(successor(z), omega()))[bigcap_2(setbuilder((cls z) => {is_successor_set(z)}), successor(z))[
+			successor_is_set(z)[Xi((cls x) => {in(z, x)}, omega())[in(z, omega())]],
+			Vi[(cls x) => {
+				cp[
+					in(x, setbuilder((cls z) => {is_successor_set(z)})) |-
+						mp[
+							mp[
+								in(x, setbuilder((cls z) => {is_successor_set(z)})),
+								Ve(?, x)[bigcap_1(setbuilder((cls z) => {
+									is_successor_set(z)
+								}), z)[in(z, omega())]]
+							],
+							Ve(?, z)[Ae2[setbuilder_def_1((cls z) => {is_successor_set(z)}, x)[
+								in(x, setbuilder((cls z) => {is_successor_set(z)}))
+							]]]
+						]
+				]
+			}]
+		]]
+}
+
+"[$\omega]는 successor set이다."
+schema omega_is_successor_set() {
+	|- id(is_successor_set(omega()))[Ai[
+		zero_in_omega()[],
+		Vi[(cls z) => {
+			cp[successor_in_omega(z)]
+		}]
+	]]
+}
+
+"자연수 집합은 집합이다. ax_infinity로부터 유도된다."
+schema omega_is_set() {
+	|- mpX_Xe_p(?, set(omega()))[
+		ax_infinity()[],
+		Vi[(cls x) => {
+			cp[
+				A(set(x), is_successor_set(x)) |-
+					id(set(omega()))[subset_is_set[
+						Ae1[A(set(x), is_successor_set(x)) ],
+						bigcap_is_smaller[setbuilder_def_2a((cls z) => {is_successor_set(z)}, ?)[
+							A(set(x), is_successor_set(x))
+						]]
+					]]
+			]
+		}]
+	]
+}
+
+"`[Pinter]`에 따르면 페아노 공리계 제3공리인 것."
+schema successor_is_not_zero(cls n) {
+	in(n, omega()) |- neq(successor(n), ord_zero())
+}
+
+"재귀 정리(recursion theorem)."
+schema recursion_theorem($A$ cls a, cls c, cls f) {
+	in(c, a), function(f, a, a) |-
+		Xq(($\gamma$ cls g) => {
+			A(
+				function(g, omega(), a),
+				A(
+					eq(fcall(g, ord_zero()), c),
+					Vin(omega(), (cls n) => {
+						eq(
+							fcall(g, successor(n)),
+							fcall(f, fcall(g, n))
+						)
+					})
+				)
+			)
+		})
+}
+
+"클래스 [$A] 및 그 원소 [$c\in A] 및 함수 [$f: A\to A]에 대하여,
+[ol
+	[*] [$\gamma(0) = c,]
+	[*] 임의의 [$n\in\omega]에 대하여, [$\gamma(n^+)=f(\gamma(n))]
+]
+을 만족하는 함수 [$\gamma:\omega\to A]를 만든다. [$c]와 [$f]가 조건을 만족하지 않으면 만들어지지 않는다. `[Pinter]`의 정리 6.8에 등장한다."
+cls define_recursive($A$ cls a, cls c, cls f) {
+	bigcap(setbuilder(($G$ cls g) => {
+		A(
+			subseteq(g, cartesian(omega(), a)),
+			A(
+				in(v2(ord_zero(), c), g),
+				Vin(omega(), (cls n) => {
+					Vin(a, (cls x) => {
+						I(
+							in(v2(n, x), g),
+							in(v2(successor(n), fcall(f, x)), g)
+						)
+					})
+				})
+			)
+		)
+	}))
 }
