@@ -1,4 +1,4 @@
-native = {
+var native = {
 	ruleset: {
 		tt: {
 			get: (name, scope) => {
@@ -217,3 +217,7 @@ native = {
 		}
 	}
 };
+
+if (typeof module != 'undefined' && module.exports) {
+	module.exports = native;
+}

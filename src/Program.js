@@ -15,9 +15,9 @@ var StackTrace = require('./StackTrace');
 
 ExpressionResolver.init({Type, Typevar, Fun, Funcall, Tee, Ruleset, Schema, Schemacall});
 
-function Program() {
+function Program(filename) {
 	this.scope = new Scope(null);
-	this.trace = new StackTrace();
+	this.trace = new StackTrace([], filename);
 	this.ExpressionResolver = ExpressionResolver;
 }
 

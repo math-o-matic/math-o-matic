@@ -1,0 +1,163 @@
+* {
+	tab-size: 4;
+	box-sizing: border-box;
+}
+
+body {
+	font: 16px Roboto, sans-serif;
+	font-weight: 400;
+	-webkit-font-smoothing: antialiased;
+	color: #5f6368;
+	line-height: 1.5;
+	word-break: normal;
+	overflow-wrap: break-word;
+}
+
+h1, h2, h3, h4, h5, h6, a, b, strong, input, textarea, th, .katex {
+	color: #202124;
+}
+
+p {
+	margin: 0;
+}
+
+p + p {
+	margin-top: 1em;
+}
+
+pre {
+	white-space: pre-wrap;
+}
+
+table {
+	border: 1px #ccc solid;
+	border-collapse: collapse;
+	margin: 1em 0;
+}
+
+table tr td, table tr th {
+	padding: .2em .5em;
+	border: 1px #ccc solid;
+}
+
+input[type=button], input[type=submit], button {
+	background: none;
+	border: none;
+	border-radius: 3px;
+	padding: 1ex 1em;
+	cursor: pointer;
+}
+
+kbd {
+	font: .85em 'Roboto Mono', monospace;
+	color: #202124;
+	border: 1px #ccc solid;
+	padding: .1em .3em;
+	border-radius: .2em;
+}
+
+.colored {
+	background-color: #202124!important;
+	color: #eee;
+}
+
+.block {
+	padding: 1em;
+	background-color: #fafafa;
+	border: 1px #ccc solid;
+	border-radius: 3px;
+	margin: 1em 0;
+}
+
+.label {
+	font-family: 'Roboto Mono', monospace, monospace;
+}
+
+.math {
+	font-size: 1.2em;
+	margin: 1em 0;
+}
+
+.katex a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.katex a[data-blue] > :not(.mspace) {
+	background-color: #E3F2FD;
+	color: #303F9F;
+}
+
+.katex a[data-green] > :not(.mspace) {
+	background-color: #E8F5E9;
+	color: #006064;
+}
+
+.katex a[data-orange] {
+	color: #E65100;
+}
+
+table.explorer td {
+	white-space: nowrap;
+}
+
+table.explorer td.brb {
+	border-right: 3px #222 solid;
+	text-align: right;
+	width: 1px;
+}
+
+table.explorer td.bbb {
+	border-bottom: 3px #222 solid;
+}
+
+.red {
+	 color: #D32F2F;
+}
+
+#search {
+	height: 30px;
+	vertical-align: middle;
+	font: .85em Roboto, sans-serif;
+}
+
+#reload {
+	height: 30px;
+	vertical-align: middle;
+}
+
+#search-dropdown {
+	background-color: white;
+}
+
+#search-dropdown ul {
+	margin: 0;
+	margin-top: .3em;
+	padding: 0;
+	border: 1px #666 solid;
+}
+
+#search-dropdown ul li {
+	list-style: none;
+}
+
+#search-dropdown ul li:hover {
+	background-color: #eee;
+}
+
+#search-dropdown ul li + li {
+	border-top: 1px #666 solid;
+}
+
+#search-dropdown ul li.selected a::before {
+	content: '> ';
+	display: inline;
+	font-weight: bold;
+}
+
+#search-dropdown ul li a {
+	display: block;
+	padding: .3em;
+	color: #5f6368;
+	text-decoration: none;
+}

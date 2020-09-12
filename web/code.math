@@ -1,4 +1,3 @@
-code = String.raw`
 #####################################
 ######## PROPOSITIONAL LOGIC ########
 #####################################
@@ -860,11 +859,11 @@ schema mpVE(pr f, pr g) {
 ######## SET THEORY ########
 ############################
 
-"집합론에서 정의하는 in 연산자."
+"집합론에서 정의하는 [$\in] 관계."
 $!<prec=450>#1<<\in>>#2$
 st in(cls x, cls y);
 
-"not in 연산자."
+"[$\notin]."
 $!<prec=450>#1<<\notin>>#2$
 st Nin(cls x, cls y) {
 	N(in(x, y))
@@ -881,7 +880,7 @@ st subseteq(cls x, cls y) {
 	})
 }
 
-"[$=] 연산자. [$\in]에 의존한다."
+"[$=]. [$\in]에 의존한다."
 $!<prec=350>#1<<=>>#2$
 st eq(cls x, cls y) {
 	A(
@@ -892,6 +891,12 @@ st eq(cls x, cls y) {
 			E(in(x, w), in(y, w))
 		})
 	)
+}
+
+"[$\neq]."
+$!<prec=350>#1<<\neq>>#2$
+st neq(cls x, cls y) {
+	N(eq(x, y))
 }
 
 "어떤 class 내에서의 forall."
@@ -1859,6 +1864,18 @@ cls successor(cls x) {
 	cup(x, singleton(x))
 }
 
+"순서수(ordinal number)로서의 0."
+$<<0>>_\text{ord}$
+cls ord_zero() {
+	emptyset()
+}
+
+"순서수(ordinal number)로서의 1. 0의 따름 순서수이다."
+$<<1>>_\text{ord}$
+cls ord_one() {
+	successor(ord_zero())
+}
+
 "따름 순서수는 집합이다."
 schema successor_is_set(cls x: @11) {
 	set(x) |- id(set(successor(x)))[cup_is_set[
@@ -1899,10 +1916,11 @@ cls omega() {
 	}))
 }
 
-schema emptyset_in_omega() {
-	|- id(in(emptyset(), omega()))[bigcap_2(setbuilder((cls z) => {
+"자연수 집합은 0을 포함한다."
+schema zero_in_omega() {
+	|- id(in(ord_zero(), omega()))[bigcap_2(setbuilder((cls z) => {
 		is_successor_set(z)
-	}), emptyset())[
+	}), ord_zero())[
 		ax_emptyset()[],
 		Vi[(cls z) => {
 			cp[
@@ -1941,7 +1959,7 @@ schema successor_in_omega(cls z) {
 "[$\omega]는 successor set이다."
 schema omega_is_successor_set() {
 	|- id(is_successor_set(omega()))[Ai[
-		emptyset_in_omega()[],
+		zero_in_omega()[],
 		Vi[(cls z) => {
 			cp[successor_in_omega(z)]
 		}]
@@ -1964,6 +1982,11 @@ schema omega_is_set() {
 			]
 		}]
 	]
+}
+
+"[&lbrack]Pinter[&rbrack]의 정리 6.2."
+schema successor_is_not_zero(cls n) {
+	in(n, omega()) |- neq(successor(n), ord_zero())
 }
 
 ###########################
@@ -2024,7 +2047,7 @@ cls rel_im($R$ cls r) {
 }
 
 "어떤 집합에 의한 상(image)."
-$#1\left[#2\right]$
+$#1<<[>>#2]$
 cls rel_im_set($R$ cls r, cls x) {
 	setbuilder((cls y) => {
 		in(v2(x, y), r)
@@ -2168,10 +2191,13 @@ schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
 	function(f, a, b) |- eq(rel_dom(f), a)
 }
 
-"함수 호출."
-$\left({#1}<<(>>#2)\right)$
+"함수 호출. [$f]가 함수이고 [$x]가 [$f]의 정의역에 있을 경우 함숫값이 된다. 그러하지 아니할 때는 다음과 같다.
+
+[ul
+	[*] [$f]가 함수이고 [$x]가 [$f]의 정의역 밖일 경우 [$\varnothing]이 된다.
+	[*] 일반적으로 [$(x, y)\in f]인 [$y]를 전부 합집합 한 것이다.
+]"
+$#1<<(>>#2)$
 cls fcall(cls f, cls x) {
 	bigcup(rel_im_set(f, singleton(x)))
 }
-
-`;
