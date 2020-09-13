@@ -49,20 +49,20 @@ Schemacall.prototype.toString = function () {
 
 Schemacall.prototype.toIndentedString = function (indent) {
 	var args = this.args.map(arg => {
-		if (arg instanceof Typevar) return arg.name;
+		if (arg instanceof Typevar) return `${arg.name}<${arg._id}>`;
 		return arg.toIndentedString(indent + 1);
 	});
 
 	if (args.join('').length <= 50) {
 		args = this.args.map(arg => {
-			if (arg instanceof Typevar) return arg.name;
+			if (arg instanceof Typevar) return `${arg.name}<${arg._id}>`;
 			return arg.toIndentedString(indent);
 		});
 
 		args = args.join(', ');
 
 		return [
-			`${this.schema.name}(`,
+			`${this.schema.name || `(${this.schema})`}(`,
 			args,
 			')'
 		].join('');
@@ -71,7 +71,7 @@ Schemacall.prototype.toIndentedString = function (indent) {
 		args = args.join(',\n' + '\t'.repeat(indent + 1));
 
 		return [
-			`${this.schema.name}(`,
+			`${this.schema.name || `(${this.schema.toIndentedString(indent)})`}(`,
 			'\t' + args,
 			')'
 		].join('\n' + '\t'.repeat(indent));

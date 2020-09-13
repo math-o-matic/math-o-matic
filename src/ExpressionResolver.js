@@ -256,46 +256,6 @@ ER.equals = function (a, b) {
 			return recurseWrap(a, b.reduced, depth + 1);
 		}
 
-		if (a.type._type == 'metatype') {
-			a = ER.expandMeta(a);
-			b = ER.expandMeta(b);
-
-			if (a._type == 'tee') {
-				for (var i = 0; i < a.left.length; i++) {
-					if (!recurseWrap(a.left[i], b.left[i], depth + 1)) return false;
-				}
-
-				return recurseWrap(a.right, b.right, depth + 1);
-			} else if (a._type == 'schema') {
-				if (a.type.resolve().from.length != b.type.resolve().from.length) {
-					throw Error('wut');
-				}
-
-				var placeholders = Array(a.type.resolve().from.length).fill().map((_, i) =>
-					new Typevar({
-						type: a.type.from[i],
-						name: '$' + i
-					})
-				);
-
-				return recurseWrap(
-					new Schemacall({
-						name: null,
-						schema: a,
-						args: placeholders
-					}),
-					new Schemacall({
-						name: null,
-						schema: b,
-						args: placeholders
-					}),
-					depth + 1
-				);
-			} else {
-				throw Error('wut');
-			}
-		}
-
 		if (iscall(a) && iscall(b)) {
 			if (iscall(callee(a))) {
 				return recurseWrap(
@@ -354,6 +314,14 @@ ER.equals = function (a, b) {
 			);
 		}
 
+		if (a._type == 'tee') {
+			for (var i = 0; i < a.left.length; i++) {
+				if (!recurseWrap(a.left[i], b.left[i], depth + 1)) return false;
+			}
+
+			return recurseWrap(a.right, b.right, depth + 1);
+		}
+
 		if (a.type.isFunctional) {
 			var placeholders = Array(a.type.resolve().from.length).fill().map((_, i) =>
 				new Typevar({
@@ -373,9 +341,9 @@ ER.equals = function (a, b) {
 	var recurseWrap = recurse;
 
 	// function recurseWrap(a, b, depth) {
-	// 	console.log(`${depth}\n${a}\n\n${b}`);
+	// 	console.log(`depth: ${depth}\n${a}\n\n${b}`);
 	// 	var ret = recurse(a, b, depth);
-	// 	console.log(`${depth}\n${a}\n\n${b}\n${ret}`);
+	// 	console.log(`depth: ${depth} → ${ret}`);
 	// 	return ret;
 	// }
 
