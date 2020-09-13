@@ -72,10 +72,7 @@
 		if (evt.key == 'Enter') {
 			evt.preventDefault();
 
-			if (listIndex >= 0
-					|| list && list[0]
-						&& list[0].name.toLowerCase() == $('#search').value.toLowerCase()
-					|| list && list.length == 1) {
+			if (list && list.length) {
 				var {type, name} = list[Math.max(0, listIndex)];
 				destroy();
 				location.href = `#${type}-${name}`;
