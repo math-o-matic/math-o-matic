@@ -94,7 +94,7 @@ Reduction.prototype.isProved = function (hyps) {
 	return Node.prototype.isProved.call(this, hyps)
 		|| this.subject.isProved(hyps)
 			&& this.leftargs.every(l => l.isProved(hyps));
-}
+};
 
 Reduction.prototype.query = function (guess, left, leftargs) {
 	if (guess.length == 0) throw this.error('wut');

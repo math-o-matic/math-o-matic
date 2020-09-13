@@ -44,7 +44,7 @@ Funcall.prototype.isProved = function (hyps) {
 	hyps = hyps || [];
 	
 	return Node.prototype.isProved.call(this, hyps);
-}
+};
 
 Funcall.prototype.toString = function () {
 	return this.toIndentedString(0);

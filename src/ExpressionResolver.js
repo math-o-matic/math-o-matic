@@ -131,7 +131,7 @@ ER.call = function (callee, args) {
 	}
 
 	return ER.substitute(callee.expr, map);
-}
+};
 
 ER.expandCallOnce = function (expr) {
 	if (!iscall(expr)) {
@@ -148,7 +148,7 @@ ER.expandCallOnce = function (expr) {
 	}
 
 	return ER.call(callee(expr), expr.args);
-}
+};
 
 // 이름 있는 것은 풀지 않는다. 재귀적.
 ER.expand0Funcalls = function (expr) {

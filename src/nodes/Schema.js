@@ -57,7 +57,7 @@ Schema.prototype.isProved = function (hyps) {
 		|| !this.native && Node.prototype.isProved.call(this, hyps)
 		|| this.axiomatic
 		|| this.expr && this.expr.isProved(hyps);
-}
+};
 
 Schema.prototype.toString = function () {
 	return this.toIndentedString(0);

@@ -36,7 +36,7 @@ MetaType.prototype._type = 'metatype';
 
 MetaType.prototype.resolve = function () {
 	return this;
-}
+};
 
 MetaType.prototype.toString = function () {
 	if (this.isSimple) return `[${this.left.join(', ')} |- ${this.right}]`;

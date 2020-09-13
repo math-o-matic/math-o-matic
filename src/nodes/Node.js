@@ -45,7 +45,7 @@ Node.prototype.isProved = function (hyps) {
 	}
 
 	return false;
-}
+};
 
 Node.prototype.PREC_FUNEXPR = 1000;
 Node.prototype.PREC_COMMA = 1000;

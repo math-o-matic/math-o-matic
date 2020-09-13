@@ -50,7 +50,7 @@ Tee.prototype.isProved = function (hyps) {
 	
 	return Node.prototype.isProved.call(this, hyps)
 		|| this.right.isProved(hyps.concat(this.left));
-}
+};
 
 Tee.prototype.toString = function () {
 	return this.toIndentedString(0);

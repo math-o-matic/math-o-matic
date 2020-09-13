@@ -27,7 +27,7 @@ Typevar.prototype.isProved = function (hyps) {
 	hyps = hyps || [];
 	
 	return Node.prototype.isProved.call(this, hyps);
-}
+};
 
 Typevar.prototype.toString = function () {
 	return this.toIndentedString(0);

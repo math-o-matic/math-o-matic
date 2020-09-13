@@ -41,7 +41,7 @@ Schemacall.prototype.isProved = function (hyps) {
 	
 	return Node.prototype.isProved.call(this, hyps)
 		|| this.schema.isProved(hyps);
-}
+};
 
 Schemacall.prototype.toString = function () {
 	return this.toIndentedString(0);

@@ -62,7 +62,7 @@ Fun.prototype.isProved = function (hyps) {
 	hyps = hyps || [];
 	
 	return Node.prototype.isProved.call(this, hyps);
-}
+};
 
 Fun.prototype.toString = function () {
 	return this.toIndentedString(0);

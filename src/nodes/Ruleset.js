@@ -25,7 +25,7 @@ Ruleset.prototype.isProved = function (hyps) {
 	
 	return Node.prototype.isProved.call(this, hyps)
 		|| this.axiomatic;
-}
+};
 
 Ruleset.prototype.toString = function () {
 	return this.toIndentedString(0);
