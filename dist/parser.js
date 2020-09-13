@@ -343,7 +343,7 @@ function peg$parse(input, options) {
       		return {
       			_type: 'schemaexpr',
       			doc: false,
-      			axiomatic: true,
+      			axiomatic: false,
       			name: null,
       			params,
       			expr,

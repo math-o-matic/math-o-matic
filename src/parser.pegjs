@@ -326,7 +326,7 @@ schemaexpr =
 		return {
 			_type: 'schemaexpr',
 			doc: false,
-			axiomatic: true,
+			axiomatic: false,
 			name: null,
 			params,
 			expr,

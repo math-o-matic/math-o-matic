@@ -9,8 +9,6 @@ function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, sco
 
 	this.doc = doc;
 
-	this.err = new Error();
-
 	if (typeof axiomatic != 'boolean') {
 		throw this.error('Assertion failed');
 	}
