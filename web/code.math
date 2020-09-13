@@ -433,6 +433,10 @@ axiomatic schema Ve(pr f: @11, cls x) {
 	V(f) |- f(x)
 }
 
+schema Ve2(pr2 f: @11, cls x, cls y) {
+	V2(f) |- Ve(?, y)[Ve(?, x)[V2(f)]]
+}
+
 "Vi의 다른 버전."
 schema Viu(pr f) {
 	(cls x) => { |- f(x) } |-
@@ -561,7 +565,7 @@ schema VVm(pr2 f) {
 	V2((cls x, cls y) => { f(x, y) }) |-
 		Vi[(cls y) => {
 			Vi[(cls x) => {
-				Ve(?, y)[Ve(?, x)[V2((cls x, cls y) => { f(x, y) })]]
+				Ve2(?, x, y)[V2((cls x, cls y) => { f(x, y) })]
 			}]
 		}]
 	~ id(V2((cls y, cls x) => { f(x, y) }))
@@ -958,19 +962,20 @@ st set(cls x) {
 	})
 }
 
-schema set_Xi(cls x, cls y) {
+"set을 도입한다."
+schema seti(cls x: @11, cls y: @12) {
 	Xi((cls y) => { in(x, y) }, y)
 	~ id(set(x))
 }
 
-schema set_Xi_A(cls x, cls y, cls z) {
+schema seti_A(cls x, cls y, cls z) {
 	Ae1(in(z, x), in(z, y)) ~
-	set_Xi(z, x)
+	seti(z, x)
 }
 
-schema set_Xi_O(cls x, cls y, cls z) {
-	|- cp[set_Xi(z, x)]
-	~ |- cp[set_Xi(z, y)]
+schema seti_O(cls x, cls y, cls z) {
+	|- cp[seti(z, x)]
+	~ |- cp[seti(z, y)]
 	~ Oe(in(z, x), in(z, y), set(z))
 }
 
@@ -992,6 +997,24 @@ schema eq_Ae1_Ve(cls x, cls y, cls z) {
 schema eq_Ae1_Ve_Ee1(cls x, cls y, cls z) {
 	eq_Ae1_Ve(x, y, z)
 	~ Ee1(in(z, x), in(z, y))
+}
+
+schema in_subseteq(cls x: @12, cls y: @22, cls z: @11) {
+	in(z, x), subseteq(x, y) |-
+		mp[
+			in(z, x),
+			Ve(?, z)[subseteq(x, y)]
+		]
+}
+
+schema in_eq(cls x: @12, cls y: @22, cls z: @11) {
+	in(z, x), eq(x, y) |-
+		mp[
+			in(z, x),
+			eq_Ae1_Ve_Ee1(x, y, z)[
+				eq(x, y)
+			]	
+		]
 }
 
 schema eq_Ae2(cls x, cls y) {
@@ -1213,7 +1236,7 @@ schema Xq_to_X(pr f: @11) {
 	Xq(f) |- Ae1[Xq(f)]
 }
 
-schema set_is_set_1(cls x, cls y) {
+schema set_is_set_1(cls x: @11, cls y: @22) {
 	id(set(x)) ~
 	eq_Ae2(x, y)
 	~ mpXE(
@@ -1223,7 +1246,7 @@ schema set_is_set_1(cls x, cls y) {
 	~ id(set(y))
 }
 
-schema set_is_set_2(cls x, cls y) {
+schema set_is_set_2(cls x: @11, cls y: @21) {
 	eq_symmetric(y, x) ~
 	set_is_set_1(x, y)
 }
@@ -1255,7 +1278,7 @@ axiomatic schema ax_extensional() {
 }
 
 schema ax_extensional_Ve(cls x, cls y) {
-	|- Ve(?, y)[Ve(?, x)[ax_extensional()[]]]
+	|- Ve2(?, x, y)[ax_extensional()[]]
 }
 
 schema ax_extensional_m(cls x, cls y) {
@@ -1331,7 +1354,8 @@ schema setbuilder_def_Ve(pr f, cls z) {
 	}, z)[setbuilder_def(f)]
 }
 
-schema setbuilder_def_1(pr f: @121, cls z: @11) {
+"setbuilder를 소거한다."
+schema setbuildere(pr f: @121, cls z: @11) {
 	in(z, setbuilder(f)) |-
 		Ae2[mp[
 			in(z, setbuilder(f)),
@@ -1339,7 +1363,7 @@ schema setbuilder_def_1(pr f: @121, cls z: @11) {
 		]]
 }
 
-schema setbuilder_def_1c(pr f, cls z) {
+schema setbuilderec(pr f, cls z) {
 	setbuilder_def_Ve(f, z)
 	~ mpu[tt.IEpAqrIpr(
 		in(z, setbuilder(f)),
@@ -1348,7 +1372,8 @@ schema setbuilder_def_1c(pr f, cls z) {
 	)]
 }
 
-schema setbuilder_def_2(pr f, cls z: @11) {
+"setbuilder를 도입한다."
+schema setbuilderi(pr f, cls z: @11) {
 	set(z), f(z) |-
 		mp[
 			Ai[set(z), f(z)],
@@ -1356,7 +1381,7 @@ schema setbuilder_def_2(pr f, cls z: @11) {
 		]
 }
 
-schema setbuilder_def_2a(pr f, cls z: @111) {
+schema setbuilderia(pr f, cls z: @111) {
 	A(set(z), f(z)) |-
 		mp[
 			A(set(z), f(z)),
@@ -1364,7 +1389,7 @@ schema setbuilder_def_2a(pr f, cls z: @111) {
 		]
 }
 
-schema setbuilder_def_set(pr f, cls x) {
+schema setbuilder_def_set(pr f, cls x: @111) {
 	I(f(x), set(x)) |-
 		Ei[
 			cp[
@@ -1387,6 +1412,12 @@ schema setbuilder_def_set(pr f, cls x) {
 		]
 }
 
+schema setbuilder_def_set_2(pr f, cls x) {
+	set(x) |- setbuilder_def_set(f, x)[
+		IpIqpm(?, f(x))[set(x)]
+	]
+}
+
 "교집합."
 $!<prec=300>#1<<\cap>>#2$
 cls cap(cls x, cls y) {
@@ -1395,15 +1426,15 @@ cls cap(cls x, cls y) {
 	})
 }
 
-schema set_Xi_A_c(cls x, cls y, cls z) {
-	|- cp[set_Xi_A(x, y, z)]
+schema seti_A_c(cls x, cls y, cls z) {
+	|- cp[seti_A(x, y, z)]
 }
 
 schema cap_def(cls x, cls y, cls z) {
 	|- id(E(in(z, cap(x, y)), A(in(z, x), in(z, y))))[
 		setbuilder_def_set((cls z) => {
 			A(in(z, x), in(z, y))
-		}, z)[set_Xi_A_c(x, y, z)[]]
+		}, z)[seti_A_c(x, y, z)[]]
 	]
 }
 
@@ -1445,20 +1476,35 @@ cls cup(cls x, cls y) {
 	})
 }
 
-schema set_Xi_O_c(cls x, cls y, cls z) {
-	|- cp[set_Xi_O(x, y, z)]
+schema cupi1(cls x: @12, cls y, cls z: @11) {
+	in(z, x) |-
+		id(in(z, cup(x, y)))[setbuilderi((cls z) => {O(in(z, x), in(z, y))}, ?)[
+			seti[in(z, x)],
+			Oi1(?, in(z, y))[in(z, x)]
+		]]
 }
 
-schema cup_def(cls x, cls y, cls z) {
-	|- id(E(in(z, cup(x, y)), O(in(z, x), in(z, y))))[
-		setbuilder_def_set((cls z) => {
-			O(in(z, x), in(z, y))
-		}, z)[set_Xi_O_c(x, y, z)[]]
-	]
+schema cupi2(cls x, cls y: @12, cls z: @11) {
+	in(z, y) |-
+		id(in(z, cup(x, y)))[setbuilderi((cls z) => {O(in(z, x), in(z, y))}, ?)[
+			seti[in(z, y)],
+			Oi2(in(z, x), ?)[in(z, y)]
+		]]
 }
 
-schema cup_def_vi(cls x, cls y) {
-	|- Vi[(cls z) => { cup_def(x, y, z)[] }]
+schema cupe(cls x: @121, cls y: @122, cls z: @11) {
+	in(z, cup(x, y)) |-
+		setbuildere[in(z, cup(x, y))]
+}
+
+"합집합을 도입한다."
+schema cupi(cls x: @112, cls y: @122, cls z: @111) {
+	O(in(z, x), in(z, y)) |-
+		Oe[
+			O(in(z, x), in(z, y)),
+			cp[cupi1(x, y, z)],
+			cp[cupi2(x, y, z)]
+		]
 }
 
 "일반화된 교집합."
@@ -1483,7 +1529,7 @@ cls bigcup($A$ cls a) {
 
 schema bigcap_1($A$ cls a, cls z) {
 	in(z, bigcap(a)) |-
-		setbuilder_def_1((cls z) => {
+		setbuildere((cls z) => {
 				Vin(a, (cls x) => {
 					in(z, x)
 				})
@@ -1494,7 +1540,7 @@ schema bigcap_2($A$ cls a, cls z) {
 	set(z), Vin(a, (cls x) => {
 		in(z, x)
 	}) |-
-		id(in(z, bigcap(a)))[setbuilder_def_2((cls z) => {
+		id(in(z, bigcap(a)))[setbuilderi((cls z) => {
 			Vin(a, (cls x) => {
 				in(z, x)
 			})
@@ -1514,6 +1560,50 @@ schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
 					]
 			]
 		}]]
+}
+
+"singleton class."
+$\left\{<<=>>#1\right\}$
+cls singleton(cls x) {
+	setbuilder((cls z) => {
+		eq(z, x)
+	})
+}
+
+"doubleton class."
+$\left\{#1<<,>> #2\right\}$
+cls doubleton(cls x, cls y) {
+	setbuilder((cls z) => {
+		O(eq(z, x), eq(z, y))
+	})
+}
+
+schema doubleton1(cls x, cls y) {
+	set(x) |-
+		id(in(x, doubleton(x, y)))[
+			setbuilderi((cls z) => {
+				O(eq(z, x), eq(z, y))
+			}, x)[
+				set(x),
+				Oi1(?, eq(x, y))[
+					eq_reflexive(x)[]
+				]
+			]
+		]
+}
+
+schema doubleton2(cls x, cls y) {
+	set(y) |-
+		id(in(y, doubleton(x, y)))[
+			setbuilderi((cls z) => {
+				O(eq(z, x), eq(z, y))
+			}, y)[
+				set(y),
+				Oi2(eq(y, x), ?)[
+					eq_reflexive(y)[]
+				]
+			]
+		]
 }
 
 "empty class."
@@ -1613,8 +1703,149 @@ schema cap_is_set_2(cls x, cls y) {
 	~ set_is_set_1(cap(y, x), cap(x, y))
 }
 
+"axiom of union."
+axiomatic schema ax_bigcup() {
+	|- V(($A$ cls a) => {
+		I(set(a), set(bigcup(a)))
+	})
+}
+
+schema ax_bigcup_m($A$ cls a) {
+	set(a) |-
+		mp[
+			set(a),
+			Ve(?, a)[ax_bigcup()[]]
+		]
+}
+
+"axiom of pairing."
+axiomatic schema ax_doubleton() {
+	|- V2((cls x, cls y) => {
+		I(
+			A(set(x), set(y)),
+			set(doubleton(x, y))
+		)
+	})
+}
+
+axiomatic schema ax_doubleton_m(cls x: @11, cls y: @21) {
+	set(x), set(y) |-
+		mp[
+			Ai[set(x), set(y)],
+			Ve2(?, x, y)[ax_doubleton()[]]
+		]
+}
+
+schema doubleton_to_cup(cls x: @121, cls y: @122, cls z: @11, cls w: @21) {
+	in(z, doubleton(x, y)), in(w, z) |-
+			
+		Oe[
+			setbuildere[in(z, doubleton(x, y))],
+			cp[eq(z, x) |- cupi1(?, y)[in_eq[
+				in(w, z), eq(z, x)
+			]]],
+			cp[eq(z, y) |- cupi2(x, ?)[in_eq[
+				in(w, z), eq(z, y)
+			]]]
+		]
+}
+
+schema bigcup_doubleton_to_cup(cls x: @1211, cls y: @1212, cls w: @11) {
+	in(w, bigcup(doubleton(x, y))) |-
+		mpX_Xe_p(
+			(cls z) => {
+				A(
+					in(z, doubleton(x, y)),
+					in(w, z)
+				)
+			},
+			in(w, cup(x, y))
+		)[
+			setbuildere[in(w, bigcup(doubleton(x, y)))],
+			Vi[(cls z) => {
+				cp[A(in(z, doubleton(x, y)), in(w, z)) |-
+					doubleton_to_cup[
+						Ae1[A(in(z, doubleton(x, y)), in(w, z))],
+						Ae2[A(in(z, doubleton(x, y)), in(w, z))]
+					]]
+			}]
+		]
+}
+
+schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
+	set(x), set(y), in(w, cup(x, y)) |-
+		id(in(w, bigcup(doubleton(x, y))))[
+			setbuilderi((cls w) => {
+				X((cls z) => {
+					A(in(z, doubleton(x, y)), in(w, z))
+				})
+			}, w)[
+				seti[in(w, cup(x, y))],
+				Oe[
+					cupe[in(w, cup(x, y))],
+					cp[
+						in(w, x) |-
+							Xi((cls z) => {
+								A(
+									in(z, doubleton(x, y)),
+									in(w, z)
+								)
+							}, x)[
+								Ai[
+									doubleton1(x, y)[set(x)],
+									in_eq[in(w, x), eq_reflexive(x)[]]
+								]
+							]
+					],
+					cp[
+						in(w, y) |-
+							Xi((cls z) => {
+								A(
+									in(z, doubleton(x, y)),
+									in(w, z)
+								)
+							}, y)[
+								Ai[
+									doubleton2(x, y)[set(y)],
+									in_eq[in(w, y), eq_reflexive(y)[]]
+								]
+							]
+					]
+				]
+			]
+		]
+}
+
+schema bigcup_doubleton_is_cup(cls x: @11, cls y: @21) {
+	set(x), set(y) |-
+		ax_extensional_m(
+			bigcup(doubleton(x, y)),
+			cup(x, y)
+		)[
+			Vi[(cls w) => {
+				Ei[
+					cp[bigcup_doubleton_to_cup(x, y, w)],
+					cp[
+						in(w, cup(x, y)) |-
+							cup_to_bigcup_doubleton[
+								set(x), set(y), in(w, cup(x, y))
+							]
+					]
+				]
+			}]
+		]
+}
+
 schema cup_is_set(cls x: @11, cls y: @21) {
-	set(x), set(y) |- set(cup(x, y))
+	set(x), set(y) |-
+		set_is_set_1[
+			ax_bigcup_m(doubleton(x, y))[
+				ax_doubleton_m[set(x), set(y)]
+			],
+			bigcup_doubleton_is_cup[
+				set(x), set(y)
+			]
+		]
 }
 
 schema subset_cap_is_subset(cls x, cls y) {
@@ -1683,8 +1914,8 @@ schema IAEpAqrIAsrqIsEprmAi(st p, st q, st r, st s) {
 	mpu[tt.IAEpAqrIAsrqIsEpr(p, q, r, s)]
 }
 
-schema power_def_1(cls x, cls y) {
-	subset_is_set_ae_c(y, x)
+schema power_def_Ve(cls x, cls y) {
+	mpu[subset_is_set_ae_c(y, x)
 	~ setbuilder_def_Ve((cls z) => {
 		subseteq(z, x)
 	}, y)
@@ -1693,29 +1924,6 @@ schema power_def_1(cls x, cls y) {
 		set(y),
 		subseteq(y, x),
 		set(x)
-	)
-}
-
-"얘는 power_def보다 강력하다. 즉 power_def는 얘를
-유도할 수 없다. 아마?"
-schema power_def_Ve(cls x, cls y) {
-	mpu[power_def_1(x, y)]
-}
-
-"생각해 보니 얘는 멱집합의 defining property라고 부를 만큼 강력하지 않다. 이름을 적당히 바꿔야 할지도 모른다."
-schema power_def(cls x) {
-	Vi_p(set(x)) ~
-	mpu[Viu((cls y) => {
-		I(set(x), E(in(y, power(x)), subseteq(y, x)))
-	})[(cls y) => { power_def_1(x, y) }]
-	~ VIm(
-		(cls z) => { set(x) },
-		(cls z) => {
-			E(
-				in(z, power(x)),
-				subseteq(z, x)
-			)
-		}
 	)]
 }
 
@@ -1752,24 +1960,8 @@ schema self_in_power_Vi(cls x) {
 	)]
 }
 
-"singleton class."
-$\left\{<<=>>#1\right\}$
-cls singleton(cls x) {
-	setbuilder((cls z) => {
-		eq(z, x)
-	})
-}
-
-"doubleton class."
-$\left\{#1<<,>> #2\right\}$
-cls doubleton(cls x, cls y) {
-	setbuilder((cls z) => {
-		O(eq(z, x), eq(z, y))
-	})
-}
-
 schema singleton_subseteq_power_1(cls x, cls y) {
-	setbuilder_def_1c((cls z) => {eq(z, x)}, y) ~
+	setbuilderec((cls z) => {eq(z, x)}, y) ~
 	eq_then_subseteq(y, x) ~
 	power_def_Ve(x, y)
 	~ Ee2(
@@ -1850,7 +2042,7 @@ schema power_is_set(cls x) {
 							}))],
 							id(subseteq(power(x), y))[Vi[(cls z) => {
 								syll[
-									setbuilder_def_1c((cls z) => {
+									setbuilderec((cls z) => {
 										subseteq(z, x)
 									}, z)[],
 									Ve(?, z)[Ae2[A(set(y), V((cls z) => {
@@ -1977,7 +2169,7 @@ schema cartesian_is_rel(cls x, cls y) {
 	})[(cls z) => {
 		|- cp[
 			id(in(z, cartesian(x, y)))
-			~ mpu[setbuilder_def_1c((cls z) => {
+			~ mpu[setbuilderec((cls z) => {
 				X2((cls a, cls b) => {
 					A(
 						eq(z, v2(a, b)),
@@ -2167,7 +2359,7 @@ schema zero_in_omega() {
 		Vi[(cls z) => {
 			cp[
 				in(z, setbuilder((cls z) => {is_successor_set(z)})) |-
-					Ae1[setbuilder_def_1[in(z, setbuilder((cls z) => {
+					Ae1[setbuildere[in(z, setbuilder((cls z) => {
 						is_successor_set(z)
 					}))]]
 			]
@@ -2190,7 +2382,7 @@ schema successor_in_omega(cls z) {
 									is_successor_set(z)
 								}), z)[in(z, omega())]]
 							],
-							Ve(?, z)[Ae2[setbuilder_def_1((cls z) => {is_successor_set(z)}, x)[
+							Ve(?, z)[Ae2[setbuildere((cls z) => {is_successor_set(z)}, x)[
 								in(x, setbuilder((cls z) => {is_successor_set(z)}))
 							]]]
 						]
@@ -2218,7 +2410,7 @@ schema omega_is_set() {
 				A(set(x), is_successor_set(x)) |-
 					id(set(omega()))[subset_is_set[
 						Ae1[A(set(x), is_successor_set(x)) ],
-						bigcap_is_smaller[setbuilder_def_2a((cls z) => {is_successor_set(z)}, ?)[
+						bigcap_is_smaller[setbuilderia((cls z) => {is_successor_set(z)}, ?)[
 							A(set(x), is_successor_set(x))
 						]]
 					]]
