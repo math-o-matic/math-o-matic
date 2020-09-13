@@ -26,7 +26,7 @@ function Tee({left, right}, scope, trace) {
 	// antecedent가 집합인지 시퀀스인지는 #14 참조.
 	this.left = left.reduce((l, r) => {
 		for (var i = 0; i < l.length; i++)
-			if (ExpressionResolver.equals0(l[i], r)) return l;
+			if (ExpressionResolver.equals(l[i], r)) return l;
 
 		return l.push(r), l;
 	}, []);
@@ -44,6 +44,13 @@ Tee.prototype = Object.create(Node.prototype);
 Tee.prototype.constructor = Tee;
 Tee.prototype._type = 'tee';
 Tee.prototype.precedence = Node.prototype.PREC_COMMA;
+
+Tee.prototype.isProved = function (hyps) {
+	hyps = hyps || [];
+	
+	return Node.prototype.isProved.call(this, hyps)
+		|| this.right.isProved(hyps.concat(this.left));
+}
 
 Tee.prototype.toString = function () {
 	return this.toIndentedString(0);

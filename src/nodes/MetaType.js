@@ -19,8 +19,8 @@ function MetaType(o) {
 	} else {
 		if (o.from.some(f => !(f instanceof Type)))
 			throw this.error('o.from.some(f => !(f instanceof Type))');
-		// if (!(o.to instanceof MetaType))
-		// 	throw this.error('!(o.to instanceof MetaType)');
+		if (!(o.to instanceof MetaType))
+			throw this.error('!(o.to instanceof MetaType)');
 
 		if (o.to.isFunctional)
 			throw this.error('Functional metatype in functional metatype is not supported');
@@ -33,6 +33,10 @@ function MetaType(o) {
 MetaType.prototype = Object.create(Node.prototype);
 MetaType.prototype.constructor = MetaType;
 MetaType.prototype._type = 'metatype';
+
+MetaType.prototype.resolve = function () {
+	return this;
+}
 
 MetaType.prototype.toString = function () {
 	if (this.isSimple) return `[${this.left.join(', ')} |- ${this.right}]`;

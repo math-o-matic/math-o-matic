@@ -1,3 +1,5 @@
+var ExpressionResolver = require('../ExpressionResolver');
+
 var ctr = 0;
 
 function Node(trace) {
@@ -34,6 +36,16 @@ Node.prototype.parseTeX = function (tex) {
 
 	return {precedence, code};
 };
+
+Node.prototype.isProved = function (hyps) {
+	hyps = hyps || [];
+
+	if (hyps.some(hyp => ExpressionResolver.equals(hyp, this))) {
+		return true;
+	}
+
+	return false;
+}
 
 Node.prototype.PREC_FUNEXPR = 1000;
 Node.prototype.PREC_COMMA = 1000;

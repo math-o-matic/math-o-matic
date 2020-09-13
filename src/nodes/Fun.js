@@ -58,6 +58,12 @@ Fun.prototype = Object.create(Node.prototype);
 Fun.prototype.constructor = Fun;
 Fun.prototype._type = 'fun';
 
+Fun.prototype.isProved = function (hyps) {
+	hyps = hyps || [];
+	
+	return Node.prototype.isProved.call(this, hyps);
+}
+
 Fun.prototype.toString = function () {
 	return this.toIndentedString(0);
 };

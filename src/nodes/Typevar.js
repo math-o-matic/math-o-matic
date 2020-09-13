@@ -23,6 +23,12 @@ Typevar.prototype = Object.create(Node.prototype);
 Typevar.prototype.constructor = Typevar;
 Typevar.prototype._type = 'typevar';
 
+Typevar.prototype.isProved = function (hyps) {
+	hyps = hyps || [];
+	
+	return Node.prototype.isProved.call(this, hyps);
+}
+
 Typevar.prototype.toString = function () {
 	return this.toIndentedString(0);
 };

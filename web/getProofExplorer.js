@@ -46,7 +46,7 @@ function getProofExplorer(expr) {
 		for (var i = 0; i < hyps.length; i++) {
 			var [hyp, lineno] = hyps[i];
 
-			if (program.ExpressionResolver.equalsMeta(hyp, expr)) {
+			if (program.ExpressionResolver.equals(hyp, expr)) {
 				return lineno;
 			}
 		}

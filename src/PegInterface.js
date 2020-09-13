@@ -321,16 +321,6 @@ PI.schema = function (obj, parentScope, trace, nativeMap) {
 
 	var expr = PI.metaexpr(obj.expr, scope, trace);
 
-	if (obj._type == 'schemaexpr' && expr.type._type == 'type') {
-		return new Fun({
-			name,
-			params,
-			expr,
-			doc: obj.doc,
-			tex: null
-		}, scope, trace);
-	}
-
 	return new Schema({axiomatic, name, params, expr, doc: obj.doc}, scope, trace);
 };
 

@@ -93,6 +93,11 @@ kbd {
 	color: #006064;
 }
 
+.katex a[data-red] > :not(.mspace) {
+	background-color: #FFEBEE;
+	color: #B71C1C;
+}
+
 .katex a[data-orange] {
 	color: #E65100;
 }

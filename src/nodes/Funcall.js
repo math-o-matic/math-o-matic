@@ -8,8 +8,10 @@ function Funcall({fun, args}, scope, trace) {
 	if (!(fun instanceof Node))
 		throw this.error('Assertion failed');
 
-	if (!['typevar', 'fun', 'funcall'].includes(fun._type))
+	if (!['typevar', 'fun', 'funcall'].includes(fun._type)) {
+		console.log(fun);
 		throw this.error('Assertion failed');
+	}
 
 	if (fun.type.isSimple)
 		throw this.error(`${fun.name} is not callable`);
@@ -37,6 +39,12 @@ function Funcall({fun, args}, scope, trace) {
 Funcall.prototype = Object.create(Node.prototype);
 Funcall.prototype.constructor = Funcall;
 Funcall.prototype._type = 'funcall';
+
+Funcall.prototype.isProved = function (hyps) {
+	hyps = hyps || [];
+	
+	return Node.prototype.isProved.call(this, hyps);
+}
 
 Funcall.prototype.toString = function () {
 	return this.toIndentedString(0);

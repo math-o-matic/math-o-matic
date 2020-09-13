@@ -67,7 +67,7 @@ function Reduction({subject, guesses, leftargs}, scope, trace) {
 		}
 
 		for (let i = 0; i < tee.left.length; i++) {
-			if (!ExpressionResolver.equalsMeta(tee.left[i], leftargs[i])) {
+			if (!ExpressionResolver.equals(tee.left[i], leftargs[i])) {
 				throw this.error(`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
@@ -87,6 +87,14 @@ ${ExpressionResolver.expandMetaAndFuncalls(leftargs[i])}
 Reduction.prototype = Object.create(Node.prototype);
 Reduction.prototype.constructor = Reduction;
 Reduction.prototype._type = 'reduction';
+
+Reduction.prototype.isProved = function (hyps) {
+	hyps = hyps || [];
+	
+	return Node.prototype.isProved.call(this, hyps)
+		|| this.subject.isProved(hyps)
+			&& this.leftargs.every(l => l.isProved(hyps));
+}
 
 Reduction.prototype.query = function (guess, left, leftargs) {
 	if (guess.length == 0) throw this.error('wut');
@@ -124,7 +132,7 @@ Reduction.prototype.query = function (guess, left, leftargs) {
 					throw that.error(`Cannot dereference @${guess}`);
 				}
 
-				if (ExpressionResolver.equals0(lef.fun, node.fun)) {
+				if (ExpressionResolver.equals(lef.fun, node.fun)) {
 					break;
 				}
 
@@ -132,7 +140,7 @@ Reduction.prototype.query = function (guess, left, leftargs) {
 					throw that.error(`Cannot dereference @${guess}`);
 				}
 
-				node = ExpressionResolver.expand0FuncallOnce(node);
+				node = ExpressionResolver.expandCallOnce(node);
 			}
 
 			if (!node.args || !(1 <= n && n <= node.args.length))

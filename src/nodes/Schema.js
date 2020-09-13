@@ -1,4 +1,5 @@
 var Node = require('./Node');
+var Type = require('./Type');
 var MetaType = require('./MetaType');
 
 var ExpressionResolver = require('../ExpressionResolver');
@@ -7,6 +8,8 @@ function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, sco
 	Node.call(this, trace);
 
 	this.doc = doc;
+
+	this.err = new Error();
 
 	if (typeof axiomatic != 'boolean') {
 		throw this.error('Assertion failed');
@@ -33,17 +36,28 @@ function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, sco
 
 		this.params = params;
 		this.expr = expr;
-		this.type = new MetaType({
+		this.type = new (expr.type._type == 'type' ? Type : MetaType)({
 			functional: true,
 			from: params.map(typevar => typevar.type),
 			to: expr.type
 		});
 	}
+
+	this.proved = this.isProved();
 }
 
 Schema.prototype = Object.create(Node.prototype);
 Schema.prototype.constructor = Schema;
 Schema.prototype._type = 'schema';
+
+Schema.prototype.isProved = function (hyps) {
+	hyps = hyps || [];
+	
+	return this.proved
+		|| !this.native && Node.prototype.isProved.call(this, hyps)
+		|| this.axiomatic
+		|| this.expr && this.expr.isProved(hyps);
+}
 
 Schema.prototype.toString = function () {
 	return this.toIndentedString(0);
@@ -75,14 +89,16 @@ Schema.prototype.toTeXString = function (prec, root) {
 		].join('');
 	}
 
+	var id = `schema-${this.name}-${this.proved ? 'p' : 'np'}`;
+
 	if (!root)
-		return `\\href{#schema-${this.name}}\\mathsf{${this.escapeTeX(this.name)}}`;
+		return `\\href{#${id}}\\mathsf{${this.escapeTeX(this.name)}}`;
 
 	if (this.native)
-		return `\\href{#schema-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}`
+		return `\\href{#${id}}{\\mathsf{${this.escapeTeX(this.name)}}}`
 			+ '\\ (\\textrm{native})';
 
-	return `\\href{#schema-${this.name}}{\\mathsf{${this.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}):`
+	return `\\href{#${id}}{\\mathsf{${this.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}):`
 				+ '\\\\\\quad' + ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
 };
 

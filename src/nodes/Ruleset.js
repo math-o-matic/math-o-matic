@@ -20,6 +20,13 @@ Ruleset.prototype = Object.create(Node.prototype);
 Ruleset.prototype.constructor = Ruleset;
 Ruleset.prototype._type = 'ruleset';
 
+Ruleset.prototype.isProved = function (hyps) {
+	hyps = hyps || [];
+	
+	return Node.prototype.isProved.call(this, hyps)
+		|| this.axiomatic;
+}
+
 Ruleset.prototype.toString = function () {
 	return this.toIndentedString(0);
 };

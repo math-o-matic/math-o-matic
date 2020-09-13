@@ -17,6 +17,42 @@ ER.init = function (o) {
 	Schemacall = o.Schemacall;
 };
 
+function iscallable(a) {
+	return ['schema', 'fun'].includes(a._type);
+}
+
+function iscall(a) {
+	return ['schemacall', 'funcall'].includes(a._type);
+}
+
+function callee(a) {
+	return a._type == 'schemacall'
+		? a.schema
+		: a._type == 'funcall'
+			? a.fun
+			: (() => {
+				console.log(a);
+				throw Error();
+			})();
+}
+
+function makecall(a, args) {
+	return a._type == 'fun' || a._type == 'typevar'
+		? new Funcall({
+			fun: a,
+			args
+		})
+		: a._type == 'schema'
+			? new Schemacall({
+				schema: a,
+				args
+			})
+			: (() => {
+				console.log(a);
+				throw Error();
+			})();
+}
+
 ER.substitute = function (expr, map) {
 	switch (expr._type) {
 		case 'funcall':
@@ -74,68 +110,45 @@ ER.substitute = function (expr, map) {
 	}
 };
 
-ER.call0 = function (fun, args) {
-	if (fun._type != 'fun') {
+ER.call = function (callee, args) {
+	if (!iscallable(callee)) {
+		console.log(callee);
 		throw Error('Illegal type');
 	}
 
-	if (!fun.expr) {
-		throw Error('Cannot call a primitive fun');
+	if (!callee.expr) {
+		throw Error('Cannot call a callable without a body');
 	}
 
-	if (fun.params.length != args.length) {
+	if (callee.params.length != args.length) {
 		throw Error('Illegal arguments length');
 	}
 
 	var map = new Map();
 
-	for (var i = 0; i < fun.params.length; i++) {
-		map.set(fun.params[i], args[i]);
+	for (var i = 0; i < callee.params.length; i++) {
+		map.set(callee.params[i], args[i]);
 	}
 
-	return ER.substitute(fun.expr, map);
-};
+	return ER.substitute(callee.expr, map);
+}
 
-ER.callMeta = function (schema, args) {
-	if (schema._type != 'schema') {
+ER.expandCallOnce = function (expr) {
+	if (!iscall(expr)) {
 		throw Error('Illegal type');
 	}
 
-	if (schema.params.length != args.length) {
-		throw Error('Illegal arguments length');
+	if (iscall(callee(expr))) {
+		var fun = ER.expandCallOnce(callee(expr));
+		return makecall(fun, expr.args);
 	}
 
-	var map = new Map();
-
-	for (var i = 0; i < schema.params.length; i++) {
-		map.set(schema.params[i], args[i]);
-	}
-
-	return ER.substitute(schema.expr, map);
-};
-
-/*
- * 이름 있는 것도 푼다. 한 번만.
- * equals0에서 쓴다.
- */
-ER.expand0FuncallOnce = function (expr) {
-	if (expr._type != 'funcall') {
-		throw Error('Illegal type');
-	}
-
-	if (expr.fun._type == 'funcall') {
-		var fun = ER.expand0FuncallOnce(expr.fun);
-		return new Funcall({
-			fun,
-			args: expr.args
-		});
-	}
-
-	if (!expr.fun.expr)
+	if (!callee(expr).expr) {
 		throw Error('Could not expand');
+	}
 
-	return ER.call0(expr.fun, expr.args);
-};
+	return ER.call(callee(expr), expr.args);
+}
 
 // 이름 있는 것은 풀지 않는다. 재귀적.
 ER.expand0Funcalls = function (expr) {
@@ -146,7 +159,7 @@ ER.expand0Funcalls = function (expr) {
 		if (fun._type != 'fun' || fun.name)
 			return new Funcall({fun, args});
 
-		return ER.expand0Funcalls(ER.call0(fun, args));
+		return ER.expand0Funcalls(ER.call(fun, args));
 	} else if (expr._type == 'fun' && !expr.name) {
 		return new Fun({
 			name: null,
@@ -174,7 +187,7 @@ ER.expandMeta = function (expr) {
 			var schema = ER.expandMeta(expr.schema),
 				args = expr.args;
 
-			return ER.expandMeta(ER.callMeta(schema, args));
+			return ER.expandMeta(ER.call(schema, args));
 		case 'reduction':
 			return ER.expandMeta(expr.reduced);
 		case 'schema':
@@ -206,7 +219,7 @@ ER.expandMetaAndFuncalls = function (expr) {
 			var schema = ER.expandMetaAndFuncalls(expr.schema);
 			var args = expr.args.map(ER.expand0Funcalls);
 
-			return ER.expandMetaAndFuncalls(ER.callMeta(schema, args));
+			return ER.expandMetaAndFuncalls(ER.call(schema, args));
 		case 'reduction':
 			return ER.expandMetaAndFuncalls(expr.reduced);
 		case 'schema':
@@ -229,57 +242,115 @@ ER.expandMetaAndFuncalls = function (expr) {
 /*
  * 스펙 참조.
  */
-ER.equals0 = function (a, b) {
+ER.equals = function (a, b) {
 	function recurse(a, b, depth) {
 		if (a == b) return true;
 
 		if (!a.type.equals(b.type)) return false;
 
-		if (a._type == 'funcall' && b._type == 'funcall') {
-			if (a.fun._type == 'funcall') return recurseWrap(
-				ER.expand0FuncallOnce(a), b, depth + 1
-			);
+		if (a._type == 'reduction') {
+			return recurseWrap(a.reduced, b, depth + 1);
+		}
 
-			if (b.fun._type == 'funcall') return recurseWrap(
-				a, ER.expand0FuncallOnce(b), depth + 1
-			);
+		if (b._type == 'reduction') {
+			return recurseWrap(a, b.reduced, depth + 1);
+		}
 
-			if (!a.fun.expr && !b.fun.expr) {
-				if (a.fun != b.fun) return false;
+		if (a.type._type == 'metatype') {
+			a = ER.expandMeta(a);
+			b = ER.expandMeta(b);
+
+			if (a._type == 'tee') {
+				for (var i = 0; i < a.left.length; i++) {
+					if (!recurseWrap(a.left[i], b.left[i], depth + 1)) return false;
+				}
+
+				return recurseWrap(a.right, b.right, depth + 1);
+			} else if (a._type == 'schema') {
+				if (a.type.resolve().from.length != b.type.resolve().from.length) {
+					throw Error('wut');
+				}
+
+				var placeholders = Array(a.type.resolve().from.length).fill().map((_, i) =>
+					new Typevar({
+						type: a.type.from[i],
+						name: '$' + i
+					})
+				);
+
+				return recurseWrap(
+					new Schemacall({
+						name: null,
+						schema: a,
+						args: placeholders
+					}),
+					new Schemacall({
+						name: null,
+						schema: b,
+						args: placeholders
+					}),
+					depth + 1
+				);
+			} else {
+				throw Error('wut');
+			}
+		}
+
+		if (iscall(a) && iscall(b)) {
+			if (iscall(callee(a))) {
+				return recurseWrap(
+					ER.expandCallOnce(a), b, depth + 1
+				);
+			}
+
+			if (iscall(callee(b))) {
+				return recurseWrap(
+					a, ER.expandCallOnce(b), depth + 1
+				);
+			}
+
+			if (!callee(a).expr && !callee(b).expr) {
+				if (callee(a) != callee(b)) return false;
+
 				for (var i = 0; i < a.args.length; i++) {
 					if (!recurseWrap(a.args[i], b.args[i], depth + 1)) return false;
 				}
+
 				return true;
 			}
 
-			if (a.fun.expr) return recurseWrap(
-				ER.expand0FuncallOnce(a), b, depth + 1
-			);
+			if (callee(a).expr) {
+				return recurseWrap(ER.expandCallOnce(a), b, depth + 1);
+			}
+
+			return recurseWrap(a, ER.expandCallOnce(b), depth + 1);
+		}
+
+		if (iscall(a)) {
+			if (iscall(callee(a))) {
+				return recurseWrap(
+					ER.expandCallOnce(a), b, depth + 1
+				);
+			}
+
+			if (!callee(a).expr) return false;
 
 			return recurseWrap(
-				a, ER.expand0FuncallOnce(b), depth + 1
+				ER.expandCallOnce(a), b, depth + 1
 			);
 		}
 
-		if (a._type == 'funcall') {
-			if (a.fun._type == 'funcall') return recurseWrap(
-				ER.expand0FuncallOnce(a), b, depth + 1
-			);
+		if (iscall(b)) {
+			if (iscall(callee(b))) {
+				return recurseWrap(
+					a, ER.expandCallOnce(b), depth + 1
+				);
+			}
 
-			if (!a.fun.expr) return false;
+			if (!callee(b).expr) return false;
+
 			return recurseWrap(
-				ER.expand0FuncallOnce(a), b, depth + 1
-			);
-		}
-
-		if (b._type == 'funcall') {
-			if (b.fun._type == 'funcall') return recurseWrap(
-				a, ER.expand0FuncallOnce(b), depth + 1
-			);
-
-			if (!b.fun.expr) return false;
-			return recurseWrap(
-				a, ER.expand0FuncallOnce(b), depth + 1
+				a, ER.expandCallOnce(b), depth + 1
 			);
 		}
 
@@ -292,15 +363,7 @@ ER.equals0 = function (a, b) {
 			);
 
 			return recurseWrap(
-				new Funcall({
-					fun: a,
-					args: placeholders
-				}),
-				new Funcall({
-					fun: b,
-					args: placeholders
-				}),
-				depth + 1
+				makecall(a, placeholders), makecall(b, placeholders), depth + 1
 			);
 		}
 
@@ -319,73 +382,6 @@ ER.equals0 = function (a, b) {
 	return recurseWrap(a, b, 0);
 };
 
-ER.equalsMeta = function (a, b) {
-	if (a._type == 'reduction') {
-		return ER.equalsMeta(a.reduced, b);
-	}
-
-	if (b._type == 'reduction') {
-		return ER.equalsMeta(a, b.reduced);
-	}
-
-	if (a.type._type == 'type' && b.type._type == 'type') {
-		return ER.equals0(a, b);
-	}
-
-	if (a.type._type != b.type._type) {
-		return false;
-	}
-
-	return (function recurse(a, b) {
-		if (a == b) return true;
-		
-		if (!a.type.equals(b.type)) return false;
-
-		a = ER.expandMeta(a);
-		b = ER.expandMeta(b);
-
-		if (a._type == 'tee') {
-			if (b._type != 'tee') {
-				throw Error('wut');
-			}
-
-			for (var i = 0; i < a.left.length; i++) {
-				if (!ER.equals0(a.left[i], b.left[i])) return false;
-			}
-
-			return ER.equals0(a.right, b.right);
-		}
-
-		if (a._type == 'schema') {
-			if (b._type != 'schema' || a.type.from.length != b.type.from.length) {
-				throw Error('wut');
-			}
-
-			var placeholders = Array(a.type.from.length).fill().map((_, i) =>
-				new Typevar({
-					type: a.type.from[i],
-					name: '$' + i
-				})
-			);
-
-			return recurse(
-				new Schemacall({
-					name: null,
-					schema: a,
-					args: placeholders
-				}),
-				new Schemacall({
-					name: null,
-					schema: b,
-					args: placeholders
-				})
-			);
-		}
-
-		throw Error('wut');
-	})(a, b);
-};
-
 ER.chain = function (tees) {
 	if (!tees.every(tee => tee._type == 'tee')) {
 		throw Error('no');
@@ -393,7 +389,7 @@ ER.chain = function (tees) {
 
 	return ER.expandMetaAndFuncalls(tees.reduceRight((r, l) => {
 		for (var i = 0; i < r.left.length; i++) {
-			if (ER.equals0(l.right, r.left[i])) {
+			if (ER.equals(l.right, r.left[i])) {
 				var newleft = r.left.slice(0, i)
 					.concat(l.left)
 					.concat(r.left.slice(i + 1));
