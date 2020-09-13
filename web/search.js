@@ -1,5 +1,5 @@
 (() => {
-	hotkeys('s', (evt, handler) => {
+	hotkeys('f', (evt, handler) => {
 		evt.preventDefault();
 		$('#search').focus();
 	});

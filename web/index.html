@@ -35,14 +35,14 @@
 		</ul>
 		<h2>핫키</h2>
 		<ul>
-			<li><kbd>S</kbd>: 검색
-			<li><kbd>R</kbd>: 로드, 다시 로드
+			<li><kbd>F</kbd>: 검색
+			<li><kbd>R</kbd>, <kbd>F7</kbd>: 로드, 다시 로드
 			<li><kbd>Backspace</kbd>, <kbd>J</kbd>: 뒤로가기
 			<li><kbd>K</kbd>: 앞으로 가기
 		</ul>
 		<h2>우상단 컨트롤에 관하여</h2>
 		<ul>
-			<li>검색창은 <kbd>S</kbd> 키를 눌러 활성화시킬 수 있으며 정의 및 스키마의 검색을 가능하게 합니다. <kbd>Tab</kbd> 및 <kbd>Shift</kbd> + <kbd>Tab</kbd> 및 <kbd>&darr;</kbd> 및 <kbd>&uarr;</kbd> 및 <kbd>Enter</kbd> 및 <kbd>Esc</kbd>를 써서 조작할 수 있으니 시도해 보세요.
+			<li>검색창은 <kbd>F</kbd> 키를 눌러 활성화시킬 수 있으며 정의 및 스키마의 검색을 가능하게 합니다. <kbd>Tab</kbd> 및 <kbd>Shift</kbd> + <kbd>Tab</kbd> 및 <kbd>&darr;</kbd> 및 <kbd>&uarr;</kbd> 및 <kbd>Enter</kbd> 및 <kbd>Esc</kbd>를 써서 조작할 수 있으니 시도해 보세요.
 			<li>reload 버튼은 <kbd>R</kbd> 키를 눌러 클릭할 수 있으며 <a href="./code.math">code.math</a> 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.
 		</ul>
 		<h2>연산자 우선순위</h2>
@@ -309,7 +309,7 @@
 				}
 			}
 
-			hotkeys('r', (evt, handler) => {
+			hotkeys('r,f7', (evt, handler) => {
 				evt.preventDefault();
 				reload();
 			});
