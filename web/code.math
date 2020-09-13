@@ -974,9 +974,12 @@ schema seti_A(cls x, cls y, cls z) {
 }
 
 schema seti_O(cls x, cls y, cls z) {
-	|- cp[seti(z, x)]
-	~ |- cp[seti(z, y)]
-	~ Oe(in(z, x), in(z, y), set(z))
+	O(in(z, x), in(z, y)) |-
+		Oe[
+			O(in(z, x), in(z, y)),
+			cp[seti(z, x)],
+			cp[seti(z, y)]
+		]
 }
 
 schema eq_Ae1(cls x, cls y) {
@@ -1109,21 +1112,13 @@ schema eq_Ae2_Ve_Ee1_c_swap(cls x, cls y, cls z) {
 	)
 }
 
-schema eq_reflexive_tmp1(cls x, cls z) {
-	tt.Epp(in(z, x))
-}
-
-schema eq_reflexive_tmp2(cls x, cls w) {
-	tt.Epp(in(x, w))
-}
-
 schema eq_reflexive(cls x) {
 	Viu((cls z) => {
 		E(in(z, x), in(z, x))
-	})[(cls z) => {eq_reflexive_tmp1(x, z)}]
+	})[(cls z) => {tt.Epp(in(z, x))}]
 	~ Viu((cls w) => {
 		E(in(x, w), in(x, w))
-	})[(cls w) => {eq_reflexive_tmp2(x, w)}]
+	})[(cls w) => {tt.Epp(in(x, w))}]
 	~ Ai(
 		V((cls z) => { E(in(z, x), in(z, x)) }),
 		V((cls w) => { E(in(x, w), in(x, w)) })
@@ -1492,11 +1487,6 @@ schema cupi2(cls x, cls y: @12, cls z: @11) {
 		]]
 }
 
-schema cupe(cls x: @121, cls y: @122, cls z: @11) {
-	in(z, cup(x, y)) |-
-		setbuildere[in(z, cup(x, y))]
-}
-
 "합집합을 도입한다."
 schema cupi(cls x: @112, cls y: @122, cls z: @111) {
 	O(in(z, x), in(z, y)) |-
@@ -1505,6 +1495,11 @@ schema cupi(cls x: @112, cls y: @122, cls z: @111) {
 			cp[cupi1(x, y, z)],
 			cp[cupi2(x, y, z)]
 		]
+}
+
+schema cupe(cls x: @121, cls y: @122, cls z: @11) {
+	in(z, cup(x, y)) |-
+		setbuildere[in(z, cup(x, y))]
 }
 
 "일반화된 교집합."
@@ -1568,6 +1563,18 @@ cls singleton(cls x) {
 	setbuilder((cls z) => {
 		eq(z, x)
 	})
+}
+
+schema self_in_singleton(cls x) {
+	set(x) |-
+		id(in(x, singleton(x)))[
+			setbuilderi((cls z) => {
+				eq(z, x)
+			}, x)[
+				set(x),
+				eq_reflexive(x)[]
+			]
+		]
 }
 
 "doubleton class."
@@ -1728,7 +1735,7 @@ axiomatic schema ax_doubleton() {
 	})
 }
 
-axiomatic schema ax_doubleton_m(cls x: @11, cls y: @21) {
+schema ax_doubleton_m(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
 		mp[
 			Ai[set(x), set(y)],
@@ -2298,6 +2305,12 @@ cls successor(cls x) {
 	cup(x, singleton(x))
 }
 
+schema self_in_successor(cls x: @11) {
+	set(x) |- id(in(x, successor(x)))[cupi2(x, ?, ?)[
+		self_in_singleton(x)[set(x)]
+	]]
+}
+
 "순서수(ordinal number)로서의 0."
 $<<0_\text{ord}>>$
 cls ord_zero() {
@@ -2421,7 +2434,19 @@ schema omega_is_set() {
 
 "`[Pinter]`에 따르면 페아노 공리계 제3공리인 것."
 schema successor_is_not_zero(cls n) {
-	in(n, omega()) |- neq(successor(n), ord_zero())
+	in(n, omega()) |-
+		id(neq(successor(n), ord_zero()))[
+			Niu[
+				eq(successor(n), ord_zero()) |-
+					Fi[
+						in_eq[
+							self_in_successor[seti[in(n, omega())]],
+							eq(successor(n), ord_zero())
+						],
+						id(Nin(n, ord_zero()))[emptyset_def(n)[]]
+					]
+			]
+		]
 }
 
 "재귀 정리(recursion theorem)."
