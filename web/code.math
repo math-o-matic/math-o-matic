@@ -1323,11 +1323,11 @@ cls setbuilder(pr f);
 "술어를 만족하는 집합 [$z]에 대해 [$f(z)]를 포함하는 클래스를 만든다. 일반적으로 [$\{f(z): g(z)\}]라고 쓰는 것이다."
 $\left\{#1<<:>>#2\right\}$
 cls setbuilder2([cls -> cls] f, pr g) {
-	setbuilder((cls z) => {
-		X((cls w) => {
+	setbuilder((cls w) => {
+		X((cls z) => {
 			A(
 				eq(w, f(z)),
-				g(w)
+				g(z)
 			)
 		})
 	})
@@ -1671,8 +1671,8 @@ schema setbuilder_is_setbuilder(pr f, cls x) {
 }
 
 "술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
-일반적으로는 [$\{z \in x: f(z)\}]라고 쓰는 것인데 더미 변수를 없애버렸다."
-$\left\{#1<<:>>#2\right\}$
+일반적으로는 [$\{z \in x: f(z)\}]라고 쓰는 것이다."
+$\left\{\in #1<<:>>#2\right\}$
 cls subsetbuilder(cls x, pr f) {
 	setbuilder((cls y) => {
 		A(
@@ -2080,7 +2080,7 @@ cls v2(cls x, cls y) {
 	doubleton(singleton(x), doubleton(x, y))
 }
 
-"순서쌍을 위한 setbuilder."
+"순서쌍을 위한 setbuilder. 즉 [$\{(a, b): f(a, b)\}]이다."
 $\left\{<<:>>#1\right\}$
 cls setbuilder_v2(pr2 f) {
 	setbuilder((cls z) => {
@@ -2088,6 +2088,19 @@ cls setbuilder_v2(pr2 f) {
 			A(
 				eq(z, v2(a, b)),
 				f(a, b)
+			)
+		})
+	})
+}
+
+"순서쌍을 위한 setbuilder2. 즉 [$\{f(a, b): g(a, b)\}]이다."
+$\left\{#1<<:>>#2\right\}$
+cls setbuilder2_v2([(cls, cls) -> cls] f, pr2 g) {
+	setbuilder((cls z) => {
+		X2((cls a, cls b) => {
+			A(
+				eq(z, f(a, b)),
+				g(a, b)
 			)
 		})
 	})
@@ -2201,10 +2214,6 @@ schema rel_subset_is_rel(cls x: @11, cls y: @12) {
 	})[subseteq(x, y), rel(y)]) ~ id(rel(x))
 }
 
-schema rel_V_1_1(cls x, cls z, cls a, cls b) {
-	eq_Ae2_Ve_Ee1_c_swap(z, v2(a, b), x)
-}
-
 "이항관계를 위한 V.
 
 [$R]이 이항관계일 때 임의의 [$(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
@@ -2242,14 +2251,28 @@ st function(cls f, $A$ cls a, $B$ cls b) {
 	)
 }
 
-"메타함수로 함수를 만든다."
-cls make_fun($A$ cls a, [cls -> cls] f) {
+"매개변수가 하나인 메타함수로 함수를 만든다."
+$\left[#1\right]_{<<\in>>#2}$
+cls make_fun([cls -> cls] f, $A$ cls a) {
 	setbuilder2(
 		(cls z) => {
 			v2(z, f(z))
 		},
 		(cls z) => {
 			in(z, a)
+		}
+	)
+}
+
+"매개변수가 두 개인 메타함수로 함수를 만든다."
+$\left[#1\right]_{<<\in>>#2 \times #3}$
+cls make_fun_v2([(cls, cls) -> cls] f, $A$ cls a, $B$ cls b) {
+	setbuilder2_v2(
+		(cls x, cls y) => {
+			v2(v2(x, y), f(x, y))
+		},
+		(cls x, cls y) => {
+			A(in(x, a), in(y, b))
 		}
 	)
 }
@@ -2321,6 +2344,12 @@ cls ord_zero() {
 $<<1_\text{ord}>>$
 cls ord_one() {
 	successor(ord_zero())
+}
+
+"순서수(ordinal number)로서의 2. 1의 따름 순서수이다."
+$<<2_\text{ord}>>$
+cls ord_two() {
+	successor(ord_one())
 }
 
 "따름 순서수는 집합이다."
@@ -2491,4 +2520,15 @@ cls define_recursive($A$ cls a, cls c, cls f) {
 			)
 		)
 	}))
+}
+
+"자연수 덧셈."
+$\left(#1<<+_\omega>>#2\right)$
+cls omega_add(cls n, cls m) {
+	fcall(define_recursive(omega(), n, make_fun((cls m) => { successor(m) }, omega())), m)
+}
+
+"[$1+1=2]이다."
+schema one_plus_one_eq_two() {
+	|- eq(omega_add(ord_one(), ord_one()), ord_two())
 }
