@@ -2107,7 +2107,7 @@ cls setbuilder2_v2([(cls, cls) -> cls] f, pr2 g) {
 }
 
 "곱집합(cartesian product)."
-$!<prec=230>#1<<\times>>#2$
+$!<prec=300>#1<<\times>>#2$
 cls cartesian(cls x, cls y) {
 	setbuilder_v2((cls a, cls b) => {
 		A(in(a, x), in(b, y))
@@ -2165,7 +2165,7 @@ cls rel_inverse(cls x) {
 }
 
 "이항관계의 합성(composition)."
-$!<prec=230>#1 <<\circ>> #2$
+$!<prec=300>#1 <<\circ>> #2$
 cls rel_composite(cls x, cls y) {
 	setbuilder_v2((cls a, cls c) => {
 		X((cls b) => {
@@ -2478,23 +2478,19 @@ schema successor_is_not_zero(cls n) {
 		]
 }
 
-"재귀 정리(recursion theorem)."
-schema recursion_theorem($A$ cls a, cls c, cls f) {
-	in(c, a), function(f, a, a) |-
-		Xq(($\gamma$ cls g) => {
-			A(
-				function(g, omega(), a),
-				A(
-					eq(fcall(g, ord_zero()), c),
-					Vin(omega(), (cls n) => {
-						eq(
-							fcall(g, successor(n)),
-							fcall(f, fcall(g, n))
-						)
-					})
+st is_recursively_defined($\gamma$ cls g, $A$ cls a, cls c, cls f) {
+	A(
+		function(g, omega(), a),
+		A(
+			eq(fcall(g, ord_zero()), c),
+			Vin(omega(), (cls n) => {
+				eq(
+					fcall(g, successor(n)),
+					fcall(f, fcall(g, n))
 				)
-			)
-		})
+			})
+		)
+	)
 }
 
 "클래스 [$A] 및 그 원소 [$c\in A] 및 함수 [$f: A\to A]에 대하여,
@@ -2503,7 +2499,7 @@ schema recursion_theorem($A$ cls a, cls c, cls f) {
 	[*] 임의의 [$n\in\omega]에 대하여, [$\gamma(n^+)=f(\gamma(n))]
 ]
 을 만족하는 함수 [$\gamma:\omega\to A]를 만든다. [$c]와 [$f]가 조건을 만족하지 않으면 만들어지지 않는다. `[Pinter]`의 정리 6.8에 등장한다."
-cls define_recursive($A$ cls a, cls c, cls f) {
+cls define_recursively($A$ cls a, cls c, cls f) {
 	bigcap(setbuilder(($G$ cls g) => {
 		A(
 			subseteq(g, cartesian(omega(), a)),
@@ -2522,10 +2518,30 @@ cls define_recursive($A$ cls a, cls c, cls f) {
 	}))
 }
 
+schema recursion_theorem_1($A$ cls a, cls c, cls f) {
+	in(c, a), function(f, a, a) |-
+		is_recursively_defined(define_recursively(a, c, f), a, c, f)
+}
+
+schema recursion_theorem_2($A$ cls a, cls c, cls f) {
+	in(c, a), function(f, a, a) |-
+		Q(($\gamma$ cls g) => {
+			is_recursively_defined(g, a, c, f)
+		})
+}
+
+"재귀 정리(recursion theorem)."
+schema recursion_theorem($A$ cls a, cls c, cls f) {
+	in(c, a), function(f, a, a) |-
+		Xq(($\gamma$ cls g) => {
+			is_recursively_defined(g, a, c, f)
+		})
+}
+
 "자연수 덧셈."
-$\left(#1<<+_\omega>>#2\right)$
+$!<prec=300>#1<<+_\omega>>#2$
 cls omega_add(cls n, cls m) {
-	fcall(define_recursive(omega(), n, make_fun((cls m) => { successor(m) }, omega())), m)
+	fcall(define_recursively(omega(), n, make_fun(($\gamma$ cls g) => { successor(g) }, omega())), m)
 }
 
 "[$1+1=2]이다."
