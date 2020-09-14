@@ -7,8 +7,8 @@ var ExpressionResolver = require('../ExpressionResolver');
  * name, expr 중 하나 이상 있어야 하고 type, expr 중
  * 한 개만 있어야 한다.
  */
-function Fun({name, type, params, expr, doc, tex}, scope, trace) {
-	Node.call(this, trace);
+function Fun({name, type, params, expr, doc, tex}, scope) {
+	Node.call(this, scope);
 
 	this.doc = doc;
 

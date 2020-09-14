@@ -2,8 +2,8 @@ var Node = require('./Node');
 var Typevar = require('./Typevar');
 var Fun = require('./Fun');
 
-function Funcall({fun, args}, scope, trace) {
-	Node.call(this, trace);
+function Funcall({fun, args}, scope) {
+	Node.call(this, scope);
 
 	if (!(fun instanceof Node))
 		throw this.error('Assertion failed');

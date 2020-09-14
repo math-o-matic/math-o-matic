@@ -2,14 +2,14 @@ var ExpressionResolver = require('../ExpressionResolver');
 
 var ctr = 0;
 
-function Node(trace) {
+function Node(scope) {
 	this._id = ++ctr;
-	this.trace = trace || null;
+	this.scope = scope || null;
 }
 
 Node.prototype.error = function (message) {
-	if (this.trace) {
-		return this.trace.error(message);
+	if (this.scope) {
+		return this.scope.error(message);
 	} else {
 		return new Error(message);
 	}

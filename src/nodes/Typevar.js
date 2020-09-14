@@ -1,7 +1,7 @@
 var Node = require('./Node');
 
-function Typevar({type, isParam, guess, name, doc, tex}, scope, trace) {
-	Node.call(this, trace);
+function Typevar({type, isParam, guess, name, doc, tex}, scope) {
+	Node.call(this, scope);
 
 	this.doc = doc;
 	this.tex = tex;

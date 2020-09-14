@@ -1,7 +1,7 @@
 var Node = require('./Node');
 
-function Ruleset({axiomatic, name, native, doc}, scope, trace) {
-	Node.call(this, trace);
+function Ruleset({axiomatic, name, native, doc}, scope) {
+	Node.call(this, scope);
 
 	this.doc = doc;
 

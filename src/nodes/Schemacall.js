@@ -3,8 +3,8 @@ var Typevar = require('./Typevar');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Schemacall({schema, args}, scope, trace) {
-	Node.call(this, trace);
+function Schemacall({schema, args}, scope) {
+	Node.call(this, scope);
 
 	if (!schema) {
 		throw this.error('Assertion failed');

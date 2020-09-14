@@ -21,7 +21,7 @@ var native = require(path.join(path.dirname(process.argv[2]), 'native.js'));
 
 try {
 	var parsed = math.parser.parse(code);
-	program = new math.Program(process.argv[2]);
+	program = new math.Program();
 	program.feed(parsed, native);
 } catch (e) {
 	console.error(formatError(e));

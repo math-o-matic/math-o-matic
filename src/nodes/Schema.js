@@ -4,8 +4,8 @@ var MetaType = require('./MetaType');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, scope, trace) {
-	Node.call(this, trace);
+function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, scope) {
+	Node.call(this, scope);
 
 	this.doc = doc;
 

@@ -3,8 +3,8 @@ var Schemacall = require('./Schemacall');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Reduction({subject, guesses, leftargs}, scope, trace) {
-	Node.call(this, trace);
+function Reduction({subject, guesses, leftargs}, scope) {
+	Node.call(this, scope);
 
 	if (!subject.native && subject._type == 'schema') {
 
@@ -27,7 +27,7 @@ function Reduction({subject, guesses, leftargs}, scope, trace) {
 		subject = new Schemacall({
 			schema: subject,
 			args: derefs,
-		}, scope, trace);
+		}, scope);
 	} else if (guesses) {
 		throw this.error('Something\'s wrong');
 	}

@@ -3,8 +3,8 @@ var MetaType = require('./MetaType');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Tee({left, right}, scope, trace) {
-	Node.call(this, trace);
+function Tee({left, right}, scope) {
+	Node.call(this, scope);
 
 	if (!(left instanceof Array
 			&& left.every(l => ['type', 'metatype'].includes(l.type._type)))) {

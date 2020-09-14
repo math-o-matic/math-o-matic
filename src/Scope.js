@@ -9,7 +9,9 @@ var Ruleset = require('./nodes/Ruleset');
 var Schema = require('./nodes/Schema');
 var Schemacall = require('./nodes/Schemacall');
 
-function Scope(parent) {
+var StackTrace = require('./StackTrace');
+
+function Scope(parent, trace) {
 	this.typedefMap = {};
 	this.defMap = {};
 	this.schemaMap = {};
@@ -27,11 +29,21 @@ function Scope(parent) {
 	this.parent = parent;
 	this.root = parent ? parent.root : this;
 
+	if (trace && !(trace instanceof StackTrace)) {
+		throw Error('Assertion failed');
+	}
+
+	this.trace = trace || new StackTrace();
+
 	this.baseType = parent ? parent.baseType : null;
 }
 
-Scope.prototype.extend = function () {
-	return new Scope(this);
+Scope.prototype.extend = function (type, name, location) {
+	return new Scope(this, this.trace.extend(type, name, location));
+};
+
+Scope.prototype.error = function (message) {
+	return this.trace.error(message);
 };
 
 /*
@@ -47,10 +59,10 @@ Scope.prototype.hasOwnType = function (name) {
 	}
 
 	if (!(name instanceof Array))
-		throw Error('Gimme an array/string');
+		throw this.error('Argument is malformed');
 
 	if (name.length < 2)
-		throw Error('Illegal array length');
+		throw this.error('Illegal array length');
 
 	return name.map(e => {
 		return this.hasOwnType(e);
@@ -71,10 +83,10 @@ Scope.prototype.hasType = function (name) {
 	}
 
 	if (!(name instanceof Array))
-		throw Error('Gimme an array/string');
+		throw this.error('Argument is malformed');
 
 	if (name.length < 2)
-		throw Error('Illegal array length');
+		throw this.error('Illegal array length');
 
 	return name.map(e => {
 		return this.hasType(e);
@@ -83,17 +95,17 @@ Scope.prototype.hasType = function (name) {
 
 Scope.prototype.addType = function (type) {
 	if (!(type instanceof Type))
-		throw Error('Illegal argument type');
+		throw this.error('Illegal argument type');
 
 	if (!type.name)
-		throw Error('Something\'s wrong');
+		throw this.error('Something\'s wrong');
 
 	if (this.hasOwnType(type.name))
-		throw Error(`Type with name ${type.name} already is there`);
+		throw this.error(`Type ${type.name} has already been declared`);
 
 	if (type.isBaseType) {
 		if (this.baseType) {
-			throw Error('A base type already exists');
+			throw this.error('A base type already exists');
 		}
 
 		(function broadcast(scope) {
@@ -115,17 +127,17 @@ Scope.prototype.addType = function (type) {
 Scope.prototype.getType = function (name) {
 	if (typeof name == 'string') {
 		if (!this.hasType(name))
-			throw Error(`Type with name ${name} not found`);
+			throw this.error(`Type ${name} is not defined`);
 
 		return this.typedefMap[name] ||
 			(!!this.parent && this.parent.getType(name));
 	}
 
 	if (!(name instanceof Array))
-		throw Error('Gimme an array/string');
+		throw this.error('Argument is malformed');
 
 	if (name.length < 2)
-		throw Error('Illegal array length');
+		throw this.error('Illegal array length');
 
 	var from = name.slice(0, name.length - 1).map(e => {
 		return this.getType(e);
@@ -151,30 +163,30 @@ Scope.prototype.hasTypevar = function (name) {
 
 Scope.prototype.addTypevar = function (typevar) {
 	if (!(typevar instanceof Typevar))
-		throw Error('Illegal argument type');
+		throw this.error('Illegal argument type');
 
 	if (this.hasOwnTypevar(typevar.name))
-		throw Error(`Def with name ${typevar.name} already is there`);
+		throw this.error(`Definition ${typevar.name} has already been declared`);
 
 	return this.defMap[typevar.name] = typevar;
 };
 
 Scope.prototype.addFun = function (fun) {
 	if (!(fun instanceof Fun))
-		throw Error('Illegal argument type');
+		throw this.error('Illegal argument type');
 
 	if (!fun.name)
-		throw Error('Cannot add anonymous fun to scope');
+		throw this.error('Cannot add anonymous fun to scope');
 
 	if (this.hasOwnTypevar(fun.name))
-		throw Error(`Def with name ${fun.name} already is there`);
+		throw this.error(`Definition ${fun.name} has already been declared`);
 
 	return this.defMap[fun.name] = fun;
 };
 
 Scope.prototype.getTypevar = function (name) {
 	if (!this.hasTypevar(name))
-		throw Error(`Def with name ${name} not found`);
+		throw this.error(`Definition ${name} is not defined`);
 
 	return this.defMap[name] ||
 		(!!this.parent && this.parent.getTypevar(name));
@@ -191,17 +203,17 @@ Scope.prototype.hasRuleset = function (name) {
 
 Scope.prototype.addRuleset = function (ruleset) {
 	if (!(ruleset instanceof Ruleset))
-		throw Error('Illegal argument type');
+		throw this.error('Illegal argument type');
 
 	if (this.hasOwnRuleset(ruleset.name))
-		throw Error(`Ruleset with name ${ruleset.name} already is there`);
+		throw this.error(`Ruleset ${ruleset.name} has already been declared`);
 
 	return this.rulesetMap[ruleset.name] = ruleset;
 };
 
 Scope.prototype.getRuleset = function (name) {
 	if (!this.hasRuleset(name))
-		throw Error(`Ruleset with name ${name} not found`);
+		throw this.error(`Ruleset ${name} is not defined`);
 
 	return this.rulesetMap[name] ||
 		(!!this.parent && this.parent.getRuleset(name));
@@ -218,17 +230,17 @@ Scope.prototype.hasSchema = function (name) {
 
 Scope.prototype.addSchema = function (schema) {
 	if (!(schema instanceof Schema))
-		throw Error('Illegal argument type');
+		throw this.error('Illegal argument type');
 
 	if (this.hasOwnSchema(schema.name))
-		throw Error(`Schema with name ${schema.name} already is there`);
+		throw this.error(`Schema ${schema.name} has already been declared`);
 
 	return this.schemaMap[schema.name] = schema;
 };
 
 Scope.prototype.getSchema = function (name) {
 	if (!this.hasSchema(name))
-		throw Error(`Schema with name ${name} not found`);
+		throw this.error(`Schema ${name} is not defined`);
 
 	return this.schemaMap[name] || this.defMap[name] ||
 		(!!this.parent && this.parent.getSchema(name));
