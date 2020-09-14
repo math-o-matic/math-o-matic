@@ -239,6 +239,8 @@ ER.expandMetaAndFuncalls = function (expr) {
 	}
 };
 
+ER.nequalscall = ER.nequalstrue = ER.nrecursecall = ER.nrecursetrue = 0;
+
 /*
  * 스펙 참조.
  */
@@ -269,14 +271,22 @@ ER.equals = function (a, b) {
 				);
 			}
 
-			if (!callee(a).expr && !callee(b).expr) {
+			if (callee(a) == callee(b) || !callee(a).expr && !callee(b).expr) {
 				if (callee(a) != callee(b)) return false;
 
-				for (var i = 0; i < a.args.length; i++) {
-					if (!recurseWrap(a.args[i], b.args[i], depth + 1)) return false;
+				if (!callee(a).expr && !callee(b).expr) {
+					for (var i = 0; i < a.args.length; i++) {
+						if (!recurseWrap(a.args[i], b.args[i], depth + 1)) return false;
+					}
+
+					return true;
 				}
 
-				return true;
+				if (a.args.every((_, i) => {
+					return recurseWrap(a.args[i], b.args[i], depth + 1);
+				})) {
+					return true;
+				}
 			}
 
 			if (callee(a).expr) {
@@ -341,13 +351,21 @@ ER.equals = function (a, b) {
 	var recurseWrap = recurse;
 
 	// function recurseWrap(a, b, depth) {
-	// 	console.log(`depth: ${depth}\n${a}\n\n${b}`);
+	// 	ER.nrecursecall++;
+
+	// 	console.log(`depth ${depth}\n${a}\n\n${b}`);
 	// 	var ret = recurse(a, b, depth);
-	// 	console.log(`depth: ${depth} → ${ret}`);
+	// 	console.log(`depth ${depth} → ${ret}`);
+
+	// 	if (ret) ER.nrecursetrue++;
+
 	// 	return ret;
 	// }
 
-	return recurseWrap(a, b, 0);
+	ER.nequalscall++;
+	var ret = recurseWrap(a, b, 0);
+	if (ret) ER.nequalstrue++;
+	return ret;
 };
 
 ER.chain = function (tees) {
