@@ -28,7 +28,7 @@ function Funcall({fun, args}, scope) {
 
 	for (var i = 0; i < paramTypes.length; i++) {
 		if (!paramTypes[i].equals(argTypes[i]))
-			throw this.error(`Illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
+			throw this.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
 	}
 	
 	this.fun = fun;
