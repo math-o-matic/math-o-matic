@@ -20,6 +20,14 @@ contexts:
         - match: $
           pop: true
 
+    - match: '/\*'
+      scope: punctuation.definition.comment.begin.math-o-matic
+      push:
+        - meta_scope: comment.block.math-o-matic
+        - match: '\*/'
+          scope: punctuation.definition.comment.end.math-o-matic
+          pop: true
+
     - match: '\b(axiomatic|base|native|ruleset|schema|type)\b'
       scope: keyword.control.math-o-matic
 
