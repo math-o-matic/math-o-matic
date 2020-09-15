@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-var math = require('.');
+var math = require('..');
 var esp = require('error-stack-parser');
 
 if (!process.argv[2]) {
