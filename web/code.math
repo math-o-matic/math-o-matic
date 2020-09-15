@@ -409,10 +409,12 @@ st X(pr f) {
 	N(V((cls x) => { N(f(x)) }))
 }
 
-"pr2를 위한 존재 양화. V2에 의존한다."
+"pr2를 위한 존재 양화. X에 의존한다."
 $!<prec=249><<\exists^2>>#1$
 st X2(pr2 f) {
-	N(V2((cls x, cls y) => { N(f(x, y)) }))
+	X((cls x) => {
+		X((cls y) => { f(x, y) })
+	})
 }
 
 schema NX_to_VN(pr f) {
@@ -426,6 +428,12 @@ schema VN_to_NX(pr f) {
 "보편 양화 도입(universal introduction)."
 axiomatic schema Vi(pr f: @1) {
 	f |- V(f)
+}
+
+schema Vi2(pr2 f: @1) {
+	f |- id(V2(f))[
+		Vi[(cls x) => { Vi[(cls y) => { f(x, y) }] }]
+	]
 }
 
 "보편 양화 소거(universal elimination)."
@@ -713,12 +721,20 @@ schema VI_Vi_V2_Vi_VI_m(pr f, pr2 g) {
 }
 
 "존재 양화 도입(existential introduction). Ve와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
-schema Xi(pr f, cls x) {
+schema Xi(pr f, cls x: @12) {
 	NNi(f(x)) ~
 	mpu[
 		|- cp[Ve(Nf(f), x)]
 		~ contrapose(V(Nf(f)), N(f(x)))
 	] ~ id(X(f))
+}
+
+schema Xi2(pr2 f, cls x, cls y) {
+	f(x, y) |- id(X2(f))[Xi((cls x) => {
+		X((cls y) => { f(x, y) })
+	}, x)[
+		Xi((cls y) => { f(x, y) }, y)[f(x, y)]
+	]]
 }
 
 "X를 위한 mp."
@@ -954,7 +970,7 @@ st Xin(cls a, pr f) {
 	})
 }
 
-"어떤 class가 집합이라는 것. 어떤 class의 원소면 된다."
+"어떤 class가 집합이라는 것. 어떤 class의 원소면 된다. 독일어 [*Menge] (집합)의 M이다."
 $\left(<<\mathfrak M>> #1\right)$
 st set(cls x) {
 	X((cls y) => {
@@ -1008,6 +1024,12 @@ schema in_subseteq(cls x: @12, cls y: @22, cls z: @11) {
 			in(z, x),
 			Ve(?, z)[subseteq(x, y)]
 		]
+}
+
+schema self_subseteq_self(cls x) {
+	|- id(subseteq(x, x))[Vi[(cls z) => {
+		cp[in(z, x) |- in(z, x)]
+	}]]
 }
 
 schema in_eq(cls x: @12, cls y: @22, cls z: @11) {
@@ -1148,39 +1170,21 @@ schema eq_symmetric(cls x, cls y) {
 }
 
 schema eq_transitive(cls x, cls y, cls z) {
-	id(eq(y, z)) ~
-	Ae1(
-		V((cls w) => {E(in(w, y), in(w, z))}),
-		V((cls w) => {E(in(y, w), in(z, w))})
-	) ~
-	Ae2(
-		V((cls w) => {E(in(w, y), in(w, z))}),
-		V((cls w) => {E(in(y, w), in(z, w))})
-	) ~
-	id(eq(x, y)) ~
-	Ae1(
-		V((cls w) => {E(in(w, x), in(w, y))}),
-		V((cls w) => {E(in(x, w), in(y, w))})
-	) ~
-	Ae2(
-		V((cls w) => {E(in(w, x), in(w, y))}),
-		V((cls w) => {E(in(x, w), in(y, w))})
-	) ~
-	syllVE(
-		(cls w) => {in(w, x)},
-		(cls w) => {in(w, y)},
-		(cls w) => {in(w, z)}
-	)
-	~ syllVE(
-		(cls w) => {in(x, w)},
-		(cls w) => {in(y, w)},
-		(cls w) => {in(z, w)}
-	)
-	~ Ai(
-		V((cls w) => {E(in(w, x), in(w, z))}),
-		V((cls w) => {E(in(x, w), in(z, w))})
-	)
-	~ id(eq(x, z))
+	eq(x, y), eq(y, z) |-
+		id(eq(x, z))[
+			Ai[
+				syllVE(
+					(cls w) => {in(w, x)},
+					(cls w) => {in(w, y)},
+					(cls w) => {in(w, z)}
+				)[Ae1[eq(x, y)], Ae1[eq(y, z)]],
+				syllVE(
+					(cls w) => {in(x, w)},
+					(cls w) => {in(y, w)},
+					(cls w) => {in(z, w)}
+				)[Ae2[eq(x, y)], Ae2[eq(y, z)]]
+			]
+		]
 }
 
 schema eq_transitive_3(cls x, cls y, cls z) {
@@ -1231,6 +1235,10 @@ schema Xq_to_X(pr f: @11) {
 	Xq(f) |- Ae1[Xq(f)]
 }
 
+schema XQ_to_Xq(pr f: @11) {
+	X(f), Q(f) |- id(Xq(f))[Ai[X(f), Q(f)]]
+}
+
 schema set_is_set_1(cls x: @11, cls y: @22) {
 	id(set(x)) ~
 	eq_Ae2(x, y)
@@ -1246,7 +1254,7 @@ schema set_is_set_2(cls x: @11, cls y: @21) {
 	set_is_set_1(x, y)
 }
 
-schema subseteq_subseteq(cls x, cls y, cls z) {
+schema subseteq_subseteq(cls x: @11, cls y: @12, cls z: @22) {
 	id(subseteq(x, y)) ~
 	id(subseteq(y, z)) ~
 	syllV(
@@ -2034,7 +2042,7 @@ schema ax_power_m(cls x) {
 }
 
 "멱집합은 집합이다."
-schema power_is_set(cls x) {
+schema power_is_set(cls x: @11) {
 	set(x) |-
 		Xe_p(set(power(x)))[mpX(?, (cls y) => {set(power(x))})[
 			ax_power_m(x)[set(x)],
@@ -2080,6 +2088,26 @@ cls v2(cls x, cls y) {
 	doubleton(singleton(x), doubleton(x, y))
 }
 
+schema v2_1(cls x, cls y, cls z, cls w) {
+	set(x), set(y), set(z), set(w), eq(v2(x, y), v2(z, w)) |-
+		eq(x, z)
+}
+
+schema v2_2(cls x, cls y, cls z, cls w) {
+	set(x), set(y), set(z), set(w), eq(v2(x, y), v2(z, w)) |-
+		eq(y, w)
+}
+
+schema v2_is_set(cls x: @11, cls y: @21) {
+	set(x), set(y) |-
+		id(set(v2(x, y)))[
+			ax_doubleton_m[
+				singleton_is_set[set(x)],
+				ax_doubleton_m[set(x), set(y)]
+			]
+		]
+}
+
 "순서쌍을 위한 setbuilder. 즉 [$\{(a, b): f(a, b)\}]이다."
 $\left\{<<:>>#1\right\}$
 cls setbuilder_v2(pr2 f) {
@@ -2112,6 +2140,46 @@ cls cartesian(cls x, cls y) {
 	setbuilder_v2((cls a, cls b) => {
 		A(in(a, x), in(b, y))
 	})
+}
+
+schema cartesian_1_(cls x, cls y, cls a, cls b, cls c, cls d) {
+	in(v2(a, b), cartesian(x, y)) |-
+		// setbuildere((cls z) => {
+		// 	X2((cls c, cls d) => {
+		// 		A(eq(z, v2(c, d)), A(in(c, x), in(d, y)))
+		// 	})
+		// }, ?)[in(v2(a, b), cartesian(x, y))]
+		A(eq(v2(a, b), v2(c, d)), A(in(c, x), in(d, y))) |-
+			Ae1[A(eq(v2(a, b), v2(c, d)), A(in(c, x), in(d, y)))]
+}
+
+schema cartesian_1(cls x, cls y, cls a, cls b) {
+	in(v2(a, b), cartesian(x, y)) |-
+		in(a, x)
+}
+
+schema cartesian_2(cls x, cls y, cls a, cls b) {
+	in(v2(a, b), cartesian(x, y)) |-
+		in(b, y)
+}
+
+schema cartesian_3(cls x: @12, cls y: @22, cls a: @11, cls b: @21) {
+	in(a, x), in(b, y) |-
+		id(in(v2(a, b), cartesian(x, y)))[setbuilderi((cls z) => {
+			X2((cls c, cls d) => {
+				A(eq(z, v2(c, d)), A(in(c, x), in(d, y)))
+			})
+		}, ?)[
+			v2_is_set[seti[in(a, x)], seti[in(b, y)]],
+			Xi2((cls c, cls d) => {
+				A(eq(v2(a, b), v2(c, d)), A(in(c, x), in(d, y)))
+			}, a, b)[
+				Ai[
+					eq_reflexive(v2(a, b))[],
+					Ai[in(a, x), in(b, y)]
+				]
+			]
+		]]
 }
 
 "어떤 class가 이항관계이다.
@@ -2218,15 +2286,63 @@ schema rel_subset_is_rel(cls x: @11, cls y: @12) {
 
 [$R]이 이항관계일 때 임의의 [$(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
 schema rel_V(pr f, cls x) {
-	rel(x) |- I(
+	rel(x), V2((cls a, cls b) => {
+		I(
+			in(v2(a, b), x),
+			f(v2(a, b))
+		)
+	}) |- Vin(x, f)
+}
+
+schema cartesian_V(pr f, cls x, cls y) {
+	V2((cls a, cls b) => {
+		I(
+			in(v2(a, b), cartesian(x, y)),
+			f(v2(a, b))
+		)
+	}) |- rel_V(f, cartesian(x, y))[
+		cartesian_is_rel(x, y)[],
 		V2((cls a, cls b) => {
 			I(
-				in(v2(a, b), x),
+				in(v2(a, b), cartesian(x, y)),
 				f(v2(a, b))
 			)
-		}),
-		Vin(x, f)
-	)
+		})
+	]
+}
+
+schema cartesian_Vu(pr f, cls x, cls y) {
+	(cls a, cls b) => {
+		I(
+			in(v2(a, b), cartesian(x, y)),
+			f(v2(a, b))
+		)
+	} |- cartesian_V(f, x, y)[Vi2[(cls a, cls b) => {
+		I(
+			in(v2(a, b), cartesian(x, y)),
+			f(v2(a, b))
+		)
+	}]]
+}
+
+schema cartesian_is_set_1(cls x, cls y) {
+	set(x), set(y) |-
+		power_is_set[power_is_set[cup_is_set[set(x), set(y)]]]
+}
+
+schema cartesian_is_set_21(cls x, cls y, cls a, cls b) {
+	in(v2(a, b), cartesian(x, y)) |-
+		in(v2(a, b), power(power(cup(a, b))))
+}
+
+schema cartesian_is_set_2(cls x, cls y) {
+	|- subseteq(cartesian(x, y), power(power(cup(x, y))))	
+}
+
+"`[Pinter]` 정리 1.51."
+schema cartesian_is_set(cls x: @11, cls y: @21) {
+	set(x), set(y) |-
+		set(cartesian(x, y))
 }
 
 schema rel_composite_associative(cls x, cls y, cls z) {
@@ -2239,8 +2355,8 @@ schema rel_composite_associative(cls x, cls y, cls z) {
 "어떤 [$\langle f, A, B\rangle]가 함수이다.
 
 [$f\subseteq A\times B]이고 임의의 [$x\in A]에 대해 [$(x, y)\in f]를 만족하는 유일한 [$y]가 존재한다는 뜻이다."
-$\left(<<\mathop\mathrm{function}>> #1: #2 \to #3\right)$
-st function(cls f, $A$ cls a, $B$ cls b) {
+$<<\mathop\mathrm{function}>>\left(#1: #2 \to #3\right)$
+st is_function(cls f, $A$ cls a, $B$ cls b) {
 	A(
 		subseteq(f, cartesian(a, b)),
 		Vin(a, (cls x) => {
@@ -2278,33 +2394,33 @@ cls make_fun_v2([(cls, cls) -> cls] f, $A$ cls a, $B$ cls b) {
 }
 
 schema fun_subseteq_cartesian(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	function(f, a, b) |- Ae1[function(f, a, b)]
+	is_function(f, a, b) |- Ae1[is_function(f, a, b)]
 }
 
 schema fun_im_unique(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	function(f, a, b) |- Ae2[function(f, a, b)]
+	is_function(f, a, b) |- Ae2[is_function(f, a, b)]
 }
 
 schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	function(f, a, b) |- id(Vin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))[
+	is_function(f, a, b) |- id(Vin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))[
 		Vi[(cls x) => {
 			cp[(
 				in(x, a) |-
-					Xq_to_X[mp[in(x, a), Ve(?, x)[fun_im_unique[function(f, a, b)]]]]
+					Xq_to_X[mp[in(x, a), Ve(?, x)[fun_im_unique[is_function(f, a, b)]]]]
 			)]
 		}]
 	]
 }
 
 schema fun_is_rel(cls f, $A$ cls a, $B$ cls b) {
-	function(f, a, b) |- rel_subset_is_rel[
-		fun_subseteq_cartesian(f, a, b)[function(f, a, b)],
+	is_function(f, a, b) |- rel_subset_is_rel[
+		fun_subseteq_cartesian(f, a, b)[is_function(f, a, b)],
 		cartesian_is_rel(a, b)[]
 	]
 }
 
 schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
-	function(f, a, b) |- eq(rel_dom(f), a)
+	is_function(f, a, b) |- eq(rel_dom(f), a)
 }
 
 "함수 호출. [$f]가 함수이고 [$x]가 [$f]의 정의역에 있을 경우 함숫값이 된다. 그러하지 아니할 때는 다음과 같다.
@@ -2316,6 +2432,10 @@ schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
 $#1<<(>>#2)$
 cls fcall(cls f, cls x) {
 	bigcup(rel_im_set(f, singleton(x)))
+}
+
+schema fcall_in_codomain(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
+	is_function(f, a, b), in(x, a) |- in(fcall(f, x), b)
 }
 
 ###########################
@@ -2410,7 +2530,7 @@ schema zero_in_omega() {
 }
 
 "`[Pinter]`에 따르면 페아노 공리계 제2공리인 것."
-schema successor_in_omega(cls z) {
+schema successor_in_omega(cls z: @11) {
 	in(z, omega()) |-
 		id(in(successor(z), omega()))[bigcap_2(setbuilder((cls z) => {is_successor_set(z)}), successor(z))[
 			successor_is_set(z)[Xi((cls x) => {in(z, x)}, omega())[in(z, omega())]],
@@ -2480,7 +2600,7 @@ schema successor_is_not_zero(cls n) {
 
 st is_recursively_defined($\gamma$ cls g, $A$ cls a, cls c, cls f) {
 	A(
-		function(g, omega(), a),
+		is_function(g, omega(), a),
 		A(
 			eq(fcall(g, ord_zero()), c),
 			Vin(omega(), (cls n) => {
@@ -2493,14 +2613,8 @@ st is_recursively_defined($\gamma$ cls g, $A$ cls a, cls c, cls f) {
 	)
 }
 
-"클래스 [$A] 및 그 원소 [$c\in A] 및 함수 [$f: A\to A]에 대하여,
-[ol
-	[*] [$\gamma(0) = c,]
-	[*] 임의의 [$n\in\omega]에 대하여, [$\gamma(n^+)=f(\gamma(n))]
-]
-을 만족하는 함수 [$\gamma:\omega\to A]를 만든다. [$c]와 [$f]가 조건을 만족하지 않으면 만들어지지 않는다. `[Pinter]`의 정리 6.8에 등장한다."
-cls define_recursively($A$ cls a, cls c, cls f) {
-	bigcap(setbuilder(($G$ cls g) => {
+cls recursion_set($A$ cls a, cls c, cls f) {
+	setbuilder(($G$ cls g) => {
 		A(
 			subseteq(g, cartesian(omega(), a)),
 			A(
@@ -2515,27 +2629,143 @@ cls define_recursively($A$ cls a, cls c, cls f) {
 				})
 			)
 		)
-	}))
+	})
 }
 
-schema recursion_theorem_1($A$ cls a, cls c, cls f) {
-	in(c, a), function(f, a, a) |-
+"클래스 [$A] 및 그 원소 [$c\in A] 및 함수 [$f: A\to A]에 대하여,
+[ol
+	[*] [$\gamma(0) = c,]
+	[*] 임의의 [$n\in\omega]에 대하여, [$\gamma(n^+)=f(\gamma(n))]
+]
+을 만족하는 함수 [$\gamma:\omega\to A]를 만든다. [$c]와 [$f]가 조건을 만족하지 않으면 만들어지지 않는다. `[Pinter]`의 정리 6.8에 등장한다."
+cls define_recursively($A$ cls a, cls c, cls f) {
+	bigcap(recursion_set(a, c, f))
+}
+
+schema recursion_theorem_1111($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		id(in(cartesian(omega(), a), recursion_set(a, c, f)))[
+			setbuilderi(($G$ cls g) => {
+				A(
+					subseteq(g, cartesian(omega(), a)),
+					A(
+						in(v2(ord_zero(), c), g),
+						Vin(omega(), (cls n) => {
+							Vin(a, (cls x) => {
+								I(
+									in(v2(n, x), g),
+									in(v2(successor(n), fcall(f, x)), g)
+								)
+							})
+						})
+					)
+				)
+			}, cartesian(omega(), a))[
+				cartesian_is_set[
+					omega_is_set[],
+					set(a)
+				],
+				Ai[
+					self_subseteq_self(cartesian(omega(), a))[],
+					Ai[
+						cartesian_3[
+							zero_in_omega[],
+							in(c, a)
+						],
+						id(Vin(omega(), (cls n) => {
+							Vin(a, (cls x) => {
+								I(
+									in(v2(n, x), cartesian(omega(), a)),
+									in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
+								)
+							})
+						}))[
+							Vi((cls n) => {
+								I(in(n, omega()), Vin(a, (cls x) => {
+									I(
+										in(v2(n, x), cartesian(omega(), a)),
+										in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
+									)
+								}))
+							})[(cls n) => {
+								cp[
+									in(n, omega()) |-
+										id(Vin(a, (cls x) => {
+											I(
+												in(v2(n, x), cartesian(omega(), a)),
+												in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
+											)
+										}))[
+											Vi((cls x) => {
+												I(in(x, a), I(
+													in(v2(n, x), cartesian(omega(), a)),
+													in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
+												))
+											})[(cls x) => {
+												cp[
+													in(x, a) |-
+														cp[in(v2(n, x), cartesian(omega(), a)) |-
+															cartesian_3[
+																successor_in_omega[in(n, omega())],
+																fcall_in_codomain[is_function(f, a, a), in(x, a)]
+															]]
+												]
+											}]
+										]
+								]
+							}]
+						]
+					]
+				]
+			]
+		]
+}
+
+schema recursion_theorem_111($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		id(subseteq(define_recursively(a, c, f), cartesian(omega(), a)))[
+			subseteq_subseteq[
+				bigcap_is_smaller[recursion_theorem_1111[set(a), in(c, a), is_function(f, a, a)]],
+				Ae1[setbuildere[recursion_theorem_1111[set(a), in(c, a), is_function(f, a, a)]]]]
+		]
+}
+
+schema recursion_theorem_112($A$ cls a: @11, cls c: @21, cls f: @31, cls x) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		in(x, omega()) |-
+			Xq((cls y) => {
+				in(v2(x, y), define_recursively(a, c, f))
+			})
+}
+
+schema recursion_theorem_11($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		is_function(define_recursively(a, c, f), omega(), a)
+}
+
+schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
 		is_recursively_defined(define_recursively(a, c, f), a, c, f)
 }
 
-schema recursion_theorem_2($A$ cls a, cls c, cls f) {
-	in(c, a), function(f, a, a) |-
+schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
 		Q(($\gamma$ cls g) => {
 			is_recursively_defined(g, a, c, f)
 		})
 }
 
 "재귀 정리(recursion theorem)."
-schema recursion_theorem($A$ cls a, cls c, cls f) {
-	in(c, a), function(f, a, a) |-
-		Xq(($\gamma$ cls g) => {
-			is_recursively_defined(g, a, c, f)
-		})
+schema recursion_theorem($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		XQ_to_Xq[
+			Xi(($\gamma$ cls g) => {
+				is_recursively_defined(g, a, c, f)
+			}, define_recursively(a, c, f))[
+				recursion_theorem_1(a, c, f)[set(a), in(c, a), is_function(f, a, a)]
+			],
+			recursion_theorem_2(a, c, f)[set(a), in(c, a), is_function(f, a, a)]
+		]
 }
 
 "자연수 덧셈."
