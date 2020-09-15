@@ -21,17 +21,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "nodemon": "nodemon -e * --watch src/ --exec \"npm run build\"",
-    "build": "pegjs --cache -o dist/parser.js src/parser.pegjs && webpack",
+    "build": "gulp",
     "lint": "eslint src/**/*.js"
   },
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
+    "del": "^5.1.0",
     "error-stack-parser": "^2.0.6",
     "eslint": "^6.8.0",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
+    "gulp-pegjs": "^0.2.0",
     "nodemon": "^2.0.4",
     "pegjs": "^0.10.0",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "webpack-stream": "^6.1.0"
   }
 }
