@@ -2613,6 +2613,7 @@ st is_recursively_defined($\gamma$ cls g, $A$ cls a, cls c, cls f) {
 	)
 }
 
+"`[Pinter]` 6.8에 나오는 [$\mathscr A]."
 cls recursion_set($A$ cls a, cls c, cls f) {
 	setbuilder(($G$ cls g) => {
 		A(
@@ -2642,7 +2643,8 @@ cls define_recursively($A$ cls a, cls c, cls f) {
 	bigcap(recursion_set(a, c, f))
 }
 
-schema recursion_theorem_1111($A$ cls a: @11, cls c: @21, cls f: @31) {
+"[$\mathscr A]는 공집합이 아니다."
+schema recursion_theorem_0($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
 		id(in(cartesian(omega(), a), recursion_set(a, c, f)))[
 			setbuilderi(($G$ cls g) => {
@@ -2721,16 +2723,38 @@ schema recursion_theorem_1111($A$ cls a: @11, cls c: @21, cls f: @31) {
 		]
 }
 
-schema recursion_theorem_111($A$ cls a: @11, cls c: @21, cls f: @31) {
+"[$\gamma\in\mathscr A]가 되기 위한 첫 번째 조건이다. 즉 [$\gamma\subseteq\omega\times A]이다.
+[$\gamma]가 함수가 되기 위한 첫 번째 조건이기도 하다."
+schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
 		id(subseteq(define_recursively(a, c, f), cartesian(omega(), a)))[
 			subseteq_subseteq[
-				bigcap_is_smaller[recursion_theorem_1111[set(a), in(c, a), is_function(f, a, a)]],
-				Ae1[setbuildere[recursion_theorem_1111[set(a), in(c, a), is_function(f, a, a)]]]]
+				bigcap_is_smaller[recursion_theorem_0[set(a), in(c, a), is_function(f, a, a)]],
+				Ae1[setbuildere[recursion_theorem_0[set(a), in(c, a), is_function(f, a, a)]]]]
 		]
 }
 
-schema recursion_theorem_112($A$ cls a: @11, cls c: @21, cls f: @31, cls x) {
+"[$\gamma\in\mathscr A]가 되기 위한 두 번째 조건."
+schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		in(v2(ord_zero(), c), define_recursively(a, c, f))
+}
+
+"[$\gamma\in\mathscr A]가 되기 위한 세 번째 조건."
+schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		Vin(omega(), (cls n) => {
+			Vin(a, (cls x) => {
+				I(
+					in(v2(n, x), define_recursively(a, c, f)),
+					in(v2(successor(n), fcall(f, x)), define_recursively(a, c, f))
+				)
+			})
+		})
+}
+
+"[$\gamma]가 함수가 되기 위한 두 번째 조건."
+schema recursion_theorem_4($A$ cls a: @11, cls c: @21, cls f: @31, cls x) {
 	set(a), in(c, a), is_function(f, a, a) |-
 		in(x, omega()) |-
 			Xq((cls y) => {
@@ -2738,17 +2762,20 @@ schema recursion_theorem_112($A$ cls a: @11, cls c: @21, cls f: @31, cls x) {
 			})
 }
 
-schema recursion_theorem_11($A$ cls a: @11, cls c: @21, cls f: @31) {
+"[$\gamma:\omega\to A]가 함수이다."
+schema recursion_theorem_5($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
 		is_function(define_recursively(a, c, f), omega(), a)
 }
 
-schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
+"[$\gamma]가 함수이고 재귀적으로 정의된다."
+schema recursion_theorem_6($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
 		is_recursively_defined(define_recursively(a, c, f), a, c, f)
 }
 
-schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
+"[$\gamma]는 여러 개 있지 않다."
+schema recursion_theorem_7($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
 		Q(($\gamma$ cls g) => {
 			is_recursively_defined(g, a, c, f)
@@ -2762,9 +2789,9 @@ schema recursion_theorem($A$ cls a: @11, cls c: @21, cls f: @31) {
 			Xi(($\gamma$ cls g) => {
 				is_recursively_defined(g, a, c, f)
 			}, define_recursively(a, c, f))[
-				recursion_theorem_1(a, c, f)[set(a), in(c, a), is_function(f, a, a)]
+				recursion_theorem_6(a, c, f)[set(a), in(c, a), is_function(f, a, a)]
 			],
-			recursion_theorem_2(a, c, f)[set(a), in(c, a), is_function(f, a, a)]
+			recursion_theorem_7(a, c, f)[set(a), in(c, a), is_function(f, a, a)]
 		]
 }
 
