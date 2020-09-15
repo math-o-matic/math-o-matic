@@ -17,15 +17,6 @@ function Scope(parent, trace) {
 	this.schemaMap = {};
 	this.rulesetMap = {};
 
-	this.Type = Type;
-	this.Typevar = Typevar;
-	this.Fun = Fun;
-	this.Funcall = Funcall;
-	this.Tee = Tee;
-	this.Ruleset = Ruleset;
-	this.Schema = Schema;
-	this.Schemacall = Schemacall;
-
 	this.parent = parent;
 	this.root = parent ? parent.root : this;
 
@@ -37,6 +28,15 @@ function Scope(parent, trace) {
 
 	this.baseType = parent ? parent.baseType : null;
 }
+
+Scope.prototype.Type = Type;
+Scope.prototype.Typevar = Typevar;
+Scope.prototype.Fun = Fun;
+Scope.prototype.Funcall = Funcall;
+Scope.prototype.Tee = Tee;
+Scope.prototype.Ruleset = Ruleset;
+Scope.prototype.Schema = Schema;
+Scope.prototype.Schemacall = Schemacall;
 
 Scope.prototype.extend = function (type, name, location) {
 	return new Scope(this, this.trace.extend(type, name, location));
