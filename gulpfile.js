@@ -3,6 +3,7 @@ const path = require('path');
 const { src, dest, series } = require('gulp');
 const webpack = require('webpack-stream');
 const pegjs = require('gulp-pegjs');
+const TerserPlugin = require('terser-webpack-plugin');
 
 function parser() {
 	return src('src/parser.pegjs')
@@ -19,6 +20,15 @@ function pack() {
 				path: path.resolve(__dirname, 'dist'),
 				filename: 'math.js',
 				library: 'math'
+			},
+			optimization: {
+				minimizer: [
+					new TerserPlugin({
+						terserOptions: {
+							keep_fnames: true
+						}
+					})
+				]
 			},
 			resolve: {
 				alias: {

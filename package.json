@@ -35,6 +35,7 @@
     "gulp-pegjs": "^0.2.0",
     "nodemon": "^2.0.4",
     "pegjs": "^0.10.0",
+    "terser-webpack-plugin": "^4.2.0",
     "webpack-stream": "^6.1.0"
   }
 }
