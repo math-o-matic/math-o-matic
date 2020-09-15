@@ -43,7 +43,8 @@ Funcall.prototype._type = 'funcall';
 Funcall.prototype.isProved = function (hyps) {
 	hyps = hyps || [];
 	
-	return Node.prototype.isProved.call(this, hyps);
+	return Node.prototype.isProved.call(this, hyps)
+		|| this.fun.isProved(hyps);
 };
 
 Funcall.prototype.toString = function () {

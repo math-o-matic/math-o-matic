@@ -145,31 +145,45 @@ function getProofExplorer(expr) {
 					)
 				].join('');
 			case 'schemacall':
-				if (expr.schema.name) {
+			case 'funcall':
+				var callee = expr._type == 'schemacall'
+					? expr.schema : expr.fun;
+				var expanded = expr.expanded || expr;
+
+				if (expr._type == 'schemacall' && callee.name) {
 					return getHtml(
 						left,
-						ktx(expr.expanded.toTeXString(true)),
+						ktx(expanded.toTeXString(true)),
 						`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
 					);
 				}
 
-				var hypno = getHypNo(hyps, expr.schema);
+				var hypno = getHypNo(hyps, callee);
 
 				if (hypno) {
 					return getHtml(
 						left,
-						ktx(expr.expanded.toTeXString(true)),
+						ktx(expanded.toTeXString(true)),
 						`<td>${DIAMOND}</td><td><b>${hypno}</b> (${expr.args.map(arg => ktx(arg.toTeXString(true))).join(', ')})</td>`
 					);
 				}
 
 				return getHtml(
 					left,
-					ktx(expr.expanded.toTeXString(true)),
+					ktx(expanded.toTeXString(true)),
 					'<td colspan="2"><b class="red">not proved</b></td>'
 				);
-			case 'funcall':
 			case 'typevar':
+				var hypno = getHypNo(hyps, expr);
+
+				if (hypno) {
+					return getHtml(
+						left,
+						ktx(expr.toTeXString(true)),
+						`<td>${DIAMOND}</td><td><b>${hypno}</b></td>`
+					);
+				}
+
 				return getHtml(
 					left,
 					ktx(expr.toTeXString(true)),
