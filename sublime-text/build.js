@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var math = require('..');
+var pegjs = require('pegjs');
 var esp = require('error-stack-parser');
 
 if (!process.argv[2]) {
@@ -20,7 +21,8 @@ var code = fs.readFileSync(process.argv[2], 'utf-8');
 var native = require(path.join(path.dirname(process.argv[2]), 'native.js'));
 
 try {
-	var parsed = math.parser.parse(code);
+	var parser = pegjs.generate(math.grammar, {cache: true});
+	var parsed = parser.parse(code);
 	program = new math.Program();
 	program.feed(parsed, native);
 } catch (e) {

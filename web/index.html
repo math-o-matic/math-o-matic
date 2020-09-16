@@ -8,6 +8,7 @@
 		<script src="./native.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/m42kup@0.2.1/dist/m42kup.min.js"></script>
+		<script src="./peg-0.10.0.min.js"></script>
 		<script>
 			m42kup.set({
 				katex
@@ -84,6 +85,14 @@
 				return ret;
 			}
 
+			var start, end;
+			console.log('--- PARSER GENERATION START ---');
+			start = new Date();
+			var parser = peg.generate(math.grammar, {cache: true});
+			end = new Date();
+			console.log('--- PARSER GENERATION END ---');
+			console.log(`Parser generation ended in ${end - start} ms`);
+
 			var loading = false;
 
 			function load(code) {
@@ -98,7 +107,7 @@
 				start = new Date();
 				var parsed;
 				try {
-					parsed = math.parser.parse(code);
+					parsed = parser.parse(code);
 				} catch (e) {
 					console.error(`Error: ${e.message}\n    at code.math:${e.location.start.line}:${e.location.start.column}`);
 					console.log('--- PARSE FAILED ---');
