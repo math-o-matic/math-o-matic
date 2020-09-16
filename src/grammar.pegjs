@@ -8,6 +8,17 @@ line =
 	/ defruleset
 	/ defschema
 
+evaluable =
+	_ e:evaluable_internal _ {return e}
+
+evaluable_internal =
+	typedef
+	/ defv
+	/ defun
+	/ defruleset
+	/ defschema
+	/ metaexpr
+
 typedef =
 	doc:(documentation __)?
 	base:("base" __)?

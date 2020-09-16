@@ -46,6 +46,11 @@ input[type=button], input[type=submit], button {
 	border-radius: 3px;
 	padding: 1ex 1em;
 	cursor: pointer;
+	font: .85em Roboto, sans-serif;
+}
+
+textarea {
+	font: .85em 'Roboto Mono', monospace;
 }
 
 kbd {
@@ -83,22 +88,32 @@ kbd {
 	color: inherit;
 }
 
-.katex a[data-blue] > :not(.mspace) {
+.katex a[href^="#def-"] > :not(.mspace) {
 	background-color: #E3F2FD;
 	color: #303F9F;
 }
 
-.katex a[data-green] > :not(.mspace) {
-	background-color: #E8F5E9;
-	color: #006064;
-}
-
-.katex a[data-red] > :not(.mspace) {
+.katex a[href^="#schema-np-"] > :not(.mspace) {
 	background-color: #FFEBEE;
 	color: #B71C1C;
 }
 
-.katex a[data-orange] {
+.katex a[href^="#schema-p-"] > :not(.mspace) {
+	background-color: #E8F5E9;
+	color: #006064;
+}
+
+.katex a[href^="#type-"] > :not(.mspace) {
+	background-color: #E8F5E9;
+	color: #006064;
+}
+
+.katex a[href^="#ruleset-"] > :not(.mspace) {
+	background-color: #E8F5E9;
+	color: #006064;
+}
+
+.katex a[href^="#id-"] > :not(.mspace) {
 	color: #E65100;
 }
 
@@ -123,7 +138,6 @@ table.explorer td.bbb {
 #search {
 	height: 30px;
 	vertical-align: middle;
-	font: .85em Roboto, sans-serif;
 }
 
 #reload {
@@ -131,8 +145,66 @@ table.explorer td.bbb {
 	vertical-align: middle;
 }
 
+.console-wrap-wrap {
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+	z-index: 9000;
+	top: 5px;
+	bottom: 5px;
+	right: 5px;
+	min-width: 300px;
+	max-width: calc(100% - 10px);
+	font-family: 'Roboto Mono', monospace;
+	pointer-events: none;
+}
+
+.console-wrap {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: stretch;
+	min-height: 0;
+}
+
+#console-display-wrap {
+	background: white;
+	flex-grow: 0;
+	overflow: auto;
+	min-height: 0;
+	pointer-events: auto;
+}
+
+#console-display {
+	width: 100%;
+	white-space: pre-wrap;
+	font-size: .95em;
+}
+
+#console-display tr.error {
+	background-color: #FFEBEE;
+	color: #B71C1C;
+}
+
+#console-display td {
+	border: none;
+	vertical-align: top;
+}
+
+#console-display td:first-child {
+	width: 1px;
+}
+
+#console-display tr {
+	border: 1px #ccc solid;
+}
+
 #search-dropdown {
 	background-color: white;
+	position: fixed;
+	bottom: 5px;
+	left: 5px;
 }
 
 #search-dropdown ul {
@@ -144,17 +216,14 @@ table.explorer td.bbb {
 
 #search-dropdown ul li {
 	list-style: none;
+	padding: .1em .3em;
 }
 
 #search-dropdown ul li:hover {
 	background-color: #eee;
 }
 
-#search-dropdown ul li + li {
-	border-top: 1px #666 solid;
-}
-
-#search-dropdown ul li.selected a::before {
+#search-dropdown ul li.selected::before {
 	content: '> ';
 	display: inline;
 	font-weight: bold;
@@ -165,4 +234,8 @@ table.explorer td.bbb {
 	padding: .3em;
 	color: #5f6368;
 	text-decoration: none;
+}
+
+#console-input {
+	pointer-events: auto;
 }

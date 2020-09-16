@@ -87,7 +87,7 @@ Schema.prototype.toTeXString = function (prec, root) {
 		].join('');
 	}
 
-	var id = `schema-${this.name}-${this.proved ? 'p' : 'np'}`;
+	var id = `schema-${this.proved ? 'p' : 'np'}-${this.name}`;
 
 	if (!root)
 		return `\\href{#${id}}\\mathsf{${this.escapeTeX(this.name)}}`;

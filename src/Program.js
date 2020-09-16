@@ -74,6 +74,35 @@ class Program {
 			}
 		});
 	}
+
+	evaluate(line) {
+		switch (line._type) {
+			case 'typedef':
+			case 'defv':
+			case 'defun':
+			case 'defruleset':
+			case 'defschema':
+			case 'tee':
+			case 'reduction':
+			case 'schemacall':
+			case 'var':
+			case 'schemaexpr':
+				return PegInterface[({
+					typedef: 'type',
+					defv: 'typevar',
+					defun: 'fun',
+					defruleset: 'ruleset',
+					defschema: 'schema',
+					tee: 'tee',
+					reduction: 'reduction',
+					schemacall: 'schemacall',
+					var: 'metavar',
+					schemaexpr: 'schemaexpr'
+				})[line._type]](line, this.scope);
+			default:
+				throw Error(`Unknown line type ${line._type}`);
+		}
+	}
 }
 
 Program.prototype.ExpressionResolver = ExpressionResolver;

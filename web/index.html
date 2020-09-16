@@ -8,6 +8,8 @@
 		<script src="./native.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/m42kup@0.2.1/dist/m42kup.min.js"></script>
+		<script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+		<script src="./getProofExplorer.js"></script>
 		<script src="./peg-0.10.0.min.js"></script>
 		<script>
 			m42kup.set({
@@ -16,9 +18,24 @@
 
 			$ = (q, n) => (n || document).querySelector(q);
 			$$ = (q, n) => (n || document).querySelectorAll(q);
+
+			var escapeHtml = s => (s + '').replace(/[&<>"']/g, m => ({
+					'&': '&amp;', '<': '&lt;', '>': '&gt;',
+					'"': '&quot;', "'": '&#39;'
+			})[m]);
+
+			var start, end;
+			console.log('--- PARSER GENERATION START ---');
+			start = new Date();
+			var parser = peg.generate(math.grammar, {cache: true});
+			var evalParser = peg.generate(math.grammar, {
+				cache: true,
+				allowedStartRules: ['evaluable']
+			})
+			end = new Date();
+			console.log('--- PARSER GENERATION END ---');
+			console.log(`Parser generation ended in ${end - start} ms`);
 		</script>
-		<script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
-		<script src="./getProofExplorer.js"></script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css">
 		<link rel="stylesheet" href="style.css">
@@ -36,15 +53,16 @@
 		</ul>
 		<h2>핫키</h2>
 		<ul>
-			<li><kbd>F</kbd>: 검색
 			<li><kbd>R</kbd>, <kbd>F7</kbd>: 로드, 다시 로드
+			<li><kbd>C</kbd>: 콘솔 여닫기
 			<li><kbd>Backspace</kbd>, <kbd>J</kbd>: 뒤로가기
 			<li><kbd>K</kbd>: 앞으로 가기
 		</ul>
-		<h2>우상단 컨트롤에 관하여</h2>
+		<h2>몇 가지 컨트롤에 관하여</h2>
 		<ul>
 			<li>검색창은 <kbd>F</kbd> 키를 눌러 활성화시킬 수 있으며 정의 및 스키마의 검색을 가능하게 합니다. <kbd>Tab</kbd> 및 <kbd>Shift</kbd> + <kbd>Tab</kbd> 및 <kbd>&darr;</kbd> 및 <kbd>&uarr;</kbd> 및 <kbd>Enter</kbd> 및 <kbd>Esc</kbd>를 써서 조작할 수 있으니 시도해 보세요.
 			<li>reload 버튼은 <kbd>R</kbd> 키를 눌러 클릭할 수 있으며 <a href="./code.math">code.math</a> 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.
+			<li>콘솔은 <kbd>C</kbd> 키를 눌러 열 수 있으며 REPL 기능을 제공합니다. <kbd>Ctrl</kbd> + <kbd>L</kbd>을 누르면 콘솔 내용이 지워집니다.
 		</ul>
 		<h2>연산자 우선순위</h2>
 		<div id="precedence">[로드하세요]</div>
@@ -55,14 +73,22 @@
 		<div id="search-background" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index:5000;display:none;"></div>
 		<div style="position:fixed;top:5px;right:5px;z-index:10000;">
 			<div>
-				<input id="search" type="text" placeholder="search">
 				<input id="reload" type="button" class="colored" value="" style="text-transform: uppercase;">
+				<input id="button-show-console" type="button" class="colored" value="console" style="text-transform: uppercase;">
 			</div>
-			<div id="search-dropdown" style="display: none;">
-				<ul></ul>
-			</div>
-			<script src="./search.js"></script>
 		</div>
+		<div class="console-wrap-wrap" style="display:none">
+		  <div class="console-wrap">
+		    <div id="console-display-wrap">
+		    	<table id="console-display" style="margin: 0"></table>
+		    	<div id="search-dropdown" style="display: none;">
+						<ul></ul>
+					</div>
+		    </div>
+	    	<textarea id="console-input" style="min-height: 100px;" placeholder="Shift + Enter to submit"></textarea>
+				<script src="./console.js"></script>
+	    </div>
+	  </div>
 		<div id="all">[로드하세요]</div>
 		<script>
 			var katexOpts = {
@@ -84,14 +110,6 @@
 
 				return ret;
 			}
-
-			var start, end;
-			console.log('--- PARSER GENERATION START ---');
-			start = new Date();
-			var parser = peg.generate(math.grammar, {cache: true});
-			end = new Date();
-			console.log('--- PARSER GENERATION END ---');
-			console.log(`Parser generation ended in ${end - start} ms`);
 
 			var loading = false;
 
@@ -208,7 +226,7 @@
 					var v = program.scope.schemaMap[k];
 
 					r = `<div class="block">`
-						+ `<p class="label"><a id="schema-${k}" href="#schema-${k}"><b>${
+						+ `<p class="label"><a id="schema-${v.proved ? 'p' : 'np'}-${k}" href="#schema-${v.proved ? 'p' : 'np'}-${k}"><b>${
 							(v.axiomatic ? 'axiomatic ' : '')
 							+ (v.native ? 'native ': '')
 						}schema</b> ${k}</a>${v.native ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
@@ -278,36 +296,6 @@
 
 				$('#all').innerHTML =
 					Object.keys(arr).sort((l, r) => l._id - r._id).map(k => arr[k]).join('');
-
-				[].forEach.call($$('.katex a'), a => {
-					var href = a.getAttribute('href');
-					var idMatch = href.match(/^#id-([0-9]+)$/);
-					var defMatch = href.match(/^#def-.+$/);
-					var schemaMatch = href.match(/^(#schema-.+?)-(p|np)$/);
-					var elseMatch = href.match(/^#(type|ruleset)-.+$/);
-
-					if (idMatch) {
-						a.dataset.orange = true;
-						a.title = 'id: ' + idMatch[1];
-					} else if (defMatch) {
-						a.dataset.blue = true;
-						a.title = a.getAttribute('href');
-					} else if (schemaMatch) {
-						var proved = schemaMatch[2] == 'p';
-
-						if (proved) {
-							a.dataset.green = true;	
-						} else {
-							a.dataset.red = true;
-						}
-						
-						a.setAttribute('href', schemaMatch[1]);
-						a.title = schemaMatch[1];
-					} else if (elseMatch) {
-						a.dataset.green = true;
-						a.title = elseMatch[0];
-					}
-				});
 
 				end = new Date();
 				console.log('--- HTML RENDER END ---');

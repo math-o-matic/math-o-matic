@@ -81,7 +81,7 @@ Schemacall.prototype.toIndentedString = function (indent) {
 Schemacall.prototype.toTeXString = function (prec, root) {
 	return (
 		this.schema.name
-			? `\\href{#schema-${this.schema.name}-${this.schema.proved ? 'p' : 'np'}}{\\textsf{${this.escapeTeX(this.schema.name)}}}`
+			? `\\href{#schema-${this.schema.proved ? 'p' : 'np'}-${this.schema.name}}{\\textsf{${this.escapeTeX(this.schema.name)}}}`
 			: this.schema.toTeXString(false)
 	) + `(${this.args.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')})`;
 };
