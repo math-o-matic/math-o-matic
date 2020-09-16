@@ -43,6 +43,8 @@ var listIndex = -1;
 var listlen = 10;
 var list = null;
 
+autosize($('#console-input'));
+
 $('#console-input').addEventListener('keydown', evt => {
 	if (evt.key == 'Escape') {
 		destroy();
