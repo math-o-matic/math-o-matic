@@ -466,11 +466,11 @@ keyword =
 	/ "type";
 
 ident =
-	$(!keyword $[a-zA-Z0-9_]+)
+	$(!keyword [a-zA-Z0-9_]+)
 
 documentation =
-	'"' b:(!'"' a:. {return a})* '"' {
-		return b.join('')
+	'"' b:$(!'"' a:. {return a})* '"' {
+		return b
 	}
 
 tex =
@@ -479,9 +479,9 @@ tex =
 	}
 
 comment =
-	"#" (!newline .)* _
-	/ "//" (!newline .)* _
-	/ "/*" (!"*/" .)* "*/" _
+	"#" (!newline .)*
+	/ "//" (!newline .)*
+	/ "/*" (!"*/" .)* "*/"
 
 newline =
 	"\r\n" / "\r" / "\n"
