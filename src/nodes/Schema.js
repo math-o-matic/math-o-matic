@@ -96,7 +96,7 @@ Schema.prototype.toTeXString = function (prec, root) {
 		return `\\href{#${id}}{\\mathsf{${this.escapeTeX(this.name)}}}`
 			+ '\\ (\\textrm{native})';
 
-	return `\\href{#${id}}{\\mathsf{${this.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}):`
+	return `\\href{#${id}}{\\mathsf{${this.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(this.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}):`
 				+ '\\\\\\quad' + ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
 };
 
