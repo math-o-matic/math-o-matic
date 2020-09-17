@@ -217,9 +217,9 @@ $('#console-input').addEventListener('keydown', evt => {
 	if (evt.key == 'Tab'
 			|| evt.key == 'ArrowDown'
 			|| evt.key == 'ArrowUp') {
-		evt.preventDefault();
-
 		if (list && list.length) {
+			evt.preventDefault();
+
 			var len = Math.min(list.length, listlen);
 			var downward = evt.key == 'ArrowDown'
 				|| evt.key == 'Tab' && !evt.shiftKey;
@@ -238,6 +238,8 @@ $('#console-input').addEventListener('keydown', evt => {
 				}
 			});
 		} else if (evt.key == 'Tab') {
+			evt.preventDefault();
+			
 			var selectionStart = evt.target.selectionStart;
 
 			evt.target.value = [

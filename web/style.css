@@ -171,6 +171,7 @@ table.explorer td.bbb {
 #console-display-wrap {
 	background: white;
 	flex-grow: 0;
+	flex-shrink: 1;
 	overflow: auto;
 	min-height: 0;
 	pointer-events: auto;
@@ -238,4 +239,5 @@ table.explorer td.bbb {
 
 #console-input {
 	pointer-events: auto;
+	flex-shrink: 0;
 }
