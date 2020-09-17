@@ -14,30 +14,46 @@ var codemirror = CodeMirror(el => {
 	viewportMargin: Infinity
 });
 
-codemirror.on('inputRead', function (editor, event) {
-	CodeMirror.showHint(codemirror, function () {
+var hintWorker = null;
+
+function hint() {
+	return new Promise((resolve, reject) => {
+		if (typeof program == 'undefined') reject();
+
 		const cursor = codemirror.getCursor();
 		var str = codemirror.getRange({line:0,ch:0}, cursor);
-
 		var keyword = str.match(/[a-z0-9_]*$/i);
-		if (!keyword) return;
+		if (!keyword) reject();
 		keyword = keyword[0];
 
-		return {
-			list: getList(keyword).map(({name, match}) => ({
-				text: name,
-				render($el, self, data) {
-					var $span = document.createElement('span');
-					$span.innerHTML = name.split('').map((e, i) => {
-						return match.includes(i) ? `<b>${e}</b>` : e;
-					}).join('');
-					$el.appendChild($span);
-				}
-			})),
-			from: codemirror.posFromIndex(codemirror.indexFromPos(cursor) - keyword.length),
-			to: cursor
+		var names = Object.keys(program.scope.defMap)
+			.concat(Object.keys(program.scope.schemaMap));
+
+		if (hintWorker) hintWorker.terminate();
+		hintWorker = new Worker('hintWorker.js');
+		hintWorker.postMessage([keyword, names]);
+		hintWorker.onmessage = e => {
+			console.log('hi');
+			resolve({
+				list: e.data.map(({name, match}) => ({
+					text: name,
+					render($el, self, data) {
+						var $span = document.createElement('span');
+						$span.innerHTML = name.split('').map((e, i) => {
+							return match.includes(i) ? `<b>${e}</b>` : e;
+						}).join('');
+						$el.appendChild($span);
+					}
+				})),
+				from: codemirror.posFromIndex(codemirror.indexFromPos(cursor) - keyword.length),
+				to: cursor
+			})
 		};
-	}, {
+	});
+}
+
+codemirror.on('inputRead', function (editor, event) {
+	CodeMirror.showHint(codemirror, hint, {
 		completeSingle: false,
 		extraKeys: {
 			'Shift-Tab': (cm, handle) => {
@@ -102,52 +118,6 @@ $('#console-input').addEventListener('keydown', evt => {
 		htmlify('Console was cleared');
 	}
 });
-
-var nmax = 10;
-
-function getList(value) {
-	value = value.toLowerCase().trim();
-
-	if (!value) return [];
-
-	if (typeof program == 'undefined') return [];
-
-	return Object.keys(program.scope.defMap)
-		.concat(Object.keys(program.scope.schemaMap))
-		.map(name => {
-			var lowername = name.toLowerCase();
-
-			var pname = 0;
-			var matchptrs = [];
-
-			for (var pval = 0; pval < value.length; pval++) {
-				if (pname >= name.length) return false;
-				
-				while (lowername[pname] != value[pval]) {
-					pname++;
-					if (pname >= name.length) return false;
-				}
-
-				matchptrs.push(pname);
-				pname++;
-			}
-
-			return {
-				name,
-				match: matchptrs
-			};
-		})
-		.filter(e => e)
-		.sort((a, b) => {
-			for (var i = 0; i < a.match.length; i++) {
-				if (a.match[i] != b.match[i])
-					return a.match[i] - b.match[i];
-			}
-
-			return a.name.localeCompare(b.name);
-		})
-		.slice(0, nmax);
-}
 
 function toggleConsole() {
 	var hidden = $('.console-wrap-wrap').style.display == 'none';
