@@ -241,3 +241,54 @@ table.explorer td.bbb {
 	pointer-events: auto;
 	flex-shrink: 0;
 }
+
+.CodeMirror {
+	z-index: 10000!important;
+	border: 1px #666 solid;
+	font-size: .85em;
+	font-family: 'Roboto Mono', monospace;
+	height: auto;
+	min-height: 90px;
+}
+
+.CodeMirror-focused .CodeMirror-selected {
+	background-color: #90CAF9;
+}
+
+.CodeMirror-scroll {
+	min-height: 50px;
+}
+
+.CodeMirror-readonly {
+	background-color: #f3f3f3;
+}
+
+.CodeMirror-placeholder {
+	color: #5f6368!important;
+}
+
+.CodeMirror-composing {
+	border-bottom: 1px solid;
+}
+
+.CodeMirror-cursors, .CodeMirror-cursor {
+	z-index: 10005!important;
+}
+
+.CodeMirror-hints {
+	z-index: 10010!important;
+	box-shadow: none;
+	border: 1px #666 solid;
+	border-radius: 0;
+	font-family: 'Roboto Mono', monospace;
+}
+
+.CodeMirror-hint {
+	border-radius: 0;
+	color: unset;
+}
+
+.CodeMirror-hint.CodeMirror-hint-active {
+	background-color: #f2f2f2;
+	color: unset;
+}
