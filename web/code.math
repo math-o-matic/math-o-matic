@@ -1148,7 +1148,7 @@ schema eq_reflexive(cls x) {
 	~ id(eq(x, x))
 }
 
-schema eq_symmetric(cls x, cls y) {
+schema eq_symmetric(cls x: @11, cls y: @12) {
 	id(eq(x, y)) ~
 	Ae1(
 		V((cls z) => { E(in(z, x), in(z, y)) }),

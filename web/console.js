@@ -88,7 +88,7 @@ $('#console-input').addEventListener('keydown', evt => {
 			} catch (e) {
 				htmlify(e, {error: true});
 			} finally {
-				codemirror.setValue('');
+				if (!evt.ctrlKey) codemirror.setValue('');
 			}
 
 			return;
