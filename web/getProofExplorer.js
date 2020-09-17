@@ -1,10 +1,13 @@
-function getProofExplorer(expr) {
+function getProofExplorer(name) {
+	if (!program) return;
+
 	var ctr = 0;
 
 	var DIAMOND = '&#x25C7;',
 		DOWN = '&#x25BC;',
 		UP = '&#x25B2;';
 
+	var expr = program.scope.schemaMap[name].expr;
 
 	var ncols = (function recurse(expr) {
 		switch (expr._type) {

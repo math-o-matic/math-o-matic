@@ -49,7 +49,7 @@
 		<h1>math-o-matic</h1>
 		<a href="https://github.com/logico-philosophical/math-o-matic">repo</a> &middot; <a href="../docs/build/index.html">docs</a>
 		<h2>개요</h2>
-		이 페이지는 math-o-matic으로 만들고 있는 공리계를 보여 줍니다. 우상단의 로드 버튼을 눌러서 공리계를 로드하세요. 장치의 계산 성능에 따라 몇십 초 가량의 시간이 걸릴 수 있습니다.
+		이 페이지는 math-o-matic으로 만들고 있는 공리계를 보여 줍니다. 우상단의 로드 버튼을 눌러서 공리계를 로드하세요. 장치의 계산 성능에 따라 수 초 가량의 시간이 걸릴 수 있습니다.
 		<h2>로컬에서 실행하는 방법</h2>
 		<p>로컬에서 file 스킴으로 페이지를 불러왔을 경우 CORS 정책에 의해 페이지가 작동하지 않을 수 있습니다. 이때 다음과 같은 해결책이 있습니다.</p>
 		<ul>
@@ -58,6 +58,7 @@
 		</ul>
 		<h2>핫키</h2>
 		<ul>
+			<li><kbd>X</kbd>: 증명 전부 펼치기
 			<li><kbd>R</kbd>, <kbd>F7</kbd>: 로드, 다시 로드
 			<li><kbd>C</kbd>: 콘솔 여닫기
 			<li><kbd>Backspace</kbd>, <kbd>J</kbd>: 뒤로가기
@@ -65,6 +66,7 @@
 		</ul>
 		<h2>몇 가지 컨트롤에 관하여</h2>
 		<ul>
+			<li>expand all 버튼은 <kbd>X</kbd> 키를 눌러 클릭할 수 있으며 증명탐색을 전부 활성화합니다. 성능에 부정적 영향이 있을 수 있습니다.
 			<li>reload 버튼은 <kbd>R</kbd> 키를 눌러 클릭할 수 있으며 <a href="./code.math">code.math</a> 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.
 			<li>콘솔은 <kbd>C</kbd> 키를 눌러 열 수 있으며 REPL 기능을 제공합니다. <kbd>Ctrl</kbd> + <kbd>L</kbd>을 누르면 콘솔 내용이 지워집니다.
 		</ul>
@@ -77,6 +79,7 @@
 		<div id="search-background" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index:5000;display:none;"></div>
 		<div style="position:fixed;top:5px;right:5px;z-index:10000;">
 			<div>
+				<input id="button-expand-all" type="button" class="colored" value="expand all" style="text-transform: uppercase;">
 				<input id="reload" type="button" class="colored" value="" style="text-transform: uppercase;">
 				<input id="button-show-console" type="button" class="colored" value="console" style="text-transform: uppercase;">
 			</div>
@@ -113,6 +116,8 @@
 
 				return ret;
 			}
+
+			var expansionList = [];
 
 			var loading = false;
 
@@ -240,7 +245,11 @@
 								? v.axiomatic
 									? ''
 									: '<p class="label"><b>proof explorer</b></p>'
-										+ `<p>${getProofExplorer(v.expr)}</p>`
+										+ (
+											expansionList.includes(k)
+												? `<p>${getProofExplorer(k)}</p>`
+												: `<p><input type="button" value="show" class="colored button-expand-proof" onclick="this.parentElement.innerHTML = getProofExplorer('${k}');expansionList.push('${k}');"></p>`
+										)
 								: ''
 						)
 
@@ -249,15 +258,6 @@
 							v.doc
 							? `<p class="description">${m42kup.render(v.doc)}</p>`
 							: '<p class="description"><i>No description provided.</i></p>'
-						)
-
-						+ (
-							v.native || v.params.every(p => !p.guess)
-								? ''
-								: '<p class="label"><b>guesses</b></p>'
-									+ `<ul>${v.params.filter(p => p.guess).map(p => {
-										return `<li>${p.name}: @${p.guess}</li>`;
-									}).join('')}</ul>`
 						)
 
 						+ `</div>`;
@@ -324,6 +324,25 @@
 				history.forward();
 			});
 
+			hotkeys('x', (evt, handler) => {
+				evt.preventDefault();
+				expandAll();
+			});
+
+			function expandAll() {
+				$('#button-expand-all').value = 'expanding...';
+
+				setTimeout(() => {
+					$$('.button-expand-proof').forEach($ => {
+						$.click();
+					});
+
+					$('#button-expand-all').value = 'expand all';
+				}, 0);
+			}
+
+			$('#button-expand-all').addEventListener('click', expandAll);
+
 			var reloading = false;
 			$('#reload').value = 'load';
 
@@ -332,23 +351,24 @@
 				reloading = true;
 
 				$('#reload').value = 'loading...';
-
-				var xhr = new XMLHttpRequest();
-				xhr.addEventListener('load', () => {
-					try {
-						load(xhr.responseText);
-					} finally {
+				setTimeout(() => {
+					var xhr = new XMLHttpRequest();
+					xhr.addEventListener('load', () => {
+						try {
+							load(xhr.responseText);
+						} finally {
+							$('#reload').value = 'reload';
+							reloading = false;
+						}
+					});
+					xhr.addEventListener('error', () => {
+						console.log('LOAD FAILED');
 						$('#reload').value = 'reload';
 						reloading = false;
-					}
-				});
-				xhr.addEventListener('error', () => {
-					console.log('LOAD FAILED');
-					$('#reload').value = 'reload';
-					reloading = false;
-				});
-				xhr.open('GET', './code.math');
-				xhr.send();
+					});
+					xhr.open('GET', './code.math');
+					xhr.send();
+				}, 0);
 			}
 
 			$('#reload').addEventListener('click', reload);

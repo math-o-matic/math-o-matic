@@ -33,7 +33,6 @@ function hint() {
 		hintWorker = new Worker('hintWorker.js');
 		hintWorker.postMessage([keyword, names]);
 		hintWorker.onmessage = e => {
-			console.log('hi');
 			resolve({
 				list: e.data.map(({name, match}) => ({
 					text: name,
