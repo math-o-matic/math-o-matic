@@ -123,7 +123,7 @@ function toggleConsole() {
 	$('.console-wrap-wrap').style.display = hidden ? 'flex' : 'none';
 
 	if (hidden) {
-		$('#console-input').focus();
+		codemirror.focus();
 		codemirror.refresh();
 	}
 }
