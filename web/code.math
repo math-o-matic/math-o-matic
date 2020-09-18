@@ -252,7 +252,7 @@ schema contrapose_u(st p: @11, st q: @1r) {
 }
 
 "후건 부정(modus tollens)."
-schema mt(st p, st q) {
+schema mt(st p: @11, st q: @21) {
 	mpu[contrapose(p, q)]
 }
 
@@ -450,6 +450,36 @@ pr Ef(pr f, pr g) {
 $\left(<<\neg>>#1\right)$
 pr Nf(pr f) {
 	(cls z) => { N(f(z)) }
+}
+
+"pr2 타입을 위한 A."
+$\left(#1<<\land>>#2\right)$
+pr2 Af2(pr2 f, pr2 g) {
+	(cls x, cls y) => { A(f(x, y), g(x, y)) }
+}
+
+"pr2 타입을 위한 O."
+$\left(#1<<\lor>>#2\right)$
+pr2 Of2(pr2 f, pr2 g) {
+	(cls x, cls y) => { O(f(x, y), g(x, y)) }
+}
+
+"pr2 타입을 위한 I."
+$\left(#1<<\to>>#2\right)$
+pr2 If2(pr2 f, pr2 g) {
+	(cls x, cls y) => { I(f(x, y), g(x, y)) }
+}
+
+"pr2 타입을 위한 E."
+$\left(#1<<\leftrightarrow>>#2\right)$
+pr2 Ef2(pr2 f, pr2 g) {
+	(cls x, cls y) => { E(f(x, y), g(x, y)) }
+}
+
+"pr2 타입을 위한 N."
+$\left(<<\neg>>#1\right)$
+pr2 Nf2(pr2 f) {
+	(cls x, cls y) => { N(f(x, y)) }
 }
 
 "보편 양화(universal quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다]."
@@ -815,7 +845,35 @@ schema Xi2(pr2 f, cls x, cls y) {
 "X를 위한 mp."
 schema mpX(pr f: @11, pr g: @212) {
 	X(f), V(If(f, g)) |-
-		id(X(g))[mtV(Nf(g), Nf(f))[contrapose_V[V(If(f, g))], X(f)]]
+		NNe[Niu[
+			N(X(g)) |- Fi[
+				Vi(Nf(f))[(cls x) => {
+					mt(f(x), g(x))[
+						Ve(?, x)[V(If(f, g))],
+						Ve(?, x)[NNe[N(X(g))]]
+					]
+				}],
+				X(f)
+			]
+		]]
+}
+
+"X2를 위한 mp."
+schema mpX2(pr2 f: @11, pr2 g: @212) {
+	X2(f), V2(If2(f, g)) |-
+		NNe[Niu[N(X2(g)) |- Fi[
+			Vi[(cls x) => {
+				id(N(X((cls y) => {f(x, y)})))[NNi[Vi[(cls y) => {
+					mt[
+						Ve2(?, x, y)[V2((cls x, cls y) => {
+							I(f(x, y), g(x, y))
+						})],
+						Ve(?, y)[NNe(V((cls y) => {N(g(x, y))}))[Ve(?, x)[NNe[N(X2(g))]]]]
+					]
+				}]]]
+			}],
+			X2(f)
+		]]]
 }
 
 "mpX의 더 강력한 버전."
@@ -899,11 +957,28 @@ schema XA(pr f, pr g) {
 	|- cp[XAm(f, g)]
 }
 
+schema X2Am(pr2 f, pr2 g) {
+	X2(Af2(f, g)) |-
+		Ai[
+			mpX2[
+				X2(Af2(f, g)),
+				id(V2(If2(Af2(f, g), f)))[Vi2[(cls x, cls y) => {
+					cp[A(f(x, y), g(x, y)) |-
+						Ae1[A(f(x, y), g(x, y))]]
+				}]]
+			],
+			mpX2[
+				X2(Af2(f, g)),
+				id(V2(If2(Af2(f, g), g)))[Vi2[(cls x, cls y) => {
+					cp[A(f(x, y), g(x, y)) |-
+						Ae2[A(f(x, y), g(x, y))]]
+				}]]
+			]
+		]
+}
+
 schema X2A(pr2 f, pr2 g) {
-	|- I(
-		X2((cls x, cls y) => {A(f(x, y), g(x, y))}),
-		A(X2(f), X2(g))
-	)
+	|- cp[X2Am(f, g)]
 }
 
 schema AeX1(pr f, pr g) {
