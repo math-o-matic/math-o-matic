@@ -406,6 +406,14 @@ schema O2Ai(st p: @11, st q: @12, st r: @22) {
 	]]
 }
 
+schema I_distribute_left(st p: @11, st q: @121, st r: @122) {
+	I(p, I(q, r)) |-
+		cp[
+			I(p, q) |-
+				cp[p |- mp[mp[p, I(p, q)], mp[p, I(p, I(q, r))]]]
+		]
+}
+
 #################################
 ######## PREDICATE LOGIC ########
 #################################
@@ -3019,20 +3027,68 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 "[$\gamma\in\mathscr A]가 되기 위한 두 번째 조건."
 schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
-		in(v2(ord_zero(), c), define_recursively(a, c, f))
+		id(in(v2(ord_zero(), c), define_recursively(a, c, f)))[
+			setbuilder_i((cls z) => {
+				V(($G$ cls g) => {
+					I(in(g, recursion_set(a, c, f)), in(z, g))
+				})
+			}, v2(ord_zero(), c))[
+				v2_is_set[
+				set_i[zero_in_omega[]],
+				set_i[in(c, a)]
+			],
+				Vi[($G$ cls g) => {
+					cp[in(g, recursion_set(a, c, f)) |- Ae1[Ae2[setbuilder_e[in(g, recursion_set(a, c, f))]]]]
+				}]
+			]
+		]
 }
 
 "[$\gamma\in\mathscr A]가 되기 위한 세 번째 조건."
 schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
-		Vin(omega(), (cls n) => {
+		id(Vin(omega(), (cls n) => {
 			Vin(a, (cls x) => {
 				I(
 					in(v2(n, x), define_recursively(a, c, f)),
 					in(v2(successor(n), fcall(f, x)), define_recursively(a, c, f))
 				)
 			})
-		})
+		}))[Vi[(cls n) => {
+			cp[in(n, omega()) |-
+				Vi[(cls x) => {
+					cp[in(x, a) |-
+						cp[in(v2(n, x), define_recursively(a, c, f)) |-
+							id(in(v2(successor(n), fcall(f, x)), define_recursively(a, c, f)))[setbuilder_i((cls z) => {
+								V(($G$ cls g) => {
+									I(in(g, recursion_set(a, c, f)), in(z, g))
+								})
+							}, v2(successor(n), fcall(f, x)))[
+								v2_is_set[
+									successor_is_set[set_i[in(n, omega())]],
+									set_i[fcall_in_codomain[is_function(f, a, a), in(x, a)]]
+								],
+								mp[
+									setbuilder_e[in(v2(n, x), define_recursively(a, c, f))],
+									VIm(
+										($G$ cls g) => {
+											I(in(g, recursion_set(a, c, f)), in(v2(n, x), g))
+										},
+										($G$ cls g) => {
+											I(in(g, recursion_set(a, c, f)), in(v2(successor(n), fcall(f, x)), g))
+										}
+									)[Vi[($G$ cls g) => {
+										I_distribute_left[cp[in(g, recursion_set(a, c, f)) |-
+											mp[in(x, a), Ve(?, x)[mp[
+												in(n, omega()),
+												Ve(?, n)[Ae2[Ae2[setbuilder_e[in(g, recursion_set(a, c, f))]]]]
+											]]]
+										]]
+									}]]
+								]
+							]]]]
+				}]]
+		}]]
 }
 
 "[$\gamma]가 함수가 되기 위한 두 번째 조건."
