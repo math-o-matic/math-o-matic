@@ -56,10 +56,17 @@ function makecall(a, args) {
 ER.substitute = function (expr, map) {
 	switch (expr._type) {
 		case 'funcall':
-			return new Funcall({
-				fun: ER.substitute(expr.fun, map),
-				args: expr.args.map(arg => ER.substitute(arg, map))
-			});
+			var fun = ER.substitute(expr.fun, map),
+				args = expr.args.map(arg => ER.substitute(arg, map));
+
+			if (fun._type == 'schema') {
+				return new Schemacall({
+					schema: fun,
+					args
+				});
+			}
+
+			return new Funcall({ fun, args });
 		case 'fun':
 			if (!expr.expr) return map.get(expr) || expr;
 
