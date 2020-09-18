@@ -2468,7 +2468,7 @@ schema cartesian_in_i(cls x: @12, cls y: @22, cls a: @11, cls b: @21) {
 
 [$V\times V]의 임의 부분집합으로 정의해도 좋을 것이다."
 $\left(<<\mathop\mathrm{relation}>> #1\right)$
-st rel($R$ cls r) {
+st is_rel($R$ cls r) {
 	Vin(r, (cls z) => {
 		X2((cls x, cls y) => {
 			eq(z, v2(x, y))
@@ -2553,22 +2553,22 @@ schema cartesian_is_rel(cls x, cls y) {
 			)]
 		]
 	}]
-	~ id(rel(cartesian(x, y)))
+	~ id(is_rel(cartesian(x, y)))
 }
 
 schema rel_subset_is_rel(cls x: @11, cls y: @12) {
-	(subseteq(x, y), rel(y) |- Vin_subset(x, y, (cls z) => {
+	(subseteq(x, y), is_rel(y) |- Vin_subset(x, y, (cls z) => {
 		X2((cls a, cls b) => {
 			eq(z, v2(a, b))
 		})
-	})[subseteq(x, y), rel(y)]) ~ id(rel(x))
+	})[subseteq(x, y), is_rel(y)]) ~ id(is_rel(x))
 }
 
 "이항관계를 위한 V.
 
 [$R]이 이항관계일 때 임의의 [$(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
 schema rel_V(pr f, cls x) {
-	rel(x), V2((cls a, cls b) => {
+	is_rel(x), V2((cls a, cls b) => {
 		I(
 			in(v2(a, b), x),
 			f(v2(a, b))
@@ -2628,7 +2628,7 @@ schema cartesian_is_set(cls x: @11, cls y: @21) {
 }
 
 schema rel_composite_associative(cls x, cls y, cls z) {
-	rel(x), rel(y), rel(z) |- eq(
+	is_rel(x), is_rel(y), is_rel(z) |- eq(
 		rel_composite(rel_composite(x, y), z),
 		rel_composite(x, rel_composite(y, z))
 	)
