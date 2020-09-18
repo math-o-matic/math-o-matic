@@ -46,6 +46,25 @@
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
+		<div id="search-background" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index:5000;display:none;"></div>
+		<div style="position:fixed;top:5px;right:5px;z-index:10000;">
+			<div>
+				<input id="button-expand-all" type="button" class="colored" value="expand all" style="text-transform: uppercase;">
+				<input id="reload" type="button" class="colored" value="" style="text-transform: uppercase;">
+				<input id="button-show-console" type="button" class="colored" value="console" style="text-transform: uppercase;">
+			</div>
+		</div>
+		<div class="console-wrap-wrap" style="display:none">
+		  <div class="console-wrap">
+		    <div id="console-display-wrap">
+		    	<table id="console-display" style="margin: 0"></table>
+		    	<div id="search-dropdown" style="display: none;">
+						<ul></ul>
+					</div>
+		    </div>
+	    	<script src="./console.js"></script>
+	    </div>
+	  </div>
 		<h1>math-o-matic</h1>
 		<a href="https://github.com/logico-philosophical/math-o-matic">repo</a> &middot; <a href="../docs/build/index.html">docs</a>
 		<h2>개요</h2>
@@ -73,28 +92,10 @@
 		<h2>연산자 우선순위</h2>
 		<div id="precedence">[로드하세요]</div>
 		<h2>목록</h2>
+		<div id="summary"></div>
 		<p>이하의 내용은
 			<a href="./code.math">code.math</a> 및
 			<a href="./native.js">native.js</a>에 있는 코드를 렌더링 한 것입니다.</p>
-		<div id="search-background" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index:5000;display:none;"></div>
-		<div style="position:fixed;top:5px;right:5px;z-index:10000;">
-			<div>
-				<input id="button-expand-all" type="button" class="colored" value="expand all" style="text-transform: uppercase;">
-				<input id="reload" type="button" class="colored" value="" style="text-transform: uppercase;">
-				<input id="button-show-console" type="button" class="colored" value="console" style="text-transform: uppercase;">
-			</div>
-		</div>
-		<div class="console-wrap-wrap" style="display:none">
-		  <div class="console-wrap">
-		    <div id="console-display-wrap">
-		    	<table id="console-display" style="margin: 0"></table>
-		    	<div id="search-dropdown" style="display: none;">
-						<ul></ul>
-					</div>
-		    </div>
-	    	<script src="./console.js"></script>
-	    </div>
-	  </div>
 		<div id="all">[로드하세요]</div>
 		<script>
 			var katexOpts = {
@@ -185,6 +186,20 @@
 				</table>
 
 				<p>위 표는 자동으로 생성되었습니다.</p>`;
+
+				var axiomSchemaList = Object.keys(program.scope.schemaMap)
+						.filter(n => program.scope.schemaMap[n].axiomatic);
+
+				var notProvedList = Object.keys(program.scope.schemaMap)
+						.filter(n => !program.scope.schemaMap[n].proved);
+
+				$('#summary').innerHTML = `
+				<ul>
+					<li><b>공리 스키마</b>(${axiomSchemaList.length}): ${
+						axiomSchemaList.map(n => `<a href="#schema-p-${n}">${n}</a>`).join(', ')}
+					<li><b>증명되지 않은 스키마</b>(${notProvedList.length}): ${
+						notProvedList.map(n => `<a href="#schema-np-${n}">${n}</a>`).join(', ')}
+				</ul>`;
 
 				var arr = {}, r;
 
