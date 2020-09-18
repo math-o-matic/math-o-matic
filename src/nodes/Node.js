@@ -5,6 +5,10 @@ var ctr = 0;
 function Node(scope) {
 	this._id = ++ctr;
 	this.scope = scope || null;
+
+	if (this.scope && this.name) {
+		this.scope.name = this.name;
+	}
 }
 
 Node.prototype.error = function (message) {

@@ -149,6 +149,7 @@ defschema =
 		{return p || []}
 	)
 	"{" _
+	defuns:(df:defun _ {return df})*
 	expr:metaexpr _
 	"}"
 	{
@@ -159,6 +160,7 @@ defschema =
 			name,
 			native: false,
 			params,
+			defuns,
 			expr,
 			location: location()
 		}
@@ -332,7 +334,10 @@ schemaexpr =
 		{return p || []}
 	)
 	"=>" _
-	"{" _ expr:metaexpr _ "}"
+	"{" _
+	defuns: (df:defun _ {return df})*
+	expr:metaexpr _
+	"}"
 	{
 		return {
 			_type: 'schemaexpr',
@@ -340,6 +345,7 @@ schemaexpr =
 			axiomatic: false,
 			name: null,
 			params,
+			defuns,
 			expr,
 			location: location()
 		}

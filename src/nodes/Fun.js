@@ -114,9 +114,27 @@ Fun.prototype.funcallToTeXString = function (args, prec) {
 		return this.makeTeX('def-' + this.name, args, prec);
 	}
 
+	function getNamespace() {
+		if (!this.scope) return '';
+
+		var scope = this.scope.parent;
+
+		var namespace = '';
+
+		while (scope.parent != null) {
+			namespace = (scope.name || '<anonymous>') + '.' + namespace;
+			scope = scope.parent;
+		}
+
+		return namespace;
+	}
+
+	var name = null;
+	if (this.name) name = getNamespace.call(this) + this.name;
+
 	return `${!this.name
 			? this.toTeXString(false)
-			: `\\href{#def-${this.name}}{${this.name.length == 1 ? this.escapeTeX(this.name) : `\\mathrm{${this.escapeTeX(this.name)}}`}}`}`
+			: `\\href{#def-${name}}{${this.name.length == 1 ? this.escapeTeX(this.name) : `\\mathrm{${this.escapeTeX(this.name)}}`}}`}`
 		+ `(${args.join(', ')})`;
 };
 

@@ -12,6 +12,8 @@ var Schemacall = require('./nodes/Schemacall');
 var StackTrace = require('./StackTrace');
 
 function Scope(parent, trace) {
+	this.name = null;
+	
 	this.typedefMap = {};
 	this.defMap = {};
 	this.schemaMap = {};
