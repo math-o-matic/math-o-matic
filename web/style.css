@@ -154,7 +154,7 @@ table.explorer td.bbb {
 	bottom: 5px;
 	right: 5px;
 	min-width: 300px;
-	max-width: calc(100% - 10px);
+	max-width: calc(100% - 110px);
 	font-family: 'Roboto Mono', monospace;
 	pointer-events: none;
 }
@@ -249,6 +249,7 @@ table.explorer td.bbb {
 	font-family: 'Roboto Mono', monospace;
 	height: auto;
 	min-height: 90px;
+	max-height: 50%;
 }
 
 .CodeMirror-focused .CodeMirror-selected {

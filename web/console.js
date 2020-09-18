@@ -1,5 +1,7 @@
 (() => {
 
+CodeMirror.keyMap.basic['Shift-Tab'] = 'indentLess';
+
 var codemirror = CodeMirror(el => {
 	el.id = 'console-input';
 	$('.console-wrap').appendChild(el);
