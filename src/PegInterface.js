@@ -315,23 +315,9 @@ PI.schema = function (obj, parentScope, nativeMap) {
 		return scope.addTypevar(tv);
 	});
 
-	var defuns = obj.defuns.map(defunobj => {
-		var fun = PI.fun(defunobj, scope);
-
-		if (scope.hasOwnTypevar(fun.name)) {
-			throw fun.scope.error(`Definition ${fun.name} has already been declared`);
-		}
-
-		if (!fun.expr) {
-			throw fun.scope.error(`Cannot declare a primitive definition in the schema scope`);
-		}
-
-		return scope.addFun(fun);
-	});
-
 	var expr = PI.metaexpr(obj.expr, scope);
 
-	return new Schema({axiomatic, name, params, defuns, expr, doc: obj.doc}, scope);
+	return new Schema({axiomatic, name, params, expr, doc: obj.doc}, scope);
 };
 
 PI.schemacall = function (obj, parentScope) {

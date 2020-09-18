@@ -4,8 +4,7 @@ var MetaType = require('./MetaType');
 
 var ExpressionResolver = require('../ExpressionResolver');
 
-function Schema({axiomatic, /* nullable */ name, native, params, defuns, expr, doc}, scope) {
-	this.name = name;
+function Schema({axiomatic, /* nullable */ name, native, params, expr, doc}, scope) {
 	Node.call(this, scope);
 
 	this.doc = doc;
@@ -22,10 +21,10 @@ function Schema({axiomatic, /* nullable */ name, native, params, defuns, expr, d
 	}
 
 	this.axiomatic = axiomatic;
+	this.name = name;
 
 	if (native) {
 		this.native = native;
-		this.defuns = [];
 		this.expr = null;
 		this.type = null;
 	} else {
@@ -34,7 +33,6 @@ function Schema({axiomatic, /* nullable */ name, native, params, defuns, expr, d
 			throw this.error('Assertion failed');
 
 		this.params = params;
-		this.defuns = defuns || [];
 		this.expr = expr;
 		this.type = new (expr.type._type == 'type' ? Type : MetaType)({
 			functional: true,
@@ -84,7 +82,7 @@ Schema.prototype.toTeXString = function (prec, root) {
 				? this.params[0].toTeXString()
 				: `\\left(${this.params.map(e => e.toTeXString(this.PREC_COMMA)).join(', ')}\\right)`
 			),
-			`\\mapsto ${this.defuns.length ? `\\langle ${this.defuns.map(fun => fun.toTeXString(this.PREC_COMMA, true)).join(', ')}\\rangle` : ''}${this.expr.toTeXString(false)}`,
+			`\\mapsto ${this.expr.toTeXString(false)}`,
 			(this.shouldConsolidate(prec) ? '\\right)' : '')
 		].join('');
 	}
@@ -99,8 +97,7 @@ Schema.prototype.toTeXString = function (prec, root) {
 			+ '\\ (\\textrm{native})';
 
 	return `\\href{#${id}}{\\mathsf{${this.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(this.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}):`
-				+ '\\\\\\quad' + ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true)
-				+ (this.defuns.length ? `\\\\\\quad\\text{where}\\\\\\qquad ${this.defuns.map(fun => fun.toTeXString(this.PREC_COMMA, true)).join(',\\\\\\qquad ')}` : '');
+				+ '\\\\\\quad' + ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
 };
 
 module.exports = Schema;
