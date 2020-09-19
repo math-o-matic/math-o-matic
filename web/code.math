@@ -1193,26 +1193,6 @@ schema self_subseteq_self(cls x) {
 	}]]
 }
 
-schema in_eq_1(cls x: @12, cls y: @22, cls z: @11) {
-	in(z, x), eq(x, y) |-
-		mp[
-			in(z, x),
-			eq_Ae1_Ve_Ee1(x, y, z)[
-				eq(x, y)
-			]
-		]
-}
-
-schema in_eq_2(cls x: @21, cls y: @22, cls z: @11) {
-	in(z, y), eq(x, y) |-
-		mp[
-			in(z, y),
-			eq_Ae1_Ve_Ee2(x, y, z)[
-				eq(x, y)
-			]
-		]
-}
-
 schema eq_Ae2(cls x, cls y) {
 	id(eq(x, y)) ~
 	Ae2(
@@ -1235,6 +1215,50 @@ schema eq_Ae2_Ve_Ee1(cls x, cls y, cls z) {
 
 schema eq_Ae2_Ve_Ee1_c(cls x, cls y, cls z) {
 	|- cp[eq_Ae2_Ve_Ee1(x, y, z)]
+}
+
+schema eq_Ae2_Ve_Ee2(cls x, cls y, cls z) {
+	eq(x, y) |- Ee2[eq_Ae2_Ve(x, y, z)[eq(x, y)]]
+}
+
+schema in_eq_left_1(cls x: @11, cls y: @22, cls z: @12) {
+	in(x, z), eq(x, y) |-
+		mp[
+			in(x, z),
+			eq_Ae2_Ve_Ee1(x, y, z)[
+				eq(x, y)
+			]
+		]
+}
+
+schema in_eq_left_2(cls x: @21, cls y: @22, cls z: @12) {
+	in(y, z), eq(x, y) |-
+		mp[
+			in(y, z),
+			eq_Ae2_Ve_Ee2(x, y, z)[
+				eq(x, y)
+			]
+		]
+}
+
+schema in_eq_right_1(cls x: @12, cls y: @22, cls z: @11) {
+	in(z, x), eq(x, y) |-
+		mp[
+			in(z, x),
+			eq_Ae1_Ve_Ee1(x, y, z)[
+				eq(x, y)
+			]
+		]
+}
+
+schema in_eq_right_2(cls x: @21, cls y: @22, cls z: @11) {
+	in(z, y), eq(x, y) |-
+		mp[
+			in(z, y),
+			eq_Ae1_Ve_Ee2(x, y, z)[
+				eq(x, y)
+			]
+		]
 }
 
 schema swapV_1(pr f, pr g, pr h, cls w) {
@@ -1758,7 +1782,7 @@ schema self_in_singleton(cls x: @11) {
 
 schema singleton_eq_e(cls x: @11, cls y: @21) {
 	set(x), set(y), eq(singleton(x), singleton(y)) |-
-		setbuilder_e[in_eq_1[self_in_singleton[set(x)], eq(singleton(x), singleton(y))]]
+		setbuilder_e[in_eq_right_1[self_in_singleton[set(x)], eq(singleton(x), singleton(y))]]
 }
 
 "doubleton class."
@@ -1799,7 +1823,7 @@ schema doubleton_in_2(cls x, cls y) {
 
 schema doubleton_eq_e1(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(x), eq(doubleton(x, y), doubleton(u, v)) |-
-		setbuilder_e[in_eq_1(doubleton(x, y), doubleton(u, v), x)[
+		setbuilder_e[in_eq_right_1(doubleton(x, y), doubleton(u, v), x)[
 			doubleton_in_1(x, y)[set(x)],
 			eq(doubleton(x, y), doubleton(u, v))
 		]]
@@ -1807,7 +1831,7 @@ schema doubleton_eq_e1(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 
 schema doubleton_eq_e2(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(y), eq(doubleton(x, y), doubleton(u, v)) |-
-		setbuilder_e[in_eq_1(doubleton(x, y), doubleton(u, v), y)[
+		setbuilder_e[in_eq_right_1(doubleton(x, y), doubleton(u, v), y)[
 			doubleton_in_2(x, y)[set(y)],
 			eq(doubleton(x, y), doubleton(u, v))
 		]]
@@ -1815,7 +1839,7 @@ schema doubleton_eq_e2(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 
 schema doubleton_eq_e3_flip(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(u), eq(doubleton(x, y), doubleton(u, v)) |-
-		setbuilder_e[in_eq_2(doubleton(x, y), doubleton(u, v), u)[
+		setbuilder_e[in_eq_right_2(doubleton(x, y), doubleton(u, v), u)[
 			doubleton_in_1(u, v)[set(u)],
 			eq(doubleton(x, y), doubleton(u, v))
 		]]
@@ -1832,7 +1856,7 @@ schema doubleton_eq_e3(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 
 schema doubleton_eq_e4_flip(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(v), eq(doubleton(x, y), doubleton(u, v)) |-
-		setbuilder_e[in_eq_2(doubleton(x, y), doubleton(u, v), v)[
+		setbuilder_e[in_eq_right_2(doubleton(x, y), doubleton(u, v), v)[
 			doubleton_in_2(u, v)[set(v)],
 			eq(doubleton(x, y), doubleton(u, v))
 		]]
@@ -2032,10 +2056,10 @@ schema doubleton_to_cup(cls x: @121, cls y: @122, cls z: @11, cls w: @21) {
 			
 		Oe[
 			setbuilder_e[in(z, doubleton(x, y))],
-			cp[eq(z, x) |- cupi1(?, y)[in_eq_1[
+			cp[eq(z, x) |- cupi1(?, y)[in_eq_right_1[
 				in(w, z), eq(z, x)
 			]]],
-			cp[eq(z, y) |- cupi2(x, ?)[in_eq_1[
+			cp[eq(z, y) |- cupi2(x, ?)[in_eq_right_1[
 				in(w, z), eq(z, y)
 			]]]
 		]
@@ -2084,7 +2108,7 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 							}, x)[
 								Ai[
 									doubleton_in_1(x, y)[set(x)],
-									in_eq_1[in(w, x), eq_reflexive(x)[]]
+									in_eq_right_1[in(w, x), eq_reflexive(x)[]]
 								]
 							]
 					],
@@ -2098,7 +2122,7 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 							}, y)[
 								Ai[
 									doubleton_in_2(x, y)[set(y)],
-									in_eq_1[in(w, y), eq_reflexive(y)[]]
+									in_eq_right_1[in(w, y), eq_reflexive(y)[]]
 								]
 							]
 					]
@@ -2407,22 +2431,22 @@ schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 			cp[
 				A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u))) |-
 					Ai[
-						eq_symmetric[setbuilder_e[in_eq_2[
+						eq_symmetric[setbuilder_e[in_eq_right_2[
 							doubleton_in_1(u, v)[set(u)],
 							Ae1[A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u)))]
 						]]],
 						eq_transitive_13[
 							eq_transitive_1[
-								eq_symmetric[setbuilder_e[in_eq_2[
+								eq_symmetric[setbuilder_e[in_eq_right_2[
 									doubleton_in_1(u, v)[set(u)],
 									Ae1[A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u)))]
 								]]],
-								eq_symmetric[setbuilder_e[in_eq_2[
+								eq_symmetric[setbuilder_e[in_eq_right_2[
 									doubleton_in_2(u, v)[set(v)],
 									Ae1[A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u)))]
 								]]]
 							],
-							eq_symmetric[setbuilder_e[in_eq_1[
+							eq_symmetric[setbuilder_e[in_eq_right_1[
 								doubleton_in_2(x, y)[set(y)],
 								Ae2[A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u)))]
 							]]]
@@ -2605,49 +2629,6 @@ schema rel_subset_is_rel(cls x: @11, cls y: @12) {
 			eq(z, v2(a, b))
 		})
 	})[subseteq(x, y), is_rel(y)]) ~ id(is_rel(x))
-}
-
-"이항관계를 위한 V.
-
-[$R]이 이항관계일 때 임의의 [$(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
-schema rel_V(pr f, cls x) {
-	is_rel(x), V2((cls a, cls b) => {
-		I(
-			in(v2(a, b), x),
-			f(v2(a, b))
-		)
-	}) |- Vin(x, f)
-}
-
-schema cartesian_V(pr f, cls x, cls y) {
-	V2((cls a, cls b) => {
-		I(
-			in(v2(a, b), cartesian(x, y)),
-			f(v2(a, b))
-		)
-	}) |- rel_V(f, cartesian(x, y))[
-		cartesian_is_rel(x, y)[],
-		V2((cls a, cls b) => {
-			I(
-				in(v2(a, b), cartesian(x, y)),
-				f(v2(a, b))
-			)
-		})
-	]
-}
-
-schema cartesian_Vu(pr f, cls x, cls y) {
-	(cls a, cls b) => {
-		I(
-			in(v2(a, b), cartesian(x, y)),
-			f(v2(a, b))
-		)
-	} |- cartesian_V(f, x, y)[Vi2[(cls a, cls b) => {
-		I(
-			in(v2(a, b), cartesian(x, y)),
-			f(v2(a, b))
-		)
-	}]]
 }
 
 schema cartesian_is_set_1(cls x, cls y) {
@@ -2913,7 +2894,7 @@ schema successor_is_not_zero(cls n) {
 			Niu[
 				eq(successor(n), ord_zero()) |-
 					Fi[
-						in_eq_1[
+						in_eq_right_1[
 							self_in_successor[set_i[in(n, omega())]],
 							eq(successor(n), ord_zero())
 						],
