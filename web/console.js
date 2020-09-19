@@ -99,6 +99,13 @@ $('#console-input').addEventListener('keydown', evt => {
 
 			try {
 				var parsed = evalParser.parse(v);
+			} catch (e) {
+				htmlify(`Parse error: ${e.message}\n    at (<unknown>:${e.location.start.line}:${e.location.start.column})`, {error: true});
+				if (!evt.ctrlKey) codemirror.setValue('');
+				return;
+			}
+
+			try {
 				htmlify(ktx(program.evaluate(parsed).toTeXString(true, true)), {
 					noescape: true
 				});
