@@ -1,4 +1,5 @@
-var ER = {};
+var ER: any = {};
+export default ER;
 
 var Type, Typevar, Fun, Funcall, Tee, Ruleset, Schema, Schemacall;
 /*
@@ -340,12 +341,15 @@ ER.equals = function (a, b) {
 		}
 
 		if (a.type.isFunctional) {
-			var placeholders = Array(a.type.resolve().from.length).fill().map((_, i) =>
-				new Typevar({
+			var placeholders = [];
+			var len = a.type.resolve().from.length;
+
+			for (var i = 0; i < len; i++) {
+				placeholders.push(new Typevar({
 					type: a.type.resolve().from[i],
 					name: '$' + i
-				})
-			);
+				}));
+			}
 
 			return recurseWrap(
 				makecall(a, placeholders), makecall(b, placeholders), depth + 1
@@ -405,5 +409,3 @@ ${r}
 -------------`);
 	}));
 };
-
-module.exports = ER;

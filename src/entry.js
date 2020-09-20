@@ -9,6 +9,6 @@ if (process.env.__webpack__) {
 	grammar = fs.readFileSync(path.join(__dirname, 'grammar.pegjs'), 'utf-8');
 }
 
-var Program = require('./Program');
+var Program = require('./Program').default;
 
 module.exports = {grammar, Program};

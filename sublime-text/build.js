@@ -11,10 +11,10 @@ if (!process.argv[2]) {
 function formatError(e) {
 	var obj = esp.parse(e);
 	if (e.location) {
-		return `Error at (${process.argv[2]}:${e.location.start.line}:${e.location.start.column}): ${e.message}`;
+		return `Error at (${process.argv[2]}:${e.location.start.line}:${e.location.start.column}): ${e.message}\n\n${e.stack}`;
 	}
 
-	return `Error at ${obj[0].functionName} (${obj[0].fileName}:${obj[0].lineNumber}:${obj[0].columnNumber}): ${e.message}`;
+	return `Error at ${obj[0].functionName} (${obj[0].fileName}:${obj[0].lineNumber}:${obj[0].columnNumber}): ${e.message}\n\n${e.stack}`;
 }
 
 var code = fs.readFileSync(process.argv[2], 'utf-8');

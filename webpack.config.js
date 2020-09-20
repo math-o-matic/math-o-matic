@@ -8,8 +8,22 @@ module.exports = {
 	entry: './src/entry.js',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'math.js',
-		library: 'math'
+		filename: 'math.min.js',
+		library: 'math',
+		libraryTarget: 'umd',
+		globalObject: 'typeof self !== \'undefined\' ? self : this'
+	},
+	resolve: {
+		extensions: ['.ts', '.js']
+	},
+	module: {
+		rules: [
+			{
+				test: /\.ts$/,
+				use: 'ts-loader',
+				exclude: /node_modules/
+			}
+		]
 	},
 	optimization: {
 		minimizer: [

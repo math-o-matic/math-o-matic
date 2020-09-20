@@ -3,25 +3,29 @@
  * PEG.js의 출력은 여기에서만 처리해야 한다.
  */
 
-var Type = require('./nodes/Type');
-var Typevar = require('./nodes/Typevar');
-var Fun = require('./nodes/Fun');
-var Funcall = require('./nodes/Funcall');
-var Tee = require('./nodes/Tee');
-var Ruleset = require('./nodes/Ruleset');
-var Schema = require('./nodes/Schema');
-var Schemacall = require('./nodes/Schemacall');
-var Reduction = require('./nodes/Reduction');
+import Type from './nodes/Type';
+import Typevar from './nodes/Typevar';
+import Fun from './nodes/Fun';
+import Funcall from './nodes/Funcall';
+import Tee from './nodes/Tee';
+import Ruleset from './nodes/Ruleset';
+import Schema from './nodes/Schema';
+import Schemacall from './nodes/Schemacall';
+import Reduction from './nodes/Reduction';
 
-var ExpressionResolver = require('./ExpressionResolver');
+import ExpressionResolver from './ExpressionResolver';
+import { DefunObject, DefvObject, FunexprObject, StypeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
+import Scope from './Scope';
 
-var PI = {};
+var PI: any = {};
 
-function typeObjToString(obj) {
+export default PI;
+
+function typeObjToString(obj: TypeObject): string {
 	if (obj._type != 'type')
 		throw Error('Assertion failed');
 
-	if (!obj.ftype) return obj.name;
+	if (!obj.ftype) return (obj as StypeObject).name;
 	return '[' + obj.from.map(typeObjToString).join(', ') + ' -> '
 			+ typeObjToString(obj.to) + ']';
 }
@@ -33,11 +37,13 @@ function typeObjToString(obj) {
  * [(cls, cls) -> st]		-> ['cls', 'cls', 'st']
  * [[cls -> st] -> st]		-> [['cls', 'st'], 'st']
  */
-function typeObjToNestedArr(obj) {
+function typeObjToNestedArr(obj: TypeObject) {
 	if (obj._type != 'type')
 		throw Error('Assertion failed');
 
 	if (!obj.ftype) {
+		obj = obj as StypeObject;
+
 		if (!obj.name)
 			throw Error('Assertion failed');
 
@@ -52,7 +58,7 @@ function typeObjToNestedArr(obj) {
 	}
 }
 
-function varObjToString(obj) {
+function varObjToString(obj: VarObject): string {
 	switch (obj.type) {
 		case 'ruleset':
 			return `${obj.rulesetName}.${obj.name}`;
@@ -63,17 +69,17 @@ function varObjToString(obj) {
 	}
 }
 
-PI.type = function (obj, parentScope) {
+PI.type = function (obj: TypedefObject, parentScope: Scope): Type {
 	if (obj._type != 'typedef')
 		throw Error('Assertion failed');
 
-	var scope = parentScope.extend('type', obj.name, obj.location);
+	var scope: Scope = parentScope.extend('type', obj.name, obj.location);
 
-	var origin = obj.origin ? scope.getType(typeObjToNestedArr(obj.origin)) : null;
+	var origin: Type = obj.origin ? scope.getType(typeObjToNestedArr(obj.origin)) : null;
 
-	var name = obj.name;
-	var doc = obj.doc;
-	var base = obj.base;
+	var name: string = obj.name;
+	var doc: string = obj.doc;
+	var base: boolean = obj.base;
 
 	if (base && origin) {
 		throw scope.error('Base type should not be an alias');
@@ -96,7 +102,7 @@ PI.type = function (obj, parentScope) {
 	});
 };
 
-PI.typevar = function (obj, parentScope) {
+PI.typevar = function (obj: DefvObject | VarObject, parentScope: Scope): Typevar {
 	if (!['defv', 'var'].includes(obj._type)) {
 		throw Error('Assertion failed');
 	}
@@ -124,13 +130,23 @@ PI.typevar = function (obj, parentScope) {
 	}, scope);
 };
 
-PI.fun = function (obj, parentScope) {
+PI.fun = function (obj: DefunObject | FunexprObject, parentScope: Scope): Fun {
 	if (obj._type != 'defun' && obj._type != 'funexpr')
 		throw Error('Assertion failed');
 
-	var scope = parentScope.extend('fun', obj.name || null, obj.location);
+	var name = null,
+		doc = null,
+		tex = null;
 
-	var name = obj.name || null;
+	if (obj._type == 'defun') {
+		obj = obj as DefunObject
+		name = obj.name;
+		doc = obj.doc;
+		tex = obj.tex;
+	}
+
+	var scope = parentScope.extend('fun', name, obj.location);
+
 	var type = null;
 	var params = obj.params.map(tvo => {
 		if (!scope.hasType(typeObjToNestedArr(tvo.type)))
@@ -144,8 +160,6 @@ PI.fun = function (obj, parentScope) {
 		return scope.addTypevar(tv);
 	});
 	var expr = null;
-	var doc = obj.doc || null;
-	var tex = obj.tex || null;
 
 	switch (obj._type) {
 		case 'defun':
@@ -391,5 +405,3 @@ PI.reduction = function (obj, parentScope) {
 		leftargs
 	}, scope);
 };
-
-module.exports = PI;

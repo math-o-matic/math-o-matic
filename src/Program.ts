@@ -1,25 +1,25 @@
-'use strict';
+import Scope from './Scope';
 
-var Scope = require('./Scope');
+import Type from './nodes/Type';
+import Typevar from './nodes/Typevar';
+import Fun from './nodes/Fun';
+import Funcall from './nodes/Funcall';
+import Tee from './nodes/Tee';
+import Ruleset from './nodes/Ruleset';
+import Schema from './nodes/Schema';
+import Schemacall from './nodes/Schemacall';
 
-var Type = require('./nodes/Type');
-var Typevar = require('./nodes/Typevar');
-var Fun = require('./nodes/Fun');
-var Funcall = require('./nodes/Funcall');
-var Tee = require('./nodes/Tee');
-var Ruleset = require('./nodes/Ruleset');
-var Schema = require('./nodes/Schema');
-var Schemacall = require('./nodes/Schemacall');
-
-var PegInterface = require('./PegInterface');
-var ExpressionResolver = require('./ExpressionResolver');
+import PegInterface from './PegInterface';
+import ExpressionResolver from './ExpressionResolver';
 
 ExpressionResolver.init({Type, Typevar, Fun, Funcall, Tee, Ruleset, Schema, Schemacall});
 
-class Program {
-	constructor() {
-		this.scope = new Scope(null);
-	}
+export default class Program {
+	public scope = new Scope(null);
+
+	public ExpressionResolver = ExpressionResolver;
+	
+	constructor() {}
 
 	feed(lines, nativeMap) {
 		lines.forEach(line => {
@@ -104,7 +104,3 @@ class Program {
 		}
 	}
 }
-
-Program.prototype.ExpressionResolver = ExpressionResolver;
-
-module.exports = Program;
