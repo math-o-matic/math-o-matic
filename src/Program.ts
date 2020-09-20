@@ -1,18 +1,6 @@
 import Scope from './Scope';
-
-import Type from './nodes/Type';
-import Typevar from './nodes/Typevar';
-import Fun from './nodes/Fun';
-import Funcall from './nodes/Funcall';
-import Tee from './nodes/Tee';
-import Ruleset from './nodes/Ruleset';
-import Schema from './nodes/Schema';
-import Schemacall from './nodes/Schemacall';
-
 import PegInterface from './PegInterface';
 import ExpressionResolver from './ExpressionResolver';
-
-ExpressionResolver.init({Type, Typevar, Fun, Funcall, Tee, Ruleset, Schema, Schemacall});
 
 export default class Program {
 	public scope = new Scope(null);

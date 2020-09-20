@@ -1,8 +1,3 @@
-import ExpressionResolver from '../ExpressionResolver';
-import Scope from '../Scope';
-import MetaType from './MetaType';
-import Type from './Type';
-
 var ctr = 0;
 
 export type Precedence = boolean | number | [number, number];
@@ -121,3 +116,9 @@ export default abstract class Node implements Nodeable {
 		});
 	}
 }
+
+// 순환 참조를 피하기 위하여 export 후 import 한다.
+import ExpressionResolver from '../ExpressionResolver';
+import Scope from '../Scope';
+import MetaType from './MetaType';
+import Type from './Type';
