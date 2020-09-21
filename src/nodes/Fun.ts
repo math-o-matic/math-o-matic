@@ -16,6 +16,7 @@ interface FunArgumentType {
 export default class Fun extends Node {
 	public readonly _type = 'fun';
 
+	public readonly shouldValidate = false;
 	public readonly name: string;
 	public readonly type: Type;
 	public readonly params;

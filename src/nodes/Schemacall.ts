@@ -1,33 +1,28 @@
 import Node, { Precedence } from './Node';
 import Typevar from './Typevar';
-
-import ExpressionResolver from '../ExpressionResolver';
 import MetaType from './MetaType';
 import Type from './Type';
 import Scope from '../Scope';
+import Fun from './Fun';
 
 export default class Schemacall extends Node {
 	public readonly _type = 'schemacall';
 
+	public readonly type: Type | MetaType;
 	public readonly schema;
 	public readonly args;
-	public readonly type: Type | MetaType;
-	public readonly expanded;
 
 	constructor ({schema, args}, scope?: Scope) {
 		super(scope);
 
-		if (!schema) {
-			throw this.error('Assertion failed');
-		}
+		if (schema.type.isSimple)
+			throw this.error(`${schema.name} is not callable`);
 
-		if (!(args instanceof Array))
+		if (!(args instanceof Array) || args.map(e => e instanceof Node).some(e => !e))
 			throw this.error('Assertion failed');
-		
-		this.schema = schema;
-		this.args = args;
-
-		var paramTypes = schema.type.from,
+			 
+		var resolvedType = schema.type.resolve(),
+			paramTypes = resolvedType.from,
 			argTypes = args.map(e => e.type);
 
 		if (paramTypes.length != argTypes.length)
@@ -37,10 +32,10 @@ export default class Schemacall extends Node {
 			if (!paramTypes[i].equals(argTypes[i]))
 				throw this.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
 		}
-
-		this.type = schema.type.to;
-
-		this.expanded = ExpressionResolver.expandMetaAndFuncalls(this);
+		
+		this.schema = schema;
+		this.type = resolvedType.to;
+		this.args = args;
 	}
 
 	public isProved(hyps?) {
@@ -63,28 +58,60 @@ export default class Schemacall extends Node {
 	
 			args = args.join(', ');
 	
-			return [
-				`${this.schema.name || `(${this.schema})`}(`,
-				args,
-				')'
-			].join('');
+			if (this.schema.shouldValidate) {
+				return [
+					`${this.schema.name || `(${this.schema})`}(`,
+					args,
+					')'
+				].join('');
+			} else {
+				return [
+					`${this.schema._type != 'fun' || !this.schema.name ? '(' + this.schema.toIndentedString(indent) + ')' : this.schema.name}(`,
+					args,
+					')'
+				].join('');
+			}
 		}
 		else {
 			args = args.join(',\n' + '\t'.repeat(indent + 1));
-	
-			return [
-				`${this.schema.name || `(${this.schema.toIndentedString(indent)})`}(`,
-				'\t' + args,
-				')'
-			].join('\n' + '\t'.repeat(indent));
+			
+			if (this.schema.shouldValidate) {
+				return [
+					`${this.schema.name || `(${this.schema.toIndentedString(indent)})`}(`,
+					'\t' + args,
+					')'
+				].join('\n' + '\t'.repeat(indent));
+			} else {
+				return [
+					`${this.schema._type != 'fun' || !this.schema.name ? '(' + this.schema.toIndentedString(indent) + ')' : this.schema.name}(`,
+					'\t' + args,
+					')'
+				].join('\n' + '\t'.repeat(indent));
+			}
 		}
 	}
 
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		return (
-			this.schema.name
-				? `\\href{#schema-${this.schema.proved ? 'p' : 'np'}-${this.schema.name}}{\\textsf{${Node.escapeTeX(this.schema.name)}}}`
-				: this.schema.toTeXString(false)
-		) + `(${this.args.map(e => e.toTeXString(Node.PREC_COMMA)).join(', ')})`;
+		if (this.schema instanceof Fun)
+			return this.schema.funcallToTeXString(this.args, prec);
+		
+		var args = this.args.map(arg => {
+			return arg.toTeXString(Node.PREC_COMMA);
+		});
+
+		if (this.schema.shouldValidate) {
+			return (
+				this.schema.name
+					? `\\href{#schema-${this.schema.proved ? 'p' : 'np'}-${this.schema.name}}{\\textsf{${Node.escapeTeX(this.schema.name)}}}`
+					: this.schema.toTeXString(false)
+			) + `(${args.join(', ')})`;
+		} else {
+			return `${!this.schema.name || this.schema._type == 'typevar'
+					? this.schema.toTeXString(false)
+					: this.schema.name.length == 1
+						? Node.escapeTeX(this.schema.name)
+						: `\\mathrm{${Node.escapeTeX(this.schema.name)}}`}`
+				+ `(${args.join(', ')})`;
+		}
 	}
 }

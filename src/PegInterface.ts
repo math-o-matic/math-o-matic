@@ -6,7 +6,6 @@
 import Type from './nodes/Type';
 import Typevar from './nodes/Typevar';
 import Fun from './nodes/Fun';
-import Funcall from './nodes/Funcall';
 import Tee from './nodes/Tee';
 import Ruleset from './nodes/Ruleset';
 import Schema from './nodes/Schema';
@@ -200,7 +199,7 @@ export default class PI {
 			return PI.expr0(arg, scope);
 		});
 
-		return new Funcall({schema, args}, scope);
+		return new Schemacall({schema, args}, scope);
 	}
 
 	public static metaexpr(obj: MetaexprObject, parentScope: Scope) {

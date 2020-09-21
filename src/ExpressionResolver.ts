@@ -1,40 +1,31 @@
-export type Expr0 = Funcall | Fun | Typevar;
+export type Expr0 = Schemacall | Fun | Typevar;
 export type Metaexpr = Tee | Reduction | Schemacall | Schema | Expr0;
 
 function iscallable(a: Metaexpr): a is Schema | Fun {
 	return ['schema', 'fun'].includes(a._type);
 }
 
-function iscall(a: Metaexpr): a is Schemacall | Funcall {
-	return ['schemacall', 'funcall'].includes(a._type);
+function iscall(a: Metaexpr): a is Schemacall {
+	return a._type == 'schemacall';
 }
 
 function callee(a: Metaexpr) {
-	return a._type == 'schemacall'
-		? a.schema
-		: a._type == 'funcall'
-			? a.schema
-			: (() => {
-				console.log(a);
-				throw Error();
-			})();
+	if (iscall(a)) return a.schema;
+
+	console.log(a);
+	throw Error();
 }
 
-function makecall(a: Metaexpr, args: Expr0[]): Funcall | Schemacall {
-	return a._type == 'fun' || a._type == 'typevar'
-		? new Funcall({
+function makecall(a: Metaexpr, args: Expr0[]): Schemacall {
+	if (a._type == 'fun' || a._type == 'typevar' || a._type == 'schema') {
+		return new Schemacall({
 			schema: a,
 			args
-		})
-		: a._type == 'schema'
-			? new Schemacall({
-				schema: a,
-				args
-			})
-			: (() => {
-				console.log(a);
-				throw Error();
-			})();
+		});
+	}
+
+	console.log(a);
+	throw Error();
 }
 
 export default class ER {
@@ -45,18 +36,6 @@ export default class ER {
 					schema: ER.substitute(expr.schema, map),
 					args: expr.args.map(arg => ER.substitute(arg, map))
 				});
-			case 'funcall':
-				var schema = ER.substitute(expr.schema, map),
-					args = expr.args.map(arg => ER.substitute(arg, map));
-
-				if (schema._type == 'schema') {
-					return new Schemacall({
-						schema,
-						args
-					});
-				}
-
-				return new Funcall({ schema, args });
 			case 'schema':
 				// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
 				if (expr.name) return expr;
@@ -164,6 +143,10 @@ export default class ER {
 			case 'schemacall':
 				var schema = ER.expandMeta(expr.schema),
 					args = expr.args;
+				
+				// @ts-ignore
+				if (!schema.expr || schema.name)
+			 		return new Schemacall({schema, args});
 
 				return ER.expandMeta(ER.call(schema, args));
 			case 'reduction':
@@ -175,7 +158,6 @@ export default class ER {
 					params: expr.params,
 					expr: ER.expandMeta(expr.expr)
 				});
-			case 'funcall':
 			case 'fun':
 			case 'typevar':
 				return expr;
@@ -214,13 +196,8 @@ export default class ER {
 				var schema = ER.expandMetaAndFuncalls(expr.schema);
 				var args = expr.args.map(ER.expandMetaAndFuncalls);
 
-				return ER.expandMetaAndFuncalls(ER.call(schema, args));
-			case 'funcall':
-				var schema = ER.expandMetaAndFuncalls(expr.schema);
-				var args = expr.args.map(ER.expandMetaAndFuncalls);
-
-				if (schema._type != 'fun' || schema.name)
-					return new Funcall({schema, args});
+				if (!schema.expr || schema.name)
+			 		return new Schemacall({schema, args});
 
 				return ER.expandMetaAndFuncalls(ER.call(schema, args));
 			case 'reduction':
@@ -402,7 +379,6 @@ ${r}
 
 // 순환 참조를 피하기 위하여 export 후 import 한다.
 import Fun from "./nodes/Fun";
-import Funcall from "./nodes/Funcall";
 import Reduction from "./nodes/Reduction";
 import Schema from "./nodes/Schema";
 import Schemacall from "./nodes/Schemacall";

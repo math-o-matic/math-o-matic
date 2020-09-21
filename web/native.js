@@ -140,7 +140,7 @@ var native = {
 
 				function recurse(t) {
 					if (t instanceof Array) {
-						return new scope.Funcall({
+						return new scope.Schemacall({
 							schema: recurse(t[0]),
 							args: t.slice(1).map(recurse)
 						});
@@ -203,7 +203,7 @@ var native = {
 				})))
 					throw Error(`Wrong type for I`);
 
-				if (right._type != 'funcall' || right.schema != I) {
+				if (right._type != 'schemacall' || right.schema != I) {
 					console.log(right);
 					throw Error('wut');
 				}

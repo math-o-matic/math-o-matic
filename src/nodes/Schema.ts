@@ -18,6 +18,7 @@ interface SchemaArgumentType {
 export default class Schema extends Node {
 	public readonly _type = 'schema';
 
+	public readonly shouldValidate = true;
 	public readonly axiomatic: boolean;
 	public readonly name: string;
 	public readonly native;
