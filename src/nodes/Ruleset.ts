@@ -27,8 +27,7 @@ export default class Ruleset extends Node {
 	public isProved(hyps) {
 		hyps = hyps || [];
 		
-		return Node.prototype.isProved.call(this, hyps)
-			|| this.axiomatic;
+		return super.isProved(hyps) || this.axiomatic;
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

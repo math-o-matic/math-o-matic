@@ -40,7 +40,7 @@ export default class Typevar extends Node {
 	public isProved(hyps) {
 		hyps = hyps || [];
 	
-		return Node.prototype.isProved.call(this, hyps);
+		return super.isProved(hyps);
 	}
 
 	// pr f
@@ -52,7 +52,7 @@ export default class Typevar extends Node {
 		return `${root ? this.type + ' ' : ''}${this.name}<${this._id}>`;
 	}
 
-	public toTeXString(prec?: Precedence, root?: boolean) {
+	public toTeXString(prec?: Precedence, root?: boolean): string {
 		var id = this.isParam ? `id-${this._id}` : `def-${this.name}`;
 
 		var tex = this.tex

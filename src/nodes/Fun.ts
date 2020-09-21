@@ -1,4 +1,4 @@
-import Node from './Node';
+import Node, { Precedence } from './Node';
 import Type from './Type';
 import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
@@ -71,13 +71,13 @@ export default class Fun extends Node {
 		this.expr = expr;
 	}
 
-	public isProved(hyps) {
+	public isProved(hyps?) {
 		hyps = hyps || [];
 		
 		return super.isProved(hyps);
 	}
 
-	public toIndentedString(indent) {
+	public toIndentedString(indent: number, root?: boolean): string {
 		if (!this.expr)
 			return `ƒ ${this.type.to} ${this.name}(${this.params.join(', ')});`;
 
@@ -89,7 +89,7 @@ export default class Fun extends Node {
 		].join('\n' + '\t'.repeat(indent));
 	}
 
-	public toTeXString(prec?, root?) {
+	public toTeXString(prec?: Precedence, root?: boolean): string {
 		if (!this.name) {
 			this.precedence = Node.PREC_FUNEXPR;
 			return [

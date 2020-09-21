@@ -46,8 +46,7 @@ export default class Schemacall extends Node {
 	public isProved(hyps?) {
 		hyps = hyps || [];
 	
-		return Node.prototype.isProved.call(this, hyps)
-			|| this.schema.isProved(hyps);
+		return super.isProved(hyps) || this.schema.isProved(hyps);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

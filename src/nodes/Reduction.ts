@@ -93,10 +93,10 @@ ${ExpressionResolver.expandMetaAndFuncalls(leftargs[i])}
 		}
 	}
 
-	public isProved(hyps) {
+	public isProved(hyps?) {
 		hyps = hyps || [];
 		
-		return Node.prototype.isProved.call(this, hyps)
+		return super.isProved(hyps)
 			|| this.subject.isProved(hyps)
 				&& this.leftargs.every(l => l.isProved(hyps));
 	}

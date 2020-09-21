@@ -70,7 +70,7 @@ export default class Schema extends Node {
 		hyps = hyps || [];
 		
 		return this.proved
-			|| !this.native && Node.prototype.isProved.call(this, hyps)
+			|| !this.native && super.isProved(hyps)
 			|| this.axiomatic
 			|| this.expr && this.expr.isProved(hyps);
 	}

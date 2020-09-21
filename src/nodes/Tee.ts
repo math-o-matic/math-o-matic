@@ -52,8 +52,7 @@ export default class Tee extends Node {
 	public isProved(hyps?) {
 		hyps = hyps || [];
 	
-		return Node.prototype.isProved.call(this, hyps)
-			|| this.right.isProved(hyps.concat(this.left));
+		return super.isProved(hyps) || this.right.isProved(hyps.concat(this.left));
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

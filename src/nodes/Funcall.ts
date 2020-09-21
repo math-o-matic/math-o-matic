@@ -42,8 +42,7 @@ export default class Funcall extends Node {
 	public isProved(hyps) {
 		hyps = hyps || [];
 		
-		return Node.prototype.isProved.call(this, hyps)
-			|| this.fun.isProved(hyps);
+		return super.isProved(hyps) || this.fun.isProved(hyps);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {
