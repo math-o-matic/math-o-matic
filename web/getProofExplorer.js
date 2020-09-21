@@ -150,7 +150,7 @@ function getProofExplorer(name) {
 				
 				var expanded = program.ExpressionResolver.expandMetaAndFuncalls(expr);
 
-				if (expr._type == 'schemacall' && callee.name) {
+				if (callee.shouldValidate && callee.name) {
 					return getHtml(
 						left,
 						ktx(expanded.toTeXString(true)),
