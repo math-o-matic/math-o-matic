@@ -1,8 +1,8 @@
-export type Expr0 = Schemacall | Fun | Typevar;
+export type Expr0 = Schemacall | Schema | Typevar;
 export type Metaexpr = Tee | Reduction | Schemacall | Schema | Expr0;
 
-function iscallable(a: Metaexpr): a is Schema | Fun {
-	return ['schema', 'fun'].includes(a._type);
+function iscallable(a: Metaexpr): a is Schema {
+	return a._type == 'schema';
 }
 
 function iscall(a: Metaexpr): a is Schemacall {
@@ -17,7 +17,7 @@ function callee(a: Metaexpr) {
 }
 
 function makecall(a: Metaexpr, args: Expr0[]): Schemacall {
-	if (a._type == 'fun' || a._type == 'typevar' || a._type == 'schema') {
+	if (a._type == 'typevar' || a._type == 'schema') {
 		return new Schemacall({
 			schema: a,
 			args
@@ -29,7 +29,7 @@ function makecall(a: Metaexpr, args: Expr0[]): Schemacall {
 }
 
 export default class ER {
-	public static substitute(expr: Metaexpr, map: Map<Typevar | Fun, Expr0>): Metaexpr {
+	public static substitute(expr: Metaexpr, map: Map<Typevar | Schema, Expr0>): Metaexpr {
 		switch (expr._type) {
 			case 'schemacall':
 				return new Schemacall({
@@ -37,30 +37,18 @@ export default class ER {
 					args: expr.args.map(arg => ER.substitute(arg, map))
 				});
 			case 'schema':
+				if (!expr.expr) return map.get(expr) || expr;
+
 				// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
-				if (expr.name) return expr;
+				if (expr.name) return map.get(expr) || expr;
 
 				// 위의 expr.name 조건을 지우면 특수한 경우에 이게 발생할지도 모른다.
 				if (expr.params.some(e => map.has(e)))
 					throw Error('Parameter collision');
 
 				return new Schema({
+					shouldValidate: expr.shouldValidate,
 					axiomatic: expr.axiomatic,
-					name: null,
-					params: expr.params,
-					expr: ER.substitute(expr.expr, map)
-				});
-			case 'fun':
-				if (!expr.expr) return map.get(expr) || expr;
-
-				// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
-				if (expr.name) return map.get(expr) || expr;
-
-				// 위의 expr.name 조건을 지우면 특수한 경우에 이게 발생한다.
-				if (expr.params.some(e => map.has(e)))
-					throw Error('Parameter collision');
-
-				return new Fun({
 					name: null,
 					params: expr.params,
 					expr: ER.substitute(expr.expr, map)
@@ -111,13 +99,13 @@ export default class ER {
 		}
 
 		if (iscall(callee(expr))) {
-			var fun = ER.expandCallOnce(callee(expr));
-			return makecall(fun, expr.args);
+			var schema = ER.expandCallOnce(callee(expr));
+			return makecall(schema, expr.args);
 		}
 
 		var callee_ = callee(expr);
 
-		if (callee_._type != 'schema' && callee_._type != 'fun') {
+		if (callee_._type != 'schema') {
 			throw Error('Something\'s wrong');
 		}
 
@@ -145,20 +133,23 @@ export default class ER {
 					args = expr.args;
 				
 				// @ts-ignore
-				if (!schema.expr || schema.name)
+				if (!schema.expr || schema.name && !schema.shouldValidate)
 			 		return new Schemacall({schema, args});
 
 				return ER.expandMeta(ER.call(schema, args));
 			case 'reduction':
 				return ER.expandMeta(expr.reduced);
 			case 'schema':
+				if (!expr.expr) return expr;
+				if (expr.type._type == 'type' && expr.name) return expr;
+
 				return new Schema({
+					shouldValidate: expr.shouldValidate,
 					axiomatic: expr.axiomatic,
 					name: null,
 					params: expr.params,
 					expr: ER.expandMeta(expr.expr)
 				});
-			case 'fun':
 			case 'typevar':
 				return expr;
 			default:
@@ -176,27 +167,21 @@ export default class ER {
 
 				return new Tee({left, right});
 			case 'schema':
+				if (!expr.expr) return expr;
+				if (expr.type._type == 'type' && expr.name) return expr;
+
 				return new Schema({
+					shouldValidate: expr.shouldValidate,
 					axiomatic: expr.axiomatic,
 					name: null,
 					params: expr.params,
 					expr: ER.expandMetaAndFuncalls(expr.expr)
 				});
-			case 'fun':
-				if (!expr.name) {
-					return new Fun({
-						name: null,
-						params: expr.params,
-						expr: ER.expandMetaAndFuncalls(expr.expr)
-					});
-				}
-
-				return expr;
 			case 'schemacall':
 				var schema = ER.expandMetaAndFuncalls(expr.schema);
 				var args = expr.args.map(ER.expandMetaAndFuncalls);
 
-				if (!schema.expr || schema.name)
+				if (!schema.expr || schema.name && !schema.shouldValidate)
 			 		return new Schemacall({schema, args});
 
 				return ER.expandMetaAndFuncalls(ER.call(schema, args));
@@ -378,7 +363,6 @@ ${r}
 }
 
 // 순환 참조를 피하기 위하여 export 후 import 한다.
-import Fun from "./nodes/Fun";
 import Reduction from "./nodes/Reduction";
 import Schema from "./nodes/Schema";
 import Schemacall from "./nodes/Schemacall";

@@ -20,7 +20,6 @@ function getProofExplorer(name) {
 					1
 				);
 			case 'schema':
-			case 'fun':
 				return recurse(expr.expr) + 1;
 			case 'tee':
 				return Math.max(
@@ -28,7 +27,6 @@ function getProofExplorer(name) {
 					recurse(expr.right)
 				) + 1;
 			case 'schemacall':
-			case 'funcall':
 			default:
 				return 1;
 		}
@@ -148,10 +146,9 @@ function getProofExplorer(name) {
 					)
 				].join('');
 			case 'schemacall':
-			case 'funcall':
 				var callee = expr.schema;
 				
-				var expanded = expr.expanded || expr;
+				var expanded = program.ExpressionResolver.expandMetaAndFuncalls(expr);
 
 				if (expr._type == 'schemacall' && callee.name) {
 					return getHtml(
@@ -193,7 +190,6 @@ function getProofExplorer(name) {
 					'<td colspan="2"><b class="red">not proved</b></td>'
 				);
 			case 'schema':
-			case 'fun':
 				if (expr.name) {
 					return getHtml(
 						left,

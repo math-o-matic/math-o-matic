@@ -7,7 +7,8 @@ import Scope from '../Scope';
 import Typevar from './Typevar';
 
 interface SchemaArgumentType {
-	axiomatic: boolean;
+	shouldValidate: boolean;
+	axiomatic?: boolean;
 	type?: Type | MetaType;
 	name?: string;
 	native?: object;
@@ -20,7 +21,7 @@ interface SchemaArgumentType {
 export default class Schema extends Node {
 	public readonly _type = 'schema';
 
-	public readonly shouldValidate = true;
+	public readonly shouldValidate;
 	public readonly axiomatic: boolean;
 	public readonly name: string;
 	public readonly native;
@@ -29,19 +30,39 @@ export default class Schema extends Node {
 	public readonly type: Type | MetaType;
 	public readonly proved: boolean;
 
-	constructor ({doc, tex, axiomatic, type, /* nullable */ name, native, params, expr}: SchemaArgumentType, scope?: Scope) {
+	/*
+	 * name, expr 중 하나 이상 있어야 하고 type, native, expr 중
+	 * 한 개만 있어야 한다.
+	 */
+	constructor ({doc, tex, shouldValidate, axiomatic, type, /* nullable */ name, native, params, expr}: SchemaArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;
+		this.shouldValidate = shouldValidate;
 
-		if (typeof axiomatic != 'boolean') {
-			throw this.error('Assertion failed');
+		if (tex) {
+			var {precedence, code} = Node.parseTeX(tex);
+
+			this.precedence = precedence;
+			this.tex = code;
+		} else {
+			this.precedence = false;
+			this.tex = null;
 		}
+
+		if (!name && !native && !expr)
+			throw this.error('Anonymous fun cannot be primitive');
+
+		if (type && expr || expr && native || native && type)
+			throw this.error('no');
+
+		if (!type && !native && !expr)
+			throw this.error('Cannot guess the type of a primitive fun');
 
 		if (name !== null && typeof name != 'string')
 			throw this.error('Assertion failed');
 
-		if (!native && !(expr.type instanceof Type || expr.type instanceof MetaType)) {
+		if (!native && expr && !(expr.type instanceof Type || expr.type instanceof MetaType)) {
 			throw this.error('Assertion failed');
 		}
 
@@ -56,14 +77,18 @@ export default class Schema extends Node {
 			if (!(params instanceof Array)
 					|| params.map(e => e instanceof Typevar).some(e => !e))
 				throw this.error('Assertion failed');
+			
+			if (expr !== null && !(expr instanceof Node))
+				throw this.error('Assertion failed');
 
-			this.params = params;
-			this.expr = expr;
-			this.type = new (expr.type instanceof Type ? Type : MetaType)({
+			this.type = type || new (expr.type instanceof Type ? Type : MetaType)({
 				functional: true,
 				from: params.map(typevar => typevar.type),
 				to: expr.type
 			});
+
+			this.params = params;
+			this.expr = expr;
 		}
 
 		this.proved = this.isProved();
@@ -96,24 +121,50 @@ export default class Schema extends Node {
 				(this.shouldConsolidate(prec) ? '\\left(' : ''),
 				(
 					this.params.length == 1
-					? this.params[0].toTeXString()
+					? this.params[0].toTeXString(false)
 					: `\\left(${this.params.map(e => e.toTeXString(Node.PREC_COMMA)).join(', ')}\\right)`
 				),
-				`\\mapsto ${this.expr.toTeXString(false)}`,
+				`\\mapsto ${ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(false)}`,
 				(this.shouldConsolidate(prec) ? '\\right)' : '')
 			].join('');
 		}
+
+		if (!this.shouldValidate) {
+			if (!root)
+				return `\\href{#def-${this.name}}\\mathrm{${Node.escapeTeX(this.name)}}`;
+		
+			if (!this.expr)
+				return this.funcallToTeXString(this.params, prec);
+		
+			return this.funcallToTeXString(this.params, Node.PREC_COLONEQQ)
+					+ `\\coloneqq ${this.expr.toTeXString(Node.PREC_COLONEQQ)}`;
+		} else {
+			var id = `schema-${this.proved ? 'p' : 'np'}-${this.name}`;
+		
+			if (!root)
+				return `\\href{#${id}}\\mathsf{${Node.escapeTeX(this.name)}}`;
+		
+			if (this.native)
+				return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}`
+					+ '\\ (\\textrm{native})';
+		
+			return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(Node.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}):`
+						+ '\\\\\\quad' + ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
+		}
+	}
+
+	public funcallToTeXString(args, prec) {
+		args = args.map(arg => {
+			return arg.toTeXString(this.tex ? this.precedence : Node.PREC_COMMA);
+		});
 	
-		var id = `schema-${this.proved ? 'p' : 'np'}-${this.name}`;
+		if (this.tex) {
+			return this.makeTeX('def-' + this.name, args, prec);
+		}
 	
-		if (!root)
-			return `\\href{#${id}}\\mathsf{${Node.escapeTeX(this.name)}}`;
-	
-		if (this.native)
-			return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}`
-				+ '\\ (\\textrm{native})';
-	
-		return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(Node.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}):`
-					+ '\\\\\\quad' + ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
+		return `${!this.name
+				? this.toTeXString(false)
+				: `\\href{#def-${this.name}}{${this.name.length == 1 ? Node.escapeTeX(this.name) : `\\mathrm{${Node.escapeTeX(this.name)}}`}}`}`
+			+ `(${args.join(', ')})`;
 	}
 }

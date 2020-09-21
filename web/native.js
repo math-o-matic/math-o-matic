@@ -158,6 +158,7 @@ var native = {
 				});
 
 				var schema = new scope.Schema({
+					shouldValidate: true,
 					axiomatic: true,
 					name: 'tt.' + name,
 					params: typevars,

@@ -5,7 +5,6 @@
 
 import Type from './nodes/Type';
 import Typevar from './nodes/Typevar';
-import Fun from './nodes/Fun';
 import Tee from './nodes/Tee';
 import Ruleset from './nodes/Ruleset';
 import Schema from './nodes/Schema';
@@ -126,7 +125,7 @@ export default class PI {
 		}, scope);
 	}
 
-	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): Fun {
+	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): Schema {
 		if (obj._type != 'defun' && obj._type != 'funexpr')
 			throw Error('Assertion failed');
 
@@ -184,7 +183,7 @@ export default class PI {
 				throw Error('wut');
 		}
 
-		return new Fun({name, type, params, expr, doc, tex}, scope);
+		return new Schema({shouldValidate: false, name, type, params, expr, doc, tex}, scope);
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope) {
@@ -316,7 +315,7 @@ export default class PI {
 				get: args => nativeMap.schema[name].get(args, scope, ExpressionResolver)
 			};
 
-			return new Schema({axiomatic, name, native, doc: obj.doc}, scope);
+			return new Schema({shouldValidate: true, axiomatic, name, native, doc: obj.doc}, scope);
 		}
 
 		var params = obj.params.map(tvo => {
@@ -333,7 +332,7 @@ export default class PI {
 
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new Schema({axiomatic, name, params, expr, doc}, scope);
+		return new Schema({shouldValidate: true, axiomatic, name, params, expr, doc}, scope);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope) {

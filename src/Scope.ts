@@ -1,6 +1,5 @@
 import Type from './nodes/Type';
 import Typevar from './nodes/Typevar';
-import Fun from './nodes/Fun';
 import Tee from './nodes/Tee';
 import Ruleset from './nodes/Ruleset';
 import Schema from './nodes/Schema';
@@ -22,7 +21,6 @@ export default class Scope {
 
 	public readonly Type = Type;
 	public readonly Typevar = Typevar;
-	public readonly Fun = Fun;
 	public readonly Tee = Tee;
 	public readonly Ruleset = Ruleset;
 	public readonly Schema = Schema;
@@ -175,7 +173,7 @@ export default class Scope {
 	}
 
 	public addFun(fun) {
-		if (!(fun instanceof Fun))
+		if (!(fun instanceof Schema))
 			throw this.error('Illegal argument type');
 
 		if (!fun.name)

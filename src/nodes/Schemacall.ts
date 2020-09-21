@@ -3,7 +3,7 @@ import Typevar from './Typevar';
 import MetaType from './MetaType';
 import Type from './Type';
 import Scope from '../Scope';
-import Fun from './Fun';
+import Schema from './Schema';
 
 export default class Schemacall extends Node {
 	public readonly _type = 'schemacall';
@@ -29,8 +29,9 @@ export default class Schemacall extends Node {
 			throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
 
 		for (var i = 0; i < paramTypes.length; i++) {
-			if (!paramTypes[i].equals(argTypes[i]))
+			if (!paramTypes[i].equals(argTypes[i])) {
 				throw this.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
+			}
 		}
 		
 		this.schema = schema;
@@ -66,7 +67,7 @@ export default class Schemacall extends Node {
 				].join('');
 			} else {
 				return [
-					`${this.schema._type != 'fun' || !this.schema.name ? '(' + this.schema.toIndentedString(indent) + ')' : this.schema.name}(`,
+					`${this.schema._type != 'schema' || !this.schema.name ? '(' + this.schema.toIndentedString(indent) + ')' : this.schema.name}(`,
 					args,
 					')'
 				].join('');
@@ -83,7 +84,7 @@ export default class Schemacall extends Node {
 				].join('\n' + '\t'.repeat(indent));
 			} else {
 				return [
-					`${this.schema._type != 'fun' || !this.schema.name ? '(' + this.schema.toIndentedString(indent) + ')' : this.schema.name}(`,
+					`${this.schema._type != 'schema' || !this.schema.name ? '(' + this.schema.toIndentedString(indent) + ')' : this.schema.name}(`,
 					'\t' + args,
 					')'
 				].join('\n' + '\t'.repeat(indent));
@@ -92,26 +93,28 @@ export default class Schemacall extends Node {
 	}
 
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		if (this.schema instanceof Fun)
+		if (this.schema.shouldValidate) {
+			return (
+				this.schema.name
+					? `\\href{#schema-${this.schema.proved ? 'p' : 'np'}-${this.schema.name}}{\\textsf{${Node.escapeTeX(this.schema.name)}}}`
+					: this.schema.toTeXString(false)
+			) + `(${this.args.map(arg => {
+				return arg.toTeXString(Node.PREC_COMMA);
+			}).join(', ')})`;
+		}
+
+		if (this.schema instanceof Schema)
 			return this.schema.funcallToTeXString(this.args, prec);
 		
 		var args = this.args.map(arg => {
 			return arg.toTeXString(Node.PREC_COMMA);
 		});
 
-		if (this.schema.shouldValidate) {
-			return (
-				this.schema.name
-					? `\\href{#schema-${this.schema.proved ? 'p' : 'np'}-${this.schema.name}}{\\textsf{${Node.escapeTeX(this.schema.name)}}}`
-					: this.schema.toTeXString(false)
-			) + `(${args.join(', ')})`;
-		} else {
-			return `${!this.schema.name || this.schema._type == 'typevar'
-					? this.schema.toTeXString(false)
-					: this.schema.name.length == 1
-						? Node.escapeTeX(this.schema.name)
-						: `\\mathrm{${Node.escapeTeX(this.schema.name)}}`}`
-				+ `(${args.join(', ')})`;
-		}
+		return `${!this.schema.name || this.schema._type == 'typevar'
+				? this.schema.toTeXString(false)
+				: this.schema.name.length == 1
+					? Node.escapeTeX(this.schema.name)
+					: `\\mathrm{${Node.escapeTeX(this.schema.name)}}`}`
+			+ `(${args.join(', ')})`;
 	}
 }
