@@ -134,7 +134,7 @@ export default class PI {
 			tex = null;
 
 		if (obj._type == 'defun') {
-			obj = obj as DefunObject
+			obj = obj as DefunObject;
 			name = obj.name;
 			doc = obj.doc;
 			tex = obj.tex;
@@ -342,15 +342,6 @@ export default class PI {
 		var scope = parentScope.extend('schemacall', 'name' in obj.schema ? obj.schema.name : null, obj.location);
 
 		var schema = PI.metaexpr(obj.schema, scope);
-
-		if (schema.type._type == 'type') {
-			return PI.funcall({
-				_type: 'funcall',
-				schema: obj.schema as any,
-				args: obj.args,
-				location: obj.location
-			}, parentScope);
-		}
 
 		var args = obj.args.map(obj => {
 			return PI.expr0(obj, scope);
