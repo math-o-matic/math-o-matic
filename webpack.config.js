@@ -39,6 +39,7 @@ module.exports = {
 			'process.env.__webpack__': true
 		})
 	],
+	devtool: 'source-map',
 	stats: {
 		cached: false,
 		cachedAssets: false,
