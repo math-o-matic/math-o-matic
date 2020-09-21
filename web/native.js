@@ -186,7 +186,7 @@ var native = {
 
 				var tee = ER.expandMeta(rule);
 
-				var right = ER.expand0Funcalls(tee.right);
+				var right = ER.expandMetaAndFuncalls(tee.right);
 
 				if (tee._type != 'tee')
 					throw Error('wut');

@@ -3,11 +3,12 @@ import Schemacall from './Schemacall';
 
 import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
+import Tee from './Tee';
 
 export default class Reduction extends Node {
 	public readonly _type = 'reduction';
 
-	public readonly subject;
+	public readonly subject: Node;
 	public readonly guesses;
 	public readonly leftargs;
 	public readonly reduced;
@@ -28,7 +29,7 @@ export default class Reduction extends Node {
 	
 				return this.query(
 					p.guess,
-					ExpressionResolver.expandMeta(subject.expr).left,
+					(ExpressionResolver.expandMeta(subject.expr) as Tee).left,
 					leftargs
 				);
 			});

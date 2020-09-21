@@ -20,7 +20,7 @@ function callee(a: Metaexpr) {
 			})();
 }
 
-function makecall(a: Metaexpr, args: Expr0[]): Metaexpr {
+function makecall(a: Metaexpr, args: Expr0[]): Funcall | Schemacall {
 	return a._type == 'fun' || a._type == 'typevar'
 		? new Funcall({
 			fun: a,
@@ -103,7 +103,7 @@ export default class ER {
 		}
 	}
 
-	public static call(callee: Schema | Fun, args: Expr0[]): Metaexpr {
+	public static call(callee: Metaexpr, args: Expr0[]): Metaexpr {
 		if (!iscallable(callee)) {
 			console.log(callee);
 			throw Error('Illegal type');
@@ -149,30 +149,9 @@ export default class ER {
 		return ER.call(callee_, expr.args);
 	}
 
-	// 이름 있는 것은 풀지 않는다. 재귀적.
-	public static expand0Funcalls(expr) {
-		if (expr._type == 'funcall') {
-			var fun = ER.expand0Funcalls(expr.fun);
-			var args = expr.args.map(ER.expand0Funcalls);
-
-			if (fun._type != 'fun' || fun.name)
-				return new Funcall({fun, args});
-
-			return ER.expand0Funcalls(ER.call(fun, args));
-		} else if (expr._type == 'fun' && !expr.name) {
-			return new Fun({
-				name: null,
-				params: expr.params,
-				expr: ER.expand0Funcalls(expr.expr)
-			});
-		} else {
-			return expr;
-		}
-	}
-
 	// expand0은 하지 않는다.
-	public static expandMeta(expr) {
-		if (expr.native) {
+	public static expandMeta(expr: Metaexpr): Metaexpr {
+		if ('native' in expr && expr.native) {
 			return expr;
 		}
 
@@ -207,7 +186,7 @@ export default class ER {
 	}
 
 	// expr0의 이름 없는 funcall까지 풀음.
-	public static expandMetaAndFuncalls(expr) {
+	public static expandMetaAndFuncalls(expr: Metaexpr) {
 		switch (expr._type) {
 			case 'tee':
 				var left = expr.left.map(ER.expandMetaAndFuncalls);
@@ -216,7 +195,7 @@ export default class ER {
 				return new Tee({left, right});
 			case 'schemacall':
 				var schema = ER.expandMetaAndFuncalls(expr.schema);
-				var args = expr.args.map(ER.expand0Funcalls);
+				var args = expr.args.map(ER.expandMetaAndFuncalls);
 
 				return ER.expandMetaAndFuncalls(ER.call(schema, args));
 			case 'reduction':
@@ -229,9 +208,25 @@ export default class ER {
 					expr: ER.expandMetaAndFuncalls(expr.expr)
 				});
 			case 'funcall':
+				var fun = ER.expandMetaAndFuncalls(expr.fun);
+				var args = expr.args.map(ER.expandMetaAndFuncalls);
+
+				if (fun._type != 'fun' || fun.name)
+					return new Funcall({fun, args});
+
+				return ER.expandMetaAndFuncalls(ER.call(fun, args));
 			case 'fun':
+				if (!expr.name) {
+					return new Fun({
+						name: null,
+						params: expr.params,
+						expr: ER.expandMetaAndFuncalls(expr.expr)
+					});
+				}
+
+				return expr;
 			case 'typevar':
-				return ER.expand0Funcalls(expr);
+				return expr;
 			default:
 				console.log(expr);
 				throw Error('Unknown metaexpr');
@@ -373,7 +368,7 @@ export default class ER {
 		return ret;
 	}
 
-	public static chain(tees) {
+	public static chain(tees: Tee[]) {
 		if (!tees.every(tee => tee._type == 'tee')) {
 			throw Error('no');
 		}
