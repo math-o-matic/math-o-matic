@@ -69,7 +69,7 @@ export interface SchemacallObject {
 
 export interface FuncallObject {
     _type: 'funcall';
-    fun: Expr0Object;
+    schema: Expr0Object;
     args: Expr0Object[];
     location: LocationObject;
 }

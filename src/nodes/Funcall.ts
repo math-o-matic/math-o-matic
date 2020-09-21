@@ -7,22 +7,20 @@ import Type from './Type';
 export default class Funcall extends Node {
 	public readonly _type = 'funcall';
 	
-	public readonly fun;
+	public readonly schema;
 	public readonly type: Type;
 	public readonly args;
 
-	constructor ({fun, args}, scope?: Scope) {
+	constructor ({schema, args}, scope?: Scope) {
 		super(scope);
 
-		fun = fun as Typevar | Fun | Funcall;
-
-		if (fun.type.isSimple)
-			throw this.error(`${fun.name} is not callable`);
+		if (schema.type.isSimple)
+			throw this.error(`${schema.name} is not callable`);
 
 		if (!(args instanceof Array) || args.map(e => e instanceof Node).some(e => !e))
 			throw this.error('Assertion failed');
 
-		var resolvedType = fun.type.resolve(),
+		var resolvedType = schema.type.resolve(),
 			paramTypes = resolvedType.from,
 			argTypes = args.map(e => e.type);
 
@@ -34,7 +32,7 @@ export default class Funcall extends Node {
 				throw this.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
 		}
 		
-		this.fun = fun;
+		this.schema = schema;
 		this.type = resolvedType.to;
 		this.args = args;
 	}
@@ -42,7 +40,7 @@ export default class Funcall extends Node {
 	public isProved(hyps) {
 		hyps = hyps || [];
 		
-		return super.isProved(hyps) || this.fun.isProved(hyps);
+		return super.isProved(hyps) || this.schema.isProved(hyps);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {
@@ -60,7 +58,7 @@ export default class Funcall extends Node {
 			args = args.join(', ');
 	
 			return [
-				`${this.fun._type != 'fun' || !this.fun.name ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
+				`${this.schema._type != 'fun' || !this.schema.name ? '(' + this.schema.toIndentedString(indent) + ')' : this.schema.name}(`,
 				args,
 				')'
 			].join('');
@@ -68,7 +66,7 @@ export default class Funcall extends Node {
 			args = args.join(',\n' + '\t'.repeat(indent + 1));
 	
 			return [
-				`${this.fun._type != 'fun' || !this.fun.name ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
+				`${this.schema._type != 'fun' || !this.schema.name ? '(' + this.schema.toIndentedString(indent) + ')' : this.schema.name}(`,
 				'\t' + args,
 				')'
 			].join('\n' + '\t'.repeat(indent));
@@ -76,18 +74,18 @@ export default class Funcall extends Node {
 	}
 
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		if (this.fun instanceof Fun)
-			return this.fun.funcallToTeXString(this.args, prec);
+		if (this.schema instanceof Fun)
+			return this.schema.funcallToTeXString(this.args, prec);
 
 		var args = this.args.map(arg => {
 			return arg.toTeXString(Node.PREC_COMMA);
 		});
 
-		return `${!this.fun.name || this.fun._type == 'typevar'
-				? this.fun.toTeXString(false)
-				: this.fun.name.length == 1
-					? Node.escapeTeX(this.fun.name)
-					: `\\mathrm{${Node.escapeTeX(this.fun.name)}}`}`
+		return `${!this.schema.name || this.schema._type == 'typevar'
+				? this.schema.toTeXString(false)
+				: this.schema.name.length == 1
+					? Node.escapeTeX(this.schema.name)
+					: `\\mathrm{${Node.escapeTeX(this.schema.name)}}`}`
 			+ `(${args.join(', ')})`;
 	}
 }

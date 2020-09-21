@@ -13,7 +13,7 @@ function callee(a: Metaexpr) {
 	return a._type == 'schemacall'
 		? a.schema
 		: a._type == 'funcall'
-			? a.fun
+			? a.schema
 			: (() => {
 				console.log(a);
 				throw Error();
@@ -23,7 +23,7 @@ function callee(a: Metaexpr) {
 function makecall(a: Metaexpr, args: Expr0[]): Funcall | Schemacall {
 	return a._type == 'fun' || a._type == 'typevar'
 		? new Funcall({
-			fun: a,
+			schema: a,
 			args
 		})
 		: a._type == 'schema'
@@ -40,18 +40,37 @@ function makecall(a: Metaexpr, args: Expr0[]): Funcall | Schemacall {
 export default class ER {
 	public static substitute(expr: Metaexpr, map: Map<Typevar | Fun, Expr0>): Metaexpr {
 		switch (expr._type) {
+			case 'schemacall':
+				return new Schemacall({
+					schema: ER.substitute(expr.schema, map),
+					args: expr.args.map(arg => ER.substitute(arg, map))
+				});
 			case 'funcall':
-				var fun = ER.substitute(expr.fun, map),
+				var schema = ER.substitute(expr.schema, map),
 					args = expr.args.map(arg => ER.substitute(arg, map));
 
-				if (fun._type == 'schema') {
+				if (schema._type == 'schema') {
 					return new Schemacall({
-						schema: fun,
+						schema,
 						args
 					});
 				}
 
-				return new Funcall({ fun, args });
+				return new Funcall({ schema, args });
+			case 'schema':
+				// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
+				if (expr.name) return expr;
+
+				// 위의 expr.name 조건을 지우면 특수한 경우에 이게 발생할지도 모른다.
+				if (expr.params.some(e => map.has(e)))
+					throw Error('Parameter collision');
+
+				return new Schema({
+					axiomatic: expr.axiomatic,
+					name: null,
+					params: expr.params,
+					expr: ER.substitute(expr.expr, map)
+				});
 			case 'fun':
 				if (!expr.expr) return map.get(expr) || expr;
 
@@ -75,25 +94,6 @@ export default class ER {
 
 				return new Tee({
 					left, right
-				});
-			case 'schemacall':
-				return new Schemacall({
-					schema: ER.substitute(expr.schema, map),
-					args: expr.args.map(arg => ER.substitute(arg, map))
-				});
-			case 'schema':
-				// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
-				if (expr.name) return expr;
-
-				// 위의 expr.name 조건을 지우면 특수한 경우에 이게 발생할지도 모른다.
-				if (expr.params.some(e => map.has(e)))
-					throw Error('Parameter collision');
-
-				return new Schema({
-					axiomatic: expr.axiomatic,
-					name: null,
-					params: expr.params,
-					expr: ER.substitute(expr.expr, map)
 				});
 			case 'reduction':
 				return ER.substitute(expr.reduced, map);
@@ -193,13 +193,6 @@ export default class ER {
 				var right = ER.expandMetaAndFuncalls(expr.right);
 
 				return new Tee({left, right});
-			case 'schemacall':
-				var schema = ER.expandMetaAndFuncalls(expr.schema);
-				var args = expr.args.map(ER.expandMetaAndFuncalls);
-
-				return ER.expandMetaAndFuncalls(ER.call(schema, args));
-			case 'reduction':
-				return ER.expandMetaAndFuncalls(expr.reduced);
 			case 'schema':
 				return new Schema({
 					axiomatic: expr.axiomatic,
@@ -207,14 +200,6 @@ export default class ER {
 					params: expr.params,
 					expr: ER.expandMetaAndFuncalls(expr.expr)
 				});
-			case 'funcall':
-				var fun = ER.expandMetaAndFuncalls(expr.fun);
-				var args = expr.args.map(ER.expandMetaAndFuncalls);
-
-				if (fun._type != 'fun' || fun.name)
-					return new Funcall({fun, args});
-
-				return ER.expandMetaAndFuncalls(ER.call(fun, args));
 			case 'fun':
 				if (!expr.name) {
 					return new Fun({
@@ -225,6 +210,21 @@ export default class ER {
 				}
 
 				return expr;
+			case 'schemacall':
+				var schema = ER.expandMetaAndFuncalls(expr.schema);
+				var args = expr.args.map(ER.expandMetaAndFuncalls);
+
+				return ER.expandMetaAndFuncalls(ER.call(schema, args));
+			case 'funcall':
+				var schema = ER.expandMetaAndFuncalls(expr.schema);
+				var args = expr.args.map(ER.expandMetaAndFuncalls);
+
+				if (schema._type != 'fun' || schema.name)
+					return new Funcall({schema, args});
+
+				return ER.expandMetaAndFuncalls(ER.call(schema, args));
+			case 'reduction':
+				return ER.expandMetaAndFuncalls(expr.reduced);
 			case 'typevar':
 				return expr;
 			default:

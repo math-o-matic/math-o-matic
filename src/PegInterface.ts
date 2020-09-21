@@ -192,15 +192,15 @@ export default class PI {
 		if (obj._type != 'funcall')
 			throw Error('Assertion failed');
 
-		var scope = parentScope.extend('funcall', 'name' in obj.fun ? obj.fun.name : null, obj.location);
+		var scope = parentScope.extend('funcall', 'name' in obj.schema ? obj.schema.name : null, obj.location);
 
-		var fun = PI.expr0(obj.fun, scope);
+		var schema = PI.expr0(obj.schema, scope);
 
 		var args = obj.args.map(arg => {
 			return PI.expr0(arg, scope);
 		});
 
-		return new Funcall({fun, args}, scope);
+		return new Funcall({schema, args}, scope);
 	}
 
 	public static metaexpr(obj: MetaexprObject, parentScope: Scope) {
@@ -348,7 +348,7 @@ export default class PI {
 		if (schema.type._type == 'type') {
 			return PI.funcall({
 				_type: 'funcall',
-				fun: obj.schema as any,
+				schema: obj.schema as any,
 				args: obj.args,
 				location: obj.location
 			}, parentScope);

@@ -134,15 +134,15 @@ ${ExpressionResolver.expandMetaAndFuncalls(leftargs[i])}
 				}
 
 				while (true) {
-					if (!lef.fun || !node.fun) {
+					if (!lef.schema || !node.schema) {
 						throw that.error(`Cannot dereference @${guess}`);
 					}
 
-					if (ExpressionResolver.equals(lef.fun, node.fun)) {
+					if (ExpressionResolver.equals(lef.schema, node.schema)) {
 						break;
 					}
 
-					if (!node.fun.expr) {
+					if (!node.schema.expr) {
 						throw that.error(`Cannot dereference @${guess}`);
 					}
 

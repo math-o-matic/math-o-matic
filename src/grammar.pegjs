@@ -270,7 +270,7 @@ schemacall =
 // forall(f, g)
 // (expr0)(f, g)
 funcall =
-	fun:(
+	schema:(
 		var
 		/ "(" _
 		e:expr0 _
@@ -290,7 +290,7 @@ funcall =
 	{
 		return {
 			_type: 'funcall',
-			fun,
+			schema,
 			args,
 			location: location()
 		}
