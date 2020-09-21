@@ -27,7 +27,7 @@ function typeObjToString(obj: TypeObject): string {
 }
 
 /*
- * Scope.prototype.getType이나 Scope.prototype.hasType 등의 입력 형태로 바꾼다.
+ * Scope#getType이나 Scope#hasType 등의 입력 형태로 바꾼다.
  * st						-> 'st'
  * [cls -> st]				-> ['cls', 'st']
  * [(cls, cls) -> st]		-> ['cls', 'cls', 'st']
