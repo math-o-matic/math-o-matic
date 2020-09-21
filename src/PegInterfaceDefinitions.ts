@@ -30,29 +30,47 @@ export interface DefunObject {
 }
 
 export type Expr0Object = FuncallObject | FunexprObject | VarObject;
+export type MetaexprObject = TeeObject | ReductionObject | SchemacallObject | VarObject | SchemaexprObject;
 
 export interface DefschemaObject {
     _type: 'defschema';
+    doc?: string;
+    axiomatic: boolean;
+    name: string;
+    native: boolean;
+    params?: DefvObject[];
+    expr?: MetaexprObject;
     location: LocationObject;
 }
 
 export interface DefrulesetObject {
     _type: 'defruleset';
+    doc?: string;
+    axiomatic: boolean;
+    name: string;
+    native: true;
     location: LocationObject;
 }
 
 export interface ReductionObject {
     _type: 'reduction';
+    subject: MetaexprObject;
+    guesses?: Array<Expr0Object | null>;
+    leftargs: MetaexprObject[];
     location: LocationObject;
 }
 
 export interface SchemacallObject {
     _type: 'schemacall';
+    schema: MetaexprObject;
+    args: Expr0Object[];
     location: LocationObject;
 }
 
 export interface FuncallObject {
     _type: 'funcall';
+    fun: Expr0Object;
+    args: Expr0Object[];
     location: LocationObject;
 }
 
@@ -65,11 +83,15 @@ export interface FunexprObject {
 
 export interface SchemaexprObject {
     _type: 'schemaexpr';
+    params: DefvObject[];
+    expr: MetaexprObject;
     location: LocationObject;
 }
 
 export interface TeeObject {
     _type: 'tee';
+    left: MetaexprObject[];
+    right: MetaexprObject;
     location: LocationObject;
 }
 

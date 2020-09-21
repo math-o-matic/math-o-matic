@@ -6,7 +6,7 @@ import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
 import Typevar from './Typevar';
 
-interface SchemaArgumentable {
+interface SchemaArgumentType {
 	axiomatic: boolean,
 	name?: string,
 	native?: object,
@@ -26,7 +26,7 @@ export default class Schema extends Node {
 	public readonly type: Type | MetaType;
 	public readonly proved: boolean;
 
-	constructor ({axiomatic, /* nullable */ name, native, params, expr, doc}: SchemaArgumentable, scope?: Scope) {
+	constructor ({axiomatic, /* nullable */ name, native, params, expr, doc}: SchemaArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;

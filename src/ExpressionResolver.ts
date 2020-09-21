@@ -1,12 +1,15 @@
-function iscallable(a) {
+export type Expr0 = Funcall | Fun | Typevar;
+export type Metaexpr = Tee | Reduction | Schemacall | Schema | Expr0;
+
+function iscallable(a: Metaexpr): a is Schema | Fun {
 	return ['schema', 'fun'].includes(a._type);
 }
 
-function iscall(a) {
+function iscall(a: Metaexpr): a is Schemacall | Funcall {
 	return ['schemacall', 'funcall'].includes(a._type);
 }
 
-function callee(a) {
+function callee(a: Metaexpr) {
 	return a._type == 'schemacall'
 		? a.schema
 		: a._type == 'funcall'
@@ -17,7 +20,7 @@ function callee(a) {
 			})();
 }
 
-function makecall(a, args) {
+function makecall(a: Metaexpr, args: Expr0[]): Metaexpr {
 	return a._type == 'fun' || a._type == 'typevar'
 		? new Funcall({
 			fun: a,
@@ -35,7 +38,7 @@ function makecall(a, args) {
 }
 
 export default class ER {
-	public static substitute(expr, map) {
+	public static substitute(expr: Metaexpr, map: Map<Typevar | Fun, Expr0>): Metaexpr {
 		switch (expr._type) {
 			case 'funcall':
 				var fun = ER.substitute(expr.fun, map),
@@ -95,11 +98,12 @@ export default class ER {
 			case 'reduction':
 				return ER.substitute(expr.reduced, map);
 			default:
+				// @ts-ignore
 				throw Error(`Unknown type ${expr._type}`);
 		}
 	}
 
-	public static call(callee, args) {
+	public static call(callee: Schema | Fun, args: Expr0[]): Metaexpr {
 		if (!iscallable(callee)) {
 			console.log(callee);
 			throw Error('Illegal type');
@@ -122,7 +126,7 @@ export default class ER {
 		return ER.substitute(callee.expr, map);
 	}
 
-	public static expandCallOnce(expr) {
+	public static expandCallOnce(expr: Metaexpr): Metaexpr {
 		if (!iscall(expr)) {
 			throw Error('Illegal type');
 		}
@@ -132,11 +136,17 @@ export default class ER {
 			return makecall(fun, expr.args);
 		}
 
-		if (!callee(expr).expr) {
+		var callee_ = callee(expr);
+
+		if (callee_._type != 'schema' && callee_._type != 'fun') {
+			throw Error('Something\'s wrong');
+		}
+
+		if (!callee_.expr) {
 			throw Error('Could not expand');
 		}
 
-		return ER.call(callee(expr), expr.args);
+		return ER.call(callee_, expr.args);
 	}
 
 	// 이름 있는 것은 풀지 않는다. 재귀적.
@@ -398,6 +408,7 @@ ${r}
 // 순환 참조를 피하기 위하여 export 후 import 한다.
 import Fun from "./nodes/Fun";
 import Funcall from "./nodes/Funcall";
+import Reduction from "./nodes/Reduction";
 import Schema from "./nodes/Schema";
 import Schemacall from "./nodes/Schemacall";
 import Tee from "./nodes/Tee";

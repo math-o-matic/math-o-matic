@@ -4,7 +4,7 @@ import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
 import Typevar from './Typevar';
 
-interface FunArgumentable {
+interface FunArgumentType {
 	name?: string,
 	type?: Type,
 	params: Typevar[],
@@ -25,7 +25,7 @@ export default class Fun extends Node {
 	 * name, expr 중 하나 이상 있어야 하고 type, expr 중
 	 * 한 개만 있어야 한다.
 	 */
-	constructor ({name, type, params, expr, doc, tex}: FunArgumentable, scope?: Scope) {
+	constructor ({name, type, params, expr, doc, tex}: FunArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;

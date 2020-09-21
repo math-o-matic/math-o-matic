@@ -14,7 +14,7 @@ import Schemacall from './nodes/Schemacall';
 import Reduction from './nodes/Reduction';
 
 import ExpressionResolver from './ExpressionResolver';
-import { DefunObject, DefvObject, FunexprObject, StypeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
+import { DefrulesetObject, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
 import Scope from './Scope';
 
 function typeObjToString(obj: TypeObject): string {
@@ -188,11 +188,11 @@ export default class PI {
 		return new Fun({name, type, params, expr, doc, tex}, scope);
 	}
 
-	public static funcall(obj, parentScope) {
+	public static funcall(obj: FuncallObject, parentScope: Scope) {
 		if (obj._type != 'funcall')
 			throw Error('Assertion failed');
 
-		var scope = parentScope.extend('funcall', obj.fun.name || null, obj.location);
+		var scope = parentScope.extend('funcall', 'name' in obj.fun ? obj.fun.name : null, obj.location);
 
 		var fun = PI.expr0(obj.fun, scope);
 
@@ -203,7 +203,7 @@ export default class PI {
 		return new Funcall({fun, args}, scope);
 	}
 
-	public static metaexpr(obj, parentScope) {
+	public static metaexpr(obj: MetaexprObject, parentScope: Scope) {
 		if (!['tee', 'reduction', 'schemacall', 'schemaexpr', 'var'].includes(obj._type))
 			throw Error('Assertion failed');
 
@@ -226,7 +226,7 @@ export default class PI {
 		}
 	}
 
-	public static expr0(obj, parentScope) {
+	public static expr0(obj: Expr0Object, parentScope: Scope) {
 		if (!['funcall', 'funexpr', 'var'].includes(obj._type)) {
 			console.log(obj);
 			throw Error('Assertion failed');
@@ -247,7 +247,7 @@ export default class PI {
 		}
 	}
 
-	public static metavar(obj, parentScope) {
+	public static metavar(obj: VarObject, parentScope: Scope) {
 		if (obj._type != 'var')
 			throw Error('Assertion failed');
 
@@ -280,7 +280,7 @@ export default class PI {
 		}
 	}
 
-	public static tee(obj, parentScope) {
+	public static tee(obj: TeeObject, parentScope: Scope) {
 		if (obj._type != 'tee')
 			throw Error('Assertion failed');
 
@@ -294,18 +294,22 @@ export default class PI {
 		return new Tee({left, right}, scope);
 	}
 
-	public static schema(obj, parentScope, nativeMap?) {
+	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, nativeMap?) {
 		if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 			throw Error('Assertion failed');
 
 		nativeMap = nativeMap || {};
 
-		var scope = parentScope.extend('schema', obj.name, obj.location);
+		var name = null, axiomatic = false, doc = null;
 
-		var axiomatic = obj.axiomatic;
-		var name = obj.name;
+		if (obj._type == 'defschema') {
+			name = obj.name; axiomatic = obj.axiomatic;
+			doc = obj.doc;
+		}
 
-		if (obj.native) {
+		var scope = parentScope.extend('schema', name, obj.location);
+
+		if (obj._type == 'defschema' && obj.native) {
 			if (!nativeMap.schema[name])
 				throw scope.error(`Native code for native schema ${name} not found`);
 
@@ -330,21 +334,21 @@ export default class PI {
 
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new Schema({axiomatic, name, params, expr, doc: obj.doc}, scope);
+		return new Schema({axiomatic, name, params, expr, doc}, scope);
 	}
 
-	public static schemacall(obj, parentScope) {
+	public static schemacall(obj: SchemacallObject, parentScope: Scope) {
 		if (obj._type != 'schemacall')
 			throw Error('Assertion failed');
 
-		var scope = parentScope.extend('schemacall', obj.schema.name || null, obj.location);
+		var scope = parentScope.extend('schemacall', 'name' in obj.schema ? obj.schema.name : null, obj.location);
 
 		var schema = PI.metaexpr(obj.schema, scope);
 
 		if (schema.type._type == 'type') {
 			return PI.funcall({
 				_type: 'funcall',
-				fun: obj.schema,
+				fun: obj.schema as any,
 				args: obj.args,
 				location: obj.location
 			}, parentScope);
@@ -360,9 +364,11 @@ export default class PI {
 		}, scope);
 	}
 
-	public static ruleset(obj, parentScope, nativeMap) {
+	public static ruleset(obj: DefrulesetObject, parentScope: Scope, nativeMap?) {
 		if (obj._type != 'defruleset')
 			throw Error('Assertion failed');
+
+		native = native || {};
 
 		var scope = parentScope.extend('ruleset', obj.name, obj.location);
 
@@ -380,11 +386,11 @@ export default class PI {
 		return new Ruleset({axiomatic, name, native, doc: obj.doc}, scope);
 	}
 
-	public static reduction(obj, parentScope) {
+	public static reduction(obj: ReductionObject, parentScope: Scope) {
 		if (obj._type != 'reduction')
 			throw Error('Assertion failed');
 
-		var scope = parentScope.extend('reduction', obj.subject.name || null, obj.location);
+		var scope = parentScope.extend('reduction', 'name' in obj.subject ? obj.subject.name : null, obj.location);
 
 		var subject = PI.metaexpr(obj.subject, scope);
 

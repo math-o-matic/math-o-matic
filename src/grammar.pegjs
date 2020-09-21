@@ -336,9 +336,6 @@ schemaexpr =
 	{
 		return {
 			_type: 'schemaexpr',
-			doc: false,
-			axiomatic: false,
-			name: null,
 			params,
 			expr,
 			location: location()
