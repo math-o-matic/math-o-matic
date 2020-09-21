@@ -7,12 +7,14 @@ import Scope from '../Scope';
 import Typevar from './Typevar';
 
 interface SchemaArgumentType {
-	axiomatic: boolean,
-	name?: string,
-	native?: object,
-	params?: Typevar[],
-	expr?: Node,
-	doc?: string
+	axiomatic: boolean;
+	type?: Type | MetaType;
+	name?: string;
+	native?: object;
+	params?: Typevar[];
+	expr?: Node;
+	doc?: string;
+	tex?: string;
 }
 
 export default class Schema extends Node {
@@ -27,7 +29,7 @@ export default class Schema extends Node {
 	public readonly type: Type | MetaType;
 	public readonly proved: boolean;
 
-	constructor ({axiomatic, /* nullable */ name, native, params, expr, doc}: SchemaArgumentType, scope?: Scope) {
+	constructor ({doc, tex, axiomatic, type, /* nullable */ name, native, params, expr}: SchemaArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;
