@@ -1007,24 +1007,22 @@ schema AeX2(pr f, pr g) {
 	)
 }
 
+schema AeX2m1(pr2 f: @111, pr2 g: @112) {
+	X2(Af2(f, g)) |-
+		Ae1[X2Am(f, g)[@h1]]
+}
+
 schema AeX2_1(pr2 f, pr2 g) {
-	tt.IApqp(X2(f), X2(g))
-	~ X2A(f, g)
-	~ syll(
-		X2((cls x, cls y) => {A(f(x, y), g(x, y))}),
-		A(X2(f), X2(g)),
-		X2(f)
-	)
+	|- cp[AeX2m1(f, g)]
+}
+
+schema AeX2m2(pr2 f: @111, pr2 g: @112) {
+	X2(Af2(f, g)) |-
+		Ae2[X2Am(f, g)[@h1]]
 }
 
 schema AeX2_2(pr2 f, pr2 g) {
-	tt.IApqq(X2(f), X2(g))
-	~ X2A(f, g)
-	~ syll(
-		X2((cls x, cls y) => {A(f(x, y), g(x, y))}),
-		A(X2(f), X2(g)),
-		X2(g)
-	)
+	|- cp[AeX2m2(f, g)]
 }
 
 schema mpVE(pr f, pr g) {
@@ -2587,31 +2585,14 @@ cls rel_composite(cls x, cls y) {
 
 "곱집합은 이항관계이다."
 schema cartesian_is_rel(cls x, cls y) {
-	Viu((cls z) => {
-		I(
-			in(z, cartesian(x, y)),
-			X2((cls a, cls b) => {
+	|- id(is_rel(cartesian(x, y)))[Vi[(cls z) => {
+		cp[in(z, cartesian(x, y)) |-
+			AeX2m1((cls a, cls b) => {
 				eq(z, v2(a, b))
-			})
-		)
-	})[(cls z) => {
-		|- cp[
-			id(in(z, cartesian(x, y)))
-			~ mpu[setbuilder_ec((cls z) => {
-				X2((cls a, cls b) => {
-					A(
-						eq(z, v2(a, b)),
-						A(in(a, x), in(b, y))
-					)
-				})
-			}, z)]
-			~ mpu[AeX2_1(
-				(cls a, cls b) => {eq(z, v2(a, b))},
-				(cls a, cls b) => {A(in(a, x), in(b, y))}
-			)]
-		]
-	}]
-	~ id(is_rel(cartesian(x, y)))
+			}, (cls a, cls b) => {
+				A(in(a, x), in(b, y))
+			})[setbuilder_e[@h1]]]
+	}]]
 }
 
 schema rel_subset_is_rel(cls x: @11, cls y: @12) {
