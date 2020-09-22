@@ -1,10 +1,6 @@
 export type Expr0 = Schemacall | Schema | Typevar;
 export type Metaexpr = Tee | Reduction | Schemacall | Schema | Expr0;
 
-function iscallable(a: Metaexpr): a is Schema {
-	return a._type == 'schema';
-}
-
 function iscall(a: Metaexpr): a is Schemacall {
 	return a._type == 'schemacall';
 }
@@ -71,7 +67,7 @@ export default class ER {
 	}
 
 	public static call(callee: Metaexpr, args: Expr0[]): Metaexpr {
-		if (!iscallable(callee)) {
+		if (callee._type != 'schema') {
 			console.log(callee);
 			throw Error('Illegal type');
 		}

@@ -12,7 +12,7 @@ interface SchemaArgumentType {
 	type?: Type | MetaType;
 	name?: string;
 	native?: object;
-	params?: Typevar[];
+	params?: (Typevar | Schema)[];
 	expr?: Node;
 	doc?: string;
 	tex?: string;

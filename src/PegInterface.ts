@@ -11,9 +11,9 @@ import Schema from './nodes/Schema';
 import Schemacall from './nodes/Schemacall';
 import Reduction from './nodes/Reduction';
 
-import ExpressionResolver from './ExpressionResolver';
+import { Expr0, Metaexpr } from './ExpressionResolver';
 import { DefrulesetObject, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
-import Scope from './Scope';
+import Scope, { NestedTypeInput } from './Scope';
 
 function typeObjToString(obj: TypeObject): string {
 	if (obj._type != 'type')
@@ -31,7 +31,7 @@ function typeObjToString(obj: TypeObject): string {
  * [(cls, cls) -> st]		-> ['cls', 'cls', 'st']
  * [[cls -> st] -> st]		-> [['cls', 'st'], 'st']
  */
-function typeObjToNestedArr(obj: TypeObject) {
+function typeObjToNestedArr(obj: TypeObject): NestedTypeInput {
 	if (obj._type != 'type')
 		throw Error('Assertion failed');
 
@@ -97,7 +97,7 @@ export default class PI {
 		});
 	}
 
-	public static typevar(obj: DefvObject | VarObject, parentScope: Scope): Typevar {
+	public static typevar(obj: DefvObject | VarObject, parentScope: Scope): Typevar | Schema {
 		if (!['defv', 'var'].includes(obj._type)) {
 			throw Error('Assertion failed');
 		}
@@ -186,7 +186,7 @@ export default class PI {
 		return new Schema({shouldValidate: false, name, type, params, expr, doc, tex}, scope);
 	}
 
-	public static funcall(obj: FuncallObject, parentScope: Scope) {
+	public static funcall(obj: FuncallObject, parentScope: Scope): Schemacall {
 		if (obj._type != 'funcall')
 			throw Error('Assertion failed');
 
@@ -201,7 +201,7 @@ export default class PI {
 		return new Schemacall({schema, args}, scope);
 	}
 
-	public static metaexpr(obj: MetaexprObject, parentScope: Scope) {
+	public static metaexpr(obj: MetaexprObject, parentScope: Scope): Metaexpr {
 		if (!['tee', 'reduction', 'schemacall', 'schemaexpr', 'var'].includes(obj._type))
 			throw Error('Assertion failed');
 
@@ -224,7 +224,7 @@ export default class PI {
 		}
 	}
 
-	public static expr0(obj: Expr0Object, parentScope: Scope) {
+	public static expr0(obj: Expr0Object, parentScope: Scope): Expr0 {
 		if (!['funcall', 'funexpr', 'var'].includes(obj._type)) {
 			console.log(obj);
 			throw Error('Assertion failed');
@@ -245,7 +245,7 @@ export default class PI {
 		}
 	}
 
-	public static metavar(obj: VarObject, parentScope: Scope) {
+	public static metavar(obj: VarObject, parentScope: Scope): Schema | Typevar {
 		if (obj._type != 'var')
 			throw Error('Assertion failed');
 
@@ -278,7 +278,7 @@ export default class PI {
 		}
 	}
 
-	public static tee(obj: TeeObject, parentScope: Scope) {
+	public static tee(obj: TeeObject, parentScope: Scope): Tee {
 		if (obj._type != 'tee')
 			throw Error('Assertion failed');
 
@@ -292,7 +292,7 @@ export default class PI {
 		return new Tee({left, right}, scope);
 	}
 
-	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, nativeMap?) {
+	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, nativeMap?): Schema {
 		if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 			throw Error('Assertion failed');
 
@@ -312,7 +312,7 @@ export default class PI {
 				throw scope.error(`Native code for native schema ${name} not found`);
 
 			var native = {
-				get: args => nativeMap.schema[name].get(args, scope, ExpressionResolver)
+				get: args => nativeMap.schema[name].get(args, scope)
 			};
 
 			return new Schema({shouldValidate: true, axiomatic, name, native, doc: obj.doc}, scope);
@@ -335,7 +335,7 @@ export default class PI {
 		return new Schema({shouldValidate: true, axiomatic, name, params, expr, doc}, scope);
 	}
 
-	public static schemacall(obj: SchemacallObject, parentScope: Scope) {
+	public static schemacall(obj: SchemacallObject, parentScope: Scope): Schemacall {
 		if (obj._type != 'schemacall')
 			throw Error('Assertion failed');
 
@@ -353,7 +353,7 @@ export default class PI {
 		}, scope);
 	}
 
-	public static ruleset(obj: DefrulesetObject, parentScope: Scope, nativeMap?) {
+	public static ruleset(obj: DefrulesetObject, parentScope: Scope, nativeMap?): Ruleset {
 		if (obj._type != 'defruleset')
 			throw Error('Assertion failed');
 
@@ -375,7 +375,7 @@ export default class PI {
 		return new Ruleset({axiomatic, name, native, doc: obj.doc}, scope);
 	}
 
-	public static reduction(obj: ReductionObject, parentScope: Scope) {
+	public static reduction(obj: ReductionObject, parentScope: Scope): Reduction {
 		if (obj._type != 'reduction')
 			throw Error('Assertion failed');
 

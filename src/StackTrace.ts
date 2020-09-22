@@ -5,7 +5,7 @@ export default class StackTrace {
 		this.stack = stack || [];
 	}
 
-	public extend(type, name, location) {
+	public extend(type, name, location): StackTrace {
 		return new StackTrace([[type, name, location]].concat(this.stack));
 	}
 

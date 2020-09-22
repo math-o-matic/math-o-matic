@@ -1,30 +1,23 @@
 import Type from './nodes/Type';
 import Typevar from './nodes/Typevar';
-import Tee from './nodes/Tee';
 import Ruleset from './nodes/Ruleset';
 import Schema from './nodes/Schema';
-import Schemacall from './nodes/Schemacall';
 
 import StackTrace from './StackTrace';
 
+export type NestedTypeInput = string | NestedTypeInput[];
+
 export default class Scope {
-	public readonly typedefMap = {};
-	public readonly defMap = {};
-	public readonly schemaMap = {};
-	public readonly rulesetMap = {};
+	public readonly typedefMap: Map<string, Type> = new Map();
+	public readonly defMap: Map<string, Typevar | Schema> = new Map();
+	public readonly schemaMap: Map<string, Schema> = new Map();
+	public readonly rulesetMap: Map<string, Ruleset> = new Map();
 
 	public readonly parent: Scope;
 	public readonly root: Scope;
 
 	public readonly trace: StackTrace;
 	public baseType: Type;
-
-	public readonly Type = Type;
-	public readonly Typevar = Typevar;
-	public readonly Tee = Tee;
-	public readonly Ruleset = Ruleset;
-	public readonly Schema = Schema;
-	public readonly Schemacall = Schemacall;
 
 	constructor (parent: Scope, trace?: StackTrace) {
 		this.parent = parent;
@@ -39,11 +32,11 @@ export default class Scope {
 		this.baseType = parent ? parent.baseType : null;
 	}
 
-	public extend(type, name, location) {
+	public extend(type, name, location): Scope {
 		return new Scope(this, this.trace.extend(type, name, location));
 	}
 
-	public error(message: string) {
+	public error(message: string): Error {
 		return this.trace.error(message);
 	}
 
@@ -54,9 +47,9 @@ export default class Scope {
 	 * ['cls', 'cls', 'st']		-> [(cls, cls) -> st]
 	 * [['cls', 'st'], 'st']	-> [[cls -> st] -> st]
 	 */
-	public hasOwnType(name) {
+	public hasOwnType(name: NestedTypeInput): boolean {
 		if (typeof name == 'string') {
-			return !!this.typedefMap[name];
+			return this.typedefMap.has(name);
 		}
 
 		if (!(name instanceof Array))
@@ -77,7 +70,7 @@ export default class Scope {
 	 * ['cls', 'cls', 'st']		-> [(cls, cls) -> st]
 	 * [['cls', 'st'], 'st']	-> [[cls -> st] -> st]
 	 */
-	public hasType(name) {
+	public hasType(name: NestedTypeInput): boolean {
 		if (typeof name == 'string') {
 			return this.hasOwnType(name)
 				|| (!!this.parent && this.parent.hasType(name));
@@ -94,7 +87,7 @@ export default class Scope {
 		}).every(e => e);
 	}
 
-	public addType(type: Type) {
+	public addType(type: Type): Type {
 		if (!(type instanceof Type))
 			throw this.error('Illegal argument type');
 
@@ -115,7 +108,8 @@ export default class Scope {
 			})(this);
 		}
 
-		return this.typedefMap[type.name] = type;
+		this.typedefMap.set(type.name, type);
+		return type;
 	}
 
 	/*
@@ -125,13 +119,13 @@ export default class Scope {
 	 * ['cls', 'cls', 'st']		-> [(cls, cls) -> st]
 	 * [['cls', 'st'], 'st']	-> [[cls -> st] -> st]
 	 */
-	public getType(name) {
+	public getType(name: NestedTypeInput): Type {
 		if (typeof name == 'string') {
 			if (!this.hasType(name))
 				throw this.error(`Type ${name} is not defined`);
 
-			return this.typedefMap[name] ||
-				(!!this.parent && this.parent.getType(name));
+			return this.typedefMap.has(name)
+				? this.typedefMap.get(name) : (!!this.parent && this.parent.getType(name));
 		}
 
 		if (!(name instanceof Array))
@@ -153,26 +147,27 @@ export default class Scope {
 		});
 	}
 
-	public hasOwnTypevar(name) {
-		return !!this.defMap[name];
+	public hasOwnTypevar(name: string): boolean {
+		return this.defMap.has(name);
 	}
 
-	public hasTypevar(name) {
+	public hasTypevar(name: string): boolean {
 		return this.hasOwnTypevar(name) ||
 			(!!this.parent && this.parent.hasTypevar(name));
 	}
 
-	public addTypevar(typevar) {
+	public addTypevar(typevar: Typevar | Schema): Typevar | Schema {
 		if (!(typevar instanceof Typevar))
 			throw this.error('Illegal argument type');
 
 		if (this.hasOwnTypevar(typevar.name))
 			throw this.error(`Definition ${typevar.name} has already been declared`);
 
-		return this.defMap[typevar.name] = typevar;
+		this.defMap.set(typevar.name, typevar);
+		return typevar;
 	}
 
-	public addFun(fun) {
+	public addFun(fun: Schema): Schema {
 		if (!(fun instanceof Schema))
 			throw this.error('Illegal argument type');
 
@@ -182,68 +177,74 @@ export default class Scope {
 		if (this.hasOwnTypevar(fun.name))
 			throw this.error(`Definition ${fun.name} has already been declared`);
 
-		return this.defMap[fun.name] = fun;
+		this.defMap.set(fun.name, fun);
+		return fun;
 	}
 
-	public getTypevar(name) {
+	public getTypevar(name: string): Typevar | Schema {
 		if (!this.hasTypevar(name))
 			throw this.error(`Definition ${name} is not defined`);
 
-		return this.defMap[name] ||
-			(!!this.parent && this.parent.getTypevar(name));
+		return this.defMap.has(name)
+			? this.defMap.get(name) : (!!this.parent && this.parent.getTypevar(name));
 	}
 
-	public hasOwnRuleset(name) {
-		return !!this.rulesetMap[name];
+	public hasOwnRuleset(name: string): boolean {
+		return this.rulesetMap.has(name);
 	}
 
-	public hasRuleset(name) {
+	public hasRuleset(name: string): boolean {
 		return this.hasOwnRuleset(name)
 			|| (!!this.parent && this.parent.hasRuleset(name));
 	}
 
-	public addRuleset(ruleset) {
+	public addRuleset(ruleset: Ruleset): Ruleset {
 		if (!(ruleset instanceof Ruleset))
 			throw this.error('Illegal argument type');
 
 		if (this.hasOwnRuleset(ruleset.name))
 			throw this.error(`Ruleset ${ruleset.name} has already been declared`);
 
-		return this.rulesetMap[ruleset.name] = ruleset;
+		this.rulesetMap.set(ruleset.name, ruleset);
+		return ruleset;
 	}
 
-	public getRuleset(name) {
+	public getRuleset(name: string): Ruleset {
 		if (!this.hasRuleset(name))
 			throw this.error(`Ruleset ${name} is not defined`);
 
-		return this.rulesetMap[name] ||
-			(!!this.parent && this.parent.getRuleset(name));
+		return this.rulesetMap.has(name)
+			? this.rulesetMap.get(name) : (!!this.parent && this.parent.getRuleset(name));
 	}
 
-	public hasOwnSchema(name) {
-		return !!this.schemaMap[name] || !!this.defMap[name];
+	public hasOwnSchema(name: string): boolean {
+		return this.schemaMap.has(name) || this.defMap.has(name);
 	}
 
-	public hasSchema(name) {
+	public hasSchema(name: string): boolean {
 		return this.hasOwnSchema(name)
 			|| (!!this.parent && this.parent.hasSchema(name));
 	}
 
-	public addSchema(schema) {
+	public addSchema(schema: Schema): Schema {
 		if (!(schema instanceof Schema))
 			throw this.error('Illegal argument type');
 
 		if (this.hasOwnSchema(schema.name))
 			throw this.error(`Schema ${schema.name} has already been declared`);
 
-		return this.schemaMap[schema.name] = schema;
+		this.schemaMap.set(schema.name, schema);
+		return schema;
 	}
 
-	public getSchema(name) {
+	public getSchema(name: string): Typevar | Schema {
 		if (!this.hasSchema(name))
 			throw this.error(`Schema ${name} is not defined`);
 
-		return this.schemaMap[name] || this.defMap[name] ||
-			(!!this.parent && this.parent.getSchema(name));
+		return this.schemaMap.has(name)
+			? this.schemaMap.get(name)
+			: this.defMap.has(name)
+				? this.defMap.get(name)
+				: (!!this.parent && this.parent.getSchema(name));
 	}
 }

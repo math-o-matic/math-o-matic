@@ -80,7 +80,7 @@ export default class Type extends Node {
 		return this.origin ? this.origin.resolve() : this;
 	}
 
-	public equals(t): boolean {
+	public equals(t: object): boolean {
 		if (!(t instanceof Type)) return false;
 
 		if (this.origin) return this.origin.equals(t);

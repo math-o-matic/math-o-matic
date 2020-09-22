@@ -55,7 +55,7 @@ export default class MetaType extends Node {
 		throw new Error('Method not implemented.');
 	}
 
-	public equals(t) {
+	public equals(t: object): boolean {
 		if (!(t instanceof MetaType)) return false;
 
 		if (this.isSimple != t.isSimple) return false;

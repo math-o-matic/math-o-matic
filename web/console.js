@@ -28,8 +28,8 @@ function hint() {
 		if (!keyword) reject();
 		keyword = keyword[0];
 
-		var names = Object.keys(program.scope.defMap)
-			.concat(Object.keys(program.scope.schemaMap));
+		var names = [...program.scope.defMap.keys()]
+			.concat([...program.scope.schemaMap.keys()]);
 
 		if (hintWorker) hintWorker.terminate();
 		hintWorker = new Worker('hintWorker.js');

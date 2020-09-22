@@ -5,14 +5,12 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0 minimum-scale=1.0">
 		<title>math-o-matic</title>
 		<script src="../dist/math.min.js"></script>
-		<script src="./native.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/m42kup@0.2.1/dist/m42kup.min.js"></script>
 		<script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror@5.57.0/lib/codemirror.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror@5.57.0/addon/hint/show-hint.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror@5.57.0/addon/display/placeholder.js"></script>
-		<script src="./getProofExplorer.js"></script>
 		<script src="./peg-0.10.0.min.js"></script>
 		<script>
 			m42kup.set({
@@ -94,8 +92,7 @@
 		<h2>목록</h2>
 		<div id="summary"></div>
 		<p>이하의 내용은
-			<a href="./code.math">code.math</a> 및
-			<a href="./native.js">native.js</a>에 있는 코드를 렌더링 한 것입니다.</p>
+			<a href="./code.math">code.math</a>에 있는 코드를 렌더링 한 것입니다.</p>
 		<div id="all">[로드하세요]</div>
 		<script>
 			var katexOpts = {
@@ -149,7 +146,7 @@
 				start = new Date();
 
 				program = new math.Program();
-				program.feed(parsed, native);
+				program.feed(parsed);
 
 				end = new Date();
 				console.log(program);
@@ -160,8 +157,8 @@
 
 				var precedenceMap = new Map();
 
-				for (var k in program.scope.defMap) {
-					var prec = program.scope.defMap[k].precedence;
+				for (var [k, v] of program.scope.defMap) {
+					var prec = v.precedence;
 					if (prec) {
 						if (precedenceMap.has(prec)) {
 							precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
@@ -187,11 +184,11 @@
 
 				<p>위 표는 자동으로 생성되었습니다.</p>`;
 
-				var axiomSchemaList = Object.keys(program.scope.schemaMap)
-						.filter(n => program.scope.schemaMap[n].axiomatic);
+				var axiomSchemaList = [...program.scope.schemaMap]
+						.filter(([k, v]) => v.axiomatic).map(([k, v]) => k);
 
-				var notProvedList = Object.keys(program.scope.schemaMap)
-						.filter(n => !program.scope.schemaMap[n].proved);
+				var notProvedList = [...program.scope.schemaMap]
+						.filter(([k, v]) => !v.proved).map(([k, v]) => k);
 
 				$('#summary').innerHTML = `
 				<ul>
@@ -203,9 +200,7 @@
 
 				var arr = {}, r;
 
-				for (var k in program.scope.typedefMap) {
-					var v = program.scope.typedefMap[k];
-
+				for (var [k, v] of program.scope.typedefMap) {
 					r = `<div class="block">`
 						+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>${
 							(v.isBaseType ? 'base ' : '')
@@ -223,9 +218,7 @@
 					arr[v._id] = r;
 				}
 
-				for (var k in program.scope.defMap) {
-					var v = program.scope.defMap[k];
-
+				for (var [k, v] of program.scope.defMap) {
 					r = `<div class="block">`
 						+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple
 								? ''
@@ -245,9 +238,7 @@
 					arr[v._id] = r;
 				}
 
-				for (var k in program.scope.schemaMap) {
-					var v = program.scope.schemaMap[k];
-
+				for (var [k, v] of program.scope.schemaMap) {
 					r = `<div class="block">`
 						+ `<p class="label"><a id="schema-${v.proved ? 'p' : 'np'}-${k}" href="#schema-${v.proved ? 'p' : 'np'}-${k}"><b>${
 							(v.axiomatic ? 'axiomatic ' : '')
@@ -262,8 +253,8 @@
 									: '<p class="label"><b>proof explorer</b></p>'
 										+ (
 											expansionList.includes(k)
-												? `<p>${getProofExplorer(k)}</p>`
-												: `<p><input type="button" value="show" class="colored button-expand-proof" onclick="this.parentElement.innerHTML = getProofExplorer('${k}');expansionList.push('${k}');"></p>`
+												? `<p>${program.getProofExplorer(k, ktx)}</p>`
+												: `<p><input type="button" value="show" class="colored button-expand-proof" onclick="this.parentElement.innerHTML = program.getProofExplorer('${k}', ktx);expansionList.push('${k}');"></p>`
 										)
 								: ''
 						)
@@ -280,9 +271,7 @@
 					arr[v._id] = r;
 				}
 
-				for (var k in program.scope.rulesetMap) {
-					var v = program.scope.rulesetMap[k];
-
+				for (var [k, v] of program.scope.rulesetMap) {
 					r = `<div class="block">`
 						+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>${
 							(v.axiomatic ? 'axiomatic ' : '')
