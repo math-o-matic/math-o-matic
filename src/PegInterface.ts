@@ -54,6 +54,10 @@ function typeObjToNestedArr(obj: TypeObject): NestedTypeInput {
 
 function varObjToString(obj: VarObject): string {
 	switch (obj.type) {
+		case '@':
+			return `@${obj.name}`;
+		case '$':
+			return `$${obj.name}`;
 		case 'ruleset':
 			return `${obj.rulesetName}.${obj.name}`;
 		case 'normal':
@@ -105,6 +109,10 @@ export default class PI {
 		var scope = parentScope.extend('typevar', obj.name, obj.location);
 
 		if (obj._type == 'var') {
+			if (obj.type != 'normal') {
+				throw scope.error(`Variable type ${obj.type} not allowed`);
+			}
+
 			if (!scope.hasTypevar(obj.name))
 				throw scope.error(`Undefined identifier ${obj.name}`);
 			return scope.getTypevar(obj.name);
@@ -245,7 +253,7 @@ export default class PI {
 		}
 	}
 
-	public static metavar(obj: VarObject, parentScope: Scope): Schema | Typevar {
+	public static metavar(obj: VarObject, parentScope: Scope): Metaexpr {
 		if (obj._type != 'var')
 			throw Error('Assertion failed');
 
@@ -253,6 +261,19 @@ export default class PI {
 		var scope = parentScope;
 
 		switch (obj.type) {
+			case '@':
+				if (obj.name.match(/^h[0-9]+$/)) {
+					var hypnum = Number(obj.name.slice(1)) - 1;
+					if (hypnum >= scope.hypotheses.length) {
+						throw scope.error(`Hypothesis #${hypnum + 1} not found`);
+					}
+
+					return scope.hypotheses[hypnum];
+				}
+
+				throw scope.error(`Unknown selector query @${obj.name}`);
+			case '$':
+				throw scope.error('Not implemented');
 			case 'ruleset':
 				if (!scope.hasRuleset(obj.rulesetName))
 					throw scope.error(`Ruleset ${obj.rulesetName} is not defined`);
@@ -284,10 +305,11 @@ export default class PI {
 
 		var scope = parentScope.extend('tee', null, obj.location);
 
-		var foo = obj => PI.metaexpr(obj, scope);
+		var left = obj.left.map(o => PI.metaexpr(o, scope));
 
-		var left = obj.left.map(foo);
-		var right = foo(obj.right);
+		var scopeRight = scope.extend('tee.right', null, obj.right.location);
+		left.forEach(l => scopeRight.hypotheses.push(l));
+		var right = PI.metaexpr(obj.right, scopeRight);
 
 		return new Tee({left, right}, scope);
 	}

@@ -446,6 +446,33 @@ ftype =
 	}
 
 var =
+	at_var
+	/ dollar_var
+	/ plain_var
+
+at_var =
+	name:at_ident
+	{
+		return {
+			_type: 'var',
+			type: '@',
+			name: name.slice(1),
+			location: location()
+		}
+	}
+
+dollar_var =
+	name:dollar_ident
+	{
+		return {
+			_type: 'var',
+			type: '$',
+			name: name.slice(1),
+			location: location()
+		}
+	}
+
+plain_var =
 	rulesetName:(id:ident _ "." _ {return id})?
 	name:ident
 	{
@@ -475,6 +502,12 @@ keyword =
 
 ident =
 	$(!keyword [a-zA-Z0-9_]+)
+
+at_ident =
+	$('@' [a-zA-Z0-9_]+)
+
+dollar_ident =
+	$('$' [a-zA-Z0-9_]+)
 
 documentation =
 	'"' b:$(!'"' a:. {return a})* '"' {

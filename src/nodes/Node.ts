@@ -66,8 +66,8 @@ export default abstract class Node implements Nodeable {
 	public isProved(hyps?): boolean {
 		hyps = hyps || [];
 
-		if (hyps.some(hyp => ExpressionResolver.equals(hyp, this))) {
-			return true;
+		for (var i = 0; i < hyps.length; i++) {
+			if (hyps[i] == this) return true;
 		}
 
 		return false;

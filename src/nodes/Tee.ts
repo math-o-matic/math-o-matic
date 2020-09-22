@@ -6,7 +6,7 @@ import Scope from '../Scope';
 
 export default class Tee extends Node {
 	public readonly _type = 'tee';
-	public static precedence = Node.PREC_COMMA;
+	public precedence = Node.PREC_COMMA;
 
 	public readonly left;
 	public readonly right;

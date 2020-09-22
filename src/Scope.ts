@@ -4,6 +4,8 @@ import Ruleset from './nodes/Ruleset';
 import Schema from './nodes/Schema';
 
 import StackTrace from './StackTrace';
+import { Metaexpr } from './ExpressionResolver';
+import $var from './nodes/$var';
 
 export type NestedTypeInput = string | NestedTypeInput[];
 
@@ -12,6 +14,8 @@ export default class Scope {
 	public readonly defMap: Map<string, Typevar | Schema> = new Map();
 	public readonly schemaMap: Map<string, Schema> = new Map();
 	public readonly rulesetMap: Map<string, Ruleset> = new Map();
+	public readonly $Map: Map<string, $var> = new Map();
+	public readonly hypotheses: Metaexpr[] = [];
 
 	public readonly parent: Scope;
 	public readonly root: Scope;
@@ -33,7 +37,9 @@ export default class Scope {
 	}
 
 	public extend(type, name, location): Scope {
-		return new Scope(this, this.trace.extend(type, name, location));
+		var child = new Scope(this, this.trace.extend(type, name, location));
+		this.hypotheses.forEach(h => child.hypotheses.push(h));
+		return child;
 	}
 
 	public error(message: string): Error {
@@ -246,5 +252,33 @@ export default class Scope {
 			: this.defMap.has(name)
 				? this.defMap.get(name)
 				: (!!this.parent && this.parent.getSchema(name));
+	}
+
+	public hasOwn$(name: string): boolean {
+		return this.$Map.has(name);
+	}
+
+	public has$(name: string): boolean {
+		return this.hasOwn$(name)
+			|| (!!this.parent && this.parent.has$(name));
+	}
+
+	public add$($: $var): $var {
+		if (!($ instanceof $var))
+			throw this.error('Illegal argument type');
+
+		if (this.hasOwn$($.name))
+			throw this.error(`$var ${$.name} has already been declared`);
+
+		this.$Map.set($.name, $);
+		return $;
+	}
+
+	public get$(name: string): $var {
+		if (!this.has$(name))
+			throw this.error(`$var ${name} is not defined`);
+
+		return this.$Map.has(name)
+			? this.$Map.get(name) : (!!this.parent && this.parent.get$(name));
 	}
 }

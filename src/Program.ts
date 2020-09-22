@@ -367,7 +367,7 @@ export default class Program {
 			for (var i = 0; i < hyps.length; i++) {
 				var [hyp, lineno] = hyps[i];
 	
-				if (ExpressionResolver.equals(hyp, expr)) {
+				if (hyp == expr) {
 					return lineno;
 				}
 			}

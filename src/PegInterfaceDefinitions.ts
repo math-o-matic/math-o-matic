@@ -114,7 +114,7 @@ export type TypeObject = StypeObject | FtypeObject;
 
 export interface VarObject {
     _type: 'var';
-    type: 'ruleset' | 'normal';
+    type: '@' | '$' | 'ruleset' | 'normal';
     rulesetName?: string;
     name: string;
     location: LocationObject;

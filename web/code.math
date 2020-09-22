@@ -130,9 +130,9 @@ schema Oe(st p: @11, st q: @12, st r: @22) {
 
 schema Oeu(st p: @11, st q: @12, st r: @2r) {
 	O(p, q), (p |- r), (q |- r) |- Oe[
-		O(p, q),
-		cp[p |- r],
-		cp[q |- r]
+		@h1,
+		cp[@h2],
+		cp[@h3]
 	]
 }
 
@@ -143,7 +143,7 @@ schema Ni(st p: @11) {
 
 schema Niu(st p: @11) {
 	(p |- F) |-
-		Ni[cp[p |- F]]
+		Ni[cp[@h1]]
 }
 
 "부정 소거(negation elimination). 폭발률(ex falso quodlibet)이라고도 한다."
@@ -178,7 +178,7 @@ schema Ee2(st p: @11, st q: @12) {
 }
 
 schema IEpqEqpm(st p: @11, st q: @12) {
-	E(p, q) |- Ei[Ee2[E(p, q)], Ee1[E(p, q)]]
+	E(p, q) |- Ei[Ee2[@h1], Ee1[@h1]]
 }
 
 schema IpIqpm(st p: @1, st q) {
@@ -195,7 +195,7 @@ schema mpE(st p: @11, st q: @12) {
 "가언적 삼단논법(hypothetical syllogism)."
 schema syll(st p: @11, st q: @12, st r: @22) {
 	I(p, q), I(q, r) |- cp[
-		p |- mp[mp[p, I(p, q)], I(q, r)]
+		p |- mp[mp[p, @h1], @h2]
 	]
 }
 
@@ -208,12 +208,12 @@ schema syll4(st p: @11, st q: @21, st r: @31, st s: @32) {
 schema syllE(st p, st q, st r) {
 	E(p, q), E(q, r) |- Ei[
 		syll[
-			Ee1[E(p, q)],
-			Ee1[E(q, r)]
+			Ee1[@h1],
+			Ee1[@h2]
 		],
 		syll[
-			Ee2[E(q, r)],
-			Ee2[E(p, q)]
+			Ee2[@h2],
+			Ee2[@h1]
 		]
 	]
 }
@@ -233,7 +233,7 @@ schema Fi(st p: @1) {
 }
 
 schema Fi_c(st p: @11) {
-	N(p) |- cp[p |- Fi[p, N(p)]]
+	N(p) |- cp[p |- Fi[@h2, @h1]]
 }
 
 "[$\bot]을 소거한다. falsum elimination이라 불러도 좋을 것이다. Ne와 마찬가지로 폭발률을 나타낸다 할 수 있다."
@@ -248,7 +248,7 @@ schema contrapose(st p: @11, st q: @12) {
 
 "contrapose의 다른 버전."
 schema contrapose_u(st p: @11, st q: @1r) {
-	(p |- q) |- N(q) |- mp[N(q), contrapose[cp[p |- q]]]
+	(p |- q) |- N(q) |- mp[@h2, contrapose[cp[@h1]]]
 }
 
 "후건 부정(modus tollens)."
@@ -262,15 +262,15 @@ schema NO_to_AN(st p: @111, st q: @112) {
 			Niu[
 				p |-
 					Fi[
-						Oi1(?, q)[p],
-						N(O(p, q))
+						Oi1(?, q)[@h2],
+						@h1
 					]
 			],
 			Niu[
 				q |-
 					Fi[
-						Oi2(p, ?)[q],
-						N(O(p, q))
+						Oi2(p, ?)[@h2],
+						@h1
 					]
 			]
 		]
@@ -279,9 +279,9 @@ schema NO_to_AN(st p: @111, st q: @112) {
 schema AN_to_NO(st p: @111, st q: @121) {
 	A(N(p), N(q)) |-
 		Niu[O(p, q) |- Oe[
-			O(p, q),
-			Fi_c[Ae1[A(N(p), N(q))]],
-			Fi_c[Ae2[A(N(p), N(q))]]
+			@h2,
+			Fi_c[Ae1[@h1]],
+			Fi_c[Ae2[@h1]]
 		]]
 }
 
@@ -289,22 +289,22 @@ schema NA_to_ON(st p: @111, st q: @112) {
 	N(A(p, q)) |-
 		NNe[Niu[N(O(N(p), N(q))) |- Fi[
 			Ai[
-				NNe[Ae1[NO_to_AN[N(O(N(p), N(q)))]]],
-				NNe[Ae2[NO_to_AN[N(O(N(p), N(q)))]]]
+				NNe[Ae1[NO_to_AN[@h2]]],
+				NNe[Ae2[NO_to_AN[@h2]]]
 			],
-			N(A(p, q))
+			@h1
 		]]]
 }
 
 schema ON_to_NA(st p: @111, st q: @112) {
 	O(N(p), N(q)) |-
 		Niu[A(p, q) |- Oeu[
-			O(N(p), N(q)),
+			@h1,
 			(N(p) |- Fi[
-				Ae1[A(p, q)], N(p)
+				Ae1[@h2], @h3
 			]),
 			(N(q) |- Fi[
-				Ae2[A(p, q)], N(q)
+				Ae2[@h2], @h3
 			])
 		]]
 }
@@ -312,8 +312,8 @@ schema ON_to_NA(st p: @111, st q: @112) {
 "무모순율(law of noncontradiction)."
 schema lnc(st p) {
 	|- Niu[A(p, N(p)) |- Fi[
-		Ae1[A(p, N(p))],
-		Ae2[A(p, N(p))]
+		Ae1[@h1],
+		Ae2[@h1]
 	]]
 }
 
@@ -321,8 +321,8 @@ schema lnc(st p) {
 schema lxm(st p) {
 	|- NNe[Niu[N(O(p, N(p))) |- Fi[
 		Ai[
-			NNe[Ae2[NO_to_AN[N(O(p, N(p)))]]],
-			Ae1[NO_to_AN[N(O(p, N(p)))]]
+			NNe[Ae2[NO_to_AN[@h1]]],
+			Ae1[NO_to_AN[@h1]]
 		],
 		lnc(p)[]
 	]]]
@@ -332,8 +332,8 @@ schema swap(st p, st q, st r) {
 	I(p, I(q, r)) |- cp[
 		q |- cp[
 			p |- mp[
-				q, mp[
-					p, I(p, I(q, r))
+				@h2, mp[
+					@h3, @h1
 				]
 			]
 		]
@@ -351,7 +351,7 @@ schema swap_m(st p, st q, st r) {
 schema O_flip(st p: @11, st q: @12) {
 	O(p, q) |-
 		Oe[
-			O(p, q),
+			@h1,
 			cp[Oi2(q, p)],
 			cp[Oi1(q, p)]
 		]
@@ -360,8 +360,8 @@ schema O_flip(st p: @11, st q: @12) {
 schema OI1(st p: @11, st q: @12, st r: @22) {
 	O(p, q), I(p, r) |-
 		Oe[
-			O(p, q),
-			cp[p |- Oi1(?, q)[mp[p, I(p, r)]]],
+			@h1,
+			cp[p |- Oi1(?, q)[mp[p, @h2]]],
 			cp[q |- Oi2(r, ?)[q]]
 		]
 }
@@ -369,40 +369,40 @@ schema OI1(st p: @11, st q: @12, st r: @22) {
 schema OI2(st p: @11, st q: @12, st r: @22) {
 	O(p, q), I(q, r) |-
 		Oe[
-			O(p, q),
-			cp[p |- Oi1(?, r)[p]],
-			cp[q |- Oi2(p, ?)[mp[q, I(q, r)]]]
+			@h1,
+			cp[p |- Oi1(?, r)[@h3]],
+			cp[q |- Oi2(p, ?)[mp[@h3, @h2]]]
 		]
 }
 
 schema OI(st p: @11, st q: @12, st r: @22, st s: @32) {
 	O(p, q), I(p, r), I(q, s) |-
-		OI2[OI1[O(p, q), I(p, r)], I(q, s)]
+		OI2[OI1[@h1, @h2], @h3]
 }
 
 schema Oe1(st p: @11, st q: @12) {
 	O(p, q), N(p) |-
-		NNe[Niu[N(q) |- Fi[O(p, q), AN_to_NO[Ai[N(p), N(q)]]]]]
+		NNe[Niu[N(q) |- Fi[@h1, AN_to_NO[Ai[@h2, @h3]]]]]
 }
 
 schema Oe2(st p: @11, st q: @12) {
 	O(p, q), N(q) |-
-		NNe[Niu[N(p) |- Fi[O(p, q), AN_to_NO[Ai[N(p), N(q)]]]]]
+		NNe[Niu[N(p) |- Fi[@h1, AN_to_NO[Ai[@h3, @h2]]]]]
 }
 
 schema O1Ai(st p: @11, st q: @21, st r: @12) {
 	O(p, r), O(q, r) |-
 		Oe[
 			lxm(r)[],
-			cp[r |- Oi2(A(p, q), ?)[r]],
-			cp[N(r) |- Oi1(?, r)[Ai[Oe2[O(p, r), N(r)], Oe2[O(q, r), N(r)]]]]
+			cp[r |- Oi2(A(p, q), ?)[@h3]],
+			cp[N(r) |- Oi1(?, r)[Ai[Oe2[@h1, @h3], Oe2[@h2, @h3]]]]
 		]
 }
 
 schema O2Ai(st p: @11, st q: @12, st r: @22) {
 	O(p, q), O(p, r) |- O_flip[O1Ai[
-		O_flip[O(p, q)],
-		O_flip[O(p, r)]
+		O_flip[@h1],
+		O_flip[@h2]
 	]]
 }
 
@@ -410,7 +410,7 @@ schema I_distribute_left(st p: @11, st q: @121, st r: @122) {
 	I(p, I(q, r)) |-
 		cp[
 			I(p, q) |-
-				cp[p |- mp[mp[p, I(p, q)], mp[p, I(p, I(q, r))]]]
+				cp[p |- mp[mp[@h3, @h2], mp[@h3, @h1]]]
 		]
 }
 
@@ -531,11 +531,11 @@ st X2(pr2 f) {
 }
 
 schema NX_to_VN(pr f) {
-	N(X(f)) |- id(V(Nf(f)))[NNe[N(X(f))]]
+	N(X(f)) |- id(V(Nf(f)))[NNe[@h1]]
 }
 
 schema VN_to_NX(pr f) {
-	V(Nf(f)) |- id(N(X(f)))[NNi[V(Nf(f))]]
+	V(Nf(f)) |- id(N(X(f)))[NNi[@h1]]
 }
 
 "보편 양화 도입(universal introduction)."
@@ -545,7 +545,7 @@ axiomatic schema Vi(pr f: @1) {
 
 schema Vi2(pr2 f: @1) {
 	f |- id(V2(f))[
-		Vi[(cls x) => { Vi[(cls y) => { f(x, y) }] }]
+		Vi[(cls x) => { Vi[(cls y) => { @h1(x, y) }] }]
 	]
 }
 
@@ -555,19 +555,19 @@ axiomatic schema Ve(pr f: @11, cls x) {
 }
 
 schema Ve2(pr2 f: @11, cls x, cls y) {
-	V2(f) |- Ve(?, y)[Ve(?, x)[V2(f)]]
+	V2(f) |- Ve(?, y)[Ve(?, x)[@h1]]
 }
 
 "Vi의 다른 버전."
 schema Viu(pr f) {
 	(cls x) => { |- f(x) } |-
-		|- id(V(f))[Vi[(cls x) => {((cls x) => { |- f(x) })(x)[]}]]
+		|- id(V(f))[Vi[(cls x) => {@h1(x)[]}]]
 }
 
 "Ve의 다른 버전."
 schema Veu(pr f, cls x) {
 	(|- V(f)) |-
-		|- Ve(?, x)[(|- V(f))[]]
+		|- Ve(?, x)[@h1[]]
 }
 
 schema Vi_p(st p) {
@@ -581,7 +581,7 @@ schema Vi_c(st p) {
 "V를 위한 contrapose."
 schema contrapose_V(pr f: @111, pr g: @112) {
 	V(If(f, g)) |- Vi[(cls x) => {
-		contrapose(f(x), g(x))[Ve(?, x)[V(If(f, g))]]
+		contrapose(f(x), g(x))[Ve(?, x)[@h1]]
 	}]
 }
 
@@ -589,7 +589,7 @@ schema contrapose_V(pr f: @111, pr g: @112) {
 schema mpV(pr f: @11, pr g: @212) {
 	V(f), V(If(f, g)) |-
 		id(V(g))[Vi[(cls x) => {
-			mp[Ve(?, x)[V(f)], Ve(?, x)[V((cls x) => { I(f(x), g(x)) })]]
+			mp[Ve(?, x)[@h1], Ve(?, x)[id(V((cls x) => { I(f(x), g(x)) }))[@h2]]]
 		}]]
 }
 
@@ -599,8 +599,8 @@ schema mtV(pr f: @111, pr g: @112) {
 		Niu[
 			V(f) |-
 				Ne(?, F)[
-					mpV[V(f), V(If(f, g))],
-					N(V(g))
+					mpV[@h3, @h1],
+					@h2
 				]
 		]
 }
@@ -608,15 +608,14 @@ schema mtV(pr f: @111, pr g: @112) {
 "VA의 m1형."
 schema VAm1(pr f: @111, pr g: @112) {
 	V(Af(f, g)) |-
-		Ai[
+		id(A(V(f), V(g)))[Ai[
 			Vi[(cls x) => {
-				Ae1[id(A(f(x), g(x)))[Ve(?, x)[V(Af(f, g))]]]
+				Ae1[id(A(f(x), g(x)))[Ve(?, x)[@h1]]]
 			}],
 			Vi[(cls x) => {
-				Ae2[id(A(f(x), g(x)))[Ve(?, x)[V(Af(f, g))]]]
+				Ae2[id(A(f(x), g(x)))[Ve(?, x)[@h1]]]
 			}]
-		]
-	~ id(A(V(f), V(g)))
+		]]
 }
 
 "VA의 m2형."
@@ -625,8 +624,8 @@ schema VAm2(pr f: @111, pr g: @121) {
 		id(V(Af(f, g)))[
 			Vi[(cls x) => {
 				Ai[
-					Ve(?, x)[Ae1[A(V(f), V(g))]],
-					Ve(?, x)[Ae2[A(V(f), V(g))]]
+					Ve(?, x)[Ae1[@h1]],
+					Ve(?, x)[Ae2[@h1]]
 				]
 			}]
 		]
@@ -640,7 +639,7 @@ schema VA(pr f, pr g) {
 "VI의 m형."
 schema VIm(pr f: @111, pr g: @112) {
 	V(If(f, g)) |-
-		cp[V(f) |- mpV[V(f), V(If(f, g))]]
+		cp[V(f) |- mpV[@h2, @h1]]
 }
 
 "[$\forall]과 [$\to] 간의 분배법칙 같은 것."
@@ -653,7 +652,7 @@ schema Oi1V(pr f, pr g) {
 	V(f) |-
 		id(V(Of(f, g)))[
 			Vi[(cls x) => {
-				Oi1(?, g(x))[Ve(?, x)[V(f)]]
+				Oi1(?, g(x))[Ve(?, x)[@h1]]
 			}]
 		]
 }
@@ -663,7 +662,7 @@ schema Oi2V(pr f, pr g) {
 	V(g) |-
 		id(V(Of(f, g)))[
 			Vi[(cls x) => {
-				Oi2(f(x), ?)[Ve(?, x)[V(g)]]
+				Oi2(f(x), ?)[Ve(?, x)[@h1]]
 			}]
 		]
 }
@@ -671,7 +670,7 @@ schema Oi2V(pr f, pr g) {
 schema VOm(pr f, pr g) {
 	O(V(f), V(g)) |-
 		Oe[
-			O(V(f), V(g)),
+			@h1,
 			cp[Oi1V(f, g)],
 			cp[Oi2V(f, g)]
 		]
@@ -684,12 +683,11 @@ schema VO(pr f, pr g) {
 "VV의 m형. 재미있게도 Vi 및 Ve로부터 유도할 수 있다."
 schema VVm(pr2 f) {
 	V2((cls x, cls y) => { f(x, y) }) |-
-		Vi[(cls y) => {
+		id(V2((cls y, cls x) => { f(x, y) }))[Vi[(cls y) => {
 			Vi[(cls x) => {
-				Ve2(?, x, y)[V2((cls x, cls y) => { f(x, y) })]
+				Ve2(?, x, y)[@h1]
 			}]
-		}]
-	~ id(V2((cls y, cls x) => { f(x, y) }))
+		}]]
 }
 
 "[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것."
@@ -846,7 +844,7 @@ schema Xi2(pr2 f, cls x, cls y) {
 	f(x, y) |- id(X2(f))[Xi((cls x) => {
 		X((cls y) => { f(x, y) })
 	}, x)[
-		Xi((cls y) => { f(x, y) }, y)[f(x, y)]
+		Xi((cls y) => { f(x, y) }, y)[@h1]
 	]]
 }
 
@@ -857,11 +855,11 @@ schema mpX(pr f: @11, pr g: @212) {
 			N(X(g)) |- Fi[
 				Vi(Nf(f))[(cls x) => {
 					mt(f(x), g(x))[
-						Ve(?, x)[V(If(f, g))],
-						Ve(?, x)[NNe[N(X(g))]]
+						Ve(?, x)[@h2],
+						Ve(?, x)[NNe[@h3]]
 					]
 				}],
-				X(f)
+				@h1
 			]
 		]]
 }
@@ -873,14 +871,14 @@ schema mpX2(pr2 f: @11, pr2 g: @212) {
 			Vi[(cls x) => {
 				id(N(X((cls y) => {f(x, y)})))[NNi[Vi[(cls y) => {
 					mt[
-						Ve2(?, x, y)[V2((cls x, cls y) => {
+						Ve2(?, x, y)[id(V2((cls x, cls y) => {
 							I(f(x, y), g(x, y))
-						})],
-						Ve(?, y)[NNe(V((cls y) => {N(g(x, y))}))[Ve(?, x)[NNe[N(X2(g))]]]]
+						}))[@h2]],
+						Ve(?, y)[NNe(V((cls y) => {N(g(x, y))}))[Ve(?, x)[NNe[@h3]]]]
 					]
 				}]]]
 			}],
-			X2(f)
+			@h1
 		]]]
 }
 
@@ -888,13 +886,13 @@ schema mpX2(pr2 f: @11, pr2 g: @212) {
 schema mpX_strong(pr f: @11, pr g: @212) {
 	X(f), V(If(f, g)) |-
 		mpX(?, Af(f, g))[
-			X(f),
+			@h1,
 			Vi[(cls x) => {
 				cp[
 					f(x) |-
 						Ai[
-							f(x),
-							mp(f(x), g(x))[f(x), Ve(?, x)[V(If(f, g))]]
+							@h3,
+							mp(f(x), g(x))[@h3, Ve(?, x)[@h2]]
 						]
 				]
 			}]
@@ -903,7 +901,7 @@ schema mpX_strong(pr f: @11, pr g: @212) {
 
 schema mpXE(pr f, pr g) {
 	X(f), V(Ef(f, g)) |-
-		mpX[X(f), Ee1V[V(Ef(f, g))]]
+		mpX[@h1, Ee1V[@h2]]
 }
 
 "st 타입을 위한 존재 양화 소거(existential elimination)."
@@ -947,7 +945,7 @@ schema XO(pr f, pr g) {
 schema ON_to_NA_V(pr f, pr g) {
 	V(Of(Nf(f), Nf(g))) |-
 		Vi[(cls x) => {
-			ON_to_NA(f(x), g(x))[Ve(?, x)[V(Of(Nf(f), Nf(g)))]]
+			ON_to_NA(f(x), g(x))[Ve(?, x)[@h1]]
 		}]
 }
 
@@ -955,7 +953,7 @@ schema ON_to_NA_V(pr f, pr g) {
 schema XAm(pr f: @111, pr g: @112) {
 	X(Af(f, g)) |- id(A(X(f), X(g)))[
 		NO_to_AN[mp[
-			contrapose_u[ON_to_NA_V(f, g)][X(Af(f, g))],
+			contrapose_u[ON_to_NA_V(f, g)][@h1],
 			contrapose[VO(Nf(f), Nf(g))[]]
 		]]
 	]
@@ -969,17 +967,17 @@ schema X2Am(pr2 f, pr2 g) {
 	X2(Af2(f, g)) |-
 		Ai[
 			mpX2[
-				X2(Af2(f, g)),
+				@h1,
 				id(V2(If2(Af2(f, g), f)))[Vi2[(cls x, cls y) => {
 					cp[A(f(x, y), g(x, y)) |-
-						Ae1[A(f(x, y), g(x, y))]]
+						Ae1[@h2]]
 				}]]
 			],
 			mpX2[
-				X2(Af2(f, g)),
+				@h1,
 				id(V2(If2(Af2(f, g), g)))[Vi2[(cls x, cls y) => {
 					cp[A(f(x, y), g(x, y)) |-
-						Ae2[A(f(x, y), g(x, y))]]
+						Ae2[@h2]]
 				}]]
 			]
 		]
@@ -1150,7 +1148,7 @@ schema set_i_A(cls x, cls y, cls z) {
 schema set_i_O(cls x, cls y, cls z) {
 	O(in(z, x), in(z, y)) |-
 		Oe[
-			O(in(z, x), in(z, y)),
+			@h1,
 			cp[set_i(z, x)],
 			cp[set_i(z, y)]
 		]
@@ -1172,24 +1170,24 @@ schema eq_Ae1_Ve(cls x, cls y, cls z) {
 }
 
 schema eq_Ae1_Ve_Ee1(cls x, cls y, cls z) {
-	eq(x, y) |- Ee1[eq_Ae1_Ve(x, y, z)[eq(x, y)]]
+	eq(x, y) |- Ee1[eq_Ae1_Ve(x, y, z)[@h1]]
 }
 
 schema eq_Ae1_Ve_Ee2(cls x, cls y, cls z) {
-	eq(x, y) |- Ee2[eq_Ae1_Ve(x, y, z)[eq(x, y)]]
+	eq(x, y) |- Ee2[eq_Ae1_Ve(x, y, z)[@h1]]
 }
 
 schema in_subseteq(cls x: @12, cls y: @22, cls z: @11) {
 	in(z, x), subseteq(x, y) |-
 		mp[
-			in(z, x),
-			Ve(?, z)[subseteq(x, y)]
+			@h1,
+			Ve(?, z)[@h2]
 		]
 }
 
 schema self_subseteq_self(cls x) {
 	|- id(subseteq(x, x))[Vi[(cls z) => {
-		cp[in(z, x) |- in(z, x)]
+		cp[in(z, x) |- @h1]
 	}]]
 }
 
@@ -1218,15 +1216,15 @@ schema eq_Ae2_Ve_Ee1_c(cls x, cls y, cls z) {
 }
 
 schema eq_Ae2_Ve_Ee2(cls x, cls y, cls z) {
-	eq(x, y) |- Ee2[eq_Ae2_Ve(x, y, z)[eq(x, y)]]
+	eq(x, y) |- Ee2[eq_Ae2_Ve(x, y, z)[@h1]]
 }
 
 schema in_eq_left_1(cls x: @11, cls y: @22, cls z: @12) {
 	in(x, z), eq(x, y) |-
 		mp[
-			in(x, z),
+			@h1,
 			eq_Ae2_Ve_Ee1(x, y, z)[
-				eq(x, y)
+				@h2
 			]
 		]
 }
@@ -1234,9 +1232,9 @@ schema in_eq_left_1(cls x: @11, cls y: @22, cls z: @12) {
 schema in_eq_left_2(cls x: @21, cls y: @22, cls z: @12) {
 	in(y, z), eq(x, y) |-
 		mp[
-			in(y, z),
+			@h1,
 			eq_Ae2_Ve_Ee2(x, y, z)[
-				eq(x, y)
+				@h2
 			]
 		]
 }
@@ -1244,9 +1242,9 @@ schema in_eq_left_2(cls x: @21, cls y: @22, cls z: @12) {
 schema in_eq_right_1(cls x: @12, cls y: @22, cls z: @11) {
 	in(z, x), eq(x, y) |-
 		mp[
-			in(z, x),
+			@h1,
 			eq_Ae1_Ve_Ee1(x, y, z)[
-				eq(x, y)
+				@h2
 			]
 		]
 }
@@ -1254,9 +1252,9 @@ schema in_eq_right_1(cls x: @12, cls y: @22, cls z: @11) {
 schema in_eq_right_2(cls x: @21, cls y: @22, cls z: @11) {
 	in(z, y), eq(x, y) |-
 		mp[
-			in(z, y),
+			@h1,
 			eq_Ae1_Ve_Ee2(x, y, z)[
-				eq(x, y)
+				@h2
 			]
 		]
 }
@@ -1372,12 +1370,12 @@ schema eq_transitive(cls x, cls y, cls z) {
 					(cls w) => {in(w, x)},
 					(cls w) => {in(w, y)},
 					(cls w) => {in(w, z)}
-				)[Ae1[eq(x, y)], Ae1[eq(y, z)]],
+				)[Ae1[@h1], Ae1[@h2]],
 				syllVE(
 					(cls w) => {in(x, w)},
 					(cls w) => {in(y, w)},
 					(cls w) => {in(z, w)}
-				)[Ae2[eq(x, y)], Ae2[eq(y, z)]]
+				)[Ae2[@h1], Ae2[@h2]]
 			]
 		]
 }
@@ -1427,11 +1425,11 @@ st Xq(pr f) {
 }
 
 schema Xq_to_X(pr f: @11) {
-	Xq(f) |- Ae1[Xq(f)]
+	Xq(f) |- Ae1[@h1]
 }
 
 schema XQ_to_Xq(pr f: @11) {
-	X(f), Q(f) |- id(Xq(f))[Ai[X(f), Q(f)]]
+	X(f), Q(f) |- id(Xq(f))[Ai[@h1, @h2]]
 }
 
 schema set_is_set_1(cls x: @11, cls y: @22) {
@@ -1556,7 +1554,7 @@ schema setbuilder_def_Ve(pr f, cls z) {
 schema setbuilder_e(pr f: @121, cls z: @11) {
 	in(z, setbuilder(f)) |-
 		Ae2[mp[
-			in(z, setbuilder(f)),
+			@h1,
 			Ee1[setbuilder_def_Ve(f, z)[]]
 		]]
 }
@@ -1574,7 +1572,7 @@ schema setbuilder_ec(pr f, cls z) {
 schema setbuilder_i(pr f, cls z: @11) {
 	set(z), f(z) |-
 		mp[
-			Ai[set(z), f(z)],
+			Ai[@h1, @h2],
 			Ee2[setbuilder_def_Ve(f, z)[]]
 		]
 }
@@ -1582,7 +1580,7 @@ schema setbuilder_i(pr f, cls z: @11) {
 schema setbuilder_ia(pr f, cls z: @111) {
 	A(set(z), f(z)) |-
 		mp[
-			A(set(z), f(z)),
+			@h1,
 			Ee2[setbuilder_def_Ve(f, z)[]]
 		]
 }
@@ -1593,7 +1591,7 @@ schema setbuilder_def_set(pr f, cls x: @111) {
 			cp[
 				in(x, setbuilder(f)) |-
 					Ae2[mp[
-						in(x, setbuilder(f)),
+						@h2,
 						Ee1[Ve(?, x)[setbuilder_def(f)[]]]
 					]]
 			],
@@ -1601,8 +1599,8 @@ schema setbuilder_def_set(pr f, cls x: @111) {
 				f(x) |-
 					mp[
 						Ai[
-							mp[f(x), I(f(x), set(x))],
-							f(x)
+							mp[@h2, @h1],
+							@h2
 						],
 						Ee2[Ve(?, x)[setbuilder_def(f)[]]]
 					]
@@ -1612,7 +1610,7 @@ schema setbuilder_def_set(pr f, cls x: @111) {
 
 schema setbuilder_def_set_2(pr f, cls x) {
 	set(x) |- setbuilder_def_set(f, x)[
-		IpIqpm(?, f(x))[set(x)]
+		IpIqpm(?, f(x))[@h1]
 	]
 }
 
@@ -1677,16 +1675,16 @@ cls cup(cls x, cls y) {
 schema cupi1(cls x: @12, cls y, cls z: @11) {
 	in(z, x) |-
 		id(in(z, cup(x, y)))[setbuilder_i((cls z) => {O(in(z, x), in(z, y))}, ?)[
-			set_i[in(z, x)],
-			Oi1(?, in(z, y))[in(z, x)]
+			set_i[@h1],
+			Oi1(?, in(z, y))[@h1]
 		]]
 }
 
 schema cupi2(cls x, cls y: @12, cls z: @11) {
 	in(z, y) |-
 		id(in(z, cup(x, y)))[setbuilder_i((cls z) => {O(in(z, x), in(z, y))}, ?)[
-			set_i[in(z, y)],
-			Oi2(in(z, x), ?)[in(z, y)]
+			set_i[@h1],
+			Oi2(in(z, x), ?)[@h1]
 		]]
 }
 
@@ -1694,7 +1692,7 @@ schema cupi2(cls x, cls y: @12, cls z: @11) {
 schema cupi(cls x: @112, cls y: @122, cls z: @111) {
 	O(in(z, x), in(z, y)) |-
 		Oe[
-			O(in(z, x), in(z, y)),
+			@h1,
 			cp[cupi1(x, y, z)],
 			cp[cupi2(x, y, z)]
 		]
@@ -1702,7 +1700,7 @@ schema cupi(cls x: @112, cls y: @122, cls z: @111) {
 
 schema cupe(cls x: @121, cls y: @122, cls z: @11) {
 	in(z, cup(x, y)) |-
-		setbuilder_e[in(z, cup(x, y))]
+		setbuilder_e[@h1]
 }
 
 "일반화된 교집합."
@@ -1731,7 +1729,7 @@ schema bigcap_1($A$ cls a, cls z) {
 				Vin(a, (cls x) => {
 					in(z, x)
 				})
-			}, z)[in(z, bigcap(a))]
+			}, z)[@h1]
 }
 
 schema bigcap_2($A$ cls a, cls z) {
@@ -1742,9 +1740,7 @@ schema bigcap_2($A$ cls a, cls z) {
 			Vin(a, (cls x) => {
 				in(z, x)
 			})
-		}, z)[set(z), Vin(a, (cls x) => {
-			in(z, x)
-		})]]
+		}, z)[@h1, @h2]]
 }
 
 schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
@@ -1753,8 +1749,8 @@ schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
 			cp[
 				in(z, bigcap(a)) |-
 					mp[
-						in(x, a),
-						Ve(?, x)[bigcap_1(a, z)[in(z, bigcap(a))]]
+						@h1,
+						Ve(?, x)[bigcap_1(a, z)[@h2]]
 					]
 			]
 		}]]
@@ -1774,15 +1770,15 @@ schema self_in_singleton(cls x: @11) {
 			setbuilder_i((cls z) => {
 				eq(z, x)
 			}, x)[
-				set(x),
+				@h1,
 				eq_reflexive(x)[]
 			]
 		]
 }
 
-schema singleton_eq_e(cls x: @11, cls y: @21) {
-	set(x), set(y), eq(singleton(x), singleton(y)) |-
-		setbuilder_e[in_eq_right_1[self_in_singleton[set(x)], eq(singleton(x), singleton(y))]]
+schema singleton_eq_e(cls x: @11, cls y: @221) {
+	set(x), eq(singleton(x), singleton(y)) |-
+		setbuilder_e[in_eq_right_1[self_in_singleton[@h1], @h2]]
 }
 
 "doubleton class."
@@ -1799,7 +1795,7 @@ schema doubleton_in_1(cls x, cls y) {
 			setbuilder_i((cls z) => {
 				O(eq(z, x), eq(z, y))
 			}, x)[
-				set(x),
+				@h1,
 				Oi1(?, eq(x, y))[
 					eq_reflexive(x)[]
 				]
@@ -1813,7 +1809,7 @@ schema doubleton_in_2(cls x, cls y) {
 			setbuilder_i((cls z) => {
 				O(eq(z, x), eq(z, y))
 			}, y)[
-				set(y),
+				@h1,
 				Oi2(eq(y, x), ?)[
 					eq_reflexive(y)[]
 				]
@@ -1824,31 +1820,31 @@ schema doubleton_in_2(cls x, cls y) {
 schema doubleton_eq_e1(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(x), eq(doubleton(x, y), doubleton(u, v)) |-
 		setbuilder_e[in_eq_right_1(doubleton(x, y), doubleton(u, v), x)[
-			doubleton_in_1(x, y)[set(x)],
-			eq(doubleton(x, y), doubleton(u, v))
+			doubleton_in_1(x, y)[@h1],
+			@h2
 		]]
 }
 
 schema doubleton_eq_e2(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(y), eq(doubleton(x, y), doubleton(u, v)) |-
 		setbuilder_e[in_eq_right_1(doubleton(x, y), doubleton(u, v), y)[
-			doubleton_in_2(x, y)[set(y)],
-			eq(doubleton(x, y), doubleton(u, v))
+			doubleton_in_2(x, y)[@h1],
+			@h2
 		]]
 }
 
 schema doubleton_eq_e3_flip(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(u), eq(doubleton(x, y), doubleton(u, v)) |-
 		setbuilder_e[in_eq_right_2(doubleton(x, y), doubleton(u, v), u)[
-			doubleton_in_1(u, v)[set(u)],
-			eq(doubleton(x, y), doubleton(u, v))
+			doubleton_in_1(u, v)[@h1],
+			@h2
 		]]
 }
 
 schema doubleton_eq_e3(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(u), eq(doubleton(x, y), doubleton(u, v)) |-
 		OI[
-			doubleton_eq_e3_flip[set(u), eq(doubleton(x, y), doubleton(u, v))],
+			doubleton_eq_e3_flip[@h1, @h2],
 			cp[eq_symmetric(u, x)],
 			cp[eq_symmetric(u, y)]
 		]
@@ -1857,15 +1853,15 @@ schema doubleton_eq_e3(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 schema doubleton_eq_e4_flip(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(v), eq(doubleton(x, y), doubleton(u, v)) |-
 		setbuilder_e[in_eq_right_2(doubleton(x, y), doubleton(u, v), v)[
-			doubleton_in_2(u, v)[set(v)],
-			eq(doubleton(x, y), doubleton(u, v))
+			doubleton_in_2(u, v)[@h1],
+			@h2
 		]]
 }
 
 schema doubleton_eq_e4(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	set(v), eq(doubleton(x, y), doubleton(u, v)) |-
 		OI[
-			doubleton_eq_e4_flip[set(v), eq(doubleton(x, y), doubleton(u, v))],
+			doubleton_eq_e4_flip[@h1, @h2],
 			cp[eq_symmetric(v, x)],
 			cp[eq_symmetric(v, y)]
 		]
@@ -1876,12 +1872,12 @@ schema doubleton_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 	set(x), set(y), set(u), set(v), eq(doubleton(x, y), doubleton(u, v)) |-
 		O1Ai[
 			O2Ai[
-				doubleton_eq_e1[set(x), eq(doubleton(x, y), doubleton(u, v))],
-				doubleton_eq_e3[set(u), eq(doubleton(x, y), doubleton(u, v))]
+				doubleton_eq_e1[@h1, @h5],
+				doubleton_eq_e3[@h3, @h5]
 			],
 			O_flip[O1Ai[
-				doubleton_eq_e4[set(v), eq(doubleton(x, y), doubleton(u, v))],
-				doubleton_eq_e2[set(y), eq(doubleton(x, y), doubleton(u, v))]
+				doubleton_eq_e4[@h4, @h5],
+				doubleton_eq_e2[@h2, @h5]
 			]]
 		]
 }
@@ -1949,20 +1945,20 @@ schema russell_set_is_not_set() {
 					id(in(russell_set(), russell_set()))[setbuilder_i((cls z) => {
 						Nin(z, z)
 					}, ?)[
-						set(russell_set()),
-						Nin(russell_set(), russell_set())
+						@h1,
+						@h2
 					]],
-					Nin(russell_set(), russell_set())
+					@h2
 				]]],
 			setbuilder_e[NNe[Niu[Nin(russell_set(), russell_set()) |-
 				Fi[
 					id(in(russell_set(), russell_set()))[setbuilder_i((cls z) => {
 						Nin(z, z)
 					}, ?)[
-						set(russell_set()),
-						Nin(russell_set(), russell_set())
+						@h1,
+						@h2
 					]],
-					Nin(russell_set(), russell_set())
+					@h2
 				]]]]
 		]
 	]
@@ -2028,7 +2024,7 @@ axiomatic schema ax_bigcup() {
 schema ax_bigcup_m($A$ cls a) {
 	set(a) |-
 		mp[
-			set(a),
+			@h1,
 			Ve(?, a)[ax_bigcup()[]]
 		]
 }
@@ -2046,21 +2042,20 @@ axiomatic schema ax_doubleton() {
 schema ax_doubleton_m(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
 		mp[
-			Ai[set(x), set(y)],
+			Ai[@h1, @h2],
 			Ve2(?, x, y)[ax_doubleton()[]]
 		]
 }
 
 schema doubleton_to_cup(cls x: @121, cls y: @122, cls z: @11, cls w: @21) {
 	in(z, doubleton(x, y)), in(w, z) |-
-			
 		Oe[
-			setbuilder_e[in(z, doubleton(x, y))],
+			setbuilder_e[@h1],
 			cp[eq(z, x) |- cupi1(?, y)[in_eq_right_1[
-				in(w, z), eq(z, x)
+				@h2, @h3
 			]]],
 			cp[eq(z, y) |- cupi2(x, ?)[in_eq_right_1[
-				in(w, z), eq(z, y)
+				@h2, @h3
 			]]]
 		]
 }
@@ -2076,12 +2071,12 @@ schema bigcup_doubleton_to_cup(cls x: @1211, cls y: @1212, cls w: @11) {
 			},
 			in(w, cup(x, y))
 		)[
-			setbuilder_e[in(w, bigcup(doubleton(x, y)))],
+			setbuilder_e[@h1],
 			Vi[(cls z) => {
 				cp[A(in(z, doubleton(x, y)), in(w, z)) |-
 					doubleton_to_cup[
-						Ae1[A(in(z, doubleton(x, y)), in(w, z))],
-						Ae2[A(in(z, doubleton(x, y)), in(w, z))]
+						Ae1[@h2],
+						Ae2[@h2]
 					]]
 			}]
 		]
@@ -2095,9 +2090,9 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 					A(in(z, doubleton(x, y)), in(w, z))
 				})
 			}, w)[
-				set_i[in(w, cup(x, y))],
+				set_i[@h3],
 				Oe[
-					cupe[in(w, cup(x, y))],
+					cupe[@h3],
 					cp[
 						in(w, x) |-
 							Xi((cls z) => {
@@ -2107,8 +2102,8 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 								)
 							}, x)[
 								Ai[
-									doubleton_in_1(x, y)[set(x)],
-									in_eq_right_1[in(w, x), eq_reflexive(x)[]]
+									doubleton_in_1(x, y)[@h1],
+									in_eq_right_1[@h4, eq_reflexive(x)[]]
 								]
 							]
 					],
@@ -2121,8 +2116,8 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 								)
 							}, y)[
 								Ai[
-									doubleton_in_2(x, y)[set(y)],
-									in_eq_right_1[in(w, y), eq_reflexive(y)[]]
+									doubleton_in_2(x, y)[@h2],
+									in_eq_right_1[@h4, eq_reflexive(y)[]]
 								]
 							]
 					]
@@ -2143,7 +2138,7 @@ schema bigcup_doubleton_is_cup(cls x: @11, cls y: @21) {
 					cp[
 						in(w, cup(x, y)) |-
 							cup_to_bigcup_doubleton[
-								set(x), set(y), in(w, cup(x, y))
+								@h1, @h2, @h3
 							]
 					]
 				]
@@ -2155,10 +2150,10 @@ schema cup_is_set(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
 		set_is_set_1[
 			ax_bigcup_m(doubleton(x, y))[
-				ax_doubleton_m[set(x), set(y)]
+				ax_doubleton_m[@h1, @h2]
 			],
 			bigcup_doubleton_is_cup[
-				set(x), set(y)
+				@h1, @h2
 			]
 		]
 }
@@ -2345,24 +2340,20 @@ schema ax_power_m(cls x) {
 schema power_is_set(cls x: @11) {
 	set(x) |-
 		Xe_p(set(power(x)))[mpX(?, (cls y) => {set(power(x))})[
-			ax_power_m(x)[set(x)],
+			ax_power_m(x)[@h1],
 			Vi[(cls y) => {
 				cp[
 					A(set(y), V((cls z) => {
 						I(subseteq(z, x), in(z, y))
 					})) |-
 						subset_is_set_ae[Ai[
-							Ae1[A(set(y), V((cls z) => {
-								I(subseteq(z, x), in(z, y))
-							}))],
+							Ae1[@h2],
 							id(subseteq(power(x), y))[Vi[(cls z) => {
 								syll[
 									setbuilder_ec((cls z) => {
 										subseteq(z, x)
 									}, z)[],
-									Ve(?, z)[Ae2[A(set(y), V((cls z) => {
-										I(subseteq(z, x), in(z, y))
-									}))]]
+									Ve(?, z)[Ae2[@h2]]
 								]
 							}]]
 						]]
@@ -2393,36 +2384,36 @@ schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 	set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v)) |-
 		Oe[
 			doubleton_eq_e[
-				singleton_is_set[set(x)],
-				ax_doubleton_m[set(x), set(y)],
-				singleton_is_set[set(u)],
-				ax_doubleton_m[set(u), set(v)],
-				eq(v2(x, y), v2(u, v))
+				singleton_is_set[@h1],
+				ax_doubleton_m[@h1, @h2],
+				singleton_is_set[@h3],
+				ax_doubleton_m[@h3, @h4],
+				@h5
 			],
 			cp[
 				A(eq(singleton(x), singleton(u)), eq(doubleton(x, y), doubleton(u, v))) |-
 				Oe[
 					doubleton_eq_e[
-						set(x), set(y), set(u), set(v),
-						Ae2[A(eq(singleton(x), singleton(u)), eq(doubleton(x, y), doubleton(u, v)))]
+						@h1, @h2, @h3, @h4,
+						Ae2[@h6]
 					],
 					cp[id(A(eq(x, u), eq(y, v)))],
 					cp[
 						A(eq(x, v), eq(y, u)) |-
 							Ai[
 								singleton_eq_e[
-									set(x), set(u),
-									Ae1[A(eq(singleton(x), singleton(u)), eq(doubleton(x, y), doubleton(u, v)))]
+									@h1,
+									Ae1[@h6]
 								],
 								eq_transitive_1[
 									eq_transitive_2[
 										singleton_eq_e[
-											set(x), set(u),
-											Ae1[A(eq(singleton(x), singleton(u)), eq(doubleton(x, y), doubleton(u, v)))]
+											@h1,
+											Ae1[@h6]
 										],
-										Ae2[A(eq(x, v), eq(y, u))]
+										Ae2[@h7]
 									],
-									Ae1[A(eq(x, v), eq(y, u))]
+									Ae1[@h7]
 								]
 							]
 					]
@@ -2432,23 +2423,23 @@ schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 				A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u))) |-
 					Ai[
 						eq_symmetric[setbuilder_e[in_eq_right_2[
-							doubleton_in_1(u, v)[set(u)],
-							Ae1[A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u)))]
+							doubleton_in_1(u, v)[@h3],
+							Ae1[@h6]
 						]]],
 						eq_transitive_13[
 							eq_transitive_1[
 								eq_symmetric[setbuilder_e[in_eq_right_2[
-									doubleton_in_1(u, v)[set(u)],
-									Ae1[A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u)))]
+									doubleton_in_1(u, v)[@h3],
+									Ae1[@h6]
 								]]],
 								eq_symmetric[setbuilder_e[in_eq_right_2[
-									doubleton_in_2(u, v)[set(v)],
-									Ae1[A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u)))]
+									doubleton_in_2(u, v)[@h4],
+									Ae1[@h6]
 								]]]
 							],
 							eq_symmetric[setbuilder_e[in_eq_right_1[
-								doubleton_in_2(x, y)[set(y)],
-								Ae2[A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u)))]
+								doubleton_in_2(x, y)[@h2],
+								Ae2[@h6]
 							]]]
 						]
 					]
@@ -2458,20 +2449,20 @@ schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 
 schema v2_eq_e1(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 	set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v)) |-
-		Ae1[v2_eq_e[set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v))]]
+		Ae1[v2_eq_e[@h1, @h2, @h3, @h4, @h5]]
 }
 
 schema v2_eq_e2(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 	set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v)) |-
-		Ae2[v2_eq_e[set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v))]]
+		Ae2[v2_eq_e[@h1, @h2, @h3, @h4, @h5]]
 }
 
 schema v2_is_set(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
 		id(set(v2(x, y)))[
 			ax_doubleton_m[
-				singleton_is_set[set(x)],
-				ax_doubleton_m[set(x), set(y)]
+				singleton_is_set[@h1],
+				ax_doubleton_m[@h1, @h2]
 			]
 		]
 }
@@ -2517,13 +2508,13 @@ schema cartesian_in_i(cls x: @12, cls y: @22, cls a: @11, cls b: @21) {
 				A(eq(z, v2(c, d)), A(in(c, x), in(d, y)))
 			})
 		}, ?)[
-			v2_is_set[set_i[in(a, x)], set_i[in(b, y)]],
+			v2_is_set[set_i[@h1], set_i[@h2]],
 			Xi2((cls c, cls d) => {
 				A(eq(v2(a, b), v2(c, d)), A(in(c, x), in(d, y)))
 			}, a, b)[
 				Ai[
 					eq_reflexive(v2(a, b))[],
-					Ai[in(a, x), in(b, y)]
+					Ai[@h1, @h2]
 				]
 			]
 		]]
@@ -2624,16 +2615,16 @@ schema cartesian_is_rel(cls x, cls y) {
 }
 
 schema rel_subset_is_rel(cls x: @11, cls y: @12) {
-	(subseteq(x, y), is_rel(y) |- Vin_subset(x, y, (cls z) => {
+	subseteq(x, y), is_rel(y) |- id(is_rel(x))[Vin_subset(x, y, (cls z) => {
 		X2((cls a, cls b) => {
 			eq(z, v2(a, b))
 		})
-	})[subseteq(x, y), is_rel(y)]) ~ id(is_rel(x))
+	})[@h1, @h2]]
 }
 
 schema cartesian_is_set_1(cls x, cls y) {
 	set(x), set(y) |-
-		power_is_set[power_is_set[cup_is_set[set(x), set(y)]]]
+		power_is_set[power_is_set[cup_is_set[@h1, @h2]]]
 }
 
 schema cartesian_is_set_21(cls x, cls y, cls a, cls b) {
@@ -2700,11 +2691,11 @@ cls make_fun_v2([(cls, cls) -> cls] f, $A$ cls a, $B$ cls b) {
 }
 
 schema fun_subseteq_cartesian(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	is_function(f, a, b) |- Ae1[is_function(f, a, b)]
+	is_function(f, a, b) |- Ae1[@h1]
 }
 
 schema fun_im_unique(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	is_function(f, a, b) |- Ae2[is_function(f, a, b)]
+	is_function(f, a, b) |- Ae2[@h1]
 }
 
 schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
@@ -2712,7 +2703,7 @@ schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 		Vi[(cls x) => {
 			cp[(
 				in(x, a) |-
-					Xq_to_X[mp[in(x, a), Ve(?, x)[fun_im_unique[is_function(f, a, b)]]]]
+					Xq_to_X[mp[@h2, Ve(?, x)[fun_im_unique[@h1]]]]
 			)]
 		}]
 	]
@@ -2720,7 +2711,7 @@ schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 
 schema fun_is_rel(cls f, $A$ cls a, $B$ cls b) {
 	is_function(f, a, b) |- rel_subset_is_rel[
-		fun_subseteq_cartesian(f, a, b)[is_function(f, a, b)],
+		fun_subseteq_cartesian(f, a, b)[@h1],
 		cartesian_is_rel(a, b)[]
 	]
 }
@@ -2756,7 +2747,7 @@ cls successor(cls x) {
 
 schema self_in_successor(cls x: @11) {
 	set(x) |- id(in(x, successor(x)))[cupi2(x, ?, ?)[
-		self_in_singleton(x)[set(x)]
+		self_in_singleton(x)[@h1]
 	]]
 }
 
@@ -2781,8 +2772,8 @@ cls ord_two() {
 "따름 순서수는 집합이다."
 schema successor_is_set(cls x: @11) {
 	set(x) |- id(set(successor(x)))[cup_is_set[
-		set(x),
-		singleton_is_set[set(x)]
+		@h1,
+		singleton_is_set[@h1]
 	]]
 }
 
@@ -2827,9 +2818,7 @@ schema zero_in_omega() {
 		Vi[(cls z) => {
 			cp[
 				in(z, setbuilder((cls z) => {is_successor_set(z)})) |-
-					Ae1[setbuilder_e[in(z, setbuilder((cls z) => {
-						is_successor_set(z)
-					}))]]
+					Ae1[setbuilder_e[@h1]]
 			]
 		}]
 	]]
@@ -2839,19 +2828,19 @@ schema zero_in_omega() {
 schema successor_in_omega(cls z: @11) {
 	in(z, omega()) |-
 		id(in(successor(z), omega()))[bigcap_2(setbuilder((cls z) => {is_successor_set(z)}), successor(z))[
-			successor_is_set(z)[Xi((cls x) => {in(z, x)}, omega())[in(z, omega())]],
+			successor_is_set(z)[Xi((cls x) => {in(z, x)}, omega())[@h1]],
 			Vi[(cls x) => {
 				cp[
 					in(x, setbuilder((cls z) => {is_successor_set(z)})) |-
 						mp[
 							mp[
-								in(x, setbuilder((cls z) => {is_successor_set(z)})),
+								@h2,
 								Ve(?, x)[bigcap_1(setbuilder((cls z) => {
 									is_successor_set(z)
-								}), z)[in(z, omega())]]
+								}), z)[@h1]]
 							],
 							Ve(?, z)[Ae2[setbuilder_e((cls z) => {is_successor_set(z)}, x)[
-								in(x, setbuilder((cls z) => {is_successor_set(z)}))
+								@h2
 							]]]
 						]
 				]
@@ -2877,9 +2866,9 @@ schema omega_is_set() {
 			cp[
 				A(set(x), is_successor_set(x)) |-
 					id(set(omega()))[subset_is_set[
-						Ae1[A(set(x), is_successor_set(x)) ],
+						Ae1[@h1],
 						bigcap_is_smaller[setbuilder_ia((cls z) => {is_successor_set(z)}, ?)[
-							A(set(x), is_successor_set(x))
+							@h1
 						]]
 					]]
 			]
@@ -2895,8 +2884,8 @@ schema successor_is_not_zero(cls n) {
 				eq(successor(n), ord_zero()) |-
 					Fi[
 						in_eq_right_1[
-							self_in_successor[set_i[in(n, omega())]],
-							eq(successor(n), ord_zero())
+							self_in_successor[set_i[@h1]],
+							@h2
 						],
 						id(Nin(n, ord_zero()))[emptyset_def(n)[]]
 					]
@@ -2971,14 +2960,14 @@ schema recursion_theorem_0($A$ cls a: @11, cls c: @21, cls f: @31) {
 			}, cartesian(omega(), a))[
 				cartesian_is_set[
 					omega_is_set[],
-					set(a)
+					@h1
 				],
 				Ai[
 					self_subseteq_self(cartesian(omega(), a))[],
 					Ai[
 						cartesian_in_i[
 							zero_in_omega[],
-							in(c, a)
+							@h2
 						],
 						id(Vin(omega(), (cls n) => {
 							Vin(a, (cls x) => {
@@ -3014,8 +3003,8 @@ schema recursion_theorem_0($A$ cls a: @11, cls c: @21, cls f: @31) {
 													in(x, a) |-
 														cp[in(v2(n, x), cartesian(omega(), a)) |-
 															cartesian_in_i[
-																successor_in_omega[in(n, omega())],
-																fcall_in_codomain[is_function(f, a, a), in(x, a)]
+																successor_in_omega[@h4],
+																fcall_in_codomain[@h3, @h5]
 															]]
 												]
 											}]
@@ -3035,14 +3024,14 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
 		id(subseteq(define_recursively(a, c, f), cartesian(omega(), a)))[
 			subseteq_subseteq[
-				bigcap_is_smaller[recursion_theorem_0[set(a), in(c, a), is_function(f, a, a)]],
-				Ae1[setbuilder_e[recursion_theorem_0[set(a), in(c, a), is_function(f, a, a)]]]]
+				bigcap_is_smaller[recursion_theorem_0[@h1, @h2, @h3]],
+				Ae1[setbuilder_e[recursion_theorem_0[@h1, @h2, @h3]]]]
 		]
 }
 
 "[$\gamma\in\mathscr A]가 되기 위한 두 번째 조건."
 schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
-	set(a), in(c, a), is_function(f, a, a) |-
+	in(c, a) |-
 		id(in(v2(ord_zero(), c), define_recursively(a, c, f)))[
 			setbuilder_i((cls z) => {
 				V(($G$ cls g) => {
@@ -3051,10 +3040,10 @@ schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
 			}, v2(ord_zero(), c))[
 				v2_is_set[
 				set_i[zero_in_omega[]],
-				set_i[in(c, a)]
+				set_i[@h1]
 			],
 				Vi[($G$ cls g) => {
-					cp[in(g, recursion_set(a, c, f)) |- Ae1[Ae2[setbuilder_e[in(g, recursion_set(a, c, f))]]]]
+					cp[in(g, recursion_set(a, c, f)) |- Ae1[Ae2[setbuilder_e[@h2]]]]
 				}]
 			]
 		]
@@ -3062,7 +3051,7 @@ schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
 
 "[$\gamma\in\mathscr A]가 되기 위한 세 번째 조건."
 schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
-	set(a), in(c, a), is_function(f, a, a) |-
+	is_function(f, a, a) |-
 		id(Vin(omega(), (cls n) => {
 			Vin(a, (cls x) => {
 				I(
@@ -3081,11 +3070,11 @@ schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
 								})
 							}, v2(successor(n), fcall(f, x)))[
 								v2_is_set[
-									successor_is_set[set_i[in(n, omega())]],
-									set_i[fcall_in_codomain[is_function(f, a, a), in(x, a)]]
+									successor_is_set[set_i[@h2]],
+									set_i[fcall_in_codomain[@h1, @h3]]
 								],
 								mp[
-									setbuilder_e[in(v2(n, x), define_recursively(a, c, f))],
+									setbuilder_e[@h4],
 									VIm(
 										($G$ cls g) => {
 											I(in(g, recursion_set(a, c, f)), in(v2(n, x), g))
@@ -3095,9 +3084,9 @@ schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
 										}
 									)[Vi[($G$ cls g) => {
 										I_distribute_left[cp[in(g, recursion_set(a, c, f)) |-
-											mp[in(x, a), Ve(?, x)[mp[
-												in(n, omega()),
-												Ve(?, n)[Ae2[Ae2[setbuilder_e[in(g, recursion_set(a, c, f))]]]]
+											mp[@h3, Ve(?, x)[mp[
+												@h2,
+												Ve(?, n)[Ae2[Ae2[setbuilder_e[@h5]]]]
 											]]]
 										]]
 									}]]
@@ -3143,9 +3132,9 @@ schema recursion_theorem($A$ cls a: @11, cls c: @21, cls f: @31) {
 			Xi(($\gamma$ cls g) => {
 				is_recursively_defined(g, a, c, f)
 			}, define_recursively(a, c, f))[
-				recursion_theorem_6(a, c, f)[set(a), in(c, a), is_function(f, a, a)]
+				recursion_theorem_6(a, c, f)[@h1, @h2, @h3]
 			],
-			recursion_theorem_7(a, c, f)[set(a), in(c, a), is_function(f, a, a)]
+			recursion_theorem_7(a, c, f)[@h1, @h2, @h3]
 		]
 }
 
