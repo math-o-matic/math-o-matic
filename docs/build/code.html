@@ -287,11 +287,16 @@ st T;
 $!&lt;prec=596&gt;#1&lt;&lt;\land&gt;&gt;#2$
 st A(st p, st q);
 </code></pre><p><code>!&lt;prec=596&gt;</code>은 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∧</mo></mrow><annotation encoding="application/x-tex">\land</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.55556em;vertical-align:0em;"></span><span class="mord">∧</span></span></span></span>의 연산자 우선순위를 596으로 하겠다는 뜻이다. 연산자 우선순위 문맥에 따라 표시할 때 괄호가 필요한지가 결정된다. <code>#1</code>과 <code>#2</code>는 각각 첫 번째와 두 번째 인자가 표시될 위치를 표시한다. <code>&lt;&lt;</code>와 <code>&gt;&gt;</code>는 클릭 되는 부분을 표시한다.</p><p>또는</p><pre><code>[(st, st) -&gt; st] A;
-</code></pre><p>라 써도 될 것이다. 이때 <code>[(st, st) -&gt; st]</code>는 <code>st</code> 두 개를 받아 <code>st</code>를 뱉는 함수형 타입이다. 그러나 저 위에 방법으로 쓰는 것이 좋을 것이다.</p><h2>공리와 증명을 작성하는 방법</h2><p>공리는 다음과 같이 작성한다.</p><pre><code>&quot;연언 도입(conjunction introduction).&quot;
+</code></pre><p>라 써도 될 것이다. 이때 <code>[(st, st) -&gt; st]</code>는 <code>st</code> 두 개를 받아 <code>st</code>를 뱉는 함수형 타입이다. 그러나 저 위에 방법으로 쓰는 것이 좋을 것이다.</p><p>무정의용어가 아닌 매크로를 정의할 수도 있는데 매크로의 정의는 본체를 가진다. 다음과 같다.</p><pre><code>&quot;pr 타입을 위한 A.&quot;
+$\left(#1&lt;&lt;\land&gt;&gt;#2\right)$
+pr Af(pr f, pr g) {
+	(cls z) =&gt; { A(f(z), g(z)) }
+}
+</code></pre><p><code>(...) =&gt; {...}</code>는 인라인에서 매크로를 정의한 것이다.</p><h2>공리와 증명을 작성하는 방법</h2><p>공리는 다음과 같이 작성한다.</p><pre><code>&quot;연언 도입(conjunction introduction).&quot;
 <b>axiomatic</b> <b>schema</b> Ai(st p: @1, st q: @2) {
 	p, q |- A(p, q)
 }
-</code></pre><p>공리라서 <code>axiomatic</code>이 붙었다. <code>|-</code>가 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⊢</mo></mrow><annotation encoding="application/x-tex">\vdash</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mrel">⊢</span></span></span></span>를 나타낸다. <code>@1</code>과 <code>@22</code>는 ⊦E 구문을 쓸 때 인자가 자동으로 인식되도록 하기 위한 것이다. 공리를 그냥 정의할 수는 없고 공리 스키마로 감싸야 한다. 정리 역시 그러하다. 예를 들어 다음과 같이 인자 없는 스키마로 감싸면 된다.</p><pre><code>&quot;axiom of empty set.&quot;
+</code></pre><p>공리라서 <code>axiomatic</code>이 붙었다. <code>|-</code>가 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⊢</mo></mrow><annotation encoding="application/x-tex">\vdash</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mrel">⊢</span></span></span></span>를 나타낸다. <code>@1</code>과 <code>@2</code>는 ⊦E 구문을 쓸 때 인자가 자동으로 인식되도록 하기 위한 것이다. 공리를 그냥 정의할 수는 없고 공리 스키마로 감싸야 한다. 정리 역시 그러하다. 예를 들어 다음과 같이 인자 없는 스키마로 감싸면 된다.</p><pre><code>&quot;axiom of empty set.&quot;
 <b>axiomatic</b> <b>schema</b> ax_emptyset() {
 	|- set(emptyset())
 }
