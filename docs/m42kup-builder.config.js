@@ -12,7 +12,11 @@ module.exports = {
 	list: [
 		{
 			name: '이론적 배경',
-			file: 'theory'
+			file: 'background'
+		},
+		{
+			name: '코드를 작성하는 법',
+			file: 'code'
 		},
 		{
 			name: '우선순위',
