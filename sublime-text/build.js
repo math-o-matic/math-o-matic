@@ -18,13 +18,12 @@ function formatError(e) {
 }
 
 var code = fs.readFileSync(process.argv[2], 'utf-8');
-var native = require(path.join(path.dirname(process.argv[2]), 'native.js'));
 
 try {
 	var parser = pegjs.generate(math.grammar, {cache: true});
 	var parsed = parser.parse(code);
 	program = new math.Program();
-	program.feed(parsed, native);
+	program.feed(parsed);
 } catch (e) {
 	console.error(formatError(e));
 	return;
