@@ -95,7 +95,7 @@ schema Ai(st p: @1, st q: @2) {
 
 "연언 도입 2번."
 schema A3i(st p: @1, st q: @2, st r: @3) {
-	p, q, r |- Ai[Ai[p, q], r]
+	p, q, r |- Ai[Ai[@h1, @h2], @h3]
 }
 
 "연언 소거(conjunction elimination) 1."
