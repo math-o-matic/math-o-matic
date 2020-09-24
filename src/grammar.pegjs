@@ -149,6 +149,7 @@ defschema =
 		{return p || []}
 	)
 	"{" _
+	defdollars: defdollar* _
 	expr:metaexpr _
 	"}"
 	{
@@ -159,6 +160,7 @@ defschema =
 			name,
 			native: false,
 			params,
+			def$s: defdollars,
 			expr,
 			location: location()
 		}
@@ -332,11 +334,15 @@ schemaexpr =
 		{return p || []}
 	)
 	"=>" _
-	"{" _ expr:metaexpr _ "}"
+	"{" _
+	defdollars: defdollar* _
+	expr:metaexpr _
+	"}"
 	{
 		return {
 			_type: 'schemaexpr',
 			params,
+			def$s: defdollars,
 			expr,
 			location: location()
 		}
@@ -371,10 +377,12 @@ metaexpr_internal_1 =
 		)? {return l || []}
 	)
 	"|-" _
+	defdollars:defdollar* _
 	right:metaexpr_internal_1
 	{
 		return {
 			_type: 'tee',
+			def$s: defdollars,
 			left,
 			right,
 			location: location()
@@ -401,6 +409,20 @@ expr0 =
 	/ funexpr
 	/ var
 	/ "(" _ e:expr0 _ ")" {return e}
+
+defdollar =
+	name:dollar_ident _
+	'=' _
+	expr:metaexpr _
+	sem
+	{
+		return {
+			_type: 'def$',
+			name,
+			expr,
+			location: location()
+		};
+	}
 
 type =
 	stype
@@ -467,7 +489,7 @@ dollar_var =
 		return {
 			_type: 'var',
 			type: '$',
-			name: name.slice(1),
+			name: name,
 			location: location()
 		}
 	}

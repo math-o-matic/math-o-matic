@@ -10,6 +10,7 @@ interface $varInput {
 }
 
 export default class $var extends Node {
+    public readonly _type = '$var';
 
     public readonly type: Type | MetaType;
     public readonly name: string;
@@ -27,12 +28,19 @@ export default class $var extends Node {
         this.expr = expr;
     }
 
+    public isProved(hyps?): boolean {
+		hyps = hyps || [];
+		
+		return super.isProved(hyps)
+			|| this.expr.isProved(hyps);
+	}
+
     public toIndentedString(indent: number, root?: boolean): string {
-        throw this.error("Method not implemented.");
+        return this.name;
     }
     
     public toTeXString(prec?: Precedence, root?: boolean): string {
-        throw this.error("Method not implemented.");
+        return `\\mathtt{${Node.escapeTeX(this.name)}}`;
     }
 
 }

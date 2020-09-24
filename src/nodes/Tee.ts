@@ -1,18 +1,26 @@
 import Node, { Precedence } from './Node';
 import MetaType from './MetaType';
 
-import ExpressionResolver from '../ExpressionResolver';
+import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
+import $var from './$var';
+
+interface TeeInput {
+	left: Metaexpr[];
+	def$s?: $var[];
+	right: Metaexpr;
+}
 
 export default class Tee extends Node {
 	public readonly _type = 'tee';
 	public precedence = Node.PREC_COMMA;
 
 	public readonly left;
+	public readonly def$s: $var[];
 	public readonly right;
 	public readonly type: MetaType;
 
-	constructor ({left, right}, scope?: Scope) {
+	constructor ({left, def$s, right}: TeeInput, scope?: Scope) {
 		super(scope);
 		
 		if (!(left instanceof Array
@@ -20,6 +28,9 @@ export default class Tee extends Node {
 			console.log(left);
 			throw this.error('Assertion failed');
 		}
+
+		if (def$s && !(def$s instanceof Array && def$s.every($ => $._type == '$var')))
+			throw this.error('Assertion failed');
 
 		if (!['type', 'metatype'].includes(right.type._type)) {
 			console.log(right);
@@ -39,6 +50,8 @@ export default class Tee extends Node {
 
 			return l.push(r), l;
 		}, []);
+
+		this.def$s = def$s || [];
 
 		this.right = right;
 
@@ -66,6 +79,7 @@ export default class Tee extends Node {
 			'\t' + this.right.toIndentedString(indent + 1)
 		].join('\n' + '\t'.repeat(indent));
 	}
+	
 	public toTeXString(prec?: Precedence, root?: boolean): string {
 		var expanded = ExpressionResolver.expandMetaAndFuncalls(this);
 

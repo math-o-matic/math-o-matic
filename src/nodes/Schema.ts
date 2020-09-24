@@ -2,9 +2,10 @@ import Node, { Precedence } from './Node';
 import Type from './Type';
 import MetaType from './MetaType';
 
-import ExpressionResolver from '../ExpressionResolver';
+import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
 import Typevar from './Typevar';
+import $var from './$var';
 
 interface SchemaArgumentType {
 	shouldValidate: boolean;
@@ -13,7 +14,8 @@ interface SchemaArgumentType {
 	name?: string;
 	native?: object;
 	params?: (Typevar | Schema)[];
-	expr?: Node;
+	def$s?: $var[];
+	expr?: Metaexpr;
 	doc?: string;
 	tex?: string;
 }
@@ -26,7 +28,8 @@ export default class Schema extends Node {
 	public readonly name: string;
 	public readonly native;
 	public readonly params;
-	public readonly expr;
+	public readonly def$s: $var[];
+	public readonly expr: Metaexpr;
 	public readonly type: Type | MetaType;
 	public readonly proved: boolean;
 
@@ -34,7 +37,7 @@ export default class Schema extends Node {
 	 * name, expr 중 하나 이상 있어야 하고 type, native, expr 중
 	 * 한 개만 있어야 한다.
 	 */
-	constructor ({doc, tex, shouldValidate, axiomatic, type, /* nullable */ name, native, params, expr}: SchemaArgumentType, scope?: Scope) {
+	constructor ({doc, tex, shouldValidate, axiomatic, type, /* nullable */ name, native, params, def$s, expr}: SchemaArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;
@@ -71,6 +74,7 @@ export default class Schema extends Node {
 
 		if (native) {
 			this.native = native;
+			this.def$s = [];
 			this.expr = null;
 			this.type = null;
 		} else {
@@ -88,6 +92,7 @@ export default class Schema extends Node {
 			});
 
 			this.params = params;
+			this.def$s = def$s || [];
 			this.expr = expr;
 		}
 

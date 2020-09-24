@@ -12,8 +12,9 @@ import Schemacall from './nodes/Schemacall';
 import Reduction from './nodes/Reduction';
 
 import { Expr0, Metaexpr } from './ExpressionResolver';
-import { DefrulesetObject, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
+import { Def$Object, DefrulesetObject, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
+import $var from './nodes/$var';
 
 function typeObjToString(obj: TypeObject): string {
 	if (obj._type != 'type')
@@ -57,7 +58,7 @@ function varObjToString(obj: VarObject): string {
 		case '@':
 			return `@${obj.name}`;
 		case '$':
-			return `$${obj.name}`;
+			return `${obj.name}`;
 		case 'ruleset':
 			return `${obj.rulesetName}.${obj.name}`;
 		case 'normal':
@@ -273,7 +274,11 @@ export default class PI {
 
 				throw scope.error(`Unknown selector query @${obj.name}`);
 			case '$':
-				throw scope.error('Not implemented');
+				if (!scope.has$(obj.name)) {
+					throw scope.error(`${obj.name} is not defined`);
+				}
+
+				return scope.get$(obj.name);
 			case 'ruleset':
 				if (!scope.hasRuleset(obj.rulesetName))
 					throw scope.error(`Ruleset ${obj.rulesetName} is not defined`);
@@ -309,9 +314,31 @@ export default class PI {
 
 		var scopeRight = scope.extend('tee.right', null, obj.right.location);
 		left.forEach(l => scopeRight.hypotheses.push(l));
+
+		var def$s = obj.def$s.map($ => {
+			var $v = PI.def$($, scopeRight);
+
+			if (scopeRight.hasOwn$($v.name)) {
+				throw scopeRight.error(`${$.name} has already been declared`);
+			}
+
+			return scopeRight.add$($v);
+		});
+
 		var right = PI.metaexpr(obj.right, scopeRight);
 
-		return new Tee({left, right}, scope);
+		return new Tee({left, def$s, right}, scope);
+	}
+
+	public static def$(obj: Def$Object, parentScope: Scope): $var {
+		if (obj._type != 'def$')
+			throw Error('Assertion failed');
+		
+		var scope = parentScope.extend('def$', obj.name, obj.location);
+		
+		var expr = PI.metaexpr(obj.expr, scope);
+
+		return new $var({name: obj.name, expr}, scope);
 	}
 
 	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, nativeMap?): Schema {
@@ -352,9 +379,19 @@ export default class PI {
 			return scope.addTypevar(tv);
 		});
 
+		var def$s = obj.def$s.map($ => {
+			var $v = PI.def$($, scope);
+
+			if (scope.hasOwn$($v.name)) {
+				throw scope.error(`${$.name} has already been declared`);
+			}
+
+			return scope.add$($v);
+		});
+
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new Schema({shouldValidate: true, axiomatic, name, params, expr, doc}, scope);
+		return new Schema({shouldValidate: true, axiomatic, name, params, def$s, expr, doc}, scope);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope): Schemacall {

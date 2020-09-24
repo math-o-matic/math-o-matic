@@ -4,7 +4,7 @@ import Type from './Type';
 
 interface TypevarArgumentType {
 	type: Type,
-	isParam?: boolean,
+	isParam: boolean,
 	guess?: string,
 	name: string,
 	doc?: string,

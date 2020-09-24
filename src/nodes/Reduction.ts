@@ -1,14 +1,14 @@
 import Node, { Precedence } from './Node';
 import Schemacall from './Schemacall';
 
-import ExpressionResolver from '../ExpressionResolver';
+import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
 import Tee from './Tee';
 
 export default class Reduction extends Node {
 	public readonly _type = 'reduction';
 
-	public readonly subject: Node;
+	public readonly subject: Metaexpr;
 	public readonly guesses;
 	public readonly leftargs;
 	public readonly reduced;
@@ -94,7 +94,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(leftargs[i])}
 		}
 	}
 
-	public isProved(hyps?) {
+	public isProved(hyps?): boolean {
 		hyps = hyps || [];
 		
 		return super.isProved(hyps)

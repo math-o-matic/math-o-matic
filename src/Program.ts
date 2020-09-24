@@ -1,11 +1,12 @@
 import Scope from './Scope';
 import PegInterface from './PegInterface';
-import ExpressionResolver from './ExpressionResolver';
+import ExpressionResolver, { Metaexpr } from './ExpressionResolver';
 import Schema from './nodes/Schema';
 import Typevar from './nodes/Typevar';
 import Tee from './nodes/Tee';
 import Schemacall from './nodes/Schemacall';
 import Type from './nodes/Type';
+import $var from './nodes/$var';
 
 export default class Program {
 	public scope = new Scope(null);
@@ -213,6 +214,7 @@ export default class Program {
 	
 					var typevars = Array(usedVars.length).fill(null).map((_, i) => {
 						return new Typevar({
+							isParam: true,
 							type: base,
 							name: vars[usedVars[i]]
 						});
@@ -316,9 +318,7 @@ export default class Program {
 		}
 	};
 
-	public getProofExplorer(name: string, ktx) {
-		var ctr = 0;
-	
+	public getProofExplorer(name: string, ktx) {	
 		var DIAMOND = '&#x25C7;',
 			DOWN = '&#x25BC;',
 			UP = '&#x25B2;';
@@ -327,9 +327,9 @@ export default class Program {
 			throw Error('wut');
 		}
 	
-		var expr = this.scope.schemaMap.get(name).expr;
+		var theexpr = this.scope.schemaMap.get(name);
 	
-		var ncols = (function recurse(expr) {
+		var ncols = (function recurse(expr: any) {
 			switch (expr._type) {
 				case 'reduction':
 					return Math.max(
@@ -344,231 +344,337 @@ export default class Program {
 				case 'tee':
 					return Math.max(
 						...expr.left.map(recurse),
+						...expr.def$s.map($ => recurse($.expr)),
 						recurse(expr.right)
 					) + 1;
 				case 'schemacall':
 				default:
 					return 1;
 			}
-		})(expr);
-	
-		var html = '<table class="explorer">';
-		html += `<tr><th>#</th><th colspan="${ncols}">expr</th><th colspan="2">rule</th></tr>`;
-	
-		function getHtml(left, h1, h2, bbb?: boolean, noctr?: boolean) {
+		})(theexpr);
+
+		function getHtmlLine(ctr: string | number, left: any[], h1: string, h2: string | string[], bbb?: boolean) {
 			var padding = left.length;
 	
 			var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString(true))).join(', ')}</td>`).join('');
+
+			for (var i = 0; i < left.length; i++)
+				while(left[i].length) left[i].pop();
 	
-			return `<tr><th>${noctr ? '' : ++ctr}</th>${htmlLeft}<td ${bbb ? 'class="bbb"' : ''} colspan="${ncols-padding}">${h1}</td>${h2}</tr>`;
+			return `<tr><th>${ctr}</th>${htmlLeft}<td ${bbb ? 'class="bbb"' : ''} colspan="${ncols-padding}">${h1}</td>${h2 instanceof Array ? h2.map(e => `<td>${e}</td>`).join('') : `<td colspan="2">${h2}</td>`}</tr>`;
 		}
-	
-		function getHypNo(hyps, expr) {
-			for (var i = 0; i < hyps.length; i++) {
-				var [hyp, lineno] = hyps[i];
-	
-				if (hyp == expr) {
-					return lineno;
-				}
-			}
-	
-			return false;
+
+		function exprToHtml(expr, expand?) {
+			if (typeof expr == 'number') return `<b>${expr}</b>`;
+			if (expr instanceof Array) return `<b>${expr[0]}&ndash;${expr[1]}</b>`;
+			if (expand) return ktx(ExpressionResolver.expandMetaAndFuncalls(expr).toTeXString(true));
+			
+			return ktx(expr.toTeXString(true));
 		}
-	
-		html += (function recurse(expr, left, hyps) {
-			var hypno = getHypNo(hyps, expr);
-	
-			if (hypno) {
-				return getHtml(
-					left,
-					ktx(expr.toTeXString(true)),
-					`<td>${DIAMOND}</td><td>[<b>${hypno}</b>]</td>`
-				);
+
+		var ctr = 0;
+
+		var tree = (function getTree(
+				expr: Metaexpr,
+				hypnumMap: Map<Metaexpr, number>,
+				$Map: Map<Metaexpr, number>) {
+			
+			if (hypnumMap.has(expr)) {
+				return [{
+					_type: 'R',
+					ctr: ++ctr,
+					num: hypnumMap.get(expr),
+					expr
+				}];
 			}
-	
+
+			if ($Map.has(expr)) {
+				return [{
+					_type: 'R',
+					ctr: ++ctr,
+					num: $Map.get(expr),
+					expr
+				}];
+			}
+
 			switch (expr._type) {
 				case 'reduction':
-					var leftPrinted = false;
-	
-					var leftargs = expr.leftargs.map(leftarg => {
-						var hypno = getHypNo(hyps, leftarg);
-	
-						if (hypno) {
-							return [false, hypno];
-						}
-	
-						if (!leftPrinted) {
-							leftPrinted = true;
-						} else {
-							left = Array(left.length).fill([]);
-						}
-	
-						return [
-							recurse(
-								leftarg,
-								left,
-								hyps
-							),
-							ctr
-						];
+					var leftarglines = [];
+					var leftargnums = expr.leftargs.map(l => {
+						if (hypnumMap.has(l)) return hypnumMap.get(l);
+						if ($Map.has(l)) return $Map.get(l);
+
+						var lines = getTree(l, hypnumMap, $Map);
+						leftarglines = leftarglines.concat(lines);
+						return lines[lines.length - 1].ctr;
 					});
-	
-					if (leftPrinted) {
-						left = Array(left.length).fill([]);
-					}
-	
-					if ((expr.subject._type == 'schema' && expr.subject.name)
-							|| (expr.subject._type == 'schemacall' && expr.subject.schema.name)) {
-						return [
-							leftargs.map(e => e[0]).filter(e => e).join(''),
-							getHtml(
-								left,
-								ktx(expr.reduced.toTeXString(true)),
-								`<td>${DOWN}</td><td>${ktx(expr.subject.toTeXString(true))} [${leftargs.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
-							)
-						].join('');
-					}
-	
-					var subject = (() => {
-						var hypno = getHypNo(hyps, expr.subject);
-	
-						if (hypno) {
-							return [false, hypno];
-						}
-	
-						if (!leftPrinted) {
-							leftPrinted = true;
-						} else {
-							left = Array(left.length).fill([]);
-						}
-	
-						return [
-							recurse(
-								expr.subject,
-								left,
-								hyps
-							),
-							ctr
-						];
-					})();
-	
-					if (leftPrinted) {
-						left = Array(left.length).fill([]);
-					}
-	
-					return [
-						leftargs.map(e => e[0]).filter(e => e).join(''),
-						subject[0] || '',
-						getHtml(
-							left,
-							ktx(expr.reduced.toTeXString(true)),
-							`<td>${DOWN}</td><td><b>${subject[1]}</b> [${leftargs.map(e => `<b>${e[1]}</b>`).join(', ')}]</td>`
-						)
-					].join('');
-				case 'schemacall':
-					var callee = expr.schema;
 					
-					var expanded = ExpressionResolver.expandMetaAndFuncalls(expr);
-	
-					if (callee.shouldValidate && callee.name) {
-						return getHtml(
-							left,
-							ktx(expanded.toTeXString(true)),
-							`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
-						);
-					}
-	
-					var hypno = getHypNo(hyps, callee);
-	
-					if (hypno) {
-						return getHtml(
-							left,
-							ktx(expanded.toTeXString(true)),
-							`<td>${DIAMOND}</td><td><b>${hypno}</b> (${expr.args.map(arg => ktx(arg.toTeXString(true))).join(', ')})</td>`
-						);
-					}
-	
-					return getHtml(
-						left,
-						ktx(expanded.toTeXString(true)),
-						'<td colspan="2"><b class="red">not proved</b></td>'
-					);
-				case 'typevar':
-					var hypno = getHypNo(hyps, expr);
-	
-					if (hypno) {
-						return getHtml(
-							left,
-							ktx(expr.toTeXString(true)),
-							`<td>${DIAMOND}</td><td><b>${hypno}</b></td>`
-						);
-					}
-	
-					return getHtml(
-						left,
-						ktx(expr.toTeXString(true)),
-						'<td colspan="2"><b class="red">not proved</b></td>'
-					);
-				case 'schema':
-					if (expr.name) {
-						return getHtml(
-							left,
-							ktx(expr.toTeXString(true, true)),
-							`<td>${DIAMOND}</td><td>${ktx(expr.toTeXString(true))}</td>`
-						);
-					}
-	
-					return recurse(
-						expr.expr,
-						left.concat([expr.params]),
-						hyps
-					);
-				case 'tee':
-					var start = ctr + 1;
-					var arr = [
-						...(
-							expr.left.length
-								? expr.left.map((e, i, a) => getHtml(
-									(i == 0 ? left.concat([[]]) : Array(left.length + 1).fill([])),
-									ktx(e.toTeXString(true)),
-									'<td colspan="2">assumption</td>',
-									i == a.length - 1
-								))
-								: [getHtml(
-									Array(left.length + 1).fill([]),
-									'',
-									'<td colspan="2"></td>',
-									true,
-									true
-								)]
-						),
-						recurse(
-							expr.right,
-							(expr.left.length == 0 ? left.concat([[]]) : Array(left.length + 1).fill([])),
-							hyps.concat(expr.left.map((e, i) => [e, start + i]))
-						)
-					];
-					var end = ctr;
-	
+					var subjectlines = [];
+					var subjectnum = hypnumMap.get(expr.subject)
+						|| $Map.get(expr.subject)
+						|| ((s => s._type == 'schema' && s.name
+								|| s._type == 'schemacall' && s.schema.name)(expr.subject)
+							? expr.subject
+							: (subjectlines = getTree(expr.subject, hypnumMap, $Map))[subjectlines.length-1].ctr);
+
 					return [
-						...arr,
-						getHtml(
-							Array(left.length).fill([]),
-							ktx(expr.toTeXString(true)),
-							`<td>${UP}</td><td>[<b>${start}</b>&ndash;<b>${end}</b>]</td>`
-						)
-					].join('');
+						...leftarglines,
+						...subjectlines,
+						{
+							_type: 'E',
+							ctr: ++ctr,
+							subject: subjectnum,
+							leftargs: leftargnums,
+							reduced: expr.reduced
+						}
+					];
+				case 'schemacall':
+					if (hypnumMap.has(expr.schema)) {
+						return [{
+							_type: 'RC',
+							ctr: ++ctr,
+							schema: hypnumMap.get(expr.schema),
+							args: expr.args,
+							expr
+						}];
+					}
+
+					if ($Map.has(expr.schema)) {
+						return [{
+							_type: 'RC',
+							ctr: ++ctr,
+							schema: $Map.get(expr.schema),
+							args: expr.args,
+							expr
+						}];
+					}
+
+					if (expr.schema.shouldValidate && expr.schema.name) {
+						return [{
+							_type: 'RCX',
+							ctr: ++ctr,
+							expr
+						}];
+					}
+
+					if (!expr.schema.shouldValidate) {
+						return [{
+							_type: 'NP',
+							ctr: ++ctr,
+							expr
+						}];
+					}
+
+					var schemalines = getTree(expr.schema, hypnumMap, $Map);
+
+					return [
+						...schemalines,
+						{
+							_type: 'RC',
+							ctr: ++ctr,
+							schema: schemalines[schemalines.length - 1].ctr,
+							args: expr.args,
+							expr
+						}
+					];
+				case 'typevar':
+					return [{
+						_type: 'NP',
+						ctr: ++ctr,
+						expr
+					}];
+				case 'schema':
+					if (expr.shouldValidate && expr.name && expr != theexpr) {
+						return [{
+							_type: 'RS',
+							ctr: ++ctr,
+							expr
+						}];
+					}
+
+					if (!expr.expr) {
+						return [{
+							_type: 'NP',
+							ctr: ++ctr,
+							expr
+						}];
+					}
+
+					$Map = new Map($Map);
+
+					var $lines = [];
+					
+					expr.def$s.forEach($ => {
+						var lines = getTree($.expr, hypnumMap, $Map);
+						$lines = $lines.concat(lines);
+
+						var $num = lines[lines.length - 1].ctr;
+						$Map.set($, $num);
+					});
+
+					return [{
+						_type: 'V',
+						$lines,
+						lines: getTree(expr.expr, hypnumMap, $Map),
+						// getHtmlLine 함수가 이 배열을 조작하기 때문에
+						// shallow copy 해야 한다.
+						params: expr.params.slice(),
+						ctr
+					}];
+				case 'tee':
+					hypnumMap = new Map(hypnumMap);
+					var leftlines = [];
+
+					var start = ctr + 1;
+
+					expr.left.forEach(l => {
+						hypnumMap.set(l, ++ctr);
+						leftlines.push({
+							_type: 'H',
+							ctr,
+							expr: l
+						});
+					});
+
+					$Map = new Map($Map);
+
+					var $lines = [];
+					expr.def$s.forEach($ => {
+						var lines = getTree($.expr, hypnumMap, $Map);
+						$lines = $lines.concat(lines);
+
+						var $num = lines[lines.length - 1].ctr;
+						$Map.set($, $num);
+					});
+
+					return [{
+						_type: 'T',
+						leftlines,
+						$lines,
+						rightlines: getTree(expr.right, hypnumMap, $Map),
+						ctr: [start, ctr]
+					}];
+				case '$var':
+					if (!$Map.has(expr)) {
+						throw Error(`${expr.name} is not defined`);
+					}
+
+					return [{
+						_type: 'R',
+						ctr: ++ctr,
+						num: $Map.get(expr),
+						expr: expr.expr
+					}];
 				default:
+					// @ts-ignore
 					console.error(expr.error(`Unknown type ${expr._type}`));
-	
-					return getHtml(
-						left,
-						ktx(expr.toTeXString(true)),
-						'<td colspan="2">???</td>'
-					);
+					return [{
+						_type: '?',
+						ctr: ++ctr,
+						expr
+					}];
 			}
-		})(expr, [], []);
-	
+		})(theexpr, new Map(), new Map());
+
+		var html = '<table class="explorer">';
+		html += `<tr><th>#</th><th colspan="${ncols}">expr</th><th colspan="2">rule</th></tr>`;
+		
+		html += (function tree2html(lines, left) {
+			return lines.map(line => {
+				switch (line._type) {
+					case 'V':
+						return tree2html(line.$lines, left.concat([line.params]))
+							+ tree2html(line.lines, left.concat([line.params]));
+					case 'T':
+						var newleft = left.concat([[]]);
+
+						var ret = '';
+
+						if (line.leftlines.length == 0) {
+							var emptyleft = Array(left.length + 1).fill([]);
+
+							ret += getHtmlLine(
+								'', emptyleft, '', '', true
+							);
+						} else {
+							ret += line.leftlines.map((line, i, a) => {
+								return getHtmlLine(
+									line.ctr,
+									newleft,
+									exprToHtml(line.expr, true),
+									'assumption',
+									i == a.length - 1
+								);
+							}).join('');
+						}
+
+						ret += tree2html(
+							line.$lines,
+							newleft
+						);
+
+						ret += tree2html(
+							line.rightlines,
+							newleft
+						);
+
+						return ret;
+					case '?':
+						return getHtmlLine(
+							line.ctr,
+							left,
+							exprToHtml(line.expr, true),
+							'???'
+						);
+					case 'H':
+						throw Error('no');
+					case 'R':
+						return getHtmlLine(
+							line.ctr,
+							left,
+							exprToHtml(line.expr, true),
+							[DIAMOND, exprToHtml(line.num)]
+						);
+					case 'RS':
+					case 'RCX':
+						return getHtmlLine(
+							line.ctr,
+							left,
+							exprToHtml(line.expr, true),
+							[DIAMOND, exprToHtml(line.expr)]
+						);
+					case 'RC':
+						return getHtmlLine(
+							line.ctr,
+							left,
+							exprToHtml(line.expr, true),
+							[DIAMOND, `${exprToHtml(line.schema)} (${line.args.map(a => exprToHtml(a)).join(', ')})`]
+						);
+					case 'E':
+						return getHtmlLine(
+							line.ctr,
+							left,
+							exprToHtml(line.reduced, true),
+							[DOWN, `${exprToHtml(line.subject)} [${line.leftargs.map(a => exprToHtml(a)).join(', ')}]`]
+						);
+					case 'NP':
+						return getHtmlLine(
+							line.ctr,
+							left,
+							exprToHtml(line.expr, true),
+							'<b class="red">not proved</b>'
+						);
+					default:
+						return getHtmlLine(
+							line.ctr,
+							left,
+							`Unknown type ${line._type}`,
+							''
+						);
+				}
+			}).join('');
+		})(tree[0].$lines.concat(tree[0].lines), []);
+		
 		html += '</table>';
 	
 		return html;

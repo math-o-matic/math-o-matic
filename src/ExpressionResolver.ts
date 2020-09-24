@@ -1,5 +1,5 @@
 export type Expr0 = Schemacall | Schema | Typevar;
-export type Metaexpr = Tee | Reduction | Schemacall | Schema | Expr0;
+export type Metaexpr = Tee | Reduction | Schemacall | Schema | $var | Expr0;
 
 function iscall(a: Metaexpr): a is Schemacall {
 	return a._type == 'schemacall';
@@ -60,6 +60,8 @@ export default class ER {
 				});
 			case 'reduction':
 				return ER.substitute(expr.reduced, map);
+			case '$var':
+				return ER.substitute(expr.expr, map);
 			default:
 				// @ts-ignore
 				throw Error(`Unknown type ${expr._type}`);
@@ -148,6 +150,8 @@ export default class ER {
 				});
 			case 'typevar':
 				return expr;
+			case '$var':
+				return ER.expandMeta(expr.expr);
 			default:
 				console.log(expr);
 				throw Error('Unknown metaexpr');
@@ -185,6 +189,8 @@ export default class ER {
 				return ER.expandMetaAndFuncalls(expr.reduced);
 			case 'typevar':
 				return expr;
+			case '$var':
+				return ER.expandMetaAndFuncalls(expr.expr);
 			default:
 				console.log(expr);
 				throw Error('Unknown metaexpr');
@@ -199,8 +205,8 @@ export default class ER {
 	/*
 	 * 스펙 참조.
 	 */
-	public static equals(a, b) {
-		function recurse(a, b, depth) {
+	public static equals(a: Metaexpr, b: Metaexpr) {
+		function recurse(a: Metaexpr, b: Metaexpr, depth: number) {
 			if (a == b) return true;
 
 			if (!a.type.equals(b.type)) return false;
@@ -211,6 +217,14 @@ export default class ER {
 
 			if (b._type == 'reduction') {
 				return recurseWrap(a, b.reduced, depth + 1);
+			}
+
+			if (a._type == '$var') {
+				return recurseWrap(a.expr, b, depth + 1);
+			}
+
+			if (b._type == '$var') {
+				return recurseWrap(a, b.expr, depth + 1);
 			}
 
 			if (iscall(a) && iscall(b)) {
@@ -238,7 +252,7 @@ export default class ER {
 					}
 
 					if (a.args.every((_, i) => {
-						return recurseWrap(a.args[i], b.args[i], depth + 1);
+						return recurseWrap(a.args[i], (b as Schemacall).args[i], depth + 1);
 					})) {
 						return true;
 					}
@@ -280,6 +294,8 @@ export default class ER {
 			}
 
 			if (a._type == 'tee') {
+				b = b as Tee;
+
 				for (var i = 0; i < a.left.length; i++) {
 					if (!recurseWrap(a.left[i], b.left[i], depth + 1)) return false;
 				}
@@ -293,6 +309,7 @@ export default class ER {
 
 				for (var i = 0; i < len; i++) {
 					placeholders.push(new Typevar({
+						isParam: true,
 						type: a.type.resolve().from[i],
 						name: '$' + i
 					}));
@@ -359,6 +376,7 @@ ${r}
 }
 
 // 순환 참조를 피하기 위하여 export 후 import 한다.
+import $var from "./nodes/$var";
 import Reduction from "./nodes/Reduction";
 import Schema from "./nodes/Schema";
 import Schemacall from "./nodes/Schemacall";

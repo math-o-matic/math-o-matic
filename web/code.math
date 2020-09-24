@@ -1936,30 +1936,20 @@ cls russell_set() {
 
 "러셀 집합은 집합이 아니다."
 schema russell_set_is_not_set() {
-	|- Niu[set(russell_set()) |-
-		Fi[
-			NNe[Niu[Nin(russell_set(), russell_set()) |-
-				Fi[
-					id(in(russell_set(), russell_set()))[setbuilder_i((cls z) => {
-						Nin(z, z)
-					}, ?)[
-						@h1,
-						@h2
-					]],
-					@h2
-				]]],
-			setbuilder_e[NNe[Niu[Nin(russell_set(), russell_set()) |-
-				Fi[
-					id(in(russell_set(), russell_set()))[setbuilder_i((cls z) => {
-						Nin(z, z)
-					}, ?)[
-						@h1,
-						@h2
-					]],
-					@h2
-				]]]]
-		]
-	]
+    |- Niu[set(russell_set()) |-
+        $russell_in_russell = NNe[Niu[Nin(russell_set(), russell_set()) |-
+            Fi[
+                id(in(russell_set(), russell_set()))[setbuilder_i((cls z) => {
+                    Nin(z, z)
+                }, ?)[
+                    @h1,
+                    @h2
+                ]],
+                @h2
+            ]]];
+
+        Fi[$russell_in_russell, setbuilder_e[$russell_in_russell]]
+    ]
 }
 
 schema setbuilder_is_setbuilder(pr f, cls x) {

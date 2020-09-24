@@ -39,6 +39,7 @@ export interface DefschemaObject {
     name: string;
     native: boolean;
     params?: DefvObject[];
+    def$s?: Def$Object[];
     expr?: MetaexprObject;
     location: LocationObject;
 }
@@ -84,6 +85,7 @@ export interface FunexprObject {
 export interface SchemaexprObject {
     _type: 'schemaexpr';
     params: DefvObject[];
+    def$s?: Def$Object[];
     expr: MetaexprObject;
     location: LocationObject;
 }
@@ -91,7 +93,15 @@ export interface SchemaexprObject {
 export interface TeeObject {
     _type: 'tee';
     left: MetaexprObject[];
+    def$s: Def$Object[];
     right: MetaexprObject;
+    location: LocationObject;
+}
+
+export interface Def$Object {
+    _type: 'def$';
+    name: string;
+    expr: MetaexprObject;
     location: LocationObject;
 }
 
