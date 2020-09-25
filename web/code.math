@@ -167,6 +167,12 @@ schema Ei(st p: @11, st q: @12) {
 	~ mpu[tt.IAIpqIqpEpq(p, q)]
 }
 
+"Ei의 다른 버전."
+schema Eiu(st p: @11, st q: @21) {
+	(p |- q), (q |- p) |-
+		Ei[cp[@h1], cp[@h2]]
+}
+
 "쌍조건문 소거(biconditional elimination) 1."
 schema Ee1(st p: @11, st q: @12) {
 	mpu[tt.IEpqIpq(p, q)]
@@ -205,7 +211,7 @@ schema syll4(st p: @11, st q: @21, st r: @31, st s: @32) {
 }
 
 "E를 위한 syll."
-schema syllE(st p, st q, st r) {
+schema syllE(st p: @11, st q: @12, st r: @22) {
 	E(p, q), E(q, r) |- Ei[
 		syll[
 			Ee1[@h1],
@@ -241,19 +247,22 @@ schema Fe(st p) {
 	mpu[tt.IFp(p)]
 }
 
+"후건 부정(modus tollens)."
+schema mt(st p: @11, st q: @21) {
+	I(p, q), N(q) |-
+		Niu[p |-
+			Fi[mp[@h3 ,@h1], @h2]]
+}
+
 "대우명제(contrapositive)를 유도한다."
 schema contrapose(st p: @11, st q: @12) {
-	mpu[tt.IIpqINqNp(p, q)]
+	I(p, q) |-
+		cp[N(q) |- mt[@h1, @h2]]
 }
 
 "contrapose의 다른 버전."
 schema contrapose_u(st p: @11, st q: @1r) {
 	(p |- q) |- N(q) |- mp[@h2, contrapose[cp[@h1]]]
-}
-
-"후건 부정(modus tollens)."
-schema mt(st p: @11, st q: @21) {
-	mpu[contrapose(p, q)]
 }
 
 schema NO_to_AN(st p: @111, st q: @112) {
@@ -328,7 +337,7 @@ schema lxm(st p) {
 	]]]
 }
 
-schema swap(st p, st q, st r) {
+schema swap(st p: @11, st q: @121, st r: @122) {
 	I(p, I(q, r)) |- cp[
 		q |- cp[
 			p |- mp[
@@ -411,6 +420,14 @@ schema I_distribute_left(st p: @11, st q: @121, st r: @122) {
 		cp[
 			I(p, q) |-
 				cp[p |- mp[mp[@h3, @h2], mp[@h3, @h1]]]
+		]
+}
+
+schema DIpqEpApq(st p: @11, st q: @12) {
+	I(p, q) |-
+		Ei[
+			cp[p |- Ai[@h2, mp[@h2, @h1]]],
+			cp[A(p, q) |- Ae1[@h2]]
 		]
 }
 
@@ -519,7 +536,7 @@ st V3(pr3 f) {
 "존재 양화(existential quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받으며 V에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다]."
 $!<prec=249><<\exists>>#1$
 st X(pr f) {
-	N(V((cls x) => { N(f(x)) }))
+	N(V(Nf(f)))
 }
 
 "pr2를 위한 존재 양화. X에 의존한다."
@@ -530,11 +547,11 @@ st X2(pr2 f) {
 	})
 }
 
-schema NX_to_VN(pr f) {
+schema NX_to_VN(pr f: @111) {
 	N(X(f)) |- id(V(Nf(f)))[NNe[@h1]]
 }
 
-schema VN_to_NX(pr f) {
+schema VN_to_NX(pr f: @111) {
 	V(Nf(f)) |- id(N(X(f)))[NNi[@h1]]
 }
 
@@ -570,7 +587,7 @@ schema Veu(pr f, cls x) {
 		|- Ve(?, x)[@h1[]]
 }
 
-schema Vi_p(st p) {
+schema Vi_p(st p: @1) {
 	p |- Vi((cls x) => { p })[(cls x) => { p }]
 }
 
@@ -906,40 +923,52 @@ schema mpXE(pr f, pr g) {
 
 "st 타입을 위한 존재 양화 소거(existential elimination)."
 schema Xe_p(st p) {
-	id(X((cls x) => {p})) ~
-	mpu[|- cp[Vi_p(N(p))]
-	~ mpu[tt.IINpqINqp(p, V((cls x) => { N(p) }))]]
+	X((cls z) => { p }) |-
+		NNe[Niu[N(p) |-
+			Fi[
+				@h1,
+				id(N(X((cls z) => { p })))[NNi[Vi_p[@h2]]]
+			]]]
 }
 
 schema mpX_Xe_p(pr f: @11, st p) {
-	mpX(f, (cls x) => { p })
-	~ Xe_p(p)
+	X(f), V(If(f, (cls z) => { p })) |-
+		Xe_p(p)[mpX[@h1, @h2]]
 }
 
+schema XOm1(pr f: @111, pr g: @112) {
+	X(Of(f, g)) |-
+		NNe[Niu[N(O(X(f), X(g))) |-
+			$noan = NO_to_AN[@h2];
+			
+			$foo = VAm2[Ai[
+				NX_to_VN[Ae1[$noan]],
+				NX_to_VN[Ae2[$noan]]
+			]];
+			
+			Fi[@h1, id(N(X(Of(f, g))))[NNi[Vi[(cls x) => {
+				AN_to_NO[id(A(N(f(x)), N(g(x))))[Ve(?, x)[$foo]]]
+			}]]]]]]
+}
+
+schema XOm2(pr f: @111, pr g: @121) {
+	O(X(f), X(g)) |-
+		NNe[Niu[N(X(Of(f, g))) |-
+			$foo = NNe[@h2];
+			
+			$1 = VAm1(Nf(f), Nf(g))[Vi[(cls x) => {
+				NO_to_AN[id(N(O(f(x), g(x))))[Ve(?, x)[$foo]]]
+			}]];
+			
+			Fi[@h1, AN_to_NO[Ai[
+				VN_to_NX[Ae1[$1]],
+				VN_to_NX[Ae2[$1]]
+			]]]
+		]]
+}
 "[$\exists]과 [$\lor] 간의 분배법칙 같은 것. VA로부터 증명할 수 있다."
 schema XO(pr f, pr g) {
-	(VA(Nf(f), Nf(g)) ~
-	mpu[tt.IEpAqrENpONqNr(
-		V(Af(Nf(f), Nf(g))), V(Nf(f)), V(Nf(g))
-	)])
-	~ ((
-		Viu((cls x) => {
-			E(N(O(f(x), g(x))), A(N(f(x)), N(g(x))))
-		})[(cls x) => {tt.ENOpqANpNq(f(x), g(x))}]
-		~ VEm(
-			(cls x) => { N(O(f(x), g(x))) },
-			(cls x) => { A(N(f(x)), N(g(x))) }
-		)
-	)
-	~ mpu[tt.IEpqENpNq(
-		V((cls x) => { N(O(f(x), g(x))) }),
-		V((cls x) => { A(N(f(x)), N(g(x))) })
-	)])
-	~ syllE(
-		X(Of(f, g)),
-		N(V(Af(Nf(f), Nf(g)))),
-		O(X(f), X(g))
-	)
+	|- Eiu[XOm1(f, g), XOm2(f, g)]
 }
 
 schema ON_to_NA_V(pr f, pr g) {
@@ -1275,45 +1304,15 @@ schema swapV(pr f, pr g, pr h) {
 	mpu[swapV_c(f, g, h)]
 }
 
-schema swapV2_1(pr2 f, pr2 g, pr2 h, cls z) {
-	swapV_c(
-		(cls w) => {f(z, w)},
-		(cls w) => {g(z, w)},
-		(cls w) => {h(z, w)}
-	)
+schema swapV2(pr2 f, pr2 g, pr2 h) {
+	V2(If2(f, If2(g, h))) |-
+		id(V2(If2(g, If2(f, h))))[Vi2[(cls x, cls y) => {
+			swap(f(x, y), g(x, y), h(x, y))[Ve2(?, x, y)[@h1]]
+		}]]
 }
 
 schema swapV2_c(pr2 f, pr2 g, pr2 h) {
-	Viu((cls z) => {
-		I(
-			V((cls w) => {I(f(z, w), I(g(z, w), h(z, w)))}),
-			V((cls w) => {I(g(z, w), I(f(z, w), h(z, w)))})
-		)
-	})[(cls z) => {swapV2_1(f, g, h, z)}]
-	~ VIm(
-		(cls z) => {
-			V((cls w) => {
-				I(f(z, w), I(g(z, w), h(z, w)))
-			})
-		},
-		(cls z) => {
-			V((cls w) => {
-				I(g(z, w), I(f(z, w), h(z, w)))
-			})
-		}
-	)
-	~ id(I(
-		V2((cls z, cls w) => {
-			I(f(z, w), I(g(z, w), h(z, w)))
-		}),
-		V2((cls z, cls w) => {
-			I(g(z, w), I(f(z, w), h(z, w)))
-		})
-	))
-}
-
-schema swapV2(pr2 f, pr2 g, pr2 h) {
-	mpu[swapV2_c(f, g, h)]
+	|- cp[swapV2(f ,g, h)]
 }
 
 schema eq_Ae2_Ve_Ee1_c_swap(cls x, cls y, cls z) {
@@ -1630,6 +1629,16 @@ schema cap_def(cls x, cls y, cls z) {
 			A(in(z, x), in(z, y))
 		}, z)[set_i_A_c(x, y, z)[]]
 	]
+}
+
+schema capi(cls x: @112, cls y: @122, cls z: @111) {
+	A(in(z, x), in(z, y)) |-
+		mp[@h1, Ee2[cap_def(x, y, z)[]]]
+}
+
+schema cape(cls x: @121, cls y: @122, cls z: @11) {
+	in(z, cap(x, y)) |-
+		mp[@h1, Ee1[cap_def(x, y, z)[]]]
 }
 
 schema cap_def_vi(cls x, cls y) {
@@ -2146,32 +2155,16 @@ schema cup_is_set(cls x: @11, cls y: @21) {
 		]
 }
 
-schema subset_cap_is_subset(cls x, cls y) {
-	id(subseteq(x, y)) ~
-	mpu[Viu((cls z) => {
-		I(I(in(z, x), in(z, y)), E(in(z, x), A(in(z, x), in(z, y))))
-	})[(cls z) => {
-		tt.IIpqEpApq(in(z, x), in(z, y))
-	}]
-	~VIm(
-		(cls z) => { I(in(z, x), in(z, y)) },
-		(cls z) => {
-			E(
-				in(z, x),
-				A(in(z, x), in(z, y))
-			)
-		}
-	)] ~
-	cap_def_vi(x, y) ~ IVEpqVEqpfm(
-		(cls z) => { in(z, cap(x, y)) },
-		(cls z) => { A(in(z, x), in(z, y)) }
-	) ~
-	syllVE(
-		(cls z) => { in(z, x) },
-		(cls z) => { A(in(z, x), in(z, y)) },
-		(cls z) => { in(z, cap(x, y)) }
-	)
-	~ ax_extensional_m(x, cap(x, y))
+schema subset_cap_is_subset(cls x: @11, cls y: @12) {
+	subseteq(x, y) |-
+		ax_extensional_m(x, cap(x, y))[
+			Vi[(cls z) => {
+				syllE[
+					DIpqEpApq[Ve(?, z)[@h1]],
+					IEpqEqpm[cap_def(x, y, z)[]]
+				]
+			}]
+		]
 }
 
 schema subset_is_set(cls x: @21, cls y: @22) {
