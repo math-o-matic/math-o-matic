@@ -31,13 +31,13 @@ contexts:
     - match: '\b(axiomatic|base|native|ruleset|schema|type)\b'
       scope: keyword.control.math-o-matic
 
-    - match: '\$'
-      scope: punctuation.definition.string.begin.math-o-matic
-      push:
-        - meta_scope: string.quoted.double.math-o-matic
-        - match: '\$'
-          scope: punctuation.definition.string.end.math-o-matic
-          pop: true
+    # - match: '\$'
+    #   scope: punctuation.definition.string.begin.math-o-matic
+    #   push:
+    #     - meta_scope: string.quoted.double.math-o-matic
+    #     - match: '\$'
+    #       scope: punctuation.definition.string.end.math-o-matic
+    #       pop: true
 
     - match: '=>'
       scope: storage.type.function.arrow.math-o-matic

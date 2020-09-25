@@ -149,7 +149,7 @@ defschema =
 		{return p || []}
 	)
 	"{" _
-	defdollars: defdollar* _
+	defdollars: (d:defdollar _ {return d})* _
 	expr:metaexpr _
 	"}"
 	{
@@ -335,7 +335,7 @@ schemaexpr =
 	)
 	"=>" _
 	"{" _
-	defdollars: defdollar* _
+	defdollars: (d:defdollar _ {return d})* _
 	expr:metaexpr _
 	"}"
 	{
@@ -377,7 +377,7 @@ metaexpr_internal_1 =
 		)? {return l || []}
 	)
 	"|-" _
-	defdollars:defdollar* _
+	defdollars: (d:defdollar _ {return d})* _
 	right:metaexpr_internal_1
 	{
 		return {
