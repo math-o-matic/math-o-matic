@@ -271,30 +271,6 @@
 					arr[v._id] = r;
 				}
 
-				for (var [k, v] of program.scope.rulesetMap) {
-					r = `<div class="block">`
-						+ `<p class="label"><a id="ruleset-${k}" href="#ruleset-${k}"><b>${
-							(v.axiomatic ? 'axiomatic ' : '')
-							+ (v.native ? 'native ' : '')
-						}ruleset</b> ${k}</a></p>`
-						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
-
-						+ (
-							v.axiomatic
-								? '' : '<p class="label"><b>not proved</b></p>'
-						)
-
-						+ '<p class="label"><b>description</b></p>'
-						+ (
-							v.doc
-							? `<p class="description">${m42kup.render(v.doc)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-						+ `</div>`;
-
-					arr[v._id] = r;
-				}
-
 				end = new Date();
 				console.log('--- HTML GENERATION END ---');
 				console.log(`HTML generation ended in ${end - start} ms`);

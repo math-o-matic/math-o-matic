@@ -104,13 +104,8 @@ kbd {
 }
 
 .katex a[href^="#type-"] > :not(.mspace) {
-	background-color: #E8F5E9;
-	color: #006064;
-}
-
-.katex a[href^="#ruleset-"] > :not(.mspace) {
-	background-color: #E8F5E9;
-	color: #006064;
+	background-color: #E8EAF6;
+	color: #1A237E;
 }
 
 .katex a[href^="#id-"] > :not(.mspace) {

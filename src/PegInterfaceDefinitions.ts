@@ -44,15 +44,6 @@ export interface DefschemaObject {
     location: LocationObject;
 }
 
-export interface DefrulesetObject {
-    _type: 'defruleset';
-    doc?: string;
-    axiomatic: boolean;
-    name: string;
-    native: true;
-    location: LocationObject;
-}
-
 export interface ReductionObject {
     _type: 'reduction';
     subject: MetaexprObject;
@@ -124,8 +115,7 @@ export type TypeObject = StypeObject | FtypeObject;
 
 export interface VarObject {
     _type: 'var';
-    type: '@' | '$' | 'ruleset' | 'normal';
-    rulesetName?: string;
+    type: '@' | '$' | 'normal';
     name: string;
     location: LocationObject;
 }

@@ -6,13 +6,12 @@
 import Type from './nodes/Type';
 import Typevar from './nodes/Typevar';
 import Tee from './nodes/Tee';
-import Ruleset from './nodes/Ruleset';
 import Schema from './nodes/Schema';
 import Schemacall from './nodes/Schemacall';
 import Reduction from './nodes/Reduction';
 
 import { Expr0, Metaexpr } from './ExpressionResolver';
-import { Def$Object, DefrulesetObject, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
+import { Def$Object, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
 import $var from './nodes/$var';
 
@@ -59,8 +58,6 @@ function varObjToString(obj: VarObject): string {
 			return `@${obj.name}`;
 		case '$':
 			return `${obj.name}`;
-		case 'ruleset':
-			return `${obj.rulesetName}.${obj.name}`;
 		case 'normal':
 			return `${obj.name}`;
 		default:
@@ -279,21 +276,6 @@ export default class PI {
 				}
 
 				return scope.get$(obj.name);
-			case 'ruleset':
-				if (!scope.hasRuleset(obj.rulesetName))
-					throw scope.error(`Ruleset ${obj.rulesetName} is not defined`);
-
-				var ruleset = scope.getRuleset(obj.rulesetName);
-
-				if (!ruleset.native)
-					throw scope.error('Behavior undefined for non-native rulesets');
-
-				var schema = ruleset.native.get(obj.name, scope);
-
-				if (!schema)
-					throw scope.error(`Schema ${varObjToString(obj)} is not defined`);
-				
-				return schema;
 			case 'normal':
 				if (!scope.hasSchema(obj.name))
 					throw scope.error(`Schema ${obj.name} is not defined`);
@@ -410,28 +392,6 @@ export default class PI {
 			schema,
 			args
 		}, scope);
-	}
-
-	public static ruleset(obj: DefrulesetObject, parentScope: Scope, nativeMap?): Ruleset {
-		if (obj._type != 'defruleset')
-			throw Error('Assertion failed');
-
-		native = native || {};
-
-		var scope = parentScope.extend('ruleset', obj.name, obj.location);
-
-		var axiomatic = obj.axiomatic;
-		var name = obj.name;
-
-		if (!obj.native)
-			throw scope.error('Assertion failed');
-
-		if (!nativeMap.ruleset[name])
-			throw scope.error(`Native code for native ruleset ${name} not found`);
-
-		var native = nativeMap.ruleset[name];
-
-		return new Ruleset({axiomatic, name, native, doc: obj.doc}, scope);
 	}
 
 	public static reduction(obj: ReductionObject, parentScope: Scope): Reduction {

@@ -5,7 +5,6 @@ line =
 	typedef
 	/ defv
 	/ defun
-	/ defruleset
 	/ defschema
 
 evaluable =
@@ -15,7 +14,6 @@ evaluable_internal =
 	typedef
 	/ defv
 	/ defun
-	/ defruleset
 	/ defschema
 	/ metaexpr
 
@@ -162,24 +160,6 @@ defschema =
 			params,
 			def$s: defdollars,
 			expr,
-			location: location()
-		}
-	}
-
-defruleset =
-	doc:(documentation __)?
-	axiomatic:("axiomatic" __)?
-	"native" __
-	"ruleset" __
-	name:ident _
-	sem
-	{
-		return {
-			_type: 'defruleset',
-			doc: doc && doc[0],
-			axiomatic: !!axiomatic,
-			name,
-			native: true,
 			location: location()
 		}
 	}
@@ -495,30 +475,20 @@ dollar_var =
 	}
 
 plain_var =
-	rulesetName:(id:ident _ "." _ {return id})?
 	name:ident
 	{
-		return rulesetName
-			? {
-				_type: 'var',
-				type: 'ruleset',
-				rulesetName,
-				name,
-				location: location()
-			}
-			: {
-				_type: 'var',
-				type: 'normal',
-				name,
-				location: location()
-			}
+		return {
+			_type: 'var',
+			type: 'normal',
+			name,
+			location: location()
+		}
 	}
 
 keyword =
 	"axiomatic"
 	/ "base"
 	/ "native"
-	/ "ruleset"
 	/ "schema"
 	/ "type";
 

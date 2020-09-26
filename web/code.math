@@ -33,39 +33,6 @@ st I(st p, st q);
 $!<prec=599>#1<<\leftrightarrow>>#2$
 st E(st p, st q);
 
-"진리표를 만들어 봤을 때 값이 항상 참인 명제 [$p]에 대하여 [$\vdash p]를 포함한다. 어떤 규칙에 접근하려면 Polish notation으로 된 이름을 만들어야 한다.
-
-[ul
-	[*] 말단
-		[ul
-			[*] p, q, r, s, t, u, v, w, x, y, z: 순서대로 1~11번째의 st 타입 입력항.
-			[*] T: verum ([$\top]). true의 T.
-			[*] F: falsum ([$\bot]). false의 F.
-		]
-	[*] 일항 연산자
-		[ul
-			[*] N: not ([$\neg]).
-		]
-	[*] 이항 연산자
-		[ul
-			[*] A: and ([$\land]).
-			[*] O: or ([$\lor]).
-			[*] I: implies ([$\to]).
-			[*] E: iff ([$\leftrightarrow]). equivalent의 E인 것으로 하자.
-		]
-]
-
-대소문자를 구분하고 괄호를 사용하지 않으며 연산자를 맨 앞에 쓰고 인자를 이어 쓴다.
-
-[> 예를 들어 [$\vdash p \land q]는 Apq, [$\vdash \neg (p \land q) \leftrightarrow (\neg p \lor \neg q)]는 ENApqONpNq가 된다.]
-
-tt에 포함되어 있는 규칙의 [$\vdash]의 좌변에는 아무 것도 없으므로, 뭔가를 좌변에 넣으려면 modus ponens를 적용해야 한다.
-
-이후 이것을 없애고 한정된 몇 가지의 규칙만을 사용하여 공리계를 구축하여야 할 것이다.
-
-[~(href=./tt.html)인터랙티브 페이지]"
-axiomatic native ruleset tt;
-
 "sequent calculus의 cut 규칙. 즉
 [$$\frac{\Delta\vdash p\quad \Sigma_1,p,\Sigma_2\vdash q}{\Sigma_1,\Delta,\Sigma_2\vdash q}]
 이다. 단 [$p]의 첫 번째 일치가 [$\Delta]로 치환된다. 즉 [$\Sigma_1]에는 [$p]가 없다.
@@ -89,8 +56,8 @@ axiomatic schema mp(st p: @1, st q: @22) {
 axiomatic native schema mpu;
 
 "연언 도입(conjunction introduction)."
-schema Ai(st p: @1, st q: @2) {
-	mpu[mpu[tt.IpIqApq(p, q)]]
+axiomatic schema Ai(st p: @1, st q: @2) {
+	p, q |- A(p, q)
 }
 
 "연언 도입 2번."
@@ -99,33 +66,28 @@ schema A3i(st p: @1, st q: @2, st r: @3) {
 }
 
 "연언 소거(conjunction elimination) 1."
-schema Ae1(st p: @11, st q: @12) {
-	mpu[tt.IApqp(p, q)]
+axiomatic schema Ae1(st p: @11, st q: @12) {
+	A(p, q) |- p
 }
 
 "연언 소거(conjunction elimination) 2."
-schema Ae2(st p: @11, st q: @12) {
-	mpu[tt.IApqq(p, q)]
+axiomatic schema Ae2(st p: @11, st q: @12) {
+	A(p, q) |- q
 }
 
 "선언 도입(disjunction introduction) 1."
-schema Oi1(st p: @1, st q) {
-	mpu[tt.IpOpq(p, q)]
+axiomatic schema Oi1(st p: @1, st q) {
+	p |- O(p, q)
 }
 
 "선언 도입(disjunction introduction) 2."
-schema Oi2(st p, st q: @1) {
-	mpu[tt.IqOpq(p, q)]
+axiomatic schema Oi2(st p, st q: @1) {
+	q |- O(p, q)
 }
 
 "선언 소거(disjunction elimination). proof by cases라고도 한다."
-schema Oe(st p: @11, st q: @12, st r: @22) {
-	A3i(
-		O(p, q),
-		I(p, r),
-		I(q, r)
-	)
-	~ mpu[tt.IAAOpqIprIqrr(p, q, r)]
+axiomatic schema Oe(st p: @11, st q: @12, st r: @22) {
+	O(p, q), I(p, r), I(q, r) |- r
 }
 
 schema Oeu(st p: @11, st q: @12, st r: @2r) {
@@ -137,8 +99,8 @@ schema Oeu(st p: @11, st q: @12, st r: @2r) {
 }
 
 "부정 도입(negation introduction). 귀류법(reductio ad absurdum)이라고도 한다."
-schema Ni(st p: @11) {
-	mpu[tt.IIpFNp(p)]
+axiomatic schema Ni(st p: @11) {
+	I(p, F) |- N(p)
 }
 
 schema Niu(st p: @11) {
@@ -147,24 +109,23 @@ schema Niu(st p: @11) {
 }
 
 "부정 소거(negation elimination). 폭발률(ex falso quodlibet)이라고도 한다."
-schema Ne(st p: @1, st q) {
-	mpu[mpu[tt.IpINpq(p, q)]]
+axiomatic schema Ne(st p: @1, st q) {
+	p, N(p) |- q
 }
 
 "이중부정 도입(double negation introduction)."
-schema NNi(st p: @1) {
-	mpu[tt.IpNNp(p)]
+axiomatic schema NNi(st p: @1) {
+	p |- N(N(p))
 }
 
 "이중부정 소거(double negation elimination)."
-schema NNe(st p: @111) {
-	mpu[tt.INNpp(p)]
+axiomatic schema NNe(st p: @111) {
+	N(N(p)) |- p
 }
 
 "쌍조건문 도입(biconditional introduction)."
-schema Ei(st p: @11, st q: @12) {
-	Ai(I(p, q), I(q, p))
-	~ mpu[tt.IAIpqIqpEpq(p, q)]
+axiomatic schema Ei(st p: @11, st q: @12) {
+	I(p, q), I(q, p) |- E(p, q)
 }
 
 "Ei의 다른 버전."
@@ -174,20 +135,25 @@ schema Eiu(st p: @11, st q: @21) {
 }
 
 "쌍조건문 소거(biconditional elimination) 1."
-schema Ee1(st p: @11, st q: @12) {
-	mpu[tt.IEpqIpq(p, q)]
+axiomatic schema Ee1(st p: @11, st q: @12) {
+	E(p, q) |- I(p, q)
 }
 
 "쌍조건문 소거(biconditional elimination) 2."
-schema Ee2(st p: @11, st q: @12) {
-	mpu[tt.IEpqIqp(p, q)]
+axiomatic schema Ee2(st p: @11, st q: @12) {
+	E(p, q) |- I(q, p)
 }
 
-schema IEpqEqpm(st p: @11, st q: @12) {
+schema A_flip(st p: @11, st q: @12) {
+	A(p, q) |-
+		Ai[Ae2[@h1], Ae1[@h1]]
+}
+
+schema E_flip(st p: @11, st q: @12) {
 	E(p, q) |- Ei[Ee2[@h1], Ee1[@h1]]
 }
 
-schema IpIqpm(st p: @1, st q) {
+schema weaken(st p: @1, st q) {
 	p |- cp[
 		q |- p
 	]
@@ -229,7 +195,7 @@ schema syllE4(st p, st q, st r, st s) {
 }
 
 "sequent calculus의 I 규칙 같은 것. 표현형식을 바꾸는 데 쓰이고 있다."
-schema id(st p: @1) {
+schema id(st p) {
 	p |- p
 }
 
@@ -243,8 +209,13 @@ schema Fi_c(st p: @11) {
 }
 
 "[$\bot]을 소거한다. falsum elimination이라 불러도 좋을 것이다. Ne와 마찬가지로 폭발률을 나타낸다 할 수 있다."
-schema Fe(st p) {
-	mpu[tt.IFp(p)]
+axiomatic schema Fe(st p) {
+	F |- p
+}
+
+"[$\top] 도입."
+axiomatic schema Ti() {
+	|- T
 }
 
 "후건 부정(modus tollens)."
@@ -429,6 +400,14 @@ schema DIpqEpApq(st p: @11, st q: @12) {
 			cp[p |- Ai[@h2, mp[@h2, @h1]]],
 			cp[A(p, q) |- Ae1[@h2]]
 		]
+}
+
+schema Ipp(st p) {
+	|- cp[id(p)]
+}
+
+schema Epp(st p) {
+	|- Ei[Ipp(p)[], Ipp(p)[]]
 }
 
 #################################
@@ -712,90 +691,51 @@ schema UU(pr2 f) {
 	|- cp[UUm(f)]
 }
 
-"IEpqEqpm의 U형."
-schema IUEpqUEqpfm(pr f, pr g) {
-	mpu[
-		Uiu((cls x) => {
-			I(E(f(x), g(x)), E(g(x), f(x)))
-		})[(cls x) => { tt.IEpqEqp(f(x), g(x)) }]
-		~ UIm(
-			(cls x) => { E(f(x), g(x)) },
-			(cls x) => { E(g(x), f(x)) }
-		)
-	]
+schema UE_flip(pr f: @111, pr g: @112) {
+	U(Ef(f, g)) |-
+		id(U(Ef(g, f)))[Ui[(cls x) => {
+			E_flip[id(E(f(x), g(x)))[Ue(?, x)[@h1]]]
+		}]]
 }
 
 "Ee1의 U형."
 schema Ee1U(pr f: @111, pr g: @112) {
-	id(U(Ef(f, g))) ~
-	mpu[
-		Uiu((cls x) => {
-			I(E(f(x), g(x)), I(f(x), g(x)))
-		})[(cls x) => {tt.IEpqIpq(f(x), g(x))}]
-		~ UIm(
-			(cls z) => { E(f(z), g(z)) },
-			(cls z) => { I(f(z), g(z)) }
-		)
-	]
-	~ id(U(If(f, g)))
+	U(Ef(f, g)) |-
+		id(U(If(f, g)))[Ui[(cls x) => {
+			Ee1[id(E(f(x), g(x)))[Ue(?, x)[@h1]]]
+		}]]
 }
 
 "Ee2의 U형."
-schema Ee2U(pr f, pr g) {
-	IUEpqUEqpfm(f, g)
-	~ Ee1U(g, f)
+schema Ee2U(pr f: @111, pr g: @112) {
+	U(Ef(f, g)) |-
+		id(U(If(g, f)))[Ui[(cls x) => {
+			Ee2[id(E(f(x), g(x)))[Ue(?, x)[@h1]]]
+		}]]
 }
 
-schema UEm(pr f, pr g) {
-	Ee1U(f, g)
-	~ UIm(f, g)
-	~ Ee2U(f, g)
-	~ UIm(g, f)
-	~ Ei(U(f), U(g))
-}
-
-schema UE(pr f, pr g) {
-	|- cp[UEm(f, g)]
+schema UEe(pr f: @111, pr g: @112) {
+	U(Ef(f, g)) |-
+		Ei[
+			UIm[Ee1U[@h1]],
+			UIm[Ee2U[@h1]]
+		]
 }
 
 schema syllU(pr f: @111, pr g: @112, pr h: @212) {
-	Ai(
-		U(If(f, g)),
-		U(If(g, h))
-	)
-	~ UAm2(
-		(cls x) => { I(f(x), g(x)) },
-		(cls x) => { I(g(x), h(x)) }
-	)
-	~ mpu[
-		Uiu((cls x) => {
-			I(A(I(f(x), g(x)), I(g(x), h(x))), I(f(x), h(x)))
-		})[(cls x) => {tt.IAIpqIqrIpr(f(x), g(x), h(x))}]
-		~ UIm(
-			(cls x) => { A(I(f(x), g(x)), I(g(x), h(x))) },
-			(cls x) => { I(f(x), h(x)) }
-		)
-	]
+	U(If(f, g)), U(If(g, h)) |-
+		id(U(If(f, h)))[Ui[(cls x) => { syll[
+			id(I(f(x), g(x)))[Ue(?, x)[@h1]],
+			id(I(g(x), h(x)))[Ue(?, x)[@h2]]
+		] }]]
 }
 
-schema syllUE(pr f, pr g, pr h) {
-	Ai(
-		U((cls w) => { E(f(w), g(w)) }),
-		U((cls w) => { E(g(w), h(w)) })
-	)
-	~ UAm2(
-		(cls w) => { E(f(w), g(w)) },
-		(cls w) => { E(g(w), h(w)) }
-	)
-	~ mpu[
-		Uiu((cls x) => {
-			I(A(E(f(x), g(x)), E(g(x), h(x))), E(f(x), h(x)))
-		})[(cls x) => {tt.IAEpqEqrEpr(f(x), g(x), h(x))}]
-		~ UIm(
-			(cls w) => { A(E(f(w), g(w)), E(g(w), h(w))) },
-			(cls w) => { E(f(w), h(w)) }
-		)
-	]
+schema syllUE(pr f: @111, pr g: @112, pr h: @212) {
+	U(Ef(f, g)), U(Ef(g, h)) |-
+		id(U(Ef(f, h)))[Ui[(cls x) => { syllE[
+			id(E(f(x), g(x)))[Ue(?, x)[@h1]],
+			id(E(g(x), h(x)))[Ue(?, x)[@h2]]
+		] }]]
 }
 
 schema UI_Ui(st p, pr f) {
@@ -1298,38 +1238,22 @@ schema eq_Ae2_Ue_Ee1_c_swap(cls x, cls y, cls z) {
 }
 
 schema eq_reflexive(cls x) {
-	Uiu((cls z) => {
-		E(in(z, x), in(z, x))
-	})[(cls z) => {tt.Epp(in(z, x))}]
-	~ Uiu((cls w) => {
-		E(in(x, w), in(x, w))
-	})[(cls w) => {tt.Epp(in(x, w))}]
-	~ Ai(
-		U((cls z) => { E(in(z, x), in(z, x)) }),
-		U((cls w) => { E(in(x, w), in(x, w)) })
-	)
-	~ id(eq(x, x))
+	|- id(eq(x, x))[Ai[
+		Ui[(cls z) => {
+			Epp(in(z, x))[]
+		}],
+		Ui[(cls w) => {
+			Epp(in(x, w))[]
+		}]
+	]]
 }
 
 schema eq_symmetric(cls x: @11, cls y: @12) {
-	id(eq(x, y)) ~
-	Ae1(
-		U((cls z) => { E(in(z, x), in(z, y)) }),
-		U((cls w) => { E(in(x, w), in(y, w)) })
-	) ~ IUEpqUEqpfm(
-		(cls z) => { in(z, x) },
-		(cls z) => { in(z, y) }
-	) ~ Ae2(
-		U((cls z) => { E(in(z, x), in(z, y)) }),
-		U((cls w) => { E(in(x, w), in(y, w)) })
-	) ~ IUEpqUEqpfm(
-		(cls w) => { in(x, w) },
-		(cls w) => { in(y, w) }
-	) ~ Ai(
-		U((cls z) => { E(in(z, y), in(z, x)) }),
-		U((cls w) => { E(in(y, w), in(x, w)) })
-	)
-	~ id(eq(y, x))
+	eq(x, y) |-
+		id(eq(y, x))[Ai[
+			UE_flip((cls z) => {in(z, x)}, (cls z) => {in(z, y)})[Ae1[@h1]],
+			UE_flip((cls w) => {in(x, w)}, (cls w) => {in(y, w)})[Ae2[@h1]]
+		]]
 }
 
 schema eq_transitive(cls x, cls y, cls z) {
@@ -1530,12 +1454,7 @@ schema setbuilder_e(pr f: @121, cls z: @11) {
 }
 
 schema setbuilder_ec(pr f, cls z) {
-	setbuilder_def_Ue(f, z)
-	~ mpu[tt.IEpAqrIpr(
-		in(z, setbuilder(f)),
-		set(z),
-		f(z)
-	)]
+	|- cp[setbuilder_e(f, z)]
 }
 
 "setbuilder를 도입한다."
@@ -1580,7 +1499,7 @@ schema setbuilder_def_set(pr f, cls x: @111) {
 
 schema setbuilder_def_set_2(pr f, cls x) {
 	set(x) |- setbuilder_def_set(f, x)[
-		IpIqpm(?, f(x))[@h1]
+		weaken(?, f(x))[@h1]
 	]
 }
 
@@ -1618,30 +1537,22 @@ schema cap_def_vi(cls x, cls y) {
 	|- Ui[(cls z) => { cap_def(x, y, z)[] }]
 }
 
+schema cap_commutative_0(cls x: @121, cls y: @122, cls z: @11) {
+	in(z, cap(x, y)) |-
+		capi[A_flip[cape[@h1]]]
+}
+
 schema cap_commutative_1(cls x, cls y, cls z) {
-	cap_def(x, y, z)
-	~ tt.EApqAqp(in(z, x), in(z, y))
-	~ cap_def(y, x, z)
-	~ IEpqEqpm(
-		in(z, cap(y, x)),
-		A(in(z, y), in(z, x))
-	)
-	~ syllE4(
-		in(z, cap(x, y)),
-		A(in(z, x), in(z, y)),
-		A(in(z, y), in(z, x)),
-		in(z, cap(y, x))
-	)
+	|- Eiu[cap_commutative_0(x, y, z), cap_commutative_0(y, x, z)]
 }
 
 schema cap_commutative_2(cls x, cls y) {
-	Uiu((cls z) => {
-		E(in(z, cap(x, y)), in(z, cap(y, x)))
-	})[(cls z) => { cap_commutative_1(x, y, z) }]
-	~ ax_extensional_m(
+	|- ax_extensional_m(
 		cap(x, y),
 		cap(y, x)
-	)
+	)[Uiu((cls z) => {
+		E(in(z, cap(x, y)), in(z, cap(y, x)))
+	})[(cls z) => { cap_commutative_1(x, y, z) }][]]
 }
 
 "합집합."
@@ -1873,34 +1784,10 @@ axiomatic schema ax_emptyset() {
 	|- set(emptyset())
 }
 
-schema emptyset_vi() {
-	setbuilder_def((cls z) => { F })
-	~ Ee1U(
-		(cls z) => { in(z, emptyset()) },
-		(cls z) => { A(set(z), F) }
-	)
-	~ Uiu((cls x) => {
-		I(A(set(x), F), F)
-	})[(cls x) => { tt.IApFF(set(x)) }]
-	~ syllU(
-		(cls z) => { in(z, emptyset()) },
-		(cls z) => { A(set(z), F) },
-		(cls z) => { F }
-	)
-	~ Uiu((cls z) => {
-		I(I(in(z, emptyset()), F), N(in(z, emptyset())))
-	})[(cls z) => { |- cp[Ni(in(z, emptyset()))] }]
-	~ mpU(
-		(cls z) => { I(in(z, emptyset()), F) },
-		(cls z) => { Nin(z, emptyset()) }
-	)
-}
-
 "emptyset의 defining property."
 schema emptyset_def(cls z) {
-	Ueu((cls z) => {
-		Nin(z, emptyset())
-	}, z)[emptyset_vi()]
+	|- id(Nin(z, emptyset()))[Niu[in(z, emptyset()) |-
+		setbuilder_e[@h1]]]
 }
 
 "universal class."
@@ -2134,7 +2021,7 @@ schema subset_cap_is_subset(cls x: @11, cls y: @12) {
 			Ui[(cls z) => {
 				syllE[
 					DIpqEpApq[Ue(?, z)[@h1]],
-					IEpqEqpm[cap_def(x, y, z)[]]
+					E_flip[cap_def(x, y, z)[]]
 				]
 			}]
 		]
@@ -2170,25 +2057,15 @@ cls power(cls x) {
 	})
 }
 
-schema IAEpAqrIAsrqIsEprmAi(st p, st q, st r, st s) {
-	Ai(
-		E(p, A(q, r)),
-		I(A(s, r), q)
-	) ~
-	mpu[tt.IAEpAqrIAsrqIsEpr(p, q, r, s)]
-}
-
 schema power_def_Ue(cls x, cls y) {
-	mpu[subset_is_set_ae_c(y, x)
-	~ setbuilder_def_Ue((cls z) => {
-		subseteq(z, x)
-	}, y)
-	~ IAEpAqrIAsrqIsEprmAi(
-		in(y, power(x)),
-		set(y),
-		subseteq(y, x),
-		set(x)
-	)]
+	set(x) |-
+		Eiu[
+			(in(y, power(x)) |- setbuilder_e[@h2]),
+			(subseteq(y, x) |-
+				id(in(y, power(x)))[setbuilder_i((cls y) => {
+					subseteq(y, x)
+				}, y)[subset_is_set[@h1, @h2], @h2]])
+		]
 }
 
 "x가 집합일 때, x와 같은 것은 x의 power class에 속한다."

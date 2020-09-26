@@ -172,7 +172,26 @@
 	<body>
 		<div class="container">
 			<h1>math-o-matic/tt</h1>
-			<p>math-o-matic의 tt에서처럼 Polish notation으로 된 명제논리 식을 입력해 보세요.</p>
+			<p>폴란드 표기법으로 된 명제논리 식을 입력해 보세요.</p>
+			<ul>
+				<li>말단
+					<ul>
+						<li>p, q, r, s, t, u, v, w, x, y, z: 순서대로 1~11번째의 st 타입 입력항.
+						<li>T: verum. true의 T.
+						<li>F: falsum. false의 F.
+					</ul>
+				<li>일항 연산자
+					<ul>
+						<li>N: not.
+					</ul>
+				<li>이항 연산자
+					<ul>
+						<li>A: and.
+						<li>O: or.
+						<li>I: implies.
+						<li>E: iff. equivalent의 E인 것으로 하자.
+					</ul>
+			</ul>
 			<p>예시: EIpIqrIApqr</p>
 			<input id="input" type="text" style="width:100%" placeholder="Type something">
 			<div id="display"></div>

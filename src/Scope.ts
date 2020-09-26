@@ -1,6 +1,5 @@
 import Type from './nodes/Type';
 import Typevar from './nodes/Typevar';
-import Ruleset from './nodes/Ruleset';
 import Schema from './nodes/Schema';
 
 import StackTrace from './StackTrace';
@@ -13,7 +12,6 @@ export default class Scope {
 	public readonly typedefMap: Map<string, Type> = new Map();
 	public readonly defMap: Map<string, Typevar | Schema> = new Map();
 	public readonly schemaMap: Map<string, Schema> = new Map();
-	public readonly rulesetMap: Map<string, Ruleset> = new Map();
 	public readonly $Map: Map<string, $var> = new Map();
 	public readonly hypotheses: Metaexpr[] = [];
 
@@ -193,34 +191,6 @@ export default class Scope {
 
 		return this.defMap.has(name)
 			? this.defMap.get(name) : (!!this.parent && this.parent.getTypevar(name));
-	}
-
-	public hasOwnRuleset(name: string): boolean {
-		return this.rulesetMap.has(name);
-	}
-
-	public hasRuleset(name: string): boolean {
-		return this.hasOwnRuleset(name)
-			|| (!!this.parent && this.parent.hasRuleset(name));
-	}
-
-	public addRuleset(ruleset: Ruleset): Ruleset {
-		if (!(ruleset instanceof Ruleset))
-			throw this.error('Illegal argument type');
-
-		if (this.hasOwnRuleset(ruleset.name))
-			throw this.error(`Ruleset ${ruleset.name} has already been declared`);
-
-		this.rulesetMap.set(ruleset.name, ruleset);
-		return ruleset;
-	}
-
-	public getRuleset(name: string): Ruleset {
-		if (!this.hasRuleset(name))
-			throw this.error(`Ruleset ${name} is not defined`);
-
-		return this.rulesetMap.has(name)
-			? this.rulesetMap.get(name) : (!!this.parent && this.parent.getRuleset(name));
 	}
 
 	public hasOwnSchema(name: string): boolean {

@@ -43,15 +43,6 @@ export default class Program {
 
 					this.scope.addFun(fun);
 					break;
-				case 'defruleset':
-					var ruleset = PegInterface.ruleset(line, this.scope, this.nativeMap);
-
-					if (this.scope.hasRuleset(ruleset.name)) {
-						throw ruleset.scope.error(`Ruleset ${ruleset.name} has already been declared`);
-					}
-
-					this.scope.addRuleset(ruleset);
-					break;
 				case 'defschema':
 					var schema = PegInterface.schema(line, this.scope, this.nativeMap);
 
@@ -72,7 +63,6 @@ export default class Program {
 			case 'typedef':
 			case 'defv':
 			case 'defun':
-			case 'defruleset':
 			case 'defschema':
 			case 'tee':
 			case 'reduction':
@@ -83,7 +73,6 @@ export default class Program {
 					typedef: 'type',
 					defv: 'typevar',
 					defun: 'fun',
-					defruleset: 'ruleset',
 					defschema: 'schema',
 					tee: 'tee',
 					reduction: 'reduction',
@@ -97,178 +86,6 @@ export default class Program {
 	}
 
 	public nativeMap = {
-		ruleset: {
-			tt: {
-				get: (name: string, scope: Scope): Schema => {
-					if (typeof name != 'string')
-						throw Error('Assertion failed');
-	
-					var vars = ['p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-					var nullary = ['T', 'F'].concat(vars);
-					var unary = ['N'];
-					var binary = ['A', 'O', 'I', 'E'];
-	
-					var arityMap = {};
-					nullary.forEach(e => arityMap[e] = 0);
-					unary.forEach(e => arityMap[e] = 1);
-					binary.forEach(e => arityMap[e] = 2);
-	
-					var usedVars = Array(vars.length).fill(false);
-	
-					// 1: 파싱 하기
-					var stack = [];
-	
-					function lastIsFull() {
-						if (!stack.length) return true;
-						return arityMap[stack[stack.length - 1][0]] == stack[stack.length - 1].length - 1;
-					}
-	
-					function push(token) {
-						if (arityMap[token] == 0) {
-							if (vars.includes(token))
-								usedVars[vars.indexOf(token)] = true;
-	
-							if (lastIsFull()) {
-								stack.push(token);
-							} else {
-								stack[stack.length - 1].push(token);
-	
-								while (stack.length > 1 && lastIsFull()
-										&& (stack[stack.length - 2] instanceof Array)) {
-									var p = stack.pop();
-									stack[stack.length - 1].push(p);
-								}
-							}
-						} else {
-							stack.push([token]);
-						}
-					}
-	
-					for (var i = 0; i < name.length; i++) {
-						if (typeof arityMap[name[i]] != 'number')
-							throw Error(`Unexpected character ${name[i]}`);
-	
-						push(name[i]);
-					}
-	
-					if (stack.length != 1)
-						throw Error('Parse failed');
-	
-					if (!lastIsFull())
-						throw Error('Parse failed');
-	
-					// @ts-ignore
-					usedVars = usedVars.map((e, i) => e && i).filter(e => e !== false);
-	
-					var parsed = stack[0];
-	
-					// 2: 진리표 확인
-					var collen = 2 ** usedVars.length;
-	
-					var functionMap = {
-						N: p => !p,
-						A: (p, q) => p && q,
-						O: (p, q) => p || q,
-						I: (p, q) => !p || q,
-						E: (p, q) => p == q
-					};
-	
-					var varTable = {};
-	
-					for (var i = 0; i < usedVars.length; i++) {
-						varTable[vars[usedVars[i]]] = Array(collen).fill(null).map((_, j) => {
-							return !((j >> (usedVars.length - i - 1)) & 1);
-						});
-					}
-	
-					var constTable = {
-						T: Array(collen).fill(true),
-						F: Array(collen).fill(false)
-					};
-	
-					function getColumn(t) {
-						if (t instanceof Array) {
-							var columns = t.slice(1).map(getColumn);
-	
-							var column = Array(collen);
-	
-							for (var i = 0; i < collen; i++) {
-								column[i] = functionMap[t[0]](...columns.map(col => col[i]));
-							}
-	
-							return column;
-						}
-	
-						if (['T', 'F'].includes(t)) return constTable[t];
-						return varTable[t];
-					}
-	
-					if (!getColumn(parsed).every(e => e))
-						throw Error('Validation failed');
-	
-					// 3: 노드 트리 만들기
-					if (!scope.baseType)
-						throw Error(`Base type not found`);
-	
-					var base = scope.baseType;
-	
-					var typevars = Array(usedVars.length).fill(null).map((_, i) => {
-						return new Typevar({
-							isParam: true,
-							type: base,
-							name: vars[usedVars[i]]
-						});
-					});
-	
-					var typevarMap = {
-						'T': 'T',
-						'F': 'F',
-						'N': 'N',
-						'A': 'A',
-						'O': 'O',
-						'I': 'I',
-						'E': 'E'
-					};
-	
-					Object.keys(typevarMap).forEach(k => {
-						var v = typevarMap[k];
-	
-						if (!scope.root.hasTypevar(v))
-							throw Error(`Typevar ${v} not found`);
-						typevarMap[k] = scope.root.getTypevar(v);
-					});
-	
-					function recurse(t) {
-						if (t instanceof Array) {
-							return new Schemacall({
-								schema: recurse(t[0]),
-								args: t.slice(1).map(recurse)
-							});
-						}
-	
-						if (vars.includes(t)) return typevars[vars.indexOf(t)];
-						return typevarMap[t];
-					}
-	
-					var funcall = recurse(parsed);
-	
-					var tee = new Tee({
-						left: [],
-						right: funcall
-					});
-	
-					var schema = new Schema({
-						shouldValidate: true,
-						axiomatic: true,
-						name: 'tt.' + name,
-						params: typevars,
-						expr: tee
-					});
-	
-					return schema;
-				}
-			}
-		},
 		schema: {
 			cut: {
 				get: (rules, scope: Scope) => {
