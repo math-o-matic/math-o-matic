@@ -978,8 +978,7 @@ schema ON_to_NA_V(pr f, pr g) {
 		}]
 }
 
-"XA의 m형."
-schema XAm(pr f: @111, pr g: @112) {
+schema XAe(pr f: @111, pr g: @112) {
 	X(Af(f, g)) |- id(A(X(f), X(g)))[
 		NO_to_AN[mp[
 			contrapose_u[ON_to_NA_V(f, g)][@h1],
@@ -988,11 +987,17 @@ schema XAm(pr f: @111, pr g: @112) {
 	]
 }
 
-schema XA(pr f, pr g) {
-	|- cp[XAm(f, g)]
+schema XAe1(pr f: @111, pr g: @112) {
+	X(Af(f, g)) |-
+		Ae1[XAe[@h1]]
 }
 
-schema X2Am(pr2 f, pr2 g) {
+schema XAe2(pr f: @111, pr g: @112) {
+	X(Af(f, g)) |-
+		Ae2[XAe[@h1]]
+}
+
+schema X2Ae(pr2 f, pr2 g) {
 	X2(Af2(f, g)) |-
 		Ai[
 			mpX2[
@@ -1012,46 +1017,14 @@ schema X2Am(pr2 f, pr2 g) {
 		]
 }
 
-schema X2A(pr2 f, pr2 g) {
-	|- cp[X2Am(f, g)]
-}
-
-schema AeX1(pr f, pr g) {
-	tt.IApqp(X(f), X(g))
-	~ XA(f, g)
-	~ syll(
-		X(Af(f, g)),
-		A(X(f), X(g)),
-		X(f)
-	)
-}
-
-schema AeX2(pr f, pr g) {
-	tt.IApqq(X(f), X(g))
-	~ XA(f, g)
-	~ syll(
-		X(Af(f, g)),
-		A(X(f), X(g)),
-		X(g)
-	)
-}
-
-schema AeX2m1(pr2 f: @111, pr2 g: @112) {
+schema X2Ae1(pr2 f: @111, pr2 g: @112) {
 	X2(Af2(f, g)) |-
-		Ae1[X2Am(f, g)[@h1]]
+		Ae1[X2Ae(f, g)[@h1]]
 }
 
-schema AeX2_1(pr2 f, pr2 g) {
-	|- cp[AeX2m1(f, g)]
-}
-
-schema AeX2m2(pr2 f: @111, pr2 g: @112) {
+schema X2Ae2(pr2 f: @111, pr2 g: @112) {
 	X2(Af2(f, g)) |-
-		Ae2[X2Am(f, g)[@h1]]
-}
-
-schema AeX2_2(pr2 f, pr2 g) {
-	|- cp[AeX2m2(f, g)]
+		Ae2[X2Ae(f, g)[@h1]]
 }
 
 schema mpVE(pr f, pr g) {
@@ -1154,7 +1127,7 @@ st Xin(cls a, pr f) {
 }
 
 "어떤 class가 집합이라는 것. 어떤 class의 원소면 된다. 독일어 [*Menge] (집합)의 M이다."
-$\left(<<\mathfrak M>> #1\right)$
+$\left(<<\operatorname{\mathfrak M}>> #1\right)$
 st set(cls x) {
 	X((cls y) => {
 		in(x, y)
@@ -1730,16 +1703,7 @@ cls bigcup($A$ cls a) {
 	})
 }
 
-schema bigcap_1($A$ cls a, cls z) {
-	in(z, bigcap(a)) |-
-		setbuilder_e((cls z) => {
-				Vin(a, (cls x) => {
-					in(z, x)
-				})
-			}, z)[@h1]
-}
-
-schema bigcap_2($A$ cls a, cls z) {
+schema bigcap_i($A$ cls a, cls z) {
 	set(z), Vin(a, (cls x) => {
 		in(z, x)
 	}) |-
@@ -1750,6 +1714,15 @@ schema bigcap_2($A$ cls a, cls z) {
 		}, z)[@h1, @h2]]
 }
 
+schema bigcap_e($A$ cls a, cls z) {
+	in(z, bigcap(a)) |-
+		setbuilder_e((cls z) => {
+				Vin(a, (cls x) => {
+					in(z, x)
+				})
+			}, z)[@h1]
+}
+
 schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
 	in(x, a) |-
 		id(subseteq(bigcap(a), x))[Vi[(cls z) => {
@@ -1757,7 +1730,7 @@ schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
 				in(z, bigcap(a)) |-
 					mp[
 						@h1,
-						Ve(?, x)[bigcap_1(a, z)[@h2]]
+						Ve(?, x)[bigcap_e(a, z)[@h2]]
 					]
 			]
 		}]]
@@ -2570,7 +2543,7 @@ cls rel_composite(cls x, cls y) {
 schema cartesian_is_rel(cls x, cls y) {
 	|- id(is_rel(cartesian(x, y)))[Vi[(cls z) => {
 		cp[in(z, cartesian(x, y)) |-
-			AeX2m1((cls a, cls b) => {
+			X2Ae1((cls a, cls b) => {
 				eq(z, v2(a, b))
 			}, (cls a, cls b) => {
 				A(in(a, x), in(b, y))
@@ -2775,7 +2748,7 @@ cls omega() {
 
 "자연수 집합은 0을 포함한다. `[Pinter]`에 따르면 페아노 공리계 제1공리이다."
 schema zero_in_omega() {
-	|- id(in(ord_zero(), omega()))[bigcap_2(setbuilder((cls z) => {
+	|- id(in(ord_zero(), omega()))[bigcap_i(setbuilder((cls z) => {
 		is_successor_set(z)
 	}), ord_zero())[
 		ax_emptyset()[],
@@ -2791,7 +2764,7 @@ schema zero_in_omega() {
 "`[Pinter]`에 따르면 페아노 공리계 제2공리인 것."
 schema successor_in_omega(cls z: @11) {
 	in(z, omega()) |-
-		id(in(successor(z), omega()))[bigcap_2(setbuilder((cls z) => {is_successor_set(z)}), successor(z))[
+		id(in(successor(z), omega()))[bigcap_i(setbuilder((cls z) => {is_successor_set(z)}), successor(z))[
 			successor_is_set(z)[Xi((cls x) => {in(z, x)}, omega())[@h1]],
 			Vi[(cls x) => {
 				cp[
@@ -2799,7 +2772,7 @@ schema successor_in_omega(cls z: @11) {
 						mp[
 							mp[
 								@h2,
-								Ve(?, x)[bigcap_1(setbuilder((cls z) => {
+								Ve(?, x)[bigcap_e(setbuilder((cls z) => {
 									is_successor_set(z)
 								}), z)[@h1]]
 							],
