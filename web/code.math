@@ -509,13 +509,13 @@ pr2 Nf2(pr2 f) {
 
 "보편 양화(universal quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다]."
 $!<prec=249><<\forall>>#1$
-st V(pr f);
+st U(pr f);
 
 "pr2를 위한 보편 양화."
 $!<prec=249><<\forall^2>>#1$
-st V2(pr2 f) {
-	V((cls x) => {
-		V((cls y) => {
+st U2(pr2 f) {
+	U((cls x) => {
+		U((cls y) => {
 			f(x, y)
 		})
 	})
@@ -523,20 +523,20 @@ st V2(pr2 f) {
 
 "pr3을 위한 보편 양화."
 $!<prec=249><<\forall^3>>#1$
-st V3(pr3 f) {
-	V((cls x) => {
-		V((cls y) => {
-			V((cls z) => {
+st U3(pr3 f) {
+	U((cls x) => {
+		U((cls y) => {
+			U((cls z) => {
 				f(x, y, z)
 			})
 		})
 	})
 }
 
-"존재 양화(existential quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받으며 V에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다]."
+"존재 양화(existential quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받으며 U에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다]."
 $!<prec=249><<\exists>>#1$
 st X(pr f) {
-	N(V(Nf(f)))
+	N(U(Nf(f)))
 }
 
 "pr2를 위한 존재 양화. X에 의존한다."
@@ -547,293 +547,293 @@ st X2(pr2 f) {
 	})
 }
 
-schema NX_to_VN(pr f: @111) {
-	N(X(f)) |- id(V(Nf(f)))[NNe[@h1]]
+schema NX_to_UN(pr f: @111) {
+	N(X(f)) |- id(U(Nf(f)))[NNe[@h1]]
 }
 
-schema VN_to_NX(pr f: @111) {
-	V(Nf(f)) |- id(N(X(f)))[NNi[@h1]]
+schema UN_to_NX(pr f: @111) {
+	U(Nf(f)) |- id(N(X(f)))[NNi[@h1]]
 }
 
 "보편 양화 도입(universal introduction)."
-axiomatic schema Vi(pr f: @1) {
-	f |- V(f)
+axiomatic schema Ui(pr f: @1) {
+	f |- U(f)
 }
 
-schema Vi2(pr2 f: @1) {
-	f |- id(V2(f))[
-		Vi[(cls x) => { Vi[(cls y) => { @h1(x, y) }] }]
+schema Ui2(pr2 f: @1) {
+	f |- id(U2(f))[
+		Ui[(cls x) => { Ui[(cls y) => { @h1(x, y) }] }]
 	]
 }
 
 "보편 양화 소거(universal elimination)."
-axiomatic schema Ve(pr f: @11, cls x) {
-	V(f) |- f(x)
+axiomatic schema Ue(pr f: @11, cls x) {
+	U(f) |- f(x)
 }
 
-schema Ve2(pr2 f: @11, cls x, cls y) {
-	V2(f) |- Ve(?, y)[Ve(?, x)[@h1]]
+schema Ue2(pr2 f: @11, cls x, cls y) {
+	U2(f) |- Ue(?, y)[Ue(?, x)[@h1]]
 }
 
-"Vi의 다른 버전."
-schema Viu(pr f) {
+"Ui의 다른 버전."
+schema Uiu(pr f) {
 	(cls x) => { |- f(x) } |-
-		|- id(V(f))[Vi[(cls x) => {@h1(x)[]}]]
+		|- id(U(f))[Ui[(cls x) => {@h1(x)[]}]]
 }
 
-"Ve의 다른 버전."
-schema Veu(pr f, cls x) {
-	(|- V(f)) |-
-		|- Ve(?, x)[@h1[]]
+"Ue의 다른 버전."
+schema Ueu(pr f, cls x) {
+	(|- U(f)) |-
+		|- Ue(?, x)[@h1[]]
 }
 
-schema Vi_p(st p: @1) {
-	p |- Vi((cls x) => { p })[(cls x) => { p }]
+schema Ui_p(st p: @1) {
+	p |- Ui((cls x) => { p })[(cls x) => { p }]
 }
 
-schema Vi_c(st p) {
-	|- cp[Vi_p(p)]
+schema Ui_c(st p) {
+	|- cp[Ui_p(p)]
 }
 
-"V를 위한 contrapose."
-schema contrapose_V(pr f: @111, pr g: @112) {
-	V(If(f, g)) |- Vi[(cls x) => {
-		contrapose(f(x), g(x))[Ve(?, x)[@h1]]
+"U를 위한 contrapose."
+schema contrapose_U(pr f: @111, pr g: @112) {
+	U(If(f, g)) |- Ui[(cls x) => {
+		contrapose(f(x), g(x))[Ue(?, x)[@h1]]
 	}]
 }
 
-"V를 위한 mp."
-schema mpV(pr f: @11, pr g: @212) {
-	V(f), V(If(f, g)) |-
-		id(V(g))[Vi[(cls x) => {
-			mp[Ve(?, x)[@h1], Ve(?, x)[id(V((cls x) => { I(f(x), g(x)) }))[@h2]]]
+"U를 위한 mp."
+schema mpU(pr f: @11, pr g: @212) {
+	U(f), U(If(f, g)) |-
+		id(U(g))[Ui[(cls x) => {
+			mp[Ue(?, x)[@h1], Ue(?, x)[id(U((cls x) => { I(f(x), g(x)) }))[@h2]]]
 		}]]
 }
 
-"V를 위한 mt."
-schema mtV(pr f: @111, pr g: @112) {
-	V(If(f, g)), N(V(g)) |-
+"U를 위한 mt."
+schema mtU(pr f: @111, pr g: @112) {
+	U(If(f, g)), N(U(g)) |-
 		Niu[
-			V(f) |-
+			U(f) |-
 				Ne(?, F)[
-					mpV[@h3, @h1],
+					mpU[@h3, @h1],
 					@h2
 				]
 		]
 }
 
-"VA의 m1형."
-schema VAm1(pr f: @111, pr g: @112) {
-	V(Af(f, g)) |-
-		id(A(V(f), V(g)))[Ai[
-			Vi[(cls x) => {
-				Ae1[id(A(f(x), g(x)))[Ve(?, x)[@h1]]]
+"UA의 m1형."
+schema UAm1(pr f: @111, pr g: @112) {
+	U(Af(f, g)) |-
+		id(A(U(f), U(g)))[Ai[
+			Ui[(cls x) => {
+				Ae1[id(A(f(x), g(x)))[Ue(?, x)[@h1]]]
 			}],
-			Vi[(cls x) => {
-				Ae2[id(A(f(x), g(x)))[Ve(?, x)[@h1]]]
+			Ui[(cls x) => {
+				Ae2[id(A(f(x), g(x)))[Ue(?, x)[@h1]]]
 			}]
 		]]
 }
 
-"VA의 m2형."
-schema VAm2(pr f: @111, pr g: @121) {
-	A(V(f), V(g)) |-
-		id(V(Af(f, g)))[
-			Vi[(cls x) => {
+"UA의 m2형."
+schema UAm2(pr f: @111, pr g: @121) {
+	A(U(f), U(g)) |-
+		id(U(Af(f, g)))[
+			Ui[(cls x) => {
 				Ai[
-					Ve(?, x)[Ae1[@h1]],
-					Ve(?, x)[Ae2[@h1]]
+					Ue(?, x)[Ae1[@h1]],
+					Ue(?, x)[Ae2[@h1]]
 				]
 			}]
 		]
 }
 
 "[$\forall]과 [$\land] 간의 분배법칙 같은 것."
-schema VA(pr f, pr g) {
-	|- Ei[cp[VAm1(f, g)], cp[VAm2(f, g)]]
+schema UA(pr f, pr g) {
+	|- Ei[cp[UAm1(f, g)], cp[UAm2(f, g)]]
 }
 
-"VI의 m형."
-schema VIm(pr f: @111, pr g: @112) {
-	V(If(f, g)) |-
-		cp[V(f) |- mpV[@h2, @h1]]
+"UI의 m형."
+schema UIm(pr f: @111, pr g: @112) {
+	U(If(f, g)) |-
+		cp[U(f) |- mpU[@h2, @h1]]
 }
 
 "[$\forall]과 [$\to] 간의 분배법칙 같은 것."
-schema VI(pr f, pr g) {
-	|- cp[VIm(f, g)]
+schema UI(pr f, pr g) {
+	|- cp[UIm(f, g)]
 }
 
-"V를 위한 Oi1."
-schema Oi1V(pr f, pr g) {
-	V(f) |-
-		id(V(Of(f, g)))[
-			Vi[(cls x) => {
-				Oi1(?, g(x))[Ve(?, x)[@h1]]
+"U를 위한 Oi1."
+schema Oi1U(pr f, pr g) {
+	U(f) |-
+		id(U(Of(f, g)))[
+			Ui[(cls x) => {
+				Oi1(?, g(x))[Ue(?, x)[@h1]]
 			}]
 		]
 }
 
-"V를 위한 Oi2."
-schema Oi2V(pr f, pr g) {
-	V(g) |-
-		id(V(Of(f, g)))[
-			Vi[(cls x) => {
-				Oi2(f(x), ?)[Ve(?, x)[@h1]]
+"U를 위한 Oi2."
+schema Oi2U(pr f, pr g) {
+	U(g) |-
+		id(U(Of(f, g)))[
+			Ui[(cls x) => {
+				Oi2(f(x), ?)[Ue(?, x)[@h1]]
 			}]
 		]
 }
 
-schema VOm(pr f, pr g) {
-	O(V(f), V(g)) |-
+schema UOm(pr f, pr g) {
+	O(U(f), U(g)) |-
 		Oe[
 			@h1,
-			cp[Oi1V(f, g)],
-			cp[Oi2V(f, g)]
+			cp[Oi1U(f, g)],
+			cp[Oi2U(f, g)]
 		]
 }
 
-schema VO(pr f, pr g) {
-	|- cp[VOm(f, g)]
+schema UO(pr f, pr g) {
+	|- cp[UOm(f, g)]
 }
 
-"VV의 m형. 재미있게도 Vi 및 Ve로부터 유도할 수 있다."
-schema VVm(pr2 f) {
-	V2((cls x, cls y) => { f(x, y) }) |-
-		id(V2((cls y, cls x) => { f(x, y) }))[Vi[(cls y) => {
-			Vi[(cls x) => {
-				Ve2(?, x, y)[@h1]
+"UU의 m형. 재미있게도 Ui 및 Ue로부터 유도할 수 있다."
+schema UUm(pr2 f) {
+	U2((cls x, cls y) => { f(x, y) }) |-
+		id(U2((cls y, cls x) => { f(x, y) }))[Ui[(cls y) => {
+			Ui[(cls x) => {
+				Ue2(?, x, y)[@h1]
 			}]
 		}]]
 }
 
 "[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것."
-schema VV(pr2 f) {
-	|- cp[VVm(f)]
+schema UU(pr2 f) {
+	|- cp[UUm(f)]
 }
 
-"IEpqEqpm의 V형."
-schema IVEpqVEqpfm(pr f, pr g) {
+"IEpqEqpm의 U형."
+schema IUEpqUEqpfm(pr f, pr g) {
 	mpu[
-		Viu((cls x) => {
+		Uiu((cls x) => {
 			I(E(f(x), g(x)), E(g(x), f(x)))
 		})[(cls x) => { tt.IEpqEqp(f(x), g(x)) }]
-		~ VIm(
+		~ UIm(
 			(cls x) => { E(f(x), g(x)) },
 			(cls x) => { E(g(x), f(x)) }
 		)
 	]
 }
 
-"Ee1의 V형."
-schema Ee1V(pr f: @111, pr g: @112) {
-	id(V(Ef(f, g))) ~
+"Ee1의 U형."
+schema Ee1U(pr f: @111, pr g: @112) {
+	id(U(Ef(f, g))) ~
 	mpu[
-		Viu((cls x) => {
+		Uiu((cls x) => {
 			I(E(f(x), g(x)), I(f(x), g(x)))
 		})[(cls x) => {tt.IEpqIpq(f(x), g(x))}]
-		~ VIm(
+		~ UIm(
 			(cls z) => { E(f(z), g(z)) },
 			(cls z) => { I(f(z), g(z)) }
 		)
 	]
-	~ id(V(If(f, g)))
+	~ id(U(If(f, g)))
 }
 
-"Ee2의 V형."
-schema Ee2V(pr f, pr g) {
-	IVEpqVEqpfm(f, g)
-	~ Ee1V(g, f)
+"Ee2의 U형."
+schema Ee2U(pr f, pr g) {
+	IUEpqUEqpfm(f, g)
+	~ Ee1U(g, f)
 }
 
-schema VEm(pr f, pr g) {
-	Ee1V(f, g)
-	~ VIm(f, g)
-	~ Ee2V(f, g)
-	~ VIm(g, f)
-	~ Ei(V(f), V(g))
+schema UEm(pr f, pr g) {
+	Ee1U(f, g)
+	~ UIm(f, g)
+	~ Ee2U(f, g)
+	~ UIm(g, f)
+	~ Ei(U(f), U(g))
 }
 
-schema VE(pr f, pr g) {
-	|- cp[VEm(f, g)]
+schema UE(pr f, pr g) {
+	|- cp[UEm(f, g)]
 }
 
-schema syllV(pr f: @111, pr g: @112, pr h: @212) {
+schema syllU(pr f: @111, pr g: @112, pr h: @212) {
 	Ai(
-		V(If(f, g)),
-		V(If(g, h))
+		U(If(f, g)),
+		U(If(g, h))
 	)
-	~ VAm2(
+	~ UAm2(
 		(cls x) => { I(f(x), g(x)) },
 		(cls x) => { I(g(x), h(x)) }
 	)
 	~ mpu[
-		Viu((cls x) => {
+		Uiu((cls x) => {
 			I(A(I(f(x), g(x)), I(g(x), h(x))), I(f(x), h(x)))
 		})[(cls x) => {tt.IAIpqIqrIpr(f(x), g(x), h(x))}]
-		~ VIm(
+		~ UIm(
 			(cls x) => { A(I(f(x), g(x)), I(g(x), h(x))) },
 			(cls x) => { I(f(x), h(x)) }
 		)
 	]
 }
 
-schema syllVE(pr f, pr g, pr h) {
+schema syllUE(pr f, pr g, pr h) {
 	Ai(
-		V((cls w) => { E(f(w), g(w)) }),
-		V((cls w) => { E(g(w), h(w)) })
+		U((cls w) => { E(f(w), g(w)) }),
+		U((cls w) => { E(g(w), h(w)) })
 	)
-	~ VAm2(
+	~ UAm2(
 		(cls w) => { E(f(w), g(w)) },
 		(cls w) => { E(g(w), h(w)) }
 	)
 	~ mpu[
-		Viu((cls x) => {
+		Uiu((cls x) => {
 			I(A(E(f(x), g(x)), E(g(x), h(x))), E(f(x), h(x)))
 		})[(cls x) => {tt.IAEpqEqrEpr(f(x), g(x), h(x))}]
-		~ VIm(
+		~ UIm(
 			(cls w) => { A(E(f(w), g(w)), E(g(w), h(w))) },
 			(cls w) => { E(f(w), h(w)) }
 		)
 	]
 }
 
-schema VI_Vi(st p, pr f) {
-	Vi_c(p) ~
-	VIm((cls z) => {p}, f)
+schema UI_Ui(st p, pr f) {
+	Ui_c(p) ~
+	UIm((cls z) => {p}, f)
 	~ syll(
 		p,
-		V((cls z) => {p}),
-		V(f)
+		U((cls z) => {p}),
+		U(f)
 	)
 }
 
-schema VI_Vi_c(st p, pr f) {
-	|- cp[VI_Vi(p, f)]
+schema UI_Ui_c(st p, pr f) {
+	|- cp[UI_Ui(p, f)]
 }
 
-schema VI_Vi_V2(pr f, pr2 g, cls z) {
-	VI_Vi_c(f(z), (cls w) => {g(z, w)})
+schema UI_Ui_U2(pr f, pr2 g, cls z) {
+	UI_Ui_c(f(z), (cls w) => {g(z, w)})
 }
 
-schema VI_Vi_V2_Vi(pr f, pr2 g) {
-	Viu((cls z) => {
-		I(V((cls w) => {I(f(z), g(z, w))}), I(f(z), V((cls w) => {g(z, w)})))
-	})[(cls z) => {VI_Vi_V2(f, g, z)}]
+schema UI_Ui_U2_Ui(pr f, pr2 g) {
+	Uiu((cls z) => {
+		I(U((cls w) => {I(f(z), g(z, w))}), I(f(z), U((cls w) => {g(z, w)})))
+	})[(cls z) => {UI_Ui_U2(f, g, z)}]
 }
 
-schema VI_Vi_V2_Vi_VI(pr f, pr2 g) {
-	VI_Vi_V2_Vi(f, g)
-	~ VIm(
+schema UI_Ui_U2_Ui_UI(pr f, pr2 g) {
+	UI_Ui_U2_Ui(f, g)
+	~ UIm(
 		(cls z) => {
-			V((cls w) => {
+			U((cls w) => {
 				I(f(z), g(z, w))
 			})
 		},
 		(cls z) => {
 			I(
 				f(z),
-				V((cls w) => {
+				U((cls w) => {
 					g(z, w)
 				})
 			)
@@ -841,19 +841,19 @@ schema VI_Vi_V2_Vi_VI(pr f, pr2 g) {
 	)
 }
 
-schema VI_Vi_V2_Vi_VI_m(pr f, pr2 g) {
-	id(V2((cls z, cls w) => {
+schema UI_Ui_U2_Ui_UI_m(pr f, pr2 g) {
+	id(U2((cls z, cls w) => {
 		I(f(z), g(z, w))
 	})) ~
-	mpu[VI_Vi_V2_Vi_VI(f, g)]
+	mpu[UI_Ui_U2_Ui_UI(f, g)]
 }
 
-"존재 양화 도입(existential introduction). Ve와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
+"존재 양화 도입(existential introduction). Ue와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
 schema Xi(pr f, cls x: @12) {
 	NNi(f(x)) ~
 	mpu[
-		|- cp[Ve(Nf(f), x)]
-		~ contrapose(V(Nf(f)), N(f(x)))
+		|- cp[Ue(Nf(f), x)]
+		~ contrapose(U(Nf(f)), N(f(x)))
 	] ~ id(X(f))
 }
 
@@ -867,13 +867,13 @@ schema Xi2(pr2 f, cls x, cls y) {
 
 "X를 위한 mp."
 schema mpX(pr f: @11, pr g: @212) {
-	X(f), V(If(f, g)) |-
+	X(f), U(If(f, g)) |-
 		NNe[Niu[
 			N(X(g)) |- Fi[
-				Vi(Nf(f))[(cls x) => {
+				Ui(Nf(f))[(cls x) => {
 					mt(f(x), g(x))[
-						Ve(?, x)[@h2],
-						Ve(?, x)[NNe[@h3]]
+						Ue(?, x)[@h2],
+						Ue(?, x)[NNe[@h3]]
 					]
 				}],
 				@h1
@@ -883,15 +883,15 @@ schema mpX(pr f: @11, pr g: @212) {
 
 "X2를 위한 mp."
 schema mpX2(pr2 f: @11, pr2 g: @212) {
-	X2(f), V2(If2(f, g)) |-
+	X2(f), U2(If2(f, g)) |-
 		NNe[Niu[N(X2(g)) |- Fi[
-			Vi[(cls x) => {
-				id(N(X((cls y) => {f(x, y)})))[NNi[Vi[(cls y) => {
+			Ui[(cls x) => {
+				id(N(X((cls y) => {f(x, y)})))[NNi[Ui[(cls y) => {
 					mt[
-						Ve2(?, x, y)[id(V2((cls x, cls y) => {
+						Ue2(?, x, y)[id(U2((cls x, cls y) => {
 							I(f(x, y), g(x, y))
 						}))[@h2]],
-						Ve(?, y)[NNe(V((cls y) => {N(g(x, y))}))[Ve(?, x)[NNe[@h3]]]]
+						Ue(?, y)[NNe(U((cls y) => {N(g(x, y))}))[Ue(?, x)[NNe[@h3]]]]
 					]
 				}]]]
 			}],
@@ -901,15 +901,15 @@ schema mpX2(pr2 f: @11, pr2 g: @212) {
 
 "mpX의 더 강력한 버전."
 schema mpX_strong(pr f: @11, pr g: @212) {
-	X(f), V(If(f, g)) |-
+	X(f), U(If(f, g)) |-
 		mpX(?, Af(f, g))[
 			@h1,
-			Vi[(cls x) => {
+			Ui[(cls x) => {
 				cp[
 					f(x) |-
 						Ai[
 							@h3,
-							mp(f(x), g(x))[@h3, Ve(?, x)[@h2]]
+							mp(f(x), g(x))[@h3, Ue(?, x)[@h2]]
 						]
 				]
 			}]
@@ -917,8 +917,8 @@ schema mpX_strong(pr f: @11, pr g: @212) {
 }
 
 schema mpXE(pr f, pr g) {
-	X(f), V(Ef(f, g)) |-
-		mpX[@h1, Ee1V[@h2]]
+	X(f), U(Ef(f, g)) |-
+		mpX[@h1, Ee1U[@h2]]
 }
 
 "st 타입을 위한 존재 양화 소거(existential elimination)."
@@ -927,12 +927,12 @@ schema Xe_p(st p) {
 		NNe[Niu[N(p) |-
 			Fi[
 				@h1,
-				id(N(X((cls z) => { p })))[NNi[Vi_p[@h2]]]
+				id(N(X((cls z) => { p })))[NNi[Ui_p[@h2]]]
 			]]]
 }
 
 schema mpX_Xe_p(pr f: @11, st p) {
-	X(f), V(If(f, (cls z) => { p })) |-
+	X(f), U(If(f, (cls z) => { p })) |-
 		Xe_p(p)[mpX[@h1, @h2]]
 }
 
@@ -941,13 +941,13 @@ schema XOm1(pr f: @111, pr g: @112) {
 		NNe[Niu[N(O(X(f), X(g))) |-
 			$noan = NO_to_AN[@h2];
 			
-			$foo = VAm2[Ai[
-				NX_to_VN[Ae1[$noan]],
-				NX_to_VN[Ae2[$noan]]
+			$foo = UAm2[Ai[
+				NX_to_UN[Ae1[$noan]],
+				NX_to_UN[Ae2[$noan]]
 			]];
 			
-			Fi[@h1, id(N(X(Of(f, g))))[NNi[Vi[(cls x) => {
-				AN_to_NO[id(A(N(f(x)), N(g(x))))[Ve(?, x)[$foo]]]
+			Fi[@h1, id(N(X(Of(f, g))))[NNi[Ui[(cls x) => {
+				AN_to_NO[id(A(N(f(x)), N(g(x))))[Ue(?, x)[$foo]]]
 			}]]]]]]
 }
 
@@ -956,33 +956,33 @@ schema XOm2(pr f: @111, pr g: @121) {
 		NNe[Niu[N(X(Of(f, g))) |-
 			$foo = NNe[@h2];
 			
-			$1 = VAm1(Nf(f), Nf(g))[Vi[(cls x) => {
-				NO_to_AN[id(N(O(f(x), g(x))))[Ve(?, x)[$foo]]]
+			$1 = UAm1(Nf(f), Nf(g))[Ui[(cls x) => {
+				NO_to_AN[id(N(O(f(x), g(x))))[Ue(?, x)[$foo]]]
 			}]];
 			
 			Fi[@h1, AN_to_NO[Ai[
-				VN_to_NX[Ae1[$1]],
-				VN_to_NX[Ae2[$1]]
+				UN_to_NX[Ae1[$1]],
+				UN_to_NX[Ae2[$1]]
 			]]]
 		]]
 }
-"[$\exists]과 [$\lor] 간의 분배법칙 같은 것. VA로부터 증명할 수 있다."
+"[$\exists]과 [$\lor] 간의 분배법칙 같은 것. UA로부터 증명할 수 있다."
 schema XO(pr f, pr g) {
 	|- Eiu[XOm1(f, g), XOm2(f, g)]
 }
 
-schema ON_to_NA_V(pr f, pr g) {
-	V(Of(Nf(f), Nf(g))) |-
-		Vi[(cls x) => {
-			ON_to_NA(f(x), g(x))[Ve(?, x)[@h1]]
+schema ON_to_NA_U(pr f, pr g) {
+	U(Of(Nf(f), Nf(g))) |-
+		Ui[(cls x) => {
+			ON_to_NA(f(x), g(x))[Ue(?, x)[@h1]]
 		}]
 }
 
 schema XAe(pr f: @111, pr g: @112) {
 	X(Af(f, g)) |- id(A(X(f), X(g)))[
 		NO_to_AN[mp[
-			contrapose_u[ON_to_NA_V(f, g)][@h1],
-			contrapose[VO(Nf(f), Nf(g))[]]
+			contrapose_u[ON_to_NA_U(f, g)][@h1],
+			contrapose[UO(Nf(f), Nf(g))[]]
 		]]
 	]
 }
@@ -1002,14 +1002,14 @@ schema X2Ae(pr2 f, pr2 g) {
 		Ai[
 			mpX2[
 				@h1,
-				id(V2(If2(Af2(f, g), f)))[Vi2[(cls x, cls y) => {
+				id(U2(If2(Af2(f, g), f)))[Ui2[(cls x, cls y) => {
 					cp[A(f(x, y), g(x, y)) |-
 						Ae1[@h2]]
 				}]]
 			],
 			mpX2[
 				@h1,
-				id(V2(If2(Af2(f, g), g)))[Vi2[(cls x, cls y) => {
+				id(U2(If2(Af2(f, g), g)))[Ui2[(cls x, cls y) => {
 					cp[A(f(x, y), g(x, y)) |-
 						Ae2[@h2]]
 				}]]
@@ -1027,8 +1027,8 @@ schema X2Ae2(pr2 f: @111, pr2 g: @112) {
 		Ae2[X2Ae(f, g)[@h1]]
 }
 
-schema mpVE(pr f, pr g) {
-	Ee1V(f, g) ~ mpV(f, g)
+schema mpUE(pr f, pr g) {
+	Ee1U(f, g) ~ mpU(f, g)
 }
 
 ############################
@@ -1048,7 +1048,7 @@ st Nin(cls x, cls y) {
 "[$\subseteq]."
 $!<prec=350>#1<<\subseteq>>#2$
 st subseteq(cls x, cls y) {
-	V((cls z) => {
+	U((cls z) => {
 		I(
 			in(z, x),
 			in(z, y)
@@ -1060,10 +1060,10 @@ st subseteq(cls x, cls y) {
 $!<prec=350>#1<<=>>#2$
 st eq(cls x, cls y) {
 	A(
-		V((cls z) => {
+		U((cls z) => {
 			E(in(z, x), in(z, y))
 		}),
-		V((cls w) => {
+		U((cls w) => {
 			E(in(x, w), in(y, w))
 		})
 	)
@@ -1077,8 +1077,8 @@ st neq(cls x, cls y) {
 
 "어떤 class 내에서의 forall."
 $!<prec=249><<\forall>>_{\in #1}#2$
-st Vin(cls a, pr f) {
-	V((cls z) => {
+st Uin(cls a, pr f) {
+	U((cls z) => {
 		I(
 			in(z, a),
 			f(z)
@@ -1086,36 +1086,36 @@ st Vin(cls a, pr f) {
 	})
 }
 
-schema Vin_subset(cls a: @12, cls b: @11, pr f: @22) {
+schema Uin_subset(cls a: @12, cls b: @11, pr f: @22) {
 	id(subseteq(a, b)) ~
-	id(Vin(b, f)) ~
-	syllV(
+	id(Uin(b, f)) ~
+	syllU(
 		(cls z) => {in(z, a)},
 		(cls z) => {in(z, b)},
 		f
-	) ~ id(Vin(a, f))
+	) ~ id(Uin(a, f))
 }
 
-schema VVin_m(cls a, pr2 f) {
-	id(V((cls z) => {
-		Vin(a, (cls w) => {f(z, w)})
+schema UUin_m(cls a, pr2 f) {
+	id(U((cls z) => {
+		Uin(a, (cls w) => {f(z, w)})
 	})) ~
-	VVm((cls z, cls w) => {
+	UUm((cls z, cls w) => {
 		I(in(w, a), f(z, w))
-	}) ~ VI_Vi_V2_Vi_VI_m(
+	}) ~ UI_Ui_U2_Ui_UI_m(
 		(cls y) => {in(y, a)},
 		(cls y, cls x) => {f(x, y)}
-	) ~ id(Vin(a, (cls w) => {
-		V((cls z) => {f(z, w)})
+	) ~ id(Uin(a, (cls w) => {
+		U((cls z) => {f(z, w)})
 	}))
 }
 
-"V와 Vin은 순서를 바꿀 수 있다."
-schema VVin(cls a, pr2 f) {
-	|- cp[VVin_m(a, f)]
+"U와 Uin은 순서를 바꿀 수 있다."
+schema UUin(cls a, pr2 f) {
+	|- cp[UUin_m(a, f)]
 }
 
-"어떤 class 내에서의 exists. Vin과 달리 and로 연결된다."
+"어떤 class 내에서의 exists. Uin과 달리 and로 연결된다."
 $!<prec=249><<\exists>>_{\in #1}#2$
 st Xin(cls a, pr f) {
 	X((cls z) => {
@@ -1157,36 +1157,36 @@ schema set_i_O(cls x, cls y, cls z) {
 schema eq_Ae1(cls x, cls y) {
 	id(eq(x, y))
 	~ Ae1(
-		V((cls z) => { E(in(z, x), in(z, y)) }),
-		V((cls w) => { E(in(x, w), in(y, w)) })
+		U((cls z) => { E(in(z, x), in(z, y)) }),
+		U((cls w) => { E(in(x, w), in(y, w)) })
 	)
 }
 
-schema eq_Ae1_Ve(cls x, cls y, cls z) {
+schema eq_Ae1_Ue(cls x, cls y, cls z) {
 	eq_Ae1(x, y)
-	~ Ve((cls z) => {
+	~ Ue((cls z) => {
 		E(in(z, x), in(z, y))
 	}, z)
 }
 
-schema eq_Ae1_Ve_Ee1(cls x, cls y, cls z) {
-	eq(x, y) |- Ee1[eq_Ae1_Ve(x, y, z)[@h1]]
+schema eq_Ae1_Ue_Ee1(cls x, cls y, cls z) {
+	eq(x, y) |- Ee1[eq_Ae1_Ue(x, y, z)[@h1]]
 }
 
-schema eq_Ae1_Ve_Ee2(cls x, cls y, cls z) {
-	eq(x, y) |- Ee2[eq_Ae1_Ve(x, y, z)[@h1]]
+schema eq_Ae1_Ue_Ee2(cls x, cls y, cls z) {
+	eq(x, y) |- Ee2[eq_Ae1_Ue(x, y, z)[@h1]]
 }
 
 schema in_subseteq(cls x: @12, cls y: @22, cls z: @11) {
 	in(z, x), subseteq(x, y) |-
 		mp[
 			@h1,
-			Ve(?, z)[@h2]
+			Ue(?, z)[@h2]
 		]
 }
 
 schema self_subseteq_self(cls x) {
-	|- id(subseteq(x, x))[Vi[(cls z) => {
+	|- id(subseteq(x, x))[Ui[(cls z) => {
 		cp[in(z, x) |- @h1]
 	}]]
 }
@@ -1194,36 +1194,36 @@ schema self_subseteq_self(cls x) {
 schema eq_Ae2(cls x, cls y) {
 	id(eq(x, y)) ~
 	Ae2(
-		V((cls z) => { E(in(z, x), in(z, y)) }),
-		V((cls w) => { E(in(x, w), in(y, w)) })
+		U((cls z) => { E(in(z, x), in(z, y)) }),
+		U((cls w) => { E(in(x, w), in(y, w)) })
 	)
 }
 
-schema eq_Ae2_Ve(cls x, cls y, cls z) {
+schema eq_Ae2_Ue(cls x, cls y, cls z) {
 	eq_Ae2(x, y)
-	~ Ve((cls z) => {
+	~ Ue((cls z) => {
 		E(in(x, z), in(y, z))
 	}, z)
 }
 
-schema eq_Ae2_Ve_Ee1(cls x, cls y, cls z) {
-	eq_Ae2_Ve(x, y, z)
+schema eq_Ae2_Ue_Ee1(cls x, cls y, cls z) {
+	eq_Ae2_Ue(x, y, z)
 	~ Ee1(in(x, z), in(y, z))
 }
 
-schema eq_Ae2_Ve_Ee1_c(cls x, cls y, cls z) {
-	|- cp[eq_Ae2_Ve_Ee1(x, y, z)]
+schema eq_Ae2_Ue_Ee1_c(cls x, cls y, cls z) {
+	|- cp[eq_Ae2_Ue_Ee1(x, y, z)]
 }
 
-schema eq_Ae2_Ve_Ee2(cls x, cls y, cls z) {
-	eq(x, y) |- Ee2[eq_Ae2_Ve(x, y, z)[@h1]]
+schema eq_Ae2_Ue_Ee2(cls x, cls y, cls z) {
+	eq(x, y) |- Ee2[eq_Ae2_Ue(x, y, z)[@h1]]
 }
 
 schema in_eq_left_1(cls x: @11, cls y: @22, cls z: @12) {
 	in(x, z), eq(x, y) |-
 		mp[
 			@h1,
-			eq_Ae2_Ve_Ee1(x, y, z)[
+			eq_Ae2_Ue_Ee1(x, y, z)[
 				@h2
 			]
 		]
@@ -1233,7 +1233,7 @@ schema in_eq_left_2(cls x: @21, cls y: @22, cls z: @12) {
 	in(y, z), eq(x, y) |-
 		mp[
 			@h1,
-			eq_Ae2_Ve_Ee2(x, y, z)[
+			eq_Ae2_Ue_Ee2(x, y, z)[
 				@h2
 			]
 		]
@@ -1243,7 +1243,7 @@ schema in_eq_right_1(cls x: @12, cls y: @22, cls z: @11) {
 	in(z, x), eq(x, y) |-
 		mp[
 			@h1,
-			eq_Ae1_Ve_Ee1(x, y, z)[
+			eq_Ae1_Ue_Ee1(x, y, z)[
 				@h2
 			]
 		]
@@ -1253,43 +1253,43 @@ schema in_eq_right_2(cls x: @21, cls y: @22, cls z: @11) {
 	in(z, y), eq(x, y) |-
 		mp[
 			@h1,
-			eq_Ae1_Ve_Ee2(x, y, z)[
+			eq_Ae1_Ue_Ee2(x, y, z)[
 				@h2
 			]
 		]
 }
 
-schema swapV_1(pr f, pr g, pr h, cls w) {
+schema swapU_1(pr f, pr g, pr h, cls w) {
 	swap_c(f(w), g(w), h(w))
 }
 
-schema swapV_c(pr f, pr g, pr h) {
-	Viu((cls w) => {
+schema swapU_c(pr f, pr g, pr h) {
+	Uiu((cls w) => {
 		I(I(f(w), I(g(w), h(w))), I(g(w), I(f(w), h(w))))
-	})[(cls w) => {swapV_1(f, g, h, w)}]
-	~ VIm(
+	})[(cls w) => {swapU_1(f, g, h, w)}]
+	~ UIm(
 		(cls w) => {I(f(w), I(g(w), h(w)))},
 		(cls w) => {I(g(w), I(f(w), h(w)))}
 	)
 }
 
-schema swapV(pr f, pr g, pr h) {
-	mpu[swapV_c(f, g, h)]
+schema swapU(pr f, pr g, pr h) {
+	mpu[swapU_c(f, g, h)]
 }
 
-schema swapV2(pr2 f, pr2 g, pr2 h) {
-	V2(If2(f, If2(g, h))) |-
-		id(V2(If2(g, If2(f, h))))[Vi2[(cls x, cls y) => {
-			swap(f(x, y), g(x, y), h(x, y))[Ve2(?, x, y)[@h1]]
+schema swapU2(pr2 f, pr2 g, pr2 h) {
+	U2(If2(f, If2(g, h))) |-
+		id(U2(If2(g, If2(f, h))))[Ui2[(cls x, cls y) => {
+			swap(f(x, y), g(x, y), h(x, y))[Ue2(?, x, y)[@h1]]
 		}]]
 }
 
-schema swapV2_c(pr2 f, pr2 g, pr2 h) {
-	|- cp[swapV2(f ,g, h)]
+schema swapU2_c(pr2 f, pr2 g, pr2 h) {
+	|- cp[swapU2(f ,g, h)]
 }
 
-schema eq_Ae2_Ve_Ee1_c_swap(cls x, cls y, cls z) {
-	eq_Ae2_Ve_Ee1_c(x, y, z)
+schema eq_Ae2_Ue_Ee1_c_swap(cls x, cls y, cls z) {
+	eq_Ae2_Ue_Ee1_c(x, y, z)
 	~ swap(
 		eq(x, y),
 		in(x, z),
@@ -1298,15 +1298,15 @@ schema eq_Ae2_Ve_Ee1_c_swap(cls x, cls y, cls z) {
 }
 
 schema eq_reflexive(cls x) {
-	Viu((cls z) => {
+	Uiu((cls z) => {
 		E(in(z, x), in(z, x))
 	})[(cls z) => {tt.Epp(in(z, x))}]
-	~ Viu((cls w) => {
+	~ Uiu((cls w) => {
 		E(in(x, w), in(x, w))
 	})[(cls w) => {tt.Epp(in(x, w))}]
 	~ Ai(
-		V((cls z) => { E(in(z, x), in(z, x)) }),
-		V((cls w) => { E(in(x, w), in(x, w)) })
+		U((cls z) => { E(in(z, x), in(z, x)) }),
+		U((cls w) => { E(in(x, w), in(x, w)) })
 	)
 	~ id(eq(x, x))
 }
@@ -1314,20 +1314,20 @@ schema eq_reflexive(cls x) {
 schema eq_symmetric(cls x: @11, cls y: @12) {
 	id(eq(x, y)) ~
 	Ae1(
-		V((cls z) => { E(in(z, x), in(z, y)) }),
-		V((cls w) => { E(in(x, w), in(y, w)) })
-	) ~ IVEpqVEqpfm(
+		U((cls z) => { E(in(z, x), in(z, y)) }),
+		U((cls w) => { E(in(x, w), in(y, w)) })
+	) ~ IUEpqUEqpfm(
 		(cls z) => { in(z, x) },
 		(cls z) => { in(z, y) }
 	) ~ Ae2(
-		V((cls z) => { E(in(z, x), in(z, y)) }),
-		V((cls w) => { E(in(x, w), in(y, w)) })
-	) ~ IVEpqVEqpfm(
+		U((cls z) => { E(in(z, x), in(z, y)) }),
+		U((cls w) => { E(in(x, w), in(y, w)) })
+	) ~ IUEpqUEqpfm(
 		(cls w) => { in(x, w) },
 		(cls w) => { in(y, w) }
 	) ~ Ai(
-		V((cls z) => { E(in(z, y), in(z, x)) }),
-		V((cls w) => { E(in(y, w), in(x, w)) })
+		U((cls z) => { E(in(z, y), in(z, x)) }),
+		U((cls w) => { E(in(y, w), in(x, w)) })
 	)
 	~ id(eq(y, x))
 }
@@ -1336,12 +1336,12 @@ schema eq_transitive(cls x, cls y, cls z) {
 	eq(x, y), eq(y, z) |-
 		id(eq(x, z))[
 			Ai[
-				syllVE(
+				syllUE(
 					(cls w) => {in(w, x)},
 					(cls w) => {in(w, y)},
 					(cls w) => {in(w, z)}
 				)[Ae1[@h1], Ae1[@h2]],
-				syllVE(
+				syllUE(
 					(cls w) => {in(x, w)},
 					(cls w) => {in(y, w)},
 					(cls w) => {in(z, w)}
@@ -1380,7 +1380,7 @@ schema eq_transitive_13(cls x: @12, cls y: @11, cls z: @22) {
 "[$f]를 만족하는 것들이 서로 같다."
 $!<prec=249><<\exists_{\leq 1}>>#1$
 st Q(pr f) {
-	V2((cls x, cls y) => {
+	U2((cls x, cls y) => {
 		I(
 			A(f(x), f(y)),
 			eq(x, y)
@@ -1420,7 +1420,7 @@ schema set_is_set_2(cls x: @11, cls y: @21) {
 schema subseteq_subseteq(cls x: @11, cls y: @12, cls z: @22) {
 	id(subseteq(x, y)) ~
 	id(subseteq(y, z)) ~
-	syllV(
+	syllU(
 		(cls w) => { in(w, x) },
 		(cls w) => { in(w, y) },
 		(cls w) => { in(w, z) }
@@ -1430,9 +1430,9 @@ schema subseteq_subseteq(cls x: @11, cls y: @12, cls z: @22) {
 
 "axiom of extensionality."
 axiomatic schema ax_extensional() {
-	|- V2((cls x, cls y) => {
+	|- U2((cls x, cls y) => {
 		I(
-			V((cls z) => {
+			U((cls z) => {
 				E(
 					in(z, x),
 					in(z, y)
@@ -1443,20 +1443,20 @@ axiomatic schema ax_extensional() {
 	})
 }
 
-schema ax_extensional_Ve(cls x, cls y) {
-	|- Ve2(?, x, y)[ax_extensional()[]]
+schema ax_extensional_Ue(cls x, cls y) {
+	|- Ue2(?, x, y)[ax_extensional()[]]
 }
 
 schema ax_extensional_m(cls x, cls y) {
-	mpu[ax_extensional_Ve(x, y)]
+	mpu[ax_extensional_Ue(x, y)]
 }
 
 schema eq_simple(cls x, cls y) {
 	|- cp[eq_Ae1(x, y)]
-	~ ax_extensional_Ve(x, y)
+	~ ax_extensional_Ue(x, y)
 	~ Ei(
 		eq(x, y),
-		V((cls z) => { E(in(z, x), in(z, y)) })
+		U((cls z) => { E(in(z, x), in(z, y)) })
 	)
 }
 
@@ -1464,9 +1464,9 @@ schema eq_then_subseteq_m(cls x, cls y) {
 	eq_simple(x, y)
 	~ mpE(
 		eq(x, y),
-		V((cls z) => { E(in(z, x), in(z, y)) })
+		U((cls z) => { E(in(z, x), in(z, y)) })
 	)
-	~ Ee1V(
+	~ Ee1U(
 		(cls z) => { in(z, x) },
 		(cls z) => { in(z, y) }
 	)
@@ -1506,7 +1506,7 @@ cls setbuilder2([cls -> cls] f, pr g) {
 
 "setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다. `[Pinter]`에서는 axiom of class construction이라 부르는 것 같다."
 axiomatic schema setbuilder_def(pr f) {
-	|- V((cls w) => {
+	|- U((cls w) => {
 		E(
 			in(w, setbuilder(f)),
 			A(set(w), f(w))
@@ -1514,8 +1514,8 @@ axiomatic schema setbuilder_def(pr f) {
 	})
 }
 
-schema setbuilder_def_Ve(pr f, cls z) {
-	Veu((cls w) => {
+schema setbuilder_def_Ue(pr f, cls z) {
+	Ueu((cls w) => {
 		E(in(w, setbuilder(f)), A(set(w), f(w)))
 	}, z)[setbuilder_def(f)]
 }
@@ -1525,12 +1525,12 @@ schema setbuilder_e(pr f: @121, cls z: @11) {
 	in(z, setbuilder(f)) |-
 		Ae2[mp[
 			@h1,
-			Ee1[setbuilder_def_Ve(f, z)[]]
+			Ee1[setbuilder_def_Ue(f, z)[]]
 		]]
 }
 
 schema setbuilder_ec(pr f, cls z) {
-	setbuilder_def_Ve(f, z)
+	setbuilder_def_Ue(f, z)
 	~ mpu[tt.IEpAqrIpr(
 		in(z, setbuilder(f)),
 		set(z),
@@ -1543,7 +1543,7 @@ schema setbuilder_i(pr f, cls z: @11) {
 	set(z), f(z) |-
 		mp[
 			Ai[@h1, @h2],
-			Ee2[setbuilder_def_Ve(f, z)[]]
+			Ee2[setbuilder_def_Ue(f, z)[]]
 		]
 }
 
@@ -1551,7 +1551,7 @@ schema setbuilder_ia(pr f, cls z: @111) {
 	A(set(z), f(z)) |-
 		mp[
 			@h1,
-			Ee2[setbuilder_def_Ve(f, z)[]]
+			Ee2[setbuilder_def_Ue(f, z)[]]
 		]
 }
 
@@ -1562,7 +1562,7 @@ schema setbuilder_def_set(pr f, cls x: @111) {
 				in(x, setbuilder(f)) |-
 					Ae2[mp[
 						@h2,
-						Ee1[Ve(?, x)[setbuilder_def(f)[]]]
+						Ee1[Ue(?, x)[setbuilder_def(f)[]]]
 					]]
 			],
 			cp[
@@ -1572,7 +1572,7 @@ schema setbuilder_def_set(pr f, cls x: @111) {
 							mp[@h2, @h1],
 							@h2
 						],
-						Ee2[Ve(?, x)[setbuilder_def(f)[]]]
+						Ee2[Ue(?, x)[setbuilder_def(f)[]]]
 					]
 			]
 		]
@@ -1615,7 +1615,7 @@ schema cape(cls x: @121, cls y: @122, cls z: @11) {
 }
 
 schema cap_def_vi(cls x, cls y) {
-	|- Vi[(cls z) => { cap_def(x, y, z)[] }]
+	|- Ui[(cls z) => { cap_def(x, y, z)[] }]
 }
 
 schema cap_commutative_1(cls x, cls y, cls z) {
@@ -1635,7 +1635,7 @@ schema cap_commutative_1(cls x, cls y, cls z) {
 }
 
 schema cap_commutative_2(cls x, cls y) {
-	Viu((cls z) => {
+	Uiu((cls z) => {
 		E(in(z, cap(x, y)), in(z, cap(y, x)))
 	})[(cls z) => { cap_commutative_1(x, y, z) }]
 	~ ax_extensional_m(
@@ -1687,7 +1687,7 @@ schema cupe(cls x: @121, cls y: @122, cls z: @11) {
 $<<\bigcap>>#1$
 cls bigcap($A$ cls a) {
 	setbuilder((cls z) => {
-		Vin(a, (cls x) => {
+		Uin(a, (cls x) => {
 			in(z, x)
 		})
 	})
@@ -1704,11 +1704,11 @@ cls bigcup($A$ cls a) {
 }
 
 schema bigcap_i($A$ cls a, cls z) {
-	set(z), Vin(a, (cls x) => {
+	set(z), Uin(a, (cls x) => {
 		in(z, x)
 	}) |-
 		id(in(z, bigcap(a)))[setbuilder_i((cls z) => {
-			Vin(a, (cls x) => {
+			Uin(a, (cls x) => {
 				in(z, x)
 			})
 		}, z)[@h1, @h2]]
@@ -1717,7 +1717,7 @@ schema bigcap_i($A$ cls a, cls z) {
 schema bigcap_e($A$ cls a, cls z) {
 	in(z, bigcap(a)) |-
 		setbuilder_e((cls z) => {
-				Vin(a, (cls x) => {
+				Uin(a, (cls x) => {
 					in(z, x)
 				})
 			}, z)[@h1]
@@ -1725,12 +1725,12 @@ schema bigcap_e($A$ cls a, cls z) {
 
 schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
 	in(x, a) |-
-		id(subseteq(bigcap(a), x))[Vi[(cls z) => {
+		id(subseteq(bigcap(a), x))[Ui[(cls z) => {
 			cp[
 				in(z, bigcap(a)) |-
 					mp[
 						@h1,
-						Ve(?, x)[bigcap_e(a, z)[@h2]]
+						Ue(?, x)[bigcap_e(a, z)[@h2]]
 					]
 			]
 		}]]
@@ -1875,22 +1875,22 @@ axiomatic schema ax_emptyset() {
 
 schema emptyset_vi() {
 	setbuilder_def((cls z) => { F })
-	~ Ee1V(
+	~ Ee1U(
 		(cls z) => { in(z, emptyset()) },
 		(cls z) => { A(set(z), F) }
 	)
-	~ Viu((cls x) => {
+	~ Uiu((cls x) => {
 		I(A(set(x), F), F)
 	})[(cls x) => { tt.IApFF(set(x)) }]
-	~ syllV(
+	~ syllU(
 		(cls z) => { in(z, emptyset()) },
 		(cls z) => { A(set(z), F) },
 		(cls z) => { F }
 	)
-	~ Viu((cls z) => {
+	~ Uiu((cls z) => {
 		I(I(in(z, emptyset()), F), N(in(z, emptyset())))
 	})[(cls z) => { |- cp[Ni(in(z, emptyset()))] }]
-	~ mpV(
+	~ mpU(
 		(cls z) => { I(in(z, emptyset()), F) },
 		(cls z) => { Nin(z, emptyset()) }
 	)
@@ -1898,7 +1898,7 @@ schema emptyset_vi() {
 
 "emptyset의 defining property."
 schema emptyset_def(cls z) {
-	Veu((cls z) => {
+	Ueu((cls z) => {
 		Nin(z, emptyset())
 	}, z)[emptyset_vi()]
 }
@@ -1937,7 +1937,7 @@ schema russell_set_is_not_set() {
 schema setbuilder_is_setbuilder(pr f, cls x) {
 	eq_Ae1(x, setbuilder(f))
 	~ setbuilder_def(f)
-	~ syllVE(
+	~ syllUE(
 		(cls z) => { in(z, x) },
 		(cls z) => { in(z, setbuilder(f)) },
 		(cls z) => { A(set(z), f(z)) }
@@ -1959,7 +1959,7 @@ cls subsetbuilder(cls x, pr f) {
 "axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
 axiomatic schema ax_specify(pr f) {
 	|-
-	V((cls x) => {
+	U((cls x) => {
 		I(
 			set(x),
 			set(subsetbuilder(x, f))
@@ -1968,7 +1968,7 @@ axiomatic schema ax_specify(pr f) {
 }
 
 schema ax_specify_m(pr f, cls x) {
-	mpu[Veu((cls x) => {
+	mpu[Ueu((cls x) => {
 		I(set(x), set(subsetbuilder(x, f)))
 	}, x)[ax_specify(f)]]
 }
@@ -1986,7 +1986,7 @@ schema cap_is_set_2(cls x, cls y) {
 
 "axiom of union."
 axiomatic schema ax_bigcup() {
-	|- V(($A$ cls a) => {
+	|- U(($A$ cls a) => {
 		I(set(a), set(bigcup(a)))
 	})
 }
@@ -1995,13 +1995,13 @@ schema ax_bigcup_m($A$ cls a) {
 	set(a) |-
 		mp[
 			@h1,
-			Ve(?, a)[ax_bigcup()[]]
+			Ue(?, a)[ax_bigcup()[]]
 		]
 }
 
 "axiom of pairing."
 axiomatic schema ax_doubleton() {
-	|- V2((cls x, cls y) => {
+	|- U2((cls x, cls y) => {
 		I(
 			A(set(x), set(y)),
 			set(doubleton(x, y))
@@ -2013,7 +2013,7 @@ schema ax_doubleton_m(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
 		mp[
 			Ai[@h1, @h2],
-			Ve2(?, x, y)[ax_doubleton()[]]
+			Ue2(?, x, y)[ax_doubleton()[]]
 		]
 }
 
@@ -2042,7 +2042,7 @@ schema bigcup_doubleton_to_cup(cls x: @1211, cls y: @1212, cls w: @11) {
 			in(w, cup(x, y))
 		)[
 			setbuilder_e[@h1],
-			Vi[(cls z) => {
+			Ui[(cls z) => {
 				cp[A(in(z, doubleton(x, y)), in(w, z)) |-
 					doubleton_to_cup[
 						Ae1[@h2],
@@ -2102,7 +2102,7 @@ schema bigcup_doubleton_is_cup(cls x: @11, cls y: @21) {
 			bigcup(doubleton(x, y)),
 			cup(x, y)
 		)[
-			Vi[(cls w) => {
+			Ui[(cls w) => {
 				Ei[
 					cp[bigcup_doubleton_to_cup(x, y, w)],
 					cp[
@@ -2131,9 +2131,9 @@ schema cup_is_set(cls x: @11, cls y: @21) {
 schema subset_cap_is_subset(cls x: @11, cls y: @12) {
 	subseteq(x, y) |-
 		ax_extensional_m(x, cap(x, y))[
-			Vi[(cls z) => {
+			Ui[(cls z) => {
 				syllE[
-					DIpqEpApq[Ve(?, z)[@h1]],
+					DIpqEpApq[Ue(?, z)[@h1]],
 					IEpqEqpm[cap_def(x, y, z)[]]
 				]
 			}]
@@ -2157,7 +2157,7 @@ schema subset_is_set_ae_c(cls x, cls y) {
 }
 
 schema subset_is_set_ae_cvi(cls x) {
-	Viu((cls y) => {
+	Uiu((cls y) => {
 		I(A(set(y), subseteq(x, y)), set(x))
 	})[(cls y) => { subset_is_set_ae_c(x, y) }]
 }
@@ -2178,9 +2178,9 @@ schema IAEpAqrIAsrqIsEprmAi(st p, st q, st r, st s) {
 	mpu[tt.IAEpAqrIAsrqIsEpr(p, q, r, s)]
 }
 
-schema power_def_Ve(cls x, cls y) {
+schema power_def_Ue(cls x, cls y) {
 	mpu[subset_is_set_ae_c(y, x)
-	~ setbuilder_def_Ve((cls z) => {
+	~ setbuilder_def_Ue((cls z) => {
 		subseteq(z, x)
 	}, y)
 	~ IAEpAqrIAsrqIsEprmAi(
@@ -2194,7 +2194,7 @@ schema power_def_Ve(cls x, cls y) {
 "x가 집합일 때, x와 같은 것은 x의 power class에 속한다."
 schema self_in_power(cls x, cls z) {
 	eq_then_subseteq(z, x)
-	~ power_def_Ve(x, z)
+	~ power_def_Ue(x, z)
 	~ Ee2(
 		in(z, power(x)),
 		subseteq(z, x)
@@ -2206,16 +2206,16 @@ schema self_in_power(cls x, cls z) {
 	)
 }
 
-schema self_in_power_Vi_1(cls x, cls z) {
+schema self_in_power_Ui_1(cls x, cls z) {
 	|- cp[self_in_power(x, z)]
 }
 
-schema self_in_power_Vi(cls x) {
-	Vi_p(set(x)) ~
-	mpu[Viu((cls z) => {
+schema self_in_power_Ui(cls x) {
+	Ui_p(set(x)) ~
+	mpu[Uiu((cls z) => {
 		I(set(x), I(eq(z, x), in(z, power(x))))
-	})[(cls z) => { self_in_power_Vi_1(x, z) }]
-	~ VIm(
+	})[(cls z) => { self_in_power_Ui_1(x, z) }]
+	~ UIm(
 		(cls z) => {set(x)},
 		(cls z) => {I(
 			eq(z, x),
@@ -2227,7 +2227,7 @@ schema self_in_power_Vi(cls x) {
 schema singleton_subseteq_power_1(cls x, cls y) {
 	setbuilder_ec((cls z) => {eq(z, x)}, y) ~
 	eq_then_subseteq(y, x) ~
-	power_def_Ve(x, y)
+	power_def_Ue(x, y)
 	~ Ee2(
 		in(y, power(x)),
 		subseteq(y, x)
@@ -2245,11 +2245,11 @@ schema singleton_subseteq_power_2(cls x, cls y) {
 }
 
 schema singleton_subseteq_power(cls x) {
-	Vi_p(set(x)) ~
-	mpu[Viu((cls y) => {
+	Ui_p(set(x)) ~
+	mpu[Uiu((cls y) => {
 		I(set(x), I(in(y, singleton(x)), in(y, power(x))))
 	})[(cls y) => { singleton_subseteq_power_2(x, y) }]
-	~ VIm(
+	~ UIm(
 		(cls y) => {set(x)},
 		(cls y) => {
 			I(
@@ -2265,13 +2265,13 @@ schema singleton_subseteq_power(cls x) {
 
 "axiom of power set."
 axiomatic schema ax_power() {
-	|- V((cls x) => {
+	|- U((cls x) => {
 		I(
 			set(x),
 			X((cls y) => {
 				A(
 					set(y),
-					V((cls z) => {
+					U((cls z) => {
 						I(subseteq(z, x), in(z, y))
 					})
 				)
@@ -2281,9 +2281,9 @@ axiomatic schema ax_power() {
 }
 
 schema ax_power_m(cls x) {
-	mpu[Veu((cls x) => {
+	mpu[Ueu((cls x) => {
 		I(set(x), X((cls y) => {
-			A(set(y), V((cls z) => {
+			A(set(y), U((cls z) => {
 				I(subseteq(z, x), in(z, y))
 			}))
 		}))
@@ -2295,19 +2295,19 @@ schema power_is_set(cls x: @11) {
 	set(x) |-
 		Xe_p(set(power(x)))[mpX(?, (cls y) => {set(power(x))})[
 			ax_power_m(x)[@h1],
-			Vi[(cls y) => {
+			Ui[(cls y) => {
 				cp[
-					A(set(y), V((cls z) => {
+					A(set(y), U((cls z) => {
 						I(subseteq(z, x), in(z, y))
 					})) |-
 						subset_is_set_ae[Ai[
 							Ae1[@h2],
-							id(subseteq(power(x), y))[Vi[(cls z) => {
+							id(subseteq(power(x), y))[Ui[(cls z) => {
 								syll[
 									setbuilder_ec((cls z) => {
 										subseteq(z, x)
 									}, z)[],
-									Ve(?, z)[Ae2[@h2]]
+									Ue(?, z)[Ae2[@h2]]
 								]
 							}]]
 						]]
@@ -2481,7 +2481,7 @@ schema cartesian_in_i(cls x: @12, cls y: @22, cls a: @11, cls b: @21) {
 [$V\times V]의 임의 부분집합으로 정의해도 좋을 것이다."
 $\left(<<\mathop\mathrm{relation}>> #1\right)$
 st is_rel($R$ cls r) {
-	Vin(r, (cls z) => {
+	Uin(r, (cls z) => {
 		X2((cls x, cls y) => {
 			eq(z, v2(x, y))
 		})
@@ -2541,7 +2541,7 @@ cls rel_composite(cls x, cls y) {
 
 "곱집합은 이항관계이다."
 schema cartesian_is_rel(cls x, cls y) {
-	|- id(is_rel(cartesian(x, y)))[Vi[(cls z) => {
+	|- id(is_rel(cartesian(x, y)))[Ui[(cls z) => {
 		cp[in(z, cartesian(x, y)) |-
 			X2Ae1((cls a, cls b) => {
 				eq(z, v2(a, b))
@@ -2552,7 +2552,7 @@ schema cartesian_is_rel(cls x, cls y) {
 }
 
 schema rel_subset_is_rel(cls x: @11, cls y: @12) {
-	subseteq(x, y), is_rel(y) |- id(is_rel(x))[Vin_subset(x, y, (cls z) => {
+	subseteq(x, y), is_rel(y) |- id(is_rel(x))[Uin_subset(x, y, (cls z) => {
 		X2((cls a, cls b) => {
 			eq(z, v2(a, b))
 		})
@@ -2593,7 +2593,7 @@ $<<\mathop\mathrm{function}>>\left(#1: #2 \to #3\right)$
 st is_function(cls f, $A$ cls a, $B$ cls b) {
 	A(
 		subseteq(f, cartesian(a, b)),
-		Vin(a, (cls x) => {
+		Uin(a, (cls x) => {
 			Xq((cls y) => {
 				in(v2(x, y), f)
 			})
@@ -2636,11 +2636,11 @@ schema fun_im_unique(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 }
 
 schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	is_function(f, a, b) |- id(Vin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))[
-		Vi[(cls x) => {
+	is_function(f, a, b) |- id(Uin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))[
+		Ui[(cls x) => {
 			cp[(
 				in(x, a) |-
-					Xq_to_X[mp[@h2, Ve(?, x)[fun_im_unique[@h1]]]]
+					Xq_to_X[mp[@h2, Ue(?, x)[fun_im_unique[@h1]]]]
 			)]
 		}]
 	]
@@ -2719,7 +2719,7 @@ $\left(<<\operatorname{successor\ set}>> #1\right)$
 st is_successor_set(cls x) {
 	A(
 		in(emptyset(), x),
-		V((cls z) => {
+		U((cls z) => {
 			I(
 				in(z ,x),
 				in(successor(z), x)
@@ -2752,7 +2752,7 @@ schema zero_in_omega() {
 		is_successor_set(z)
 	}), ord_zero())[
 		ax_emptyset()[],
-		Vi[(cls z) => {
+		Ui[(cls z) => {
 			cp[
 				in(z, setbuilder((cls z) => {is_successor_set(z)})) |-
 					Ae1[setbuilder_e[@h1]]
@@ -2766,17 +2766,17 @@ schema successor_in_omega(cls z: @11) {
 	in(z, omega()) |-
 		id(in(successor(z), omega()))[bigcap_i(setbuilder((cls z) => {is_successor_set(z)}), successor(z))[
 			successor_is_set(z)[Xi((cls x) => {in(z, x)}, omega())[@h1]],
-			Vi[(cls x) => {
+			Ui[(cls x) => {
 				cp[
 					in(x, setbuilder((cls z) => {is_successor_set(z)})) |-
 						mp[
 							mp[
 								@h2,
-								Ve(?, x)[bigcap_e(setbuilder((cls z) => {
+								Ue(?, x)[bigcap_e(setbuilder((cls z) => {
 									is_successor_set(z)
 								}), z)[@h1]]
 							],
-							Ve(?, z)[Ae2[setbuilder_e((cls z) => {is_successor_set(z)}, x)[
+							Ue(?, z)[Ae2[setbuilder_e((cls z) => {is_successor_set(z)}, x)[
 								@h2
 							]]]
 						]
@@ -2789,7 +2789,7 @@ schema successor_in_omega(cls z: @11) {
 schema omega_is_successor_set() {
 	|- id(is_successor_set(omega()))[Ai[
 		zero_in_omega()[],
-		Vi[(cls z) => {
+		Ui[(cls z) => {
 			cp[successor_in_omega(z)]
 		}]
 	]]
@@ -2799,7 +2799,7 @@ schema omega_is_successor_set() {
 schema omega_is_set() {
 	|- mpX_Xe_p(?, set(omega()))[
 		ax_infinity()[],
-		Vi[(cls x) => {
+		Ui[(cls x) => {
 			cp[
 				A(set(x), is_successor_set(x)) |-
 					id(set(omega()))[subset_is_set[
@@ -2835,7 +2835,7 @@ st is_recursively_defined($\gamma$ cls g, $A$ cls a, cls c, cls f) {
 		is_function(g, omega(), a),
 		A(
 			eq(fcall(g, ord_zero()), c),
-			Vin(omega(), (cls n) => {
+			Uin(omega(), (cls n) => {
 				eq(
 					fcall(g, successor(n)),
 					fcall(f, fcall(g, n))
@@ -2852,8 +2852,8 @@ cls recursion_set($A$ cls a, cls c, cls f) {
 			subseteq(g, cartesian(omega(), a)),
 			A(
 				in(v2(ord_zero(), c), g),
-				Vin(omega(), (cls n) => {
-					Vin(a, (cls x) => {
+				Uin(omega(), (cls n) => {
+					Uin(a, (cls x) => {
 						I(
 							in(v2(n, x), g),
 							in(v2(successor(n), fcall(f, x)), g)
@@ -2884,8 +2884,8 @@ schema recursion_theorem_0($A$ cls a: @11, cls c: @21, cls f: @31) {
 					subseteq(g, cartesian(omega(), a)),
 					A(
 						in(v2(ord_zero(), c), g),
-						Vin(omega(), (cls n) => {
-							Vin(a, (cls x) => {
+						Uin(omega(), (cls n) => {
+							Uin(a, (cls x) => {
 								I(
 									in(v2(n, x), g),
 									in(v2(successor(n), fcall(f, x)), g)
@@ -2906,16 +2906,16 @@ schema recursion_theorem_0($A$ cls a: @11, cls c: @21, cls f: @31) {
 							zero_in_omega[],
 							@h2
 						],
-						id(Vin(omega(), (cls n) => {
-							Vin(a, (cls x) => {
+						id(Uin(omega(), (cls n) => {
+							Uin(a, (cls x) => {
 								I(
 									in(v2(n, x), cartesian(omega(), a)),
 									in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
 								)
 							})
 						}))[
-							Vi((cls n) => {
-								I(in(n, omega()), Vin(a, (cls x) => {
+							Ui((cls n) => {
+								I(in(n, omega()), Uin(a, (cls x) => {
 									I(
 										in(v2(n, x), cartesian(omega(), a)),
 										in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
@@ -2924,13 +2924,13 @@ schema recursion_theorem_0($A$ cls a: @11, cls c: @21, cls f: @31) {
 							})[(cls n) => {
 								cp[
 									in(n, omega()) |-
-										id(Vin(a, (cls x) => {
+										id(Uin(a, (cls x) => {
 											I(
 												in(v2(n, x), cartesian(omega(), a)),
 												in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
 											)
 										}))[
-											Vi((cls x) => {
+											Ui((cls x) => {
 												I(in(x, a), I(
 													in(v2(n, x), cartesian(omega(), a)),
 													in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
@@ -2971,7 +2971,7 @@ schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
 	in(c, a) |-
 		id(in(v2(ord_zero(), c), define_recursively(a, c, f)))[
 			setbuilder_i((cls z) => {
-				V(($G$ cls g) => {
+				U(($G$ cls g) => {
 					I(in(g, recursion_set(a, c, f)), in(z, g))
 				})
 			}, v2(ord_zero(), c))[
@@ -2979,7 +2979,7 @@ schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
 				set_i[zero_in_omega[]],
 				set_i[@h1]
 			],
-				Vi[($G$ cls g) => {
+				Ui[($G$ cls g) => {
 					cp[in(g, recursion_set(a, c, f)) |- Ae1[Ae2[setbuilder_e[@h2]]]]
 				}]
 			]
@@ -2989,20 +2989,20 @@ schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
 "[$\gamma\in\mathscr A]가 되기 위한 세 번째 조건."
 schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
 	is_function(f, a, a) |-
-		id(Vin(omega(), (cls n) => {
-			Vin(a, (cls x) => {
+		id(Uin(omega(), (cls n) => {
+			Uin(a, (cls x) => {
 				I(
 					in(v2(n, x), define_recursively(a, c, f)),
 					in(v2(successor(n), fcall(f, x)), define_recursively(a, c, f))
 				)
 			})
-		}))[Vi[(cls n) => {
+		}))[Ui[(cls n) => {
 			cp[in(n, omega()) |-
-				Vi[(cls x) => {
+				Ui[(cls x) => {
 					cp[in(x, a) |-
 						cp[in(v2(n, x), define_recursively(a, c, f)) |-
 							id(in(v2(successor(n), fcall(f, x)), define_recursively(a, c, f)))[setbuilder_i((cls z) => {
-								V(($G$ cls g) => {
+								U(($G$ cls g) => {
 									I(in(g, recursion_set(a, c, f)), in(z, g))
 								})
 							}, v2(successor(n), fcall(f, x)))[
@@ -3012,18 +3012,18 @@ schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
 								],
 								mp[
 									setbuilder_e[@h4],
-									VIm(
+									UIm(
 										($G$ cls g) => {
 											I(in(g, recursion_set(a, c, f)), in(v2(n, x), g))
 										},
 										($G$ cls g) => {
 											I(in(g, recursion_set(a, c, f)), in(v2(successor(n), fcall(f, x)), g))
 										}
-									)[Vi[($G$ cls g) => {
+									)[Ui[($G$ cls g) => {
 										I_distribute_left[cp[in(g, recursion_set(a, c, f)) |-
-											mp[@h3, Ve(?, x)[mp[
+											mp[@h3, Ue(?, x)[mp[
 												@h2,
-												Ve(?, n)[Ae2[Ae2[setbuilder_e[@h5]]]]
+												Ue(?, n)[Ae2[Ae2[setbuilder_e[@h5]]]]
 											]]]
 										]]
 									}]]
