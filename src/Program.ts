@@ -44,7 +44,7 @@ export default class Program {
 					this.scope.addFun(fun);
 					break;
 				case 'defschema':
-					var schema = PegInterface.schema(line, this.scope, this.nativeMap);
+					var schema = PegInterface.schema(line, this.scope);
 
 					if (this.scope.hasSchema(schema.name)) {
 						throw schema.scope.error(`Schema ${schema.name} has already been declared`);
@@ -84,16 +84,6 @@ export default class Program {
 				throw Error(`Unknown line type ${line._type}`);
 		}
 	}
-
-	public nativeMap = {
-		schema: {
-			cut: {
-				get: (rules, scope: Scope) => {
-					return ExpressionResolver.chain(rules.map(ExpressionResolver.expandMeta));
-				}
-			}
-		}
-	};
 
 	public getProofExplorer(name: string, ktx) {	
 		var DIAMOND = '&#x25C7;',

@@ -113,25 +113,6 @@ defun =
 	}
 
 defschema =
-	// native schemata
-	doc:(documentation __)?
-	axiomatic:("axiomatic" __)?
-	"native" __
-	"schema" __
-	name:ident _
-	sem
-	{
-		return {
-			_type: 'defschema',
-			doc: doc && doc[0],
-			axiomatic: !!axiomatic,
-			name,
-			native: true,
-			location: location()
-		}
-	}
-	/
-	// non-native schemata
 	doc:(documentation __)?
 	axiomatic:("axiomatic" __)?
 	"schema" __
@@ -156,7 +137,6 @@ defschema =
 			doc: doc && doc[0],
 			axiomatic: !!axiomatic,
 			name,
-			native: false,
 			params,
 			def$s: defdollars,
 			expr,
@@ -329,36 +309,16 @@ schemaexpr =
 	}
 
 metaexpr =
-	// right associativity
-	a:(
-		metaexpr_internal_1
-	) _ "~" _ b:metaexpr
-	{
-		return {
-			_type: 'reduction',
-			subject: {
-				_type: 'var',
-				type: 'normal',
-				name: 'cut',
-				location: location()
-			},
-			leftargs: [a, b],
-			location: location()
-		}
-	}
-	/ metaexpr_internal_1
-
-metaexpr_internal_1 =
 	left:(
 		l:(
-			head:metaexpr_internal_2 _
-			tail:("," _ e:metaexpr_internal_2 _ {return e})*
+			head:metaexpr_internal_1 _
+			tail:("," _ e:metaexpr_internal_1 _ {return e})*
 			{return [head].concat(tail)}
 		)? {return l || []}
 	)
 	"|-" _
 	defdollars: (d:defdollar _ {return d})* _
-	right:metaexpr_internal_1
+	right:metaexpr
 	{
 		return {
 			_type: 'tee',
@@ -368,7 +328,7 @@ metaexpr_internal_1 =
 			location: location()
 		}
 	}
-	/ metaexpr_internal_2
+	/ metaexpr_internal_1
 
 /*
  * 다음이 성립하여야 한다.
@@ -377,7 +337,7 @@ metaexpr_internal_1 =
  * - schemacall이 var보다 앞이다.
  *
  */
-metaexpr_internal_2 =
+metaexpr_internal_1 =
 	reduction
 	/ schemacall
 	/ var
@@ -488,7 +448,6 @@ plain_var =
 keyword =
 	"axiomatic"
 	/ "base"
-	/ "native"
 	/ "schema"
 	/ "type";
 

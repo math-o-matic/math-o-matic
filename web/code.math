@@ -33,13 +33,6 @@ st I(st p, st q);
 $!<prec=599>#1<<\leftrightarrow>>#2$
 st E(st p, st q);
 
-"sequent calculus의 cut 규칙. 즉
-[$$\frac{\Delta\vdash p\quad \Sigma_1,p,\Sigma_2\vdash q}{\Sigma_1,\Delta,\Sigma_2\vdash q}]
-이다. 단 [$p]의 첫 번째 일치가 [$\Delta]로 치환된다. 즉 [$\Sigma_1]에는 [$p]가 없다.
-
-1계층 reduction 구문을 도입한다면 그로부터 증명할 수 있다."
-axiomatic native schema cut;
-
 "함의 도입(implication introduction). conditional proof를 가능케 한다. 특정 힐베르트 체계(Hilbert system)에서는 메타정리(metatheorem)이며 이를 연역 정리(deduction theorem)라 부른다."
 axiomatic schema cp(st p: @11, st q: @1r) {
 	(p |- q) |- I(p, q)
@@ -169,7 +162,8 @@ schema syll(st p: @11, st q: @12, st r: @22) {
 
 "syll을 두 번 적용한 것. 사단논법이라 해도 좋을 것이다."
 schema syll4(st p: @11, st q: @21, st r: @31, st s: @32) {
-	syll(p, q, r) ~ syll(p, r, s)
+	I(p, q), I(q, r), I(r, s) |-
+		syll[syll[@h1, @h2], @h3]
 }
 
 "E를 위한 syll."
@@ -186,8 +180,9 @@ schema syllE(st p: @11, st q: @12, st r: @22) {
 	]
 }
 
-schema syllE4(st p, st q, st r, st s) {
-	syllE(p, q, r) ~ syllE(p, r, s)
+schema syllE4(st p: @11, st q: @21, st r: @31, st s: @32) {
+	E(p, q), E(q, r), E(r, s) |-
+		syllE[syllE[@h1, @h2], @h3]
 }
 
 "sequent calculus의 I 규칙 같은 것. 표현형식을 바꾸는 데 쓰이고 있다."
@@ -674,7 +669,7 @@ schema UO(pr f, pr g) {
 }
 
 "UU의 m형. 재미있게도 Ui 및 Ue로부터 유도할 수 있다."
-schema UUm(pr2 f) {
+schema UUm(pr2 f: @11) {
 	U2((cls x, cls y) => { f(x, y) }) |-
 		id(U2((cls y, cls x) => { f(x, y) }))[Ui[(cls y) => {
 			Ui[(cls x) => {
@@ -733,55 +728,6 @@ schema syllUE(pr f: @111, pr g: @112, pr h: @212) {
 			id(E(f(x), g(x)))[Ue(?, x)[@h1]],
 			id(E(g(x), h(x)))[Ue(?, x)[@h2]]
 		] }]]
-}
-
-schema UI_Ui(st p, pr f) {
-	Ui_c(p) ~
-	UIm((cls z) => {p}, f)
-	~ syll(
-		p,
-		U((cls z) => {p}),
-		U(f)
-	)
-}
-
-schema UI_Ui_c(st p, pr f) {
-	|- cp[UI_Ui(p, f)]
-}
-
-schema UI_Ui_U2(pr f, pr2 g, cls z) {
-	UI_Ui_c(f(z), (cls w) => {g(z, w)})
-}
-
-schema UI_Ui_U2_Ui(pr f, pr2 g) {
-	Uiu((cls z) => {
-		I(U((cls w) => {I(f(z), g(z, w))}), I(f(z), U((cls w) => {g(z, w)})))
-	})[(cls z) => {UI_Ui_U2(f, g, z)}]
-}
-
-schema UI_Ui_U2_Ui_UI(pr f, pr2 g) {
-	UI_Ui_U2_Ui(f, g)
-	~ UIm(
-		(cls z) => {
-			U((cls w) => {
-				I(f(z), g(z, w))
-			})
-		},
-		(cls z) => {
-			I(
-				f(z),
-				U((cls w) => {
-					g(z, w)
-				})
-			)
-		}
-	)
-}
-
-schema UI_Ui_U2_Ui_UI_m(pr f, pr2 g) {
-	U2((cls z, cls w) => {
-		I(f(z), g(z, w))
-	}) |- mp[@h1, UI_Ui_U2_Ui_UI(f, g)[]]
 }
 
 "존재 양화 도입(existential introduction). Ue와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
@@ -961,7 +907,8 @@ schema X2Ae2(pr2 f: @111, pr2 g: @112) {
 }
 
 schema mpUE(pr f, pr g) {
-	Ee1U(f, g) ~ mpU(f, g)
+	U(f), U(Ef(f, g)) |-
+		mpU[@h1, Ee1U[@h2]]
 }
 
 ############################
@@ -1020,32 +967,20 @@ st Uin(cls a, pr f) {
 }
 
 schema Uin_subset(cls a: @12, cls b: @11, pr f: @22) {
-	id(subseteq(a, b)) ~
-	id(Uin(b, f)) ~
-	syllU(
-		(cls z) => {in(z, a)},
-		(cls z) => {in(z, b)},
-		f
-	) ~ id(Uin(a, f))
+	subseteq(a, b), Uin(b, f) |-
+		id(Uin(a, f))[syllU((cls z) => {in(z, a)}, (cls z) => {in(z, b)}, f)[@h1, @h2]]
 }
 
-schema UUin_m(cls a, pr2 f) {
-	id(U((cls z) => {
+schema UUin_to_UinU(cls a, pr2 f) {
+	U((cls z) => {
 		Uin(a, (cls w) => {f(z, w)})
-	})) ~
-	UUm((cls z, cls w) => {
-		I(in(w, a), f(z, w))
-	}) ~ UI_Ui_U2_Ui_UI_m(
-		(cls y) => {in(y, a)},
-		(cls y, cls x) => {f(x, y)}
-	) ~ id(Uin(a, (cls w) => {
-		U((cls z) => {f(z, w)})
-	}))
-}
-
-"U와 Uin은 순서를 바꿀 수 있다."
-schema UUin(cls a, pr2 f) {
-	|- cp[UUin_m(a, f)]
+	}) |-
+		id(Uin(a, (cls w) => {
+			U((cls z) => {f(z, w)})
+		}))[Ui[(cls w) => { cp[in(w, a) |-
+			Ui[(cls z) => {
+				mp[@h2, Ue(?, w)[Ue(?, z)[@h1]]]
+			}]] }]]
 }
 
 "어떤 class 내에서의 exists. Uin과 달리 and로 연결된다."
@@ -1069,13 +1004,13 @@ st set(cls x) {
 
 "set을 도입한다."
 schema set_i(cls x: @11, cls y: @12) {
-	Xi((cls y) => { in(x, y) }, y)
-	~ id(set(x))
+	in(x, y) |-
+		id(set(x))[Xi((cls y) => {in(x, y)}, y)[@h1]]
 }
 
 schema set_i_A(cls x, cls y, cls z) {
-	Ae1(in(z, x), in(z, y)) ~
-	set_i(z, x)
+	A(in(z, x), in(z, y)) |-
+		set_i[Ae1[@h1]]
 }
 
 schema set_i_O(cls x, cls y, cls z) {
@@ -1087,19 +1022,12 @@ schema set_i_O(cls x, cls y, cls z) {
 		]
 }
 
-schema eq_Ae1(cls x, cls y) {
-	id(eq(x, y))
-	~ Ae1(
-		U((cls z) => { E(in(z, x), in(z, y)) }),
-		U((cls w) => { E(in(x, w), in(y, w)) })
-	)
+schema eq_Ae1(cls x: @11, cls y: @12) {
+	eq(x, y) |- Ae1[@h1]
 }
 
 schema eq_Ae1_Ue(cls x, cls y, cls z) {
-	eq_Ae1(x, y)
-	~ Ue((cls z) => {
-		E(in(z, x), in(z, y))
-	}, z)
+	eq(x, y) |- Ue(?, z)[eq_Ae1(x, y)[@h1]]
 }
 
 schema eq_Ae1_Ue_Ee1(cls x, cls y, cls z) {
@@ -1124,24 +1052,16 @@ schema self_subseteq_self(cls x) {
 	}]]
 }
 
-schema eq_Ae2(cls x, cls y) {
-	id(eq(x, y)) ~
-	Ae2(
-		U((cls z) => { E(in(z, x), in(z, y)) }),
-		U((cls w) => { E(in(x, w), in(y, w)) })
-	)
+schema eq_Ae2(cls x: @11, cls y: @12) {
+	eq(x, y) |- Ae2[@h1]
 }
 
-schema eq_Ae2_Ue(cls x, cls y, cls z) {
-	eq_Ae2(x, y)
-	~ Ue((cls z) => {
-		E(in(x, z), in(y, z))
-	}, z)
+schema eq_Ae2_Ue(cls x, cls y, cls w) {
+	eq(x, y) |- Ue(?, w)[eq_Ae2(x, y)[@h1]]
 }
 
-schema eq_Ae2_Ue_Ee1(cls x, cls y, cls z) {
-	eq_Ae2_Ue(x, y, z)
-	~ Ee1(in(x, z), in(y, z))
+schema eq_Ae2_Ue_Ee1(cls x, cls y, cls w) {
+	eq(x, y) |- Ee1[eq_Ae2_Ue(x, y, w)[@h1]]
 }
 
 schema eq_Ae2_Ue_Ee1_c(cls x, cls y, cls z) {
@@ -1215,12 +1135,7 @@ schema swapU2_c(pr2 f, pr2 g, pr2 h) {
 }
 
 schema eq_Ae2_Ue_Ee1_c_swap(cls x, cls y, cls z) {
-	eq_Ae2_Ue_Ee1_c(x, y, z)
-	~ swap(
-		eq(x, y),
-		in(x, z),
-		in(y, z)
-	)
+	|- swap[eq_Ae2_Ue_Ee1_c(x, y, z)[]]
 }
 
 schema eq_reflexive(cls x) {
@@ -1242,7 +1157,7 @@ schema eq_symmetric(cls x: @11, cls y: @12) {
 		]]
 }
 
-schema eq_transitive(cls x, cls y, cls z) {
+schema eq_transitive(cls x: @11, cls y: @12, cls z: @22) {
 	eq(x, y), eq(y, z) |-
 		id(eq(x, z))[
 			Ai[
@@ -1260,31 +1175,24 @@ schema eq_transitive(cls x, cls y, cls z) {
 		]
 }
 
-schema eq_transitive_3(cls x, cls y, cls z) {
-	eq_transitive(x, y, z)
-	~ eq_symmetric(x, z)
+schema eq_transitive_3(cls x: @11, cls y: @12, cls z: @22) {
+	eq(x, y), eq(y, z) |- eq_symmetric[eq_transitive[@h1, @h2]]
 }
 
 schema eq_transitive_2(cls x: @11, cls y: @12, cls z: @21) {
-	eq_symmetric(z, y) ~
-	eq_transitive(x, y, z)
+	eq(x, y), eq(z, y) |- eq_transitive[@h1, eq_symmetric[@h2]]
 }
 
-schema eq_transitive_23(cls x, cls y, cls z) {
-	eq_symmetric(z, y) ~
-	eq_transitive(x, y, z)
-	~ eq_symmetric(x, z)
+schema eq_transitive_23(cls x: @11, cls y: @12, cls z: @21) {
+	eq(x, y), eq(z, y) |- eq_symmetric[eq_transitive[@h1, eq_symmetric[@h2]]]
 }
 
 schema eq_transitive_1(cls x: @12, cls y: @11, cls z: @22) {
-	eq_symmetric(y, x)
-	~ eq_transitive(x, y, z)
+	eq(y, x), eq(y, z) |- eq_transitive[eq_symmetric[@h1], @h2]
 }
 
 schema eq_transitive_13(cls x: @12, cls y: @11, cls z: @22) {
-	eq_symmetric(y, x)
-	~ eq_transitive(x, y, z)
-	~ eq_symmetric(x, z)
+	eq(y, x), eq(y, z) |- eq_symmetric[eq_transitive[eq_symmetric[@h1], @h2]]
 }
 
 "[$f]를 만족하는 것들이 서로 같다."
@@ -1313,29 +1221,18 @@ schema XQ_to_Xq(pr f: @11) {
 }
 
 schema set_is_set_1(cls x: @11, cls y: @22) {
-	id(set(x)) ~
-	eq_Ae2(x, y)
-	~ mpXE(
-		(cls w) => { in(x, w) },
-		(cls w) => { in(y, w) }
-	)
-	~ id(set(y))
+	set(x), eq(x, y) |-
+		id(set(y))[mpXE((cls w) => {in(x, w)}, (cls w) => {in(y, w)})[@h1, eq_Ae2[@h2]]]
 }
 
 schema set_is_set_2(cls x: @11, cls y: @21) {
-	eq_symmetric(y, x) ~
-	set_is_set_1(x, y)
+	set(x), eq(y, x) |-
+		set_is_set_1[@h1, eq_symmetric[@h2]]
 }
 
 schema subseteq_subseteq(cls x: @11, cls y: @12, cls z: @22) {
-	id(subseteq(x, y)) ~
-	id(subseteq(y, z)) ~
-	syllU(
-		(cls w) => { in(w, x) },
-		(cls w) => { in(w, y) },
-		(cls w) => { in(w, z) }
-	)
-	~ id(subseteq(x, z))
+	subseteq(x, y), subseteq(y, z) |-
+		id(subseteq(x, z))[syllU((cls w) => {in(w, x)}, (cls w) => {in(w, y)}, (cls w) => {in(w, z)})[@h1, @h2]]
 }
 
 "axiom of extensionality."
@@ -1363,12 +1260,10 @@ schema ax_extensional_m(cls x, cls y) {
 }
 
 schema eq_simple(cls x, cls y) {
-	|- cp[eq_Ae1(x, y)]
-	~ ax_extensional_Ue(x, y)
-	~ Ei(
-		eq(x, y),
-		U((cls z) => { E(in(z, x), in(z, y)) })
-	)
+	|- Eiu[
+		eq_Ae1(x, y),
+		ax_extensional_m(x, y)
+	]
 }
 
 schema eq_to_subseteq(cls x: @11, cls y: @12) {
@@ -1381,13 +1276,13 @@ schema eq_then_subseteq(cls x, cls y) {
 }
 
 schema eq_subseteq(cls x, cls y, cls z) {
-	eq_to_subseteq(x, y)
-	~ subseteq_subseteq(x, y, z)
+	eq(x, y), subseteq(y, z) |-
+		subseteq_subseteq[eq_to_subseteq[@h1], @h2]
 }
 
 schema subseteq_eq(cls x, cls y, cls z) {
-	eq_to_subseteq(y, z)
-	~ subseteq_subseteq(x, y, z)
+	subseteq(x, y), eq(y, z) |-
+		subseteq_subseteq[@h1, eq_to_subseteq[@h2]]
 }
 
 "술어를 만족하는 set들의 class를 만든다. 일반적으로는 [$\{z: f(z)\}]라고 쓰는 것이다."
@@ -1800,14 +1695,15 @@ schema russell_set_is_not_set() {
     ]
 }
 
-schema setbuilder_is_setbuilder(pr f, cls x) {
-	eq_Ae1(x, setbuilder(f))
-	~ setbuilder_def(f)
-	~ syllUE(
-		(cls z) => { in(z, x) },
-		(cls z) => { in(z, setbuilder(f)) },
-		(cls z) => { A(set(z), f(z)) }
-	)
+schema setbuilder_is_setbuilder(pr f: @121, cls x: @11) {
+	eq(x, setbuilder(f)) |-
+		id(U((cls z) => {
+			E(in(z, x), A(set(z), f(z)))
+		}))[syllUE(
+			(cls z) => {in(z, x)},
+			(cls z) => {in(z, setbuilder(f))},
+			(cls z) => {A(set(z), f(z))}
+		)[eq_Ae1[@h1], setbuilder_def(f)[]]]
 }
 
 "술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
@@ -1838,14 +1734,14 @@ schema ax_specify_m(pr f, cls x: @11) {
 }
 
 schema cap_is_set_1(cls x, cls y) {
-	ax_specify_m((cls z) => { in(z, y) }, x)
-	~ id(set(cap(x, y)))
+	set(x) |- id(set(cap(x, y)))[ax_specify_m((cls z) => {in(z, y)}, ?)[@h1]]
 }
 
 schema cap_is_set_2(cls x, cls y) {
-	ax_specify_m((cls z) => { in(z, x) }, y)
-	~ cap_commutative_2(y, x)
-	~ set_is_set_1(cap(y, x), cap(x, y))
+	set(y) |- set_is_set_1[
+		cap_is_set_1(y, x)[@h1],
+		cap_commutative_2(y, x)[]
+	]
 }
 
 "axiom of union."
@@ -2005,15 +1901,15 @@ schema subset_cap_is_subset(cls x: @11, cls y: @12) {
 }
 
 schema subset_is_set(cls x: @21, cls y: @22) {
-	subset_cap_is_subset(x, y)
-	~ cap_is_set_2(x, y)
-	~ set_is_set_2(cap(x, y), x)
+	set(y), subseteq(x, y) |-
+		set_is_set_2[cap_is_set_2(x, y)[@h1], subset_cap_is_subset[@h2]]
 }
 
 schema subset_is_set_ae(cls x: @121, cls y: @111) {
-	Ae1(set(y), subseteq(x, y))
-	~ Ae2(set(y), subseteq(x, y))
-	~ subset_is_set(x, y)
+	A(set(y), subseteq(x, y)) |-
+		subset_is_set[
+			Ae1[@h1], Ae2[@h1]
+		]
 }
 
 schema subset_is_set_ae_c(cls x, cls y) {
@@ -2047,33 +1943,18 @@ schema power_def_Ue(cls x, cls y) {
 
 "x가 집합일 때, x와 같은 것은 x의 power class에 속한다."
 schema self_in_power(cls x, cls z) {
-	eq_then_subseteq(z, x)
-	~ power_def_Ue(x, z)
-	~ Ee2(
-		in(z, power(x)),
-		subseteq(z, x)
-	)
-	~ syll(
-		eq(z, x),
-		subseteq(z, x),
-		in(z, power(x))
-	)
+	set(x) |-
+		cp[eq(z, x) |-
+			mp[eq_to_subseteq[@h2], Ee2[power_def_Ue(x, z)[@h1]]]]
 }
 
 schema singleton_subseteq_power_1(cls x, cls y) {
-	setbuilder_ec((cls z) => {eq(z, x)}, y) ~
-	eq_then_subseteq(y, x) ~
-	power_def_Ue(x, y)
-	~ Ee2(
-		in(y, power(x)),
-		subseteq(y, x)
-	)
-	~ syll4(
-		in(y, singleton(x)),
-		eq(y, x),
-		subseteq(y, x),
-		in(y, power(x))
-	)
+	set(x) |-
+		cp[in(y, singleton(x)) |-
+			mp[
+				mp[@h2, setbuilder_ec((cls z) => {eq(z, x)}, y)[]],
+				self_in_power(x, y)[@h1]
+			]]
 }
 
 schema singleton_subseteq_power(cls x: @11) {
@@ -2132,9 +2013,8 @@ schema power_is_set(cls x: @11) {
 
 "싱글턴은 집합이다."
 schema singleton_is_set(cls x: @11) {
-	singleton_subseteq_power(x)
-	~ power_is_set(x)
-	~ subset_is_set(singleton(x), power(x))
+	set(x) |-
+		subset_is_set[power_is_set[@h1], singleton_subseteq_power(x)[@h1]]
 }
 
 ###########################

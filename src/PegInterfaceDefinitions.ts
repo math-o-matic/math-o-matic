@@ -37,7 +37,6 @@ export interface DefschemaObject {
     doc?: string;
     axiomatic: boolean;
     name: string;
-    native: boolean;
     params?: DefvObject[];
     def$s?: Def$Object[];
     expr?: MetaexprObject;

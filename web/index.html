@@ -242,8 +242,7 @@
 					r = `<div class="block">`
 						+ `<p class="label"><a id="schema-${v.proved ? 'p' : 'np'}-${k}" href="#schema-${v.proved ? 'p' : 'np'}-${k}"><b>${
 							(v.axiomatic ? 'axiomatic ' : '')
-							+ (v.native ? 'native ': '')
-						}schema</b> ${k}</a>${v.native ? '' : `(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
+						}schema</b> ${k}</a>${`(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
 						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
 
 						+ (

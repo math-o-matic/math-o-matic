@@ -17,7 +17,7 @@ export default class Reduction extends Node {
 	constructor ({subject, guesses, leftargs}, scope?: Scope) {
 		super(scope);
 
-		if (!subject.native && subject._type == 'schema') {
+		if (subject._type == 'schema') {
 			subject.params.forEach((p, i) => {
 				if (!(guesses && guesses[i]) && !p.guess) {
 					throw this.error(`Argument #${i + 1} could not be guessed`);
@@ -42,8 +42,7 @@ export default class Reduction extends Node {
 			throw this.error('Something\'s wrong');
 		}
 	
-		if (!subject.native
-				&& !(subject.type._type == 'metatype' && subject.type.isSimple))
+		if (!(subject.type._type == 'metatype' && subject.type.isSimple))
 			throw this.error('Subject is not reducible');
 	
 		if (!(leftargs instanceof Array)
@@ -52,33 +51,29 @@ export default class Reduction extends Node {
 		
 		this.subject = subject;
 		this.leftargs = leftargs;
-	
-		if (subject.native) {
-			this.reduced = subject.native.get(leftargs);
-			this.type = this.reduced.type;
-		} else {
-			var paramTypes = subject.type.left,
-				leftargTypes = leftargs.map(e => e.type);
-	
-			if (paramTypes.length != leftargTypes.length)
-				throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${leftargTypes.length}`);
-	
-			for (let i = 0; i < paramTypes.length; i++) {
-				if (!paramTypes[i].equals(leftargTypes[i]))
-					throw this.error(`Illegal argument type (expected ${paramTypes[i]}): ${leftargTypes[i]}`);
-			}
-	
-			this.type = subject.type.right;
-	
-			var tee = ExpressionResolver.expandMetaAndFuncalls(subject);
-	
-			if (tee._type != 'tee') {
-				throw this.error('Assertion failed');
-			}
-	
-			for (let i = 0; i < tee.left.length; i++) {
-				if (!ExpressionResolver.equals(tee.left[i], leftargs[i])) {
-					throw this.error(`LHS #${i + 1} failed to match:
+
+		var paramTypes = subject.type.left,
+			leftargTypes = leftargs.map(e => e.type);
+
+		if (paramTypes.length != leftargTypes.length)
+			throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${leftargTypes.length}`);
+
+		for (let i = 0; i < paramTypes.length; i++) {
+			if (!paramTypes[i].equals(leftargTypes[i]))
+				throw this.error(`Illegal argument type (expected ${paramTypes[i]}): ${leftargTypes[i]}`);
+		}
+
+		this.type = subject.type.right;
+
+		var tee = ExpressionResolver.expandMetaAndFuncalls(subject);
+
+		if (tee._type != 'tee') {
+			throw this.error('Assertion failed');
+		}
+
+		for (let i = 0; i < tee.left.length; i++) {
+			if (!ExpressionResolver.equals(tee.left[i], leftargs[i])) {
+				throw this.error(`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
 ${ExpressionResolver.expandMetaAndFuncalls(tee.left[i])}
@@ -87,11 +82,10 @@ ${ExpressionResolver.expandMetaAndFuncalls(tee.left[i])}
 --- RECEIVED ---
 ${ExpressionResolver.expandMetaAndFuncalls(leftargs[i])}
 ----------------`);
-				}
 			}
-	
-			this.reduced = tee.right;
 		}
+
+		this.reduced = tee.right;
 	}
 
 	public isProved(hyps?): boolean {

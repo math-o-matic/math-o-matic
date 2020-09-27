@@ -323,11 +323,9 @@ export default class PI {
 		return new $var({name: obj.name, expr}, scope);
 	}
 
-	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, nativeMap?): Schema {
+	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope): Schema {
 		if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 			throw Error('Assertion failed');
-
-		nativeMap = nativeMap || {};
 
 		var name = null, axiomatic = false, doc = null;
 
@@ -337,17 +335,6 @@ export default class PI {
 		}
 
 		var scope = parentScope.extend('schema', name, obj.location);
-
-		if (obj._type == 'defschema' && obj.native) {
-			if (!nativeMap.schema[name])
-				throw scope.error(`Native code for native schema ${name} not found`);
-
-			var native = {
-				get: args => nativeMap.schema[name].get(args, scope)
-			};
-
-			return new Schema({shouldValidate: true, axiomatic, name, native, doc: obj.doc}, scope);
-		}
 
 		var params = obj.params.map(tvo => {
 			if (!scope.hasType(typeObjToNestedArr(tvo.type)))

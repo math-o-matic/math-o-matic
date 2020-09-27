@@ -116,10 +116,6 @@ export default class ER {
 
 	// expand0은 하지 않는다.
 	public static expandMeta(expr: Metaexpr): Metaexpr {
-		if ('native' in expr && expr.native) {
-			return expr;
-		}
-
 		switch (expr._type) {
 			case 'tee':
 				var left = expr.left.map(ER.expandMeta);

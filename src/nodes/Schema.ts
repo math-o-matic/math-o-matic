@@ -12,7 +12,6 @@ interface SchemaArgumentType {
 	axiomatic?: boolean;
 	type?: Type | MetaType;
 	name?: string;
-	native?: object;
 	params?: (Typevar | Schema)[];
 	def$s?: $var[];
 	expr?: Metaexpr;
@@ -26,7 +25,6 @@ export default class Schema extends Node {
 	public readonly shouldValidate;
 	public readonly axiomatic: boolean;
 	public readonly name: string;
-	public readonly native;
 	public readonly params;
 	public readonly def$s: $var[];
 	public readonly expr: Metaexpr;
@@ -34,10 +32,10 @@ export default class Schema extends Node {
 	public readonly proved: boolean;
 
 	/*
-	 * name, expr 중 하나 이상 있어야 하고 type, native, expr 중
+	 * name, expr 중 하나 이상 있어야 하고 type, expr 중
 	 * 한 개만 있어야 한다.
 	 */
-	constructor ({doc, tex, shouldValidate, axiomatic, type, /* nullable */ name, native, params, def$s, expr}: SchemaArgumentType, scope?: Scope) {
+	constructor ({doc, tex, shouldValidate, axiomatic, type, /* nullable */ name, params, def$s, expr}: SchemaArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;
@@ -53,48 +51,41 @@ export default class Schema extends Node {
 			this.tex = null;
 		}
 
-		if (!name && !native && !expr)
+		if (!name && !expr)
 			throw this.error('Anonymous fun cannot be primitive');
 
-		if (type && expr || expr && native || native && type)
+		if (type && expr)
 			throw this.error('no');
 
-		if (!type && !native && !expr)
+		if (!type && !expr)
 			throw this.error('Cannot guess the type of a primitive fun');
 
 		if (name !== null && typeof name != 'string')
 			throw this.error('Assertion failed');
 
-		if (!native && expr && !(expr.type instanceof Type || expr.type instanceof MetaType)) {
+		if (expr && !(expr.type instanceof Type || expr.type instanceof MetaType)) {
 			throw this.error('Assertion failed');
 		}
 
 		this.axiomatic = axiomatic;
 		this.name = name;
 
-		if (native) {
-			this.native = native;
-			this.def$s = [];
-			this.expr = null;
-			this.type = null;
-		} else {
-			if (!(params instanceof Array)
-					|| params.map(e => e instanceof Typevar).some(e => !e))
-				throw this.error('Assertion failed');
-			
-			if (expr !== null && !(expr instanceof Node))
-				throw this.error('Assertion failed');
+		if (!(params instanceof Array)
+				|| params.map(e => e instanceof Typevar).some(e => !e))
+			throw this.error('Assertion failed');
+		
+		if (expr !== null && !(expr instanceof Node))
+			throw this.error('Assertion failed');
 
-			this.type = type || new (expr.type instanceof Type ? Type : MetaType)({
-				functional: true,
-				from: params.map(typevar => typevar.type),
-				to: expr.type
-			});
+		this.type = type || new (expr.type instanceof Type ? Type : MetaType)({
+			functional: true,
+			from: params.map(typevar => typevar.type),
+			to: expr.type
+		});
 
-			this.params = params;
-			this.def$s = def$s || [];
-			this.expr = expr;
-		}
+		this.params = params;
+		this.def$s = def$s || [];
+		this.expr = expr;
 
 		this.proved = this.isProved();
 	}
@@ -103,15 +94,12 @@ export default class Schema extends Node {
 		hyps = hyps || [];
 		
 		return this.proved
-			|| !this.native && super.isProved(hyps)
+			|| super.isProved(hyps)
 			|| this.axiomatic
 			|| this.expr && this.expr.isProved(hyps);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {
-		if (this.native)
-			return `∫ ${this.name} <native>`;
-
 		return [
 			`∫ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
 			'\t' + this.expr.toIndentedString(indent + 1),
@@ -148,10 +136,6 @@ export default class Schema extends Node {
 		
 			if (!root)
 				return `\\href{#${id}}\\mathsf{${Node.escapeTeX(this.name)}}`;
-		
-			if (this.native)
-				return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}`
-					+ '\\ (\\textrm{native})';
 		
 			return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(Node.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}):`
 						+ '\\\\\\quad' + ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
