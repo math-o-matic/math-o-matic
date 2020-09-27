@@ -50,11 +50,6 @@ axiomatic schema mp(st p: @1, st q: @22) {
 	p, I(p, q) |- q
 }
 
-"mp의 다른 버전. 즉
-[$$\frac{\Delta\vdash p\to q}{\Delta, p\vdash q}]
-이다. mp보다 적용하는 것이 간단하다. mp로부터 증명할 수 있으나 아직 표현할 수 있는 방법이 없다."
-axiomatic native schema mpu;
-
 "연언 도입(conjunction introduction)."
 axiomatic schema Ai(st p: @1, st q: @2) {
 	p, q |- A(p, q)
@@ -161,7 +156,8 @@ schema weaken(st p: @1, st q) {
 
 "E를 위한 mp."
 schema mpE(st p: @11, st q: @12) {
-	mpu[Ee1(p, q)]
+	E(p, q), p |-
+		mp[@h2, Ee1[@h1]]
 }
 
 "가언적 삼단논법(hypothetical syllogism)."
@@ -324,8 +320,9 @@ schema swap_c(st p, st q, st r) {
 	|- cp[swap(p, q, r)]
 }
 
-schema swap_m(st p, st q, st r) {
-	mpu[swap(p, q, r)]
+schema swap_m(st p: @11, st q: @121, st r: @122) {
+	I(p, I(q, r)), q |-
+		mp[@h2, swap[@h1]]
 }
 
 schema O_flip(st p: @11, st q: @12) {
@@ -782,19 +779,15 @@ schema UI_Ui_U2_Ui_UI(pr f, pr2 g) {
 }
 
 schema UI_Ui_U2_Ui_UI_m(pr f, pr2 g) {
-	id(U2((cls z, cls w) => {
+	U2((cls z, cls w) => {
 		I(f(z), g(z, w))
-	})) ~
-	mpu[UI_Ui_U2_Ui_UI(f, g)]
+	}) |- mp[@h1, UI_Ui_U2_Ui_UI(f, g)[]]
 }
 
 "존재 양화 도입(existential introduction). Ue와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
 schema Xi(pr f, cls x: @12) {
-	NNi(f(x)) ~
-	mpu[
-		|- cp[Ue(Nf(f), x)]
-		~ contrapose(U(Nf(f)), N(f(x)))
-	] ~ id(X(f))
+	f(x) |-
+		id(X(f))[contrapose_u[Ue(Nf(f), x)][NNi[@h1]]]
 }
 
 schema Xi2(pr2 f, cls x, cls y) {
@@ -1199,22 +1192,15 @@ schema in_eq_right_2(cls x: @21, cls y: @22, cls z: @11) {
 		]
 }
 
-schema swapU_1(pr f, pr g, pr h, cls w) {
-	swap_c(f(w), g(w), h(w))
+schema swapU(pr f, pr g, pr h) {
+	U(If(f, If(g, h))) |-
+		id(U(If(g, If(f, h))))[Ui[(cls x) => {
+			swap[id(I(f(x), I(g(x), h(x))))[Ue(?, x)[@h1]]]
+		}]]
 }
 
 schema swapU_c(pr f, pr g, pr h) {
-	Uiu((cls w) => {
-		I(I(f(w), I(g(w), h(w))), I(g(w), I(f(w), h(w))))
-	})[(cls w) => {swapU_1(f, g, h, w)}]
-	~ UIm(
-		(cls w) => {I(f(w), I(g(w), h(w)))},
-		(cls w) => {I(g(w), I(f(w), h(w)))}
-	)
-}
-
-schema swapU(pr f, pr g, pr h) {
-	mpu[swapU_c(f, g, h)]
+	|- cp[swapU(f, g, h)]
 }
 
 schema swapU2(pr2 f, pr2 g, pr2 h) {
@@ -1372,7 +1358,8 @@ schema ax_extensional_Ue(cls x, cls y) {
 }
 
 schema ax_extensional_m(cls x, cls y) {
-	mpu[ax_extensional_Ue(x, y)]
+	U((cls z) => {E(in(z, x), in(z, y))}) |-
+		mp[@h1, ax_extensional_Ue(x, y)[]]
 }
 
 schema eq_simple(cls x, cls y) {
@@ -1384,30 +1371,22 @@ schema eq_simple(cls x, cls y) {
 	)
 }
 
-schema eq_then_subseteq_m(cls x, cls y) {
-	eq_simple(x, y)
-	~ mpE(
-		eq(x, y),
-		U((cls z) => { E(in(z, x), in(z, y)) })
-	)
-	~ Ee1U(
-		(cls z) => { in(z, x) },
-		(cls z) => { in(z, y) }
-	)
-	~ id(subseteq(x, y))
+schema eq_to_subseteq(cls x: @11, cls y: @12) {
+	eq(x, y) |-
+		id(subseteq(x, y))[Ee1U((cls z) => {in(z, x)}, (cls z) => {in(z, y)})[mp[@h1, Ee1[eq_simple(x, y)[]]]]]
 }
 
 schema eq_then_subseteq(cls x, cls y) {
-	|- cp[eq_then_subseteq_m(x, y)]
+	|- cp[eq_to_subseteq(x, y)]
 }
 
 schema eq_subseteq(cls x, cls y, cls z) {
-	eq_then_subseteq_m(x, y)
+	eq_to_subseteq(x, y)
 	~ subseteq_subseteq(x, y, z)
 }
 
 schema subseteq_eq(cls x, cls y, cls z) {
-	eq_then_subseteq_m(y, z)
+	eq_to_subseteq(y, z)
 	~ subseteq_subseteq(x, y, z)
 }
 
@@ -1854,10 +1833,8 @@ axiomatic schema ax_specify(pr f) {
 	})
 }
 
-schema ax_specify_m(pr f, cls x) {
-	mpu[Ueu((cls x) => {
-		I(set(x), set(subsetbuilder(x, f)))
-	}, x)[ax_specify(f)]]
+schema ax_specify_m(pr f, cls x: @11) {
+	set(x) |- mp[@h1, Ue(?, x)[ax_specify(f)[]]]
 }
 
 schema cap_is_set_1(cls x, cls y) {
@@ -2083,24 +2060,6 @@ schema self_in_power(cls x, cls z) {
 	)
 }
 
-schema self_in_power_Ui_1(cls x, cls z) {
-	|- cp[self_in_power(x, z)]
-}
-
-schema self_in_power_Ui(cls x) {
-	Ui_p(set(x)) ~
-	mpu[Uiu((cls z) => {
-		I(set(x), I(eq(z, x), in(z, power(x))))
-	})[(cls z) => { self_in_power_Ui_1(x, z) }]
-	~ UIm(
-		(cls z) => {set(x)},
-		(cls z) => {I(
-			eq(z, x),
-			in(z, power(x))
-		)}
-	)]
-}
-
 schema singleton_subseteq_power_1(cls x, cls y) {
 	setbuilder_ec((cls z) => {eq(z, x)}, y) ~
 	eq_then_subseteq(y, x) ~
@@ -2117,27 +2076,11 @@ schema singleton_subseteq_power_1(cls x, cls y) {
 	)
 }
 
-schema singleton_subseteq_power_2(cls x, cls y) {
-	|- cp[singleton_subseteq_power_1(x, y)]
-}
-
-schema singleton_subseteq_power(cls x) {
-	Ui_p(set(x)) ~
-	mpu[Uiu((cls y) => {
-		I(set(x), I(in(y, singleton(x)), in(y, power(x))))
-	})[(cls y) => { singleton_subseteq_power_2(x, y) }]
-	~ UIm(
-		(cls y) => {set(x)},
-		(cls y) => {
-			I(
-				in(y, singleton(x)),
-				in(y, power(x))
-			)
-		}
-	)]
-	~ id(
-		subseteq(singleton(x), power(x))
-	)
+schema singleton_subseteq_power(cls x: @11) {
+	set(x) |-
+		id(subseteq(singleton(x), power(x)))[Ui[(cls y) => {
+			singleton_subseteq_power_1(x, y)[@h1]
+		}]]
 }
 
 "axiom of power set."
@@ -2158,13 +2101,7 @@ axiomatic schema ax_power() {
 }
 
 schema ax_power_m(cls x) {
-	mpu[Ueu((cls x) => {
-		I(set(x), X((cls y) => {
-			A(set(y), U((cls z) => {
-				I(subseteq(z, x), in(z, y))
-			}))
-		}))
-	}, x)[ax_power()]]
+	set(x) |- mp[@h1, Ue(?, x)[ax_power()[]]]
 }
 
 "멱집합은 집합이다."

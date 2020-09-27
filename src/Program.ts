@@ -91,46 +91,6 @@ export default class Program {
 				get: (rules, scope: Scope) => {
 					return ExpressionResolver.chain(rules.map(ExpressionResolver.expandMeta));
 				}
-			},
-			mpu: {
-				get: (rules, scope: Scope) => {
-					if (rules.length != 1) throw Error('wut');
-					var rule = rules[0];
-	
-					if (!scope.baseType)
-						throw Error(`Base type not found`);
-	
-					var base = scope.baseType;
-	
-					var tee = ExpressionResolver.expandMeta(rule) as Tee;
-	
-					var right = ExpressionResolver.expandMetaAndFuncalls(tee.right);
-	
-					if (tee._type != 'tee')
-						throw Error('wut');
-	
-					if (!scope.hasTypevar('I'))
-						throw Error(`Typevar I not found`);
-	
-					var I = scope.getTypevar('I');
-	
-					if (!I.type.equals(new Type({
-						functional: true,
-						from: [base, base],
-						to: base
-					})))
-						throw Error(`Wrong type for I`);
-	
-					if (right._type != 'schemacall' || right.schema != I) {
-						console.log(right);
-						throw Error('wut');
-					}
-	
-					return new Tee({
-						left: tee.left.concat([right.args[0]]),
-						right: right.args[1]
-					});
-				}
 			}
 		}
 	};
