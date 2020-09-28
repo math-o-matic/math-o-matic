@@ -147,10 +147,14 @@ schema weaken(st p: @1, st q) {
 	]
 }
 
-"E를 위한 mp."
-schema mpE(st p: @11, st q: @12) {
-	E(p, q), p |-
-		mp[@h2, Ee1[@h1]]
+schema mpE1(st p: @1, st q: @22) {
+	p, E(p, q) |-
+		mp[@h1, Ee1[@h2]]
+}
+
+schema mpE2(st p: @1, st q: @21) {
+	p, E(q, p) |-
+		mp[@h1, Ee2[@h2]]
 }
 
 "가언적 삼단논법(hypothetical syllogism)."
@@ -200,8 +204,8 @@ schema Fi_c(st p: @11) {
 }
 
 "[$\bot]을 소거한다. falsum elimination이라 불러도 좋을 것이다. Ne와 마찬가지로 폭발률을 나타낸다 할 수 있다."
-axiomatic schema Fe(st p) {
-	F |- p
+schema Fe(st p) {
+	F |- NNe[Niu[N(p) |- @h1]]
 }
 
 "[$\top] 도입."
@@ -383,6 +387,24 @@ schema I_distribute_left(st p: @11, st q: @121, st r: @122) {
 		cp[
 			I(p, q) |-
 				cp[p |- mp[mp[@h3, @h2], mp[@h3, @h1]]]
+		]
+}
+
+schema EOi(st p: @11, st q: @12, st r: @21, st s: @22) {
+	E(p, q), E(r, s) |-
+		Eiu[
+			(O(p, r) |-
+				Oeu[
+					@h3,
+					(p |- Oi1(?, s)[mpE1[@h4, @h1]]),
+					(r |- Oi2(q, ?)[mpE1[@h4, @h2]])
+				]),
+			(O(q, s) |-
+				Oeu[
+					@h3,
+					(q |- Oi1(?, r)[mpE2[@h4, @h1]]),
+					(s |- Oi2(p, ?)[mpE2[@h4, @h2]])
+				])
 		]
 }
 
@@ -688,6 +710,14 @@ schema UE_flip(pr f: @111, pr g: @112) {
 		id(U(Ef(g, f)))[Ui[(cls x) => {
 			E_flip[id(E(f(x), g(x)))[Ue(?, x)[@h1]]]
 		}]]
+}
+
+schema EiU(pr f: @111, pr g: @112) {
+	U(If(f, g)), U(If(g, f)) |-
+		id(U(Ef(f, g)))[Ui[(cls z) => { Ei[
+			id(I(f(z), g(z)))[Ue(?, z)[@h1]],
+			id(I(g(z), f(z)))[Ue(?, z)[@h2]]
+		] }]]
 }
 
 "Ee1의 U형."
@@ -1195,6 +1225,22 @@ schema eq_transitive_13(cls x: @12, cls y: @11, cls z: @22) {
 	eq(y, x), eq(y, z) |- eq_symmetric[eq_transitive[eq_symmetric[@h1], @h2]]
 }
 
+schema eq_transitive_El(cls x: @11, cls y: @12, cls z) {
+	eq(x, y) |-
+		Eiu[
+			(eq(z, x) |- eq_transitive[@h2, @h1]),
+			(eq(z, y) |- eq_transitive_23[@h1, @h2])
+		]
+}
+
+schema eq_transitive_Er(cls x: @11, cls y: @12, cls z) {
+	eq(x, y) |-
+		Ei[
+			cp[eq(x, z) |- eq_transitive_1[@h1, @h2]],
+			cp[eq(y, z) |- eq_transitive[@h1, @h2]]
+		]
+}
+
 "[$f]를 만족하는 것들이 서로 같다."
 $!<prec=249><<\exists_{\leq 1}>>#1$
 st Q(pr f) {
@@ -1337,6 +1383,25 @@ schema setbuilder_i(pr f, cls z: @11) {
 		mp[
 			Ai[@h1, @h2],
 			Ee2[setbuilder_def_Ue(f, z)[]]
+		]
+}
+
+schema setbuilder_subseteq_i(pr f: @111, pr g: @112) {
+	U(If(f, g)) |-
+		id(subseteq(setbuilder(f), setbuilder(g)))[
+			Ui[(cls z) => { cp[in(z, setbuilder(f)) |- setbuilder_i(g, z)[
+				set_i[@h2],
+				mp[setbuilder_e[@h2], id(I(f(z), g(z)))[Ue(?, z)[@h1]]]
+			]] }]
+		]
+}
+
+schema setbuilder_eq_i(pr f: @111, pr g: @112) {
+	U(Ef(f, g)) |-
+		ax_extensional_m(setbuilder(f), setbuilder(g))[
+			EiU((cls z) => {in(z, setbuilder(f))}, (cls z) => {in(z, setbuilder(g))})[
+				setbuilder_subseteq_i[Ee1U[@h1]], setbuilder_subseteq_i[Ee2U[@h1]]
+			]
 		]
 }
 
@@ -1541,6 +1606,16 @@ schema self_in_singleton(cls x: @11) {
 		]
 }
 
+schema singleton_eq_i(cls x: @11, cls y: @12) {
+	eq(x, y) |- id(eq(singleton(x), singleton(y)))[
+		setbuilder_eq_i((cls z) => {eq(z, x)}, (cls z) => {eq(z, y)})[
+			Ui[(cls z) => {
+				eq_transitive_El(x, y, z)[@h1]
+			}]
+		]
+	]
+}
+
 schema singleton_eq_e(cls x: @11, cls y: @221) {
 	set(x), eq(singleton(x), singleton(y)) |-
 		setbuilder_e[in_eq_right_1[self_in_singleton[@h1], @h2]]
@@ -1579,6 +1654,19 @@ schema doubleton_in_2(cls x, cls y) {
 					eq_reflexive(y)[]
 				]
 			]
+		]
+}
+
+schema doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
+	eq(x, u), eq(y, v) |-
+		id(eq(doubleton(x, y), doubleton(u, v)))[
+			setbuilder_eq_i(
+				(cls z) => {O(eq(z, x), eq(z, y))},
+				(cls z) => {O(eq(z, u), eq(z, v))}
+			)[Ui[(cls z) => { EOi[
+				eq_transitive_El(x, u, z)[@h1],
+				eq_transitive_El(y, v, z)[@h2]
+			] }]]
 		]
 }
 
@@ -2056,6 +2144,16 @@ cls v2(cls x, cls y) {
 	doubleton(singleton(x), doubleton(x, y))
 }
 
+schema v2_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
+	eq(x, u), eq(y, v) |-
+		id(eq(v2(x, y), v2(u, v)))[
+			doubleton_eq_i[
+				singleton_eq_i[@h1],
+				doubleton_eq_i[@h1, @h2]
+			]
+		]
+}
+
 "`[Pinter]` 정리 1.30."
 schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 	set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v)) |-
@@ -2358,6 +2456,11 @@ schema fun_im_unique(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	is_function(f, a, b) |- Ae2[@h1]
 }
 
+schema fun_im_unique_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
+	is_function(f, a, b), in(x, a) |-
+		mp[@h2, Ue(?, x)[fun_im_unique[@h1]]]
+}
+
 schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	is_function(f, a, b) |- id(Uin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))[
 		Ui[(cls x) => {
@@ -2367,6 +2470,11 @@ schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 			)]
 		}]
 	]
+}
+
+schema fun_im_exists_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
+	is_function(f, a, b), in(x, a) |-
+		mp[@h2, Ue(?, x)[fun_im_exists[@h1]]]
 }
 
 schema fun_is_rel(cls f, $A$ cls a, $B$ cls b) {
@@ -2389,6 +2497,16 @@ schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
 $#1<<(>>#2)$
 cls fcall(cls f, cls x) {
 	bigcup(rel_im_set(f, singleton(x)))
+}
+
+schema fcall_in_codomain_(cls f, cls a, cls b, cls x, cls y) {
+	is_function(f, a, b), in(x, a), in(y, rel_im_set(f, singleton(x))) |-
+		mpX_Xe_p(?, in(v2(x, y), f))[
+			setbuilder_e[@h3],
+			Ui[(cls z) => { cp[A(in(z, singleton(x)), in(v2(z, y), f)) |-
+				in_eq_left_1[Ae2[@h4], v2_eq_i[setbuilder_e[Ae1[@h4]], eq_reflexive(y)[]]]]
+			}]
+		]
 }
 
 schema fcall_in_codomain(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
