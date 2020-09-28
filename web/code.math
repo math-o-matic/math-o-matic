@@ -1790,6 +1790,35 @@ schema doubleton_to_cup(cls x: @121, cls y: @122, cls z: @11, cls w: @21) {
 		]
 }
 
+schema bigcup_singleton_to_self(cls x: @1211, cls z: @11) {
+	in(z, bigcup(singleton(x))) |-
+		mpX_Xe_p(?, in(z, x))[
+			setbuilder_e[@h1],
+			Ui[(cls w) => { cp[A(in(w, singleton(x)), in(z, w)) |-
+				in_eq_right_1[Ae2[@h2], setbuilder_e[Ae1[@h2]]]] }]
+		]
+}
+
+schema self_to_bigcup_singleton(cls x: @11, cls z: @21) {
+	set(x), in(z, x) |-
+		id(in(z, bigcup(singleton(x))))[setbuilder_i((cls z) => {
+			X((cls w) => {A(in(w, singleton(x)), in(z, w))})
+		}, z)[set_i[@h2], Xi((cls w) => {A(in(w, singleton(x)), in(z, w))}, x)[Ai[
+			self_in_singleton[@h1],
+			@h2
+		]]]]
+}
+
+schema bigcup_singleton_is_self(cls x: @11) {
+	set(x) |-
+		ax_extensional_m(bigcup(singleton(x)), x)[Ui[(cls z) => {
+			Eiu[
+				bigcup_singleton_to_self(x, z),
+				(in(z, x) |- self_to_bigcup_singleton[@h1, @h2])
+			]
+		}]]
+}
+
 schema bigcup_doubleton_to_cup(cls x: @1211, cls y: @1212, cls w: @11) {
 	in(w, bigcup(doubleton(x, y))) |-
 		mpX_Xe_p(
