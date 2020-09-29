@@ -949,6 +949,16 @@ schema mpUE(pr f, pr g) {
 $!<prec=450>#1<<\in>>#2$
 st in(cls x, cls y);
 
+$\left(\cdot<<\in>>#1\right)$
+pr is_in(cls y) {
+	(cls x) => {in(x, y)}
+}
+
+$\left(#1<<\in>>\cdot\right)$
+pr contains(cls x) {
+	(cls y) => {in(x, y)}
+}
+
 "[$\notin]."
 $!<prec=450>#1<<\notin>>#2$
 st Nin(cls x, cls y) {
@@ -998,7 +1008,7 @@ st Uin(cls a, pr f) {
 
 schema Uin_subset(cls a: @12, cls b: @11, pr f: @22) {
 	subseteq(a, b), Uin(b, f) |-
-		id(Uin(a, f))[syllU((cls z) => {in(z, a)}, (cls z) => {in(z, b)}, f)[@h1, @h2]]
+		id(Uin(a, f))[syllU(is_in(a), is_in(b), f)[@h1, @h2]]
 }
 
 schema UUin_to_UinU(cls a, pr2 f) {
@@ -1035,7 +1045,7 @@ st set(cls x) {
 "set을 도입한다."
 schema set_i(cls x: @11, cls y: @12) {
 	in(x, y) |-
-		id(set(x))[Xi((cls y) => {in(x, y)}, y)[@h1]]
+		id(set(x))[Xi(contains(x), y)[@h1]]
 }
 
 schema set_i_A(cls x, cls y, cls z) {
@@ -1182,8 +1192,8 @@ schema eq_reflexive(cls x) {
 schema eq_symmetric(cls x: @11, cls y: @12) {
 	eq(x, y) |-
 		id(eq(y, x))[Ai[
-			UE_flip((cls z) => {in(z, x)}, (cls z) => {in(z, y)})[Ae1[@h1]],
-			UE_flip((cls w) => {in(x, w)}, (cls w) => {in(y, w)})[Ae2[@h1]]
+			UE_flip(is_in(x), is_in(y))[Ae1[@h1]],
+			UE_flip(contains(x), contains(y))[Ae2[@h1]]
 		]]
 }
 
@@ -1192,14 +1202,10 @@ schema eq_transitive(cls x: @11, cls y: @12, cls z: @22) {
 		id(eq(x, z))[
 			Ai[
 				syllUE(
-					(cls w) => {in(w, x)},
-					(cls w) => {in(w, y)},
-					(cls w) => {in(w, z)}
+					is_in(x), is_in(y), is_in(z)
 				)[Ae1[@h1], Ae1[@h2]],
 				syllUE(
-					(cls w) => {in(x, w)},
-					(cls w) => {in(y, w)},
-					(cls w) => {in(z, w)}
+					contains(x), contains(y), contains(z)
 				)[Ae2[@h1], Ae2[@h2]]
 			]
 		]
@@ -1268,7 +1274,7 @@ schema XQ_to_Xq(pr f: @11) {
 
 schema set_is_set_1(cls x: @11, cls y: @22) {
 	set(x), eq(x, y) |-
-		id(set(y))[mpXE((cls w) => {in(x, w)}, (cls w) => {in(y, w)})[@h1, eq_Ae2[@h2]]]
+		id(set(y))[mpXE(contains(x), contains(y))[@h1, eq_Ae2[@h2]]]
 }
 
 schema set_is_set_2(cls x: @11, cls y: @21) {
@@ -1278,7 +1284,7 @@ schema set_is_set_2(cls x: @11, cls y: @21) {
 
 schema subseteq_subseteq(cls x: @11, cls y: @12, cls z: @22) {
 	subseteq(x, y), subseteq(y, z) |-
-		id(subseteq(x, z))[syllU((cls w) => {in(w, x)}, (cls w) => {in(w, y)}, (cls w) => {in(w, z)})[@h1, @h2]]
+		id(subseteq(x, z))[syllU(is_in(x), is_in(y), is_in(z))[@h1, @h2]]
 }
 
 "axiom of extensionality."
@@ -1314,7 +1320,7 @@ schema eq_simple(cls x, cls y) {
 
 schema eq_to_subseteq(cls x: @11, cls y: @12) {
 	eq(x, y) |-
-		id(subseteq(x, y))[Ee1U((cls z) => {in(z, x)}, (cls z) => {in(z, y)})[mp[@h1, Ee1[eq_simple(x, y)[]]]]]
+		id(subseteq(x, y))[Ee1U(is_in(x), is_in(y))[mp[@h1, Ee1[eq_simple(x, y)[]]]]]
 }
 
 schema eq_then_subseteq(cls x, cls y) {
@@ -1399,7 +1405,7 @@ schema setbuilder_subseteq_i(pr f: @111, pr g: @112) {
 schema setbuilder_eq_i(pr f: @111, pr g: @112) {
 	U(Ef(f, g)) |-
 		ax_extensional_m(setbuilder(f), setbuilder(g))[
-			EiU((cls z) => {in(z, setbuilder(f))}, (cls z) => {in(z, setbuilder(g))})[
+			EiU(is_in(setbuilder(f)), is_in(setbuilder(g)))[
 				setbuilder_subseteq_i[Ee1U[@h1]], setbuilder_subseteq_i[Ee2U[@h1]]
 			]
 		]
@@ -1788,8 +1794,8 @@ schema setbuilder_is_setbuilder(pr f: @121, cls x: @11) {
 		id(U((cls z) => {
 			E(in(z, x), A(set(z), f(z)))
 		}))[syllUE(
-			(cls z) => {in(z, x)},
-			(cls z) => {in(z, setbuilder(f))},
+			is_in(x),
+			is_in(setbuilder(f)),
 			(cls z) => {A(set(z), f(z))}
 		)[eq_Ae1[@h1], setbuilder_def(f)[]]]
 }
@@ -1822,7 +1828,7 @@ schema ax_specify_m(pr f, cls x: @11) {
 }
 
 schema cap_is_set_1(cls x, cls y) {
-	set(x) |- id(set(cap(x, y)))[ax_specify_m((cls z) => {in(z, y)}, ?)[@h1]]
+	set(x) |- id(set(cap(x, y)))[ax_specify_m(is_in(y), ?)[@h1]]
 }
 
 schema cap_is_set_2(cls x, cls y) {
@@ -2606,7 +2612,7 @@ schema zero_in_omega() {
 schema successor_in_omega(cls z: @11) {
 	in(z, omega()) |-
 		id(in(successor(z), omega()))[bigcap_i(setbuilder((cls z) => {is_successor_set(z)}), successor(z))[
-			successor_is_set(z)[Xi((cls x) => {in(z, x)}, omega())[@h1]],
+			successor_is_set(z)[Xi(contains(z), omega())[@h1]],
 			Ui[(cls x) => {
 				cp[
 					in(x, setbuilder((cls z) => {is_successor_set(z)})) |-
