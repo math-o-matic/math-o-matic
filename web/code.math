@@ -210,7 +210,7 @@ schema Fe(st p) {
 
 "[$\top] 도입."
 axiomatic schema Ti() {
-	|- T
+	T
 }
 
 "후건 부정(modus tollens)."
@@ -286,7 +286,7 @@ schema ON_to_NA(st p: @111, st q: @112) {
 
 "무모순율(law of noncontradiction)."
 schema lnc(st p) {
-	|- Niu[A(p, N(p)) |- Fi[
+	Niu[A(p, N(p)) |- Fi[
 		Ae1[@h1],
 		Ae2[@h1]
 	]]
@@ -294,12 +294,12 @@ schema lnc(st p) {
 
 "배중률(law of excluded middle)."
 schema lxm(st p) {
-	|- NNe[Niu[N(O(p, N(p))) |- Fi[
+	NNe[Niu[N(O(p, N(p))) |- Fi[
 		Ai[
 			NNe[Ae2[NO_to_AN[@h1]]],
 			Ae1[NO_to_AN[@h1]]
 		],
-		lnc(p)[]
+		lnc(p)
 	]]]
 }
 
@@ -316,7 +316,7 @@ schema swap(st p: @11, st q: @121, st r: @122) {
 }
 
 schema swap_c(st p, st q, st r) {
-	|- cp[swap(p, q, r)]
+	cp[swap(p, q, r)]
 }
 
 schema swap_m(st p: @11, st q: @121, st r: @122) {
@@ -369,7 +369,7 @@ schema Oe2(st p: @11, st q: @12) {
 schema O1Ai(st p: @11, st q: @21, st r: @12) {
 	O(p, r), O(q, r) |-
 		Oe[
-			lxm(r)[],
+			lxm(r),
 			cp[r |- Oi2(A(p, q), ?)[@h3]],
 			cp[N(r) |- Oi1(?, r)[Ai[Oe2[@h1, @h3], Oe2[@h2, @h3]]]]
 		]
@@ -417,11 +417,11 @@ schema DIpqEpApq(st p: @11, st q: @12) {
 }
 
 schema Ipp(st p) {
-	|- cp[id(p)]
+	cp[id(p)]
 }
 
 schema Epp(st p) {
-	|- Ei[Ipp(p)[], Ipp(p)[]]
+	Ei[Ipp(p), Ipp(p)]
 }
 
 #################################
@@ -568,24 +568,12 @@ schema Ue2(pr2 f: @11, cls x, cls y) {
 	U2(f) |- Ue(?, y)[Ue(?, x)[@h1]]
 }
 
-"Ui의 다른 버전."
-schema Uiu(pr f) {
-	(cls x) => { |- f(x) } |-
-		|- id(U(f))[Ui[(cls x) => {@h1(x)[]}]]
-}
-
-"Ue의 다른 버전."
-schema Ueu(pr f, cls x) {
-	(|- U(f)) |-
-		|- Ue(?, x)[@h1[]]
-}
-
 schema Ui_p(st p: @1) {
 	p |- Ui((cls x) => { p })[(cls x) => { p }]
 }
 
 schema Ui_c(st p) {
-	|- cp[Ui_p(p)]
+	cp[Ui_p(p)]
 }
 
 "U를 위한 contrapose."
@@ -643,7 +631,7 @@ schema UAm2(pr f: @111, pr g: @121) {
 
 "[$\forall]과 [$\land] 간의 분배법칙 같은 것."
 schema UA(pr f, pr g) {
-	|- Ei[cp[UAm1(f, g)], cp[UAm2(f, g)]]
+	Ei[cp[UAm1(f, g)], cp[UAm2(f, g)]]
 }
 
 "UI의 m형."
@@ -654,7 +642,7 @@ schema UIm(pr f: @111, pr g: @112) {
 
 "[$\forall]과 [$\to] 간의 분배법칙 같은 것."
 schema UI(pr f, pr g) {
-	|- cp[UIm(f, g)]
+	cp[UIm(f, g)]
 }
 
 "U를 위한 Oi1."
@@ -687,7 +675,7 @@ schema UOm(pr f, pr g) {
 }
 
 schema UO(pr f, pr g) {
-	|- cp[UOm(f, g)]
+	cp[UOm(f, g)]
 }
 
 "UU의 m형. 재미있게도 Ui 및 Ue로부터 유도할 수 있다."
@@ -702,7 +690,7 @@ schema UUm(pr2 f: @11) {
 
 "[$\forall x\forall y]랑 [$\forall y\forall x]가 같다는 것."
 schema UU(pr2 f) {
-	|- cp[UUm(f)]
+	cp[UUm(f)]
 }
 
 schema UE_flip(pr f: @111, pr g: @112) {
@@ -877,7 +865,7 @@ schema XOm2(pr f: @111, pr g: @121) {
 }
 "[$\exists]과 [$\lor] 간의 분배법칙 같은 것. UA로부터 증명할 수 있다."
 schema XO(pr f, pr g) {
-	|- Eiu[XOm1(f, g), XOm2(f, g)]
+	Eiu[XOm1(f, g), XOm2(f, g)]
 }
 
 schema ON_to_NA_U(pr f, pr g) {
@@ -891,7 +879,7 @@ schema XAe(pr f: @111, pr g: @112) {
 	X(Af(f, g)) |- id(A(X(f), X(g)))[
 		NO_to_AN[mp[
 			contrapose_u[ON_to_NA_U(f, g)][@h1],
-			contrapose[UO(Nf(f), Nf(g))[]]
+			contrapose[UO(Nf(f), Nf(g))]
 		]]
 	]
 }
@@ -1087,7 +1075,7 @@ schema in_subseteq(cls x: @12, cls y: @22, cls z: @11) {
 }
 
 schema self_subseteq_self(cls x) {
-	|- id(subseteq(x, x))[Ui[(cls z) => {
+	id(subseteq(x, x))[Ui[(cls z) => {
 		cp[in(z, x) |- @h1]
 	}]]
 }
@@ -1105,7 +1093,7 @@ schema eq_Ae2_Ue_Ee1(cls x, cls y, cls w) {
 }
 
 schema eq_Ae2_Ue_Ee1_c(cls x, cls y, cls z) {
-	|- cp[eq_Ae2_Ue_Ee1(x, y, z)]
+	cp[eq_Ae2_Ue_Ee1(x, y, z)]
 }
 
 schema eq_Ae2_Ue_Ee2(cls x, cls y, cls z) {
@@ -1160,7 +1148,7 @@ schema swapU(pr f, pr g, pr h) {
 }
 
 schema swapU_c(pr f, pr g, pr h) {
-	|- cp[swapU(f, g, h)]
+	cp[swapU(f, g, h)]
 }
 
 schema swapU2(pr2 f, pr2 g, pr2 h) {
@@ -1171,20 +1159,20 @@ schema swapU2(pr2 f, pr2 g, pr2 h) {
 }
 
 schema swapU2_c(pr2 f, pr2 g, pr2 h) {
-	|- cp[swapU2(f ,g, h)]
+	cp[swapU2(f ,g, h)]
 }
 
 schema eq_Ae2_Ue_Ee1_c_swap(cls x, cls y, cls z) {
-	|- swap[eq_Ae2_Ue_Ee1_c(x, y, z)[]]
+	swap[eq_Ae2_Ue_Ee1_c(x, y, z)]
 }
 
 schema eq_reflexive(cls x) {
-	|- id(eq(x, x))[Ai[
+	id(eq(x, x))[Ai[
 		Ui[(cls z) => {
-			Epp(in(z, x))[]
+			Epp(in(z, x))
 		}],
 		Ui[(cls w) => {
-			Epp(in(x, w))[]
+			Epp(in(x, w))
 		}]
 	]]
 }
@@ -1289,7 +1277,7 @@ schema subseteq_subseteq(cls x: @11, cls y: @12, cls z: @22) {
 
 "axiom of extensionality."
 axiomatic schema ax_extensional() {
-	|- U2((cls x, cls y) => {
+	U2((cls x, cls y) => {
 		I(
 			U((cls z) => {
 				E(
@@ -1303,16 +1291,16 @@ axiomatic schema ax_extensional() {
 }
 
 schema ax_extensional_Ue(cls x, cls y) {
-	|- Ue2(?, x, y)[ax_extensional()[]]
+	Ue2(?, x, y)[ax_extensional()]
 }
 
 schema ax_extensional_m(cls x, cls y) {
 	U((cls z) => {E(in(z, x), in(z, y))}) |-
-		mp[@h1, ax_extensional_Ue(x, y)[]]
+		mp[@h1, ax_extensional_Ue(x, y)]
 }
 
 schema eq_simple(cls x, cls y) {
-	|- Eiu[
+	Eiu[
 		eq_Ae1(x, y),
 		ax_extensional_m(x, y)
 	]
@@ -1320,11 +1308,11 @@ schema eq_simple(cls x, cls y) {
 
 schema eq_to_subseteq(cls x: @11, cls y: @12) {
 	eq(x, y) |-
-		id(subseteq(x, y))[Ee1U(is_in(x), is_in(y))[mp[@h1, Ee1[eq_simple(x, y)[]]]]]
+		id(subseteq(x, y))[Ee1U(is_in(x), is_in(y))[mp[@h1, Ee1[eq_simple(x, y)]]]]
 }
 
 schema eq_then_subseteq(cls x, cls y) {
-	|- cp[eq_to_subseteq(x, y)]
+	cp[eq_to_subseteq(x, y)]
 }
 
 schema eq_subseteq(cls x, cls y, cls z) {
@@ -1356,7 +1344,7 @@ cls setbuilder2([cls -> cls] f, pr g) {
 
 "setbuilder의 defining property. f를 만족하는 임의의 [**집합]의 class를 만들게 해 준다. `[Pinter]`에서는 axiom of class construction이라 부르는 것 같다."
 axiomatic schema setbuilder_def(pr f) {
-	|- U((cls w) => {
+	U((cls w) => {
 		E(
 			in(w, setbuilder(f)),
 			A(set(w), f(w))
@@ -1365,7 +1353,7 @@ axiomatic schema setbuilder_def(pr f) {
 }
 
 schema setbuilder_def_Ue(pr f, cls z) {
-	Ueu((cls w) => {
+	Ue((cls w) => {
 		E(in(w, setbuilder(f)), A(set(w), f(w)))
 	}, z)[setbuilder_def(f)]
 }
@@ -1375,12 +1363,12 @@ schema setbuilder_e(pr f: @121, cls z: @11) {
 	in(z, setbuilder(f)) |-
 		Ae2[mp[
 			@h1,
-			Ee1[setbuilder_def_Ue(f, z)[]]
+			Ee1[setbuilder_def_Ue(f, z)]
 		]]
 }
 
 schema setbuilder_ec(pr f, cls z) {
-	|- cp[setbuilder_e(f, z)]
+	cp[setbuilder_e(f, z)]
 }
 
 "setbuilder를 도입한다."
@@ -1388,7 +1376,7 @@ schema setbuilder_i(pr f, cls z: @11) {
 	set(z), f(z) |-
 		mp[
 			Ai[@h1, @h2],
-			Ee2[setbuilder_def_Ue(f, z)[]]
+			Ee2[setbuilder_def_Ue(f, z)]
 		]
 }
 
@@ -1415,7 +1403,7 @@ schema setbuilder_ia(pr f, cls z: @111) {
 	A(set(z), f(z)) |-
 		mp[
 			@h1,
-			Ee2[setbuilder_def_Ue(f, z)[]]
+			Ee2[setbuilder_def_Ue(f, z)]
 		]
 }
 
@@ -1426,7 +1414,7 @@ schema setbuilder_def_set(pr f, cls x: @111) {
 				in(x, setbuilder(f)) |-
 					Ae2[mp[
 						@h2,
-						Ee1[Ue(?, x)[setbuilder_def(f)[]]]
+						Ee1[Ue(?, x)[setbuilder_def(f)]]
 					]]
 			],
 			cp[
@@ -1436,7 +1424,7 @@ schema setbuilder_def_set(pr f, cls x: @111) {
 							mp[@h2, @h1],
 							@h2
 						],
-						Ee2[Ue(?, x)[setbuilder_def(f)[]]]
+						Ee2[Ue(?, x)[setbuilder_def(f)]]
 					]
 			]
 		]
@@ -1457,29 +1445,29 @@ cls cap(cls x, cls y) {
 }
 
 schema set_i_A_c(cls x, cls y, cls z) {
-	|- cp[set_i_A(x, y, z)]
+	cp[set_i_A(x, y, z)]
 }
 
 schema cap_def(cls x, cls y, cls z) {
-	|- id(E(in(z, cap(x, y)), A(in(z, x), in(z, y))))[
+	id(E(in(z, cap(x, y)), A(in(z, x), in(z, y))))[
 		setbuilder_def_set((cls z) => {
 			A(in(z, x), in(z, y))
-		}, z)[set_i_A_c(x, y, z)[]]
+		}, z)[set_i_A_c(x, y, z)]
 	]
 }
 
 schema capi(cls x: @112, cls y: @122, cls z: @111) {
 	A(in(z, x), in(z, y)) |-
-		mp[@h1, Ee2[cap_def(x, y, z)[]]]
+		mp[@h1, Ee2[cap_def(x, y, z)]]
 }
 
 schema cape(cls x: @121, cls y: @122, cls z: @11) {
 	in(z, cap(x, y)) |-
-		mp[@h1, Ee1[cap_def(x, y, z)[]]]
+		mp[@h1, Ee1[cap_def(x, y, z)]]
 }
 
 schema cap_def_vi(cls x, cls y) {
-	|- Ui[(cls z) => { cap_def(x, y, z)[] }]
+	Ui[(cls z) => { cap_def(x, y, z) }]
 }
 
 schema cap_commutative_0(cls x: @121, cls y: @122, cls z: @11) {
@@ -1488,16 +1476,16 @@ schema cap_commutative_0(cls x: @121, cls y: @122, cls z: @11) {
 }
 
 schema cap_commutative_1(cls x, cls y, cls z) {
-	|- Eiu[cap_commutative_0(x, y, z), cap_commutative_0(y, x, z)]
+	Eiu[cap_commutative_0(x, y, z), cap_commutative_0(y, x, z)]
 }
 
 schema cap_commutative_2(cls x, cls y) {
-	|- ax_extensional_m(
+	ax_extensional_m(
 		cap(x, y),
 		cap(y, x)
-	)[Uiu((cls z) => {
+	)[Ui((cls z) => {
 		E(in(z, cap(x, y)), in(z, cap(y, x)))
-	})[(cls z) => { cap_commutative_1(x, y, z) }][]]
+	})[(cls z) => { cap_commutative_1(x, y, z) }]]
 }
 
 "합집합."
@@ -1607,7 +1595,7 @@ schema self_in_singleton(cls x: @11) {
 				eq(z, x)
 			}, x)[
 				@h1,
-				eq_reflexive(x)[]
+				eq_reflexive(x)
 			]
 		]
 }
@@ -1643,7 +1631,7 @@ schema doubleton_in_1(cls x, cls y) {
 			}, x)[
 				@h1,
 				Oi1(?, eq(x, y))[
-					eq_reflexive(x)[]
+					eq_reflexive(x)
 				]
 			]
 		]
@@ -1657,7 +1645,7 @@ schema doubleton_in_2(cls x, cls y) {
 			}, y)[
 				@h1,
 				Oi2(eq(y, x), ?)[
-					eq_reflexive(y)[]
+					eq_reflexive(y)
 				]
 			]
 		]
@@ -1749,12 +1737,12 @@ cls emptyset() {
 
 "axiom of empty set."
 axiomatic schema ax_emptyset() {
-	|- set(emptyset())
+	set(emptyset())
 }
 
 "emptyset의 defining property."
 schema emptyset_def(cls z) {
-	|- id(Nin(z, emptyset()))[Niu[in(z, emptyset()) |-
+	id(Nin(z, emptyset()))[Niu[in(z, emptyset()) |-
 		setbuilder_e[@h1]]]
 }
 
@@ -1797,7 +1785,7 @@ schema setbuilder_is_setbuilder(pr f: @121, cls x: @11) {
 			is_in(x),
 			is_in(setbuilder(f)),
 			(cls z) => {A(set(z), f(z))}
-		)[eq_Ae1[@h1], setbuilder_def(f)[]]]
+		)[eq_Ae1[@h1], setbuilder_def(f)]]
 }
 
 "술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
@@ -1814,7 +1802,6 @@ cls subsetbuilder(cls x, pr f) {
 
 "axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
 axiomatic schema ax_specify(pr f) {
-	|-
 	U((cls x) => {
 		I(
 			set(x),
@@ -1824,7 +1811,7 @@ axiomatic schema ax_specify(pr f) {
 }
 
 schema ax_specify_m(pr f, cls x: @11) {
-	set(x) |- mp[@h1, Ue(?, x)[ax_specify(f)[]]]
+	set(x) |- mp[@h1, Ue(?, x)[ax_specify(f)]]
 }
 
 schema cap_is_set_1(cls x, cls y) {
@@ -1834,13 +1821,13 @@ schema cap_is_set_1(cls x, cls y) {
 schema cap_is_set_2(cls x, cls y) {
 	set(y) |- set_is_set_1[
 		cap_is_set_1(y, x)[@h1],
-		cap_commutative_2(y, x)[]
+		cap_commutative_2(y, x)
 	]
 }
 
 "axiom of union."
 axiomatic schema ax_bigcup() {
-	|- U(($A$ cls a) => {
+	U(($A$ cls a) => {
 		I(set(a), set(bigcup(a)))
 	})
 }
@@ -1849,13 +1836,13 @@ schema ax_bigcup_m($A$ cls a) {
 	set(a) |-
 		mp[
 			@h1,
-			Ue(?, a)[ax_bigcup()[]]
+			Ue(?, a)[ax_bigcup()]
 		]
 }
 
 "axiom of pairing."
 axiomatic schema ax_doubleton() {
-	|- U2((cls x, cls y) => {
+	U2((cls x, cls y) => {
 		I(
 			A(set(x), set(y)),
 			set(doubleton(x, y))
@@ -1867,7 +1854,7 @@ schema ax_doubleton_m(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
 		mp[
 			Ai[@h1, @h2],
-			Ue2(?, x, y)[ax_doubleton()[]]
+			Ue2(?, x, y)[ax_doubleton()]
 		]
 }
 
@@ -1956,7 +1943,7 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 							}, x)[
 								Ai[
 									doubleton_in_1(x, y)[@h1],
-									in_eq_right_1[@h4, eq_reflexive(x)[]]
+									in_eq_right_1[@h4, eq_reflexive(x)]
 								]
 							]
 					],
@@ -1970,7 +1957,7 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 							}, y)[
 								Ai[
 									doubleton_in_2(x, y)[@h2],
-									in_eq_right_1[@h4, eq_reflexive(y)[]]
+									in_eq_right_1[@h4, eq_reflexive(y)]
 								]
 							]
 					]
@@ -2017,7 +2004,7 @@ schema subset_cap_is_subset(cls x: @11, cls y: @12) {
 			Ui[(cls z) => {
 				syllE[
 					DIpqEpApq[Ue(?, z)[@h1]],
-					E_flip[cap_def(x, y, z)[]]
+					E_flip[cap_def(x, y, z)]
 				]
 			}]
 		]
@@ -2036,11 +2023,11 @@ schema subset_is_set_ae(cls x: @121, cls y: @111) {
 }
 
 schema subset_is_set_ae_c(cls x, cls y) {
-	|- cp[subset_is_set_ae(x, y)]
+	cp[subset_is_set_ae(x, y)]
 }
 
 schema subset_is_set_ae_cvi(cls x) {
-	Uiu((cls y) => {
+	Ui((cls y) => {
 		I(A(set(y), subseteq(x, y)), set(x))
 	})[(cls y) => { subset_is_set_ae_c(x, y) }]
 }
@@ -2075,7 +2062,7 @@ schema singleton_subseteq_power_1(cls x, cls y) {
 	set(x) |-
 		cp[in(y, singleton(x)) |-
 			mp[
-				mp[@h2, setbuilder_ec((cls z) => {eq(z, x)}, y)[]],
+				mp[@h2, setbuilder_ec((cls z) => {eq(z, x)}, y)],
 				self_in_power(x, y)[@h1]
 			]]
 }
@@ -2089,7 +2076,7 @@ schema singleton_subseteq_power(cls x: @11) {
 
 "axiom of power set."
 axiomatic schema ax_power() {
-	|- U((cls x) => {
+	U((cls x) => {
 		I(
 			set(x),
 			X((cls y) => {
@@ -2105,7 +2092,7 @@ axiomatic schema ax_power() {
 }
 
 schema ax_power_m(cls x) {
-	set(x) |- mp[@h1, Ue(?, x)[ax_power()[]]]
+	set(x) |- mp[@h1, Ue(?, x)[ax_power()]]
 }
 
 "멱집합은 집합이다."
@@ -2124,7 +2111,7 @@ schema power_is_set(cls x: @11) {
 								syll[
 									setbuilder_ec((cls z) => {
 										subseteq(z, x)
-									}, z)[],
+									}, z),
 									Ue(?, z)[Ae2[@h2]]
 								]
 							}]]
@@ -2294,7 +2281,7 @@ schema cartesian_in_i(cls x: @12, cls y: @22, cls a: @11, cls b: @21) {
 				A(eq(v2(a, b), v2(c, d)), A(in(c, x), in(d, y)))
 			}, a, b)[
 				Ai[
-					eq_reflexive(v2(a, b))[],
+					eq_reflexive(v2(a, b)),
 					Ai[@h1, @h2]
 				]
 			]
@@ -2368,7 +2355,7 @@ cls rel_composite(cls x, cls y) {
 
 "곱집합은 이항관계이다."
 schema cartesian_is_rel(cls x, cls y) {
-	|- id(is_rel(cartesian(x, y)))[Ui[(cls z) => {
+	id(is_rel(cartesian(x, y)))[Ui[(cls z) => {
 		cp[in(z, cartesian(x, y)) |-
 			X2Ae1((cls a, cls b) => {
 				eq(z, v2(a, b))
@@ -2397,7 +2384,7 @@ schema cartesian_is_set_21(cls x, cls y, cls a, cls b) {
 }
 
 schema cartesian_is_set_2(cls x, cls y) {
-	|- subseteq(cartesian(x, y), power(power(cup(x, y))))	
+	subseteq(cartesian(x, y), power(power(cup(x, y))))	
 }
 
 "`[Pinter]` 정리 1.51."
@@ -2486,7 +2473,7 @@ schema fun_im_exists_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 schema fun_is_rel(cls f, $A$ cls a, $B$ cls b) {
 	is_function(f, a, b) |- rel_subset_is_rel[
 		fun_subseteq_cartesian(f, a, b)[@h1],
-		cartesian_is_rel(a, b)[]
+		cartesian_is_rel(a, b)
 	]
 }
 
@@ -2510,7 +2497,7 @@ schema fcall_in_codomain_(cls f, cls a, cls b, cls x, cls y) {
 		mpX_Xe_p(?, in(v2(x, y), f))[
 			setbuilder_e[@h3],
 			Ui[(cls z) => { cp[A(in(z, singleton(x)), in(v2(z, y), f)) |-
-				in_eq_left_1[Ae2[@h4], v2_eq_i[setbuilder_e[Ae1[@h4]], eq_reflexive(y)[]]]]
+				in_eq_left_1[Ae2[@h4], v2_eq_i[setbuilder_e[Ae1[@h4]], eq_reflexive(y)]]]
 			}]
 		]
 }
@@ -2577,7 +2564,7 @@ st is_successor_set(cls x) {
 
 "무한 공리(axiom of infinity). 즉 successor set 중에는 집합인 것이 있다."
 axiomatic schema ax_infinity() {
-	|- X((cls x) => {
+	X((cls x) => {
 		A(
 			set(x),
 			is_successor_set(x)
@@ -2595,10 +2582,10 @@ cls omega() {
 
 "자연수 집합은 0을 포함한다. `[Pinter]`에 따르면 페아노 공리계 제1공리이다."
 schema zero_in_omega() {
-	|- id(in(ord_zero(), omega()))[bigcap_i(setbuilder((cls z) => {
+	id(in(ord_zero(), omega()))[bigcap_i(setbuilder((cls z) => {
 		is_successor_set(z)
 	}), ord_zero())[
-		ax_emptyset()[],
+		ax_emptyset(),
 		Ui[(cls z) => {
 			cp[
 				in(z, setbuilder((cls z) => {is_successor_set(z)})) |-
@@ -2634,8 +2621,8 @@ schema successor_in_omega(cls z: @11) {
 
 "[$\omega]는 successor set이다."
 schema omega_is_successor_set() {
-	|- id(is_successor_set(omega()))[Ai[
-		zero_in_omega()[],
+	id(is_successor_set(omega()))[Ai[
+		zero_in_omega(),
 		Ui[(cls z) => {
 			cp[successor_in_omega(z)]
 		}]
@@ -2644,8 +2631,8 @@ schema omega_is_successor_set() {
 
 "자연수 집합은 집합이다. ax_infinity로부터 유도된다."
 schema omega_is_set() {
-	|- mpX_Xe_p(?, set(omega()))[
-		ax_infinity()[],
+	mpX_Xe_p(?, set(omega()))[
+		ax_infinity(),
 		Ui[(cls x) => {
 			cp[
 				A(set(x), is_successor_set(x)) |-
@@ -2671,7 +2658,7 @@ schema successor_is_not_zero(cls n) {
 							self_in_successor[set_i[@h1]],
 							@h2
 						],
-						id(Nin(n, ord_zero()))[emptyset_def(n)[]]
+						id(Nin(n, ord_zero()))[emptyset_def(n)]
 					]
 			]
 		]
@@ -2743,14 +2730,14 @@ schema recursion_theorem_0($A$ cls a: @11, cls c: @21, cls f: @31) {
 				)
 			}, cartesian(omega(), a))[
 				cartesian_is_set[
-					omega_is_set[],
+					omega_is_set(),
 					@h1
 				],
 				Ai[
-					self_subseteq_self(cartesian(omega(), a))[],
+					self_subseteq_self(cartesian(omega(), a)),
 					Ai[
 						cartesian_in_i[
-							zero_in_omega[],
+							zero_in_omega(),
 							@h2
 						],
 						id(Uin(omega(), (cls n) => {
@@ -2823,7 +2810,7 @@ schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
 				})
 			}, v2(ord_zero(), c))[
 				v2_is_set[
-				set_i[zero_in_omega[]],
+				set_i[zero_in_omega()],
 				set_i[@h1]
 			],
 				Ui[($G$ cls g) => {
@@ -2930,5 +2917,5 @@ cls omega_add(cls n, cls m) {
 
 "[$1+1=2]이다."
 schema one_plus_one_eq_two() {
-	|- eq(omega_add(ord_one(), ord_one()), ord_two())
+	eq(omega_add(ord_one(), ord_one()), ord_two())
 }
