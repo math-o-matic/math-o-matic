@@ -1252,10 +1252,6 @@ st Xq(pr f) {
 	A(X(f), Q(f))
 }
 
-schema Xq_to_X(pr f: @11) {
-	Xq(f) |- Ae1[@h1]
-}
-
 schema XQ_to_Xq(pr f: @11) {
 	X(f), Q(f) |- id(Xq(f))[Ai[@h1, @h2]]
 }
@@ -1567,6 +1563,20 @@ schema bigcap_e($A$ cls a, cls z) {
 			}, z)[@h1]
 }
 
+schema bigcup_i($A$ cls a: @12, cls x: @11, cls z: @21) {
+	in(x, a), in(z, x) |-
+		id(in(z, bigcup(a)))[setbuilder_i((cls z) => {
+			X((cls w) => {
+				A(in(w, a), in(z, w))
+			})
+		}, z)[
+			set_i[@h2],
+			Xi((cls w) => {
+				A(in(w, a), in(z, w))
+			}, x)[Ai[@h1, @h2]]
+		]]
+}
+
 schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
 	in(x, a) |-
 		id(subseteq(bigcap(a), x))[Ui[(cls z) => {
@@ -1588,6 +1598,10 @@ cls singleton(cls x) {
 	})
 }
 
+st is_singleton(cls x) {
+	Xq(is_in(x))
+}
+
 schema self_in_singleton(cls x: @11) {
 	set(x) |-
 		id(in(x, singleton(x)))[
@@ -1597,6 +1611,20 @@ schema self_in_singleton(cls x: @11) {
 				@h1,
 				eq_reflexive(x)
 			]
+		]
+}
+
+schema singleton_Q(cls x) {
+	id(Q(is_in(singleton(x))))[Ui2[(cls y, cls z) => {
+		cp[A(in(y, singleton(x)), in(z, singleton(x))) |-
+			eq_transitive_2[setbuilder_e[Ae1[@h1]], setbuilder_e[Ae2[@h1]]]]
+	}]]
+}
+
+schema singleton_is_singleton(cls x) {
+	set(x) |-
+		id(is_singleton(singleton(x)))[
+			Ai[Xi(is_in(singleton(x)), x)[self_in_singleton[@h1]], singleton_Q(x)]
 		]
 }
 
@@ -1869,6 +1897,23 @@ schema doubleton_to_cup(cls x: @121, cls y: @122, cls z: @11, cls w: @21) {
 				@h2, @h3
 			]]]
 		]
+}
+
+schema bigcup_singleton_to_element($A$ cls a: @11, cls x: @21, cls z: @31) {
+	is_singleton(a), in(x, a), in(z, bigcup(a)) |-
+		mpX_Xe_p(?, in(z, x))[
+			setbuilder_e[@h3],
+			Ui[(cls w) => { cp[A(in(w, a), in(z, w)) |-
+				in_eq_right_2[Ae2[@h4], mp[Ai[@h2, Ae1[@h4]], Ue2(?, x, w)[Ae2[@h1]]]]] }]
+		]
+}
+
+schema bigcup_singleton_is_element($A$ cls a: @11, cls x: @21) {
+	is_singleton(a), in(x, a) |-
+		ax_extensional_m(bigcup(a), x)[Ui[(cls z) => { Ei[
+			cp[in(z, bigcup(a)) |- bigcup_singleton_to_element[@h1, @h2, @h3]],
+			cp[in(z, x) |- bigcup_i[@h2, @h3]]
+		] }]]
 }
 
 schema bigcup_singleton_to_self(cls x: @1211, cls z: @11) {
@@ -2408,9 +2453,14 @@ st is_function(cls f, $A$ cls a, $B$ cls b) {
 	A(
 		subseteq(f, cartesian(a, b)),
 		Uin(a, (cls x) => {
-			Xq((cls y) => {
-				in(v2(x, y), f)
-			})
+			A(
+				Xin(b, (cls y) => {
+					in(v2(x, y), f)
+				}),
+				Q((cls y) => {
+					in(v2(x, y), f)
+				})
+			)
 		})
 	)
 }
@@ -2445,29 +2495,45 @@ schema fun_subseteq_cartesian(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	is_function(f, a, b) |- Ae1[@h1]
 }
 
-schema fun_im_unique(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
+schema fun_im_Xq(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	is_function(f, a, b) |- Ae2[@h1]
 }
 
-schema fun_im_unique_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
+schema fun_im_Xq_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 	is_function(f, a, b), in(x, a) |-
-		mp[@h2, Ue(?, x)[fun_im_unique[@h1]]]
+		mp[@h2, Ue(?, x)[fun_im_Xq[@h1]]]
 }
 
-schema fun_im_exists(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	is_function(f, a, b) |- id(Uin(a, (cls x) => {X((cls y) => {in(v2(x, y), f)})}))[
+schema fun_im_X(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
+	is_function(f, a, b) |- id(Uin(a, (cls x) => {Xin(b, (cls y) => {in(v2(x, y), f)})}))[
 		Ui[(cls x) => {
 			cp[(
 				in(x, a) |-
-					Xq_to_X[mp[@h2, Ue(?, x)[fun_im_unique[@h1]]]]
+					Ae1[mp[@h2, Ue(?, x)[fun_im_Xq[@h1]]]]
 			)]
 		}]
 	]
 }
 
-schema fun_im_exists_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
+schema fun_im_X_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 	is_function(f, a, b), in(x, a) |-
-		mp[@h2, Ue(?, x)[fun_im_exists[@h1]]]
+		mp[@h2, Ue(?, x)[fun_im_X[@h1]]]
+}
+
+schema fun_im_Q(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
+	is_function(f, a, b) |- id(Uin(a, (cls x) => {Q((cls y) => {in(v2(x, y), f)})}))[
+		Ui[(cls x) => {
+			cp[(
+				in(x, a) |-
+					Ae2[mp[@h2, Ue(?, x)[fun_im_Xq[@h1]]]]
+			)]
+		}]
+	]
+}
+
+schema fun_im_Q_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21, $y_1$ cls y1: @312, $y_2$ cls y2: @412) {
+	is_function(f, a, b), in(x, a), in(v2(x, y1), f), in(v2(x, y2), f) |-
+		mp[Ai[@h3, @h4], Ue2(?, y1, y2)[mp[@h2, Ue(?, x)[fun_im_Q[@h1]]]]]
 }
 
 schema fun_is_rel(cls f, $A$ cls a, $B$ cls b) {
@@ -2492,7 +2558,7 @@ cls fcall(cls f, cls x) {
 	bigcup(rel_im_set(f, singleton(x)))
 }
 
-schema fcall_in_codomain_(cls f, cls a, cls b, cls x, cls y) {
+schema fcall_def_0(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 	is_function(f, a, b), in(x, a), in(y, rel_im_set(f, singleton(x))) |-
 		mpX_Xe_p(?, in(v2(x, y), f))[
 			setbuilder_e[@h3],
@@ -2502,8 +2568,68 @@ schema fcall_in_codomain_(cls f, cls a, cls b, cls x, cls y) {
 		]
 }
 
+schema fcall_def_1(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
+	is_function(f, a, b), in(x, a), in(y, b), in(v2(x, y), f) |-
+		id(in(y, rel_im_set(f, singleton(x))))[setbuilder_i(
+			(cls y) => {
+				X((cls z) => {A(in(z, singleton(x)), in(v2(z, y), f))})
+			}, y
+		)[
+			set_i[@h3],
+			Xi((cls z) => {A(in(z, singleton(x)), in(v2(z, y), f))}, x)[Ai[self_in_singleton[set_i[@h2]], @h4]]
+		]]
+}
+
+schema fcall_def_2(cls f, $A$ cls a, $B$ cls b, cls x) {
+	is_function(f, a, b), in(x, a) |-
+			mpX(?, is_in(rel_im_set(f, singleton(x))))[
+				fun_im_X_m[@h1, @h2],
+				Ui[(cls y) => { cp[A(in(y, b), in(v2(x, y), f)) |-
+					fcall_def_1(f, a, b, x, y)[@h1, @h2, Ae1[@h3], Ae2[@h3]]] }]
+			]
+}
+
+schema fcall_def_3(cls f, $A$ cls a, $B$ cls b, cls x) {
+	is_function(f, a, b), in(x, a) |-
+		id(Q(is_in(rel_im_set(f, singleton(x)))))[Ui2[($y_1$ cls y1, $y_2$ cls y2) => {
+			cp[A(in(y1, rel_im_set(f, singleton(x))), in(y2, rel_im_set(f, singleton(x)))) |-
+				fun_im_Q_m[
+					@h1, @h2,
+					fcall_def_0(f, a, b, x, y1)[@h1, @h2, Ae1[@h3]],
+					fcall_def_0(f, a, b, x, y2)[@h1, @h2, Ae2[@h3]]
+				]]
+		}]]
+}
+
+schema fcall_def(cls f, $A$ cls a, $B$ cls b, cls x) {
+	is_function(f, a, b), in(x, a) |-
+		mpX_Xe_p(?, in(v2(x, fcall(f, x)), f))[
+			fcall_def_2(f, a, b, x)[@h1, @h2],
+			Ui[(cls y) => {
+				cp[in(y, rel_im_set(f, singleton(x))) |-
+					in_eq_left_2[
+						fcall_def_0(f, a, b, x, y)[@h1, @h2, @h3],
+						v2_eq_i[
+							eq_reflexive(x),
+							bigcup_singleton_is_element[
+								id(is_singleton(rel_im_set(f, singleton(x))))[
+									XQ_to_Xq[fcall_def_2(f, a, b, x)[@h1, @h2], fcall_def_3(f, a, b, x)[@h1, @h2]]
+								],
+								@h3
+							]
+						]
+					]]
+			}]
+		]
+}
+
 schema fcall_in_codomain(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
-	is_function(f, a, b), in(x, a) |- in(fcall(f, x), b)
+	is_function(f, a, b), in(x, a) |-
+		mpX_Xe_p(?, in(fcall(f, x), b))[
+			fun_im_X_m[@h1, @h2],
+			Ui[(cls y) => { cp[A(in(y, b), in(v2(x, y), f)) |-
+				in_eq_left_1[Ae1[@h3], fun_im_Q_m[@h1, @h2, Ae2[@h3], fcall_def(f, a, b, x)[@h1, @h2]]]] }]
+		]
 }
 
 ###########################
