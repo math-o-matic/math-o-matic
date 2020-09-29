@@ -17,6 +17,21 @@ export default class Reduction extends Node {
 	constructor ({subject, guesses, leftargs}, scope?: Scope) {
 		super(scope);
 
+		if (guesses) {
+			var resolvedType = subject.type.resolve(),
+				paramTypes = resolvedType.from,
+				argTypes = guesses.map(e => e && e.type);
+
+			if (paramTypes.length != argTypes.length)
+				throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
+
+			for (var i = 0; i < paramTypes.length; i++) {
+				if (argTypes[i] && !paramTypes[i].equals(argTypes[i])) {
+					throw this.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
+				}
+			}
+		}
+
 		if (subject._type == 'schema') {
 			subject.params.forEach((p, i) => {
 				if (!(guesses && guesses[i]) && !p.guess) {

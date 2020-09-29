@@ -1862,10 +1862,10 @@ schema doubleton_to_cup(cls x: @121, cls y: @122, cls z: @11, cls w: @21) {
 	in(z, doubleton(x, y)), in(w, z) |-
 		Oe[
 			setbuilder_e[@h1],
-			cp[eq(z, x) |- cupi1(?, y)[in_eq_right_1[
+			cp[eq(z, x) |- cupi1(?, y, ?)[in_eq_right_1[
 				@h2, @h3
 			]]],
-			cp[eq(z, y) |- cupi2(x, ?)[in_eq_right_1[
+			cp[eq(z, y) |- cupi2(x, ?, ?)[in_eq_right_1[
 				@h2, @h3
 			]]]
 		]
