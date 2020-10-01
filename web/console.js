@@ -7,7 +7,7 @@ var codemirror = CodeMirror(el => {
 	$('.console-wrap').appendChild(el);
 }, {
 	placeholder: 'Shift + Enter to submit',
-	lineNumbers: false,
+	lineNumbers: true,
 	lineWrapping: true,
 	indentUnit: 4,
 	tabSize: 4,
