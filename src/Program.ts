@@ -107,7 +107,10 @@ export default class Program {
 						1
 					);
 				case 'schema':
-					return recurse(expr.expr) + 1;
+					return Math.max(
+						...expr.def$s.map($ => recurse($.expr)),
+						recurse(expr.expr)
+					 ) + 1;
 				case 'tee':
 					return Math.max(
 						...expr.left.map(recurse),
@@ -176,9 +179,13 @@ export default class Program {
 						return lines[lines.length - 1].ctr;
 					});
 					
+					var args = null;
 					var subjectlines = [];
 					var subjectnum = hypnumMap.get(expr.subject)
 						|| $Map.get(expr.subject)
+						|| (expr.subject._type == 'schemacall' && $Map.has(expr.subject.schema)
+							? (args = expr.subject.args, $Map.get(expr.subject.schema))
+							: false)
 						|| ((s => s._type == 'schema' && s.name
 								|| s._type == 'schemacall' && s.schema.name)(expr.subject)
 							? expr.subject
@@ -191,6 +198,7 @@ export default class Program {
 							_type: 'E',
 							ctr: ++ctr,
 							subject: subjectnum,
+							args,
 							leftargs: leftargnums,
 							reduced: expr.reduced
 						}
@@ -269,6 +277,8 @@ export default class Program {
 
 					$Map = new Map($Map);
 
+					var start = ctr + 1;
+
 					var $lines = [];
 					
 					expr.def$s.forEach($ => {
@@ -286,7 +296,7 @@ export default class Program {
 						// getHtmlLine 함수가 이 배열을 조작하기 때문에
 						// shallow copy 해야 한다.
 						params: expr.params.slice(),
-						ctr
+						ctr: [start ,ctr]
 					}];
 				case 'tee':
 					hypnumMap = new Map(hypnumMap);
@@ -422,7 +432,7 @@ export default class Program {
 							line.ctr,
 							left,
 							exprToHtml(line.reduced, true),
-							[DOWN, `${exprToHtml(line.subject)} [${line.leftargs.map(a => exprToHtml(a)).join(', ')}]`]
+							[DOWN, `${exprToHtml(line.subject)}${line.args ? ' (' + line.args.map(a => exprToHtml(a)).join(', ') + ')' : ''} [${line.leftargs.map(a => exprToHtml(a)).join(', ')}]`]
 						);
 					case 'NP':
 						return getHtmlLine(
