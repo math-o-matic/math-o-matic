@@ -103,6 +103,10 @@ export default class ER {
 
 		var callee_ = callee(expr);
 
+		while (callee_._type == '$var') {
+			callee_ = callee_.expr;
+		}
+
 		if (callee_._type != 'schema') {
 			throw Error('Something\'s wrong');
 		}
