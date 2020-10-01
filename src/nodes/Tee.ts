@@ -41,20 +41,9 @@ export default class Tee extends Node {
 			throw this.error('RHS of a rule cannot be a schema');
 		}
 
-		// antecedent의 contraction
-		// 현재 antecedent를 집합처럼 생각하므로 contraction을 자동으로 한다.
-		// antecedent가 집합인지 시퀀스인지는 #14 참조.
-		this.left = left.reduce((l, r) => {
-			for (var i = 0; i < l.length; i++)
-				if (ExpressionResolver.equals(l[i], r)) return l;
-
-			return l.push(r), l;
-		}, []);
-
+		this.left = left;
 		this.def$s = def$s || [];
-
 		this.right = right;
-
 		this.type = new MetaType({
 			functional: false,
 			left: left.map(e => e.type),
