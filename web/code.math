@@ -1296,13 +1296,9 @@ axiomatic schema ax_extensional() {
 	})
 }
 
-schema ax_extensional_Ue(cls x, cls y) {
-	Ue2(?, x, y)[ax_extensional()]
-}
-
 schema ax_extensional_m(cls x, cls y) {
 	U((cls z) => {E(in(z, x), in(z, y))}) |-
-		mp[@h1, ax_extensional_Ue(x, y)]
+		mp[@h1, Ue2(?, x, y)[ax_extensional()]]
 }
 
 schema eq_simple(cls x, cls y) {
@@ -1322,8 +1318,9 @@ schema eq_to_subseteq_2(cls x: @11, cls y: @12) {
 		eq_to_subseteq_1[eq_symmetric[@h1]]
 }
 
-schema eq_then_subseteq_1(cls x, cls y) {
-	cp[eq_to_subseteq_1(x, y)]
+schema subseteq_to_eq(cls x: @11, cls y: @12) {
+	subseteq(x, y), subseteq(y, x) |-
+		ax_extensional_m(x, y)[EiU(is_in(x), is_in(y))[@h1, @h2]]
 }
 
 schema eq_subseteq(cls x, cls y, cls z) {
@@ -1552,6 +1549,14 @@ schema cup_e(cls x: @121, cls y: @122, cls z: @11) {
 		setbuilder_e[@h1]
 }
 
+schema cup_is_bigger_1(cls x, cls y) {
+	id(subseteq(x, cup(x, y)))[Ui[(cls z) => {cp[in(z, x) |- cup_i[Oi1(?, in(z, y))[@h1]]]}]]
+}
+
+schema cup_is_bigger_2(cls x, cls y) {
+	id(subseteq(y, cup(x, y)))[Ui[(cls z) => {cp[in(z, y) |- cup_i[Oi2(in(z, x), ?)[@h1]]]}]]
+}
+
 schema cup_eq_i(cls x: @11, cls y: @12, cls u: @21, cls v: @22) {
 	$foo = (cls x, cls y, cls u, cls v, cls z) => {
 		eq(x, y), eq(u, v) |-
@@ -1637,6 +1642,173 @@ schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
 					]
 			]
 		}]]
+}
+
+schema setbuilder_is_setbuilder(pr f: @121, cls x: @11) {
+	eq(x, setbuilder(f)) |-
+		id(U((cls z) => {
+			E(in(z, x), A(set(z), f(z)))
+		}))[syllUE(
+			is_in(x),
+			is_in(setbuilder(f)),
+			(cls z) => {A(set(z), f(z))}
+		)[eq_Ae1[@h1], setbuilder_def(f)]]
+}
+
+"술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
+일반적으로는 [$\{z \in x: f(z)\}]라고 쓰는 것이다."
+$\left\{\in #1<<:>>#2\right\}$
+cls subsetbuilder(cls x, pr f) {
+	setbuilder((cls y) => {
+		A(
+			in(y, x),
+			f(y)
+		)
+	})
+}
+
+"axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
+axiomatic schema ax_specify(pr f) {
+	U((cls x) => {
+		I(
+			set(x),
+			set(subsetbuilder(x, f))
+		)
+	})
+}
+
+schema ax_specify_m(pr f, cls x: @11) {
+	set(x) |- mp[@h1, Ue(?, x)[ax_specify(f)]]
+}
+
+schema cap_is_set_1(cls x, cls y) {
+	set(x) |- id(set(cap(x, y)))[ax_specify_m(is_in(y), ?)[@h1]]
+}
+
+schema cap_is_set_2(cls x, cls y) {
+	set(y) |- set_is_set_1[
+		cap_is_set_1(y, x)[@h1],
+		cap_commutative_2(y, x)
+	]
+}
+
+"axiom of union."
+axiomatic schema ax_bigcup() {
+	U(($A$ cls a) => {
+		I(set(a), set(bigcup(a)))
+	})
+}
+
+schema ax_bigcup_m($A$ cls a) {
+	set(a) |-
+		mp[
+			@h1,
+			Ue(?, a)[ax_bigcup()]
+		]
+}
+
+schema subset_cap_is_subset(cls x: @11, cls y: @12) {
+	subseteq(x, y) |-
+		ax_extensional_m(x, cap(x, y))[
+			Ui[(cls z) => {
+				syllE[
+					DIpqEpApq[Ue(?, z)[@h1]],
+					E_flip[cap_def(x, y, z)]
+				]
+			}]
+		]
+}
+
+schema subset_is_set(cls x: @21, cls y: @22) {
+	set(y), subseteq(x, y) |-
+		set_is_set_2[cap_is_set_2(x, y)[@h1], subset_cap_is_subset[@h2]]
+}
+
+schema supset_is_not_set(cls x: @111, cls y: @22) {
+	N(set(x)), subseteq(x, y) |-
+		Niu[set(y) |- Fi[subset_is_set[@h3, @h2], @h1]]
+}
+
+"empty class."
+$<<\varnothing>>$
+cls emptyset() {
+	setbuilder((cls z) => { F })
+}
+
+"axiom of empty set."
+axiomatic schema ax_emptyset() {
+	set(emptyset())
+}
+
+"emptyset의 defining property."
+schema emptyset_def(cls z) {
+	id(Nin(z, emptyset()))[Niu[in(z, emptyset()) |-
+		setbuilder_e[@h1]]]
+}
+
+"universal class."
+$<<V>>$
+cls universe() {
+	setbuilder((cls z) => { T })
+}
+
+schema universe_in_i(cls x: @11) {
+	set(x) |-
+		id(in(x, universe()))[setbuilder_i((cls z) => {T}, x)[@h1, Ti()]]
+}
+
+schema universe_subseteq_i($X$ cls x) {
+	id(subseteq(x, universe()))[Ui[(cls z) => {cp[in(z, x) |- universe_in_i[set_i[@h1]]]}]]
+}
+
+schema cup_universe_is_universe($X$ cls x) {
+	subseteq_to_eq[
+		id(subseteq(cup(x, universe()), universe()))[
+			Ui[(cls z) => {cp[in(z, cup(x, universe())) |-
+				universe_in_i[set_i[@h1]]]}]
+		],
+		cup_is_bigger_2(x, universe())
+	]
+}
+
+schema universe_cup_is_universe($X$ cls x) {
+	subseteq_to_eq[
+		id(subseteq(cup(universe(), x), universe()))[
+			Ui[(cls z) => {cp[in(z, cup(universe(), x)) |-
+				universe_in_i[set_i[@h1]]]}]
+		],
+		cup_is_bigger_1(universe(), x)
+	]
+}
+
+"러셀 집합. 사실 집합이 아니라 proper class이다."
+cls russell_set() {
+	setbuilder((cls z) => {
+		Nin(z, z)
+	})
+}
+
+"러셀 집합은 집합이 아니다."
+schema russell_set_is_not_set() {
+	Niu[set(russell_set()) |-
+		$russell_in_russell = NNe[Niu[Nin(russell_set(), russell_set()) |-
+			Fi[
+				id(in(russell_set(), russell_set()))[setbuilder_i((cls z) => {
+					Nin(z, z)
+				}, ?)[
+					@h1,
+					@h2
+				]],
+				@h2
+			]]];
+
+		Fi[$russell_in_russell, setbuilder_e[$russell_in_russell]]
+	]
+}
+
+"전체집합은 집합이 아니다."
+schema universe_is_not_set() {
+	supset_is_not_set[russell_set_is_not_set(), universe_subseteq_i(russell_set())]
 }
 
 "싱글턴 클래스. [$x]가 집합일 때는 일반적인 정의와 같고 [$x]가 proper class일 경우는 [$V]가 된다. 이러한 정의를 도입한 이유는 [~(href=https://github.com/logico-philosophical/math-o-matic/issues/8#issuecomment-701468167)이슈 #8]에 있다."
@@ -1734,6 +1906,70 @@ schema doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 		id(eq(doubleton(x, y), doubleton(u, v)))[cup_eq_i[singleton_eq_i[@h1], singleton_eq_i[@h2]]]
 }
 
+schema doubleton_is_universe_1(cls x: @111, cls y) {
+	N(set(x)) |-
+		subseteq_to_eq[
+			universe_subseteq_i(doubleton(x, y)),
+			id(subseteq(universe(), doubleton(x, y)))[Ui[(cls z) => {cp[in(z, universe()) |-
+				id(in(z, doubleton(x, y)))[setbuilder_i(
+					Of(is_in(singleton(x)), is_in(singleton(y))), z
+				)[
+					set_i[@h2],
+					Oi1(?, in(z, singleton(y)))[id(in(z, singleton(x)))[setbuilder_i(
+						(cls z) => {O(N(set(x)), eq(z, x))},
+						z
+					)[set_i[@h2], Oi1(?, eq(z, x))[@h1]]]]
+				]]
+			]}]]
+		]
+}
+
+schema doubleton_is_universe_2(cls x, cls y: @111) {
+	N(set(y)) |-
+		subseteq_to_eq[
+			universe_subseteq_i(doubleton(x, y)),
+			id(subseteq(universe(), doubleton(x, y)))[Ui[(cls z) => {cp[in(z, universe()) |-
+				id(in(z, doubleton(x, y)))[setbuilder_i(
+					Of(is_in(singleton(x)), is_in(singleton(y))), z
+				)[
+					set_i[@h2],
+					Oi2(in(z, singleton(x)), ?)[id(in(z, singleton(y)))[setbuilder_i(
+						(cls z) => {O(N(set(y)), eq(z, y))},
+						z
+					)[set_i[@h2], Oi1(?, eq(z, y))[@h1]]]]
+				]]
+			]}]]
+		]
+}
+
+schema doubleton_is_universe(cls x: @1111, cls y: @1211) {
+	O(N(set(x)), N(set(y))) |-
+		Oeu[
+			@h1,
+			doubleton_is_universe_1(x, y),
+			doubleton_is_universe_2(x, y)
+		]
+}
+
+schema doubleton_set_e1(cls x: @111, cls y: @112) {
+	set(doubleton(x, y)) |-
+		NNe[Niu[N(set(x)) |-
+			Fi[set_is_set_1[@h1, doubleton_is_universe_1(x, y)[@h2]], universe_is_not_set()]
+		]]
+}
+
+schema doubleton_set_e2(cls x: @111, cls y: @112) {
+	set(doubleton(x, y)) |-
+		NNe[Niu[N(set(y)) |-
+			Fi[set_is_set_1[@h1, doubleton_is_universe_2(x, y)[@h2]], universe_is_not_set()]
+		]]
+}
+
+schema doubleton_set_e(cls x: @111, cls y: @112) {
+	set(doubleton(x, y)) |-
+		Ai[doubleton_set_e1[@h1], doubleton_set_e2[@h1]]
+}
+
 schema doubleton_eq_e1(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 	set(x), set(y), set(u), set(v), eq(doubleton(x, y), doubleton(u, v)) |-
 		doubleton_e[
@@ -1799,118 +2035,7 @@ schema doubleton_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 		]
 }
 
-"empty class."
-$<<\varnothing>>$
-cls emptyset() {
-	setbuilder((cls z) => { F })
-}
-
-"axiom of empty set."
-axiomatic schema ax_emptyset() {
-	set(emptyset())
-}
-
-"emptyset의 defining property."
-schema emptyset_def(cls z) {
-	id(Nin(z, emptyset()))[Niu[in(z, emptyset()) |-
-		setbuilder_e[@h1]]]
-}
-
-"universal class."
-$<<V>>$
-cls universe() {
-	setbuilder((cls z) => { T })
-}
-
-"러셀 집합. 사실 집합이 아니라 proper class이다."
-cls russell_set() {
-	setbuilder((cls z) => {
-		Nin(z, z)
-	})
-}
-
-"러셀 집합은 집합이 아니다."
-schema russell_set_is_not_set() {
-    |- Niu[set(russell_set()) |-
-        $russell_in_russell = NNe[Niu[Nin(russell_set(), russell_set()) |-
-            Fi[
-                id(in(russell_set(), russell_set()))[setbuilder_i((cls z) => {
-                    Nin(z, z)
-                }, ?)[
-                    @h1,
-                    @h2
-                ]],
-                @h2
-            ]]];
-
-        Fi[$russell_in_russell, setbuilder_e[$russell_in_russell]]
-    ]
-}
-
-schema setbuilder_is_setbuilder(pr f: @121, cls x: @11) {
-	eq(x, setbuilder(f)) |-
-		id(U((cls z) => {
-			E(in(z, x), A(set(z), f(z)))
-		}))[syllUE(
-			is_in(x),
-			is_in(setbuilder(f)),
-			(cls z) => {A(set(z), f(z))}
-		)[eq_Ae1[@h1], setbuilder_def(f)]]
-}
-
-"술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
-일반적으로는 [$\{z \in x: f(z)\}]라고 쓰는 것이다."
-$\left\{\in #1<<:>>#2\right\}$
-cls subsetbuilder(cls x, pr f) {
-	setbuilder((cls y) => {
-		A(
-			in(y, x),
-			f(y)
-		)
-	})
-}
-
-"axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
-axiomatic schema ax_specify(pr f) {
-	U((cls x) => {
-		I(
-			set(x),
-			set(subsetbuilder(x, f))
-		)
-	})
-}
-
-schema ax_specify_m(pr f, cls x: @11) {
-	set(x) |- mp[@h1, Ue(?, x)[ax_specify(f)]]
-}
-
-schema cap_is_set_1(cls x, cls y) {
-	set(x) |- id(set(cap(x, y)))[ax_specify_m(is_in(y), ?)[@h1]]
-}
-
-schema cap_is_set_2(cls x, cls y) {
-	set(y) |- set_is_set_1[
-		cap_is_set_1(y, x)[@h1],
-		cap_commutative_2(y, x)
-	]
-}
-
-"axiom of union."
-axiomatic schema ax_bigcup() {
-	U(($A$ cls a) => {
-		I(set(a), set(bigcup(a)))
-	})
-}
-
-schema ax_bigcup_m($A$ cls a) {
-	set(a) |-
-		mp[
-			@h1,
-			Ue(?, a)[ax_bigcup()]
-		]
-}
-
-"axiom of pairing."
+"axiom of pairing. doubleton의 정의가 이상해졌으므로 doubleton에 의존하지 않도록 바꾸는 것이 좋을 것이다."
 axiomatic schema ax_doubleton() {
 	U2((cls x, cls y) => {
 		I(
@@ -1920,7 +2045,7 @@ axiomatic schema ax_doubleton() {
 	})
 }
 
-schema ax_doubleton_m(cls x: @11, cls y: @21) {
+schema doubleton_set_i(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
 		mp[
 			Ai[@h1, @h2],
@@ -2078,29 +2203,12 @@ schema cup_is_set(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
 		set_is_set_1[
 			ax_bigcup_m(doubleton(x, y))[
-				ax_doubleton_m[@h1, @h2]
+				doubleton_set_i[@h1, @h2]
 			],
 			bigcup_doubleton_is_cup[
 				@h1, @h2
 			]
 		]
-}
-
-schema subset_cap_is_subset(cls x: @11, cls y: @12) {
-	subseteq(x, y) |-
-		ax_extensional_m(x, cap(x, y))[
-			Ui[(cls z) => {
-				syllE[
-					DIpqEpApq[Ue(?, z)[@h1]],
-					E_flip[cap_def(x, y, z)]
-				]
-			}]
-		]
-}
-
-schema subset_is_set(cls x: @21, cls y: @22) {
-	set(y), subseteq(x, y) |-
-		set_is_set_2[cap_is_set_2(x, y)[@h1], subset_cap_is_subset[@h2]]
 }
 
 "power class."
@@ -2192,10 +2300,33 @@ schema power_is_set(cls x: @11) {
 		]]
 }
 
+schema singleton_is_universe(cls x: @111) {
+	N(set(x)) |-
+		ax_extensional_m(singleton(x), universe())[Ui[(cls z) => { Ei[
+			cp[in(z, singleton(x)) |- universe_in_i[set_i[@h2]]],
+			cp[in(z, universe()) |- id(in(z, singleton(x)))[setbuilder_i(
+				(cls z) => {O(N(set(x)), eq(z, x))}, z
+			)[
+				set_i[@h2],
+				Oi1(?, eq(z, x))[@h1]
+			]]]
+		] }]]
+}
+
 "싱글턴은 집합이다."
-schema singleton_is_set(cls x: @11) {
+schema singleton_set_i(cls x: @11) {
 	set(x) |-
 		subset_is_set[power_is_set[@h1], singleton_subseteq_power(x)[@h1]]
+}
+
+schema singleton_set_e(cls x: @111) {
+	set(singleton(x)) |-
+		NNe[Niu[N(set(x)) |-
+			Fi[
+				set_is_set_1[@h1, singleton_is_universe[@h2]],
+				universe_is_not_set()
+			]
+		]]
 }
 
 ###########################
@@ -2223,10 +2354,10 @@ schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 	set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v)) |-
 		Oe[
 			doubleton_eq_e[
-				singleton_is_set[@h1],
-				ax_doubleton_m[@h1, @h2],
-				singleton_is_set[@h3],
-				ax_doubleton_m[@h3, @h4],
+				singleton_set_i[@h1],
+				doubleton_set_i[@h1, @h2],
+				singleton_set_i[@h3],
+				doubleton_set_i[@h3, @h4],
 				@h5
 			],
 			cp[
@@ -2296,12 +2427,12 @@ schema v2_eq_e2(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 		Ae2[v2_eq_e[@h1, @h2, @h3, @h4, @h5]]
 }
 
-schema v2_is_set(cls x: @11, cls y: @21) {
+schema v2_set_i(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
 		id(set(v2(x, y)))[
-			ax_doubleton_m[
-				singleton_is_set[@h1],
-				ax_doubleton_m[@h1, @h2]
+			doubleton_set_i[
+				singleton_set_i[@h1],
+				doubleton_set_i[@h1, @h2]
 			]
 		]
 }
@@ -2347,7 +2478,7 @@ schema cartesian_in_i($A$ cls a: @12, $B$ cls b: @22, cls x: @11, cls y: @21) {
 				A(eq(z, v2(u, v)), A(in(u, a), in(v, b)))
 			})
 		}, ?)[
-			v2_is_set[set_i[@h1], set_i[@h2]],
+			v2_set_i[set_i[@h1], set_i[@h2]],
 			Xi2((cls u, cls v) => {
 				A(eq(v2(x, y), v2(u, v)), A(in(u, a), in(v, b)))
 			}, x, y)[
@@ -2489,13 +2620,13 @@ schema cartesian_is_set_21($A$ cls a, $B$ cls b, cls x, cls y) {
 		$y_in_cup_ab = cup_i2(a, ?, ?)[cartesian_in_e2[@h1, @h2, @h3]];
 		
 		$1 = id(in(singleton(x), power(cup(a, b))))[setbuilder_i((cls z) => {subseteq(z, cup(a, b))}, ?)[
-			singleton_is_set(x)[@h1],
+			singleton_set_i(x)[@h1],
 			id(subseteq(singleton(x), cup(a, b)))[Ui[(cls z) => { cp[in(z, singleton(x)) |-
 				in_eq_left_2[$x_in_cup_ab, Oe1[setbuilder_e[@h4], NNi[@h1]]]] }]]
 		]];
 		
 		$2 = id(in(doubleton(x, y), power(cup(a, b))))[setbuilder_i((cls z) => {subseteq(z, cup(a, b))}, ?)[
-			ax_doubleton_m[@h1, @h2],
+			doubleton_set_i[@h1, @h2],
 			id(subseteq(doubleton(x, y), cup(a, b)))[Ui[(cls z) => { cp[in(z, doubleton(x, y)) |-
 				Oeu[
 					doubleton_e[@h1, @h2, @h4],
@@ -2509,10 +2640,10 @@ schema cartesian_is_set_21($A$ cls a, $B$ cls b, cls x, cls y) {
 			(cls z) => {subseteq(z, power(cup(a, b)))},
 			?
 		)[
-			v2_is_set[@h1, @h2],
+			v2_set_i[@h1, @h2],
 			id(subseteq(v2(x, y), power(cup(a, b))))[Ui[(cls z) => { cp[in(z, doubleton(singleton(x), doubleton(x, y))) |-
 				Oeu[
-					doubleton_e[singleton_is_set[@h1], ax_doubleton_m[@h1, @h2], @h4],
+					doubleton_e[singleton_set_i[@h1], doubleton_set_i[@h1, @h2], @h4],
 					(eq(z, singleton(x)) |- in_eq_left_2[$1, @h5]),
 					(eq(z, doubleton(x, y)) |- in_eq_left_2[$2, @h5])
 				]
@@ -2762,7 +2893,7 @@ cls ord_two() {
 schema successor_is_set(cls x: @11) {
 	set(x) |- id(set(successor(x)))[cup_is_set[
 		@h1,
-		singleton_is_set[@h1]
+		singleton_set_i[@h1]
 	]]
 }
 
@@ -3027,7 +3158,7 @@ schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
 					I(in(g, recursion_set(a, c, f)), in(z, g))
 				})
 			}, v2(ord_zero(), c))[
-				v2_is_set[
+				v2_set_i[
 				set_i[zero_in_omega()],
 				set_i[@h1]
 			],
@@ -3058,7 +3189,7 @@ schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
 									I(in(g, recursion_set(a, c, f)), in(z, g))
 								})
 							}, v2(successor(n), fcall(f, x)))[
-								v2_is_set[
+								v2_set_i[
 									successor_is_set[set_i[@h2]],
 									set_i[fcall_in_codomain[@h1, @h3]]
 								],
