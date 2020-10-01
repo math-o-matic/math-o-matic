@@ -175,7 +175,11 @@ table.explorer td.bbb {
 #console-display {
 	width: 100%;
 	white-space: pre-wrap;
-	font-size: .95em;
+	font-size: .80em;
+}
+
+#console-display .katex {
+	font-size: 1.5em;
 }
 
 #console-display tr.error {
