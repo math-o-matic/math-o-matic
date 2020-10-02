@@ -2437,6 +2437,16 @@ schema v2_set_i(cls x: @11, cls y: @21) {
 		]
 }
 
+schema v2_set_e1(cls x: @111, cls y: @112) {
+	set(v2(x, y)) |-
+		singleton_set_e[doubleton_set_e1[@h1]]
+}
+
+schema v2_set_e2(cls x: @111, cls y: @112) {
+	set(v2(x, y)) |-
+		doubleton_set_e2[doubleton_set_e2[@h1]]
+}
+
 "순서쌍을 위한 setbuilder. 즉 [$\{(a, b): f(a, b)\}]이다."
 $\left\{<<:>>#1\right\}$
 cls setbuilder_v2(pr2 f) {
@@ -2490,38 +2500,40 @@ schema cartesian_in_i($A$ cls a: @12, $B$ cls b: @22, cls x: @11, cls y: @21) {
 		]]
 }
 
-schema cartesian_in_e($A$ cls a: @321, $B$ cls b: @322, cls x: @11, cls y: @21) {
-	set(x), set(y), in(v2(x, y), cartesian(a, b)) |-
+schema cartesian_in_e($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
+	in(v2(x, y), cartesian(a, b)) |-
+		$set_v2_xy = set_i[@h1];
+		$set_x = v2_set_e1[$set_v2_xy];
+		$set_y = v2_set_e2[$set_v2_xy];
+		
 		mpX2_X2e_p(?, A(in(x, a), in(y, b)))[
 			setbuilder_e((cls z) => {
 				X2((cls u, cls v) => {
 					A(eq(z, v2(u, v)), A(in(u, a), in(v, b)))
 				})
-			}, ?)[@h3],
+			}, ?)[@h1],
 			Ui2[(cls u, cls v) => { cp[A(eq(v2(x, y), v2(u, v)), A(in(u, a), in(v, b))) |-
-				$foo = Ae2[@h4];
+				$foo = Ae2[@h2];
 				$u_in_a = Ae1[$foo];
 				$v_in_b = Ae2[$foo];
 				$u_is_set = set_i[$u_in_a];
 				$v_is_set = set_i[$v_in_b];
-				$Ae1h4 = Ae1[@h4];
+				$Ae1h4 = Ae1[@h2];
 
 				Ai[
-					in_eq_left_2[$u_in_a, v2_eq_e1[@h1, @h2, $u_is_set, $v_is_set, $Ae1h4]],
-					in_eq_left_2[$v_in_b, v2_eq_e2[@h1, @h2, $u_is_set, $v_is_set, $Ae1h4]]
+					in_eq_left_2[$u_in_a, v2_eq_e1[$set_x, $set_y, $u_is_set, $v_is_set, $Ae1h4]],
+					in_eq_left_2[$v_in_b, v2_eq_e2[$set_x, $set_y, $u_is_set, $v_is_set, $Ae1h4]]
 				]
 			] }]
 		]
 }
 
-schema cartesian_in_e1($A$ cls a: @321, $B$ cls b: @322, cls x: @11, cls y: @21) {
-	set(x), set(y), in(v2(x, y), cartesian(a, b)) |-
-		Ae1[cartesian_in_e[@h1, @h2, @h3]]
+schema cartesian_in_e1($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
+	in(v2(x, y), cartesian(a, b)) |- Ae1[cartesian_in_e[@h1]]
 }
 
-schema cartesian_in_e2($A$ cls a: @321, $B$ cls b: @322, cls x: @11, cls y: @21) {
-	set(x), set(y), in(v2(x, y), cartesian(a, b)) |-
-		Ae2[cartesian_in_e[@h1, @h2, @h3]]
+schema cartesian_in_e2($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
+	in(v2(x, y), cartesian(a, b)) |- Ae2[cartesian_in_e[@h1]]
 }
 
 "어떤 class가 이항관계이다.
@@ -2589,6 +2601,32 @@ cls rel_composite(cls x, cls y) {
 	})
 }
 
+"이항관계를 위한 U.
+
+[$R]이 이항관계일 때 임의의 [$(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
+schema rel_U(pr f, $R$ cls r: @11) {
+	is_rel(r), U2((cls x, cls y) => {
+		I(
+			in(v2(x, y), r),
+			f(v2(x, y))
+		)
+	}), U2((cls x, cls y) => {
+		I(A(f(x), eq(x, y)), f(y))
+	}) |-
+		id(Uin(r, f))[Ui[(cls z) => {cp[in(z, r) |-
+			mpX2_X2e_p(?, f(z))[
+				mp[@h4, Ue(?, z)[@h1]],
+				Ui2[(cls x, cls y) => {
+					cp[eq(z, v2(x, y)) |-
+						mp[
+							Ai[mp[in_eq_left_1[@h4, @h5], Ue2(?, x, y)[@h2]], eq_symmetric[@h5]],
+							Ue2(?, v2(x, y), z)[@h3]
+						]]
+				}]
+			]
+		]}]]
+}
+
 "곱집합은 이항관계이다."
 schema cartesian_is_rel(cls x, cls y) {
 	id(is_rel(cartesian(x, y)))[Ui[(cls z) => {
@@ -2614,24 +2652,28 @@ schema cartesian_is_set_1($A$ cls a, $B$ cls b) {
 		power_is_set[power_is_set[cup_is_set[@h1, @h2]]]
 }
 
-schema cartesian_is_set_21($A$ cls a, $B$ cls b, cls x, cls y) {
-	set(x), set(y), in(v2(x, y), cartesian(a, b)) |-
-		$x_in_cup_ab = cup_i1(?, b, ?)[cartesian_in_e1[@h1, @h2, @h3]];
-		$y_in_cup_ab = cup_i2(a, ?, ?)[cartesian_in_e2[@h1, @h2, @h3]];
+schema cartesian_is_set_21($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
+	in(v2(x, y), cartesian(a, b)) |-
+		$set_v2_xy = set_i[@h1];
+		$set_x = v2_set_e1[$set_v2_xy];
+		$set_y = v2_set_e2[$set_v2_xy];
+		
+		$x_in_cup_ab = cup_i1(?, b, ?)[cartesian_in_e1[@h1]];
+		$y_in_cup_ab = cup_i2(a, ?, ?)[cartesian_in_e2[@h1]];
 		
 		$1 = id(in(singleton(x), power(cup(a, b))))[setbuilder_i((cls z) => {subseteq(z, cup(a, b))}, ?)[
-			singleton_set_i(x)[@h1],
+			singleton_set_i(x)[$set_x],
 			id(subseteq(singleton(x), cup(a, b)))[Ui[(cls z) => { cp[in(z, singleton(x)) |-
-				in_eq_left_2[$x_in_cup_ab, Oe1[setbuilder_e[@h4], NNi[@h1]]]] }]]
+				in_eq_left_2[$x_in_cup_ab, Oe1[setbuilder_e[@h2], NNi[$set_x]]]] }]]
 		]];
 		
 		$2 = id(in(doubleton(x, y), power(cup(a, b))))[setbuilder_i((cls z) => {subseteq(z, cup(a, b))}, ?)[
-			doubleton_set_i[@h1, @h2],
+			doubleton_set_i[$set_x, $set_y],
 			id(subseteq(doubleton(x, y), cup(a, b)))[Ui[(cls z) => { cp[in(z, doubleton(x, y)) |-
 				Oeu[
-					doubleton_e[@h1, @h2, @h4],
-					(eq(z, x) |- in_eq_left_2[$x_in_cup_ab, @h5]),
-					(eq(z, y) |- in_eq_left_2[$y_in_cup_ab, @h5])
+					doubleton_e[$set_x, $set_y, @h2],
+					(eq(z, x) |- in_eq_left_2[$x_in_cup_ab, @h3]),
+					(eq(z, y) |- in_eq_left_2[$y_in_cup_ab, @h3])
 				]
 			] }]]
 		]];
@@ -2640,25 +2682,39 @@ schema cartesian_is_set_21($A$ cls a, $B$ cls b, cls x, cls y) {
 			(cls z) => {subseteq(z, power(cup(a, b)))},
 			?
 		)[
-			v2_set_i[@h1, @h2],
+			v2_set_i[$set_x, $set_y],
 			id(subseteq(v2(x, y), power(cup(a, b))))[Ui[(cls z) => { cp[in(z, doubleton(singleton(x), doubleton(x, y))) |-
 				Oeu[
-					doubleton_e[singleton_set_i[@h1], doubleton_set_i[@h1, @h2], @h4],
-					(eq(z, singleton(x)) |- in_eq_left_2[$1, @h5]),
-					(eq(z, doubleton(x, y)) |- in_eq_left_2[$2, @h5])
+					doubleton_e[singleton_set_i[$set_x], doubleton_set_i[$set_x, $set_y], @h2],
+					(eq(z, singleton(x)) |- in_eq_left_2[$1, @h3]),
+					(eq(z, doubleton(x, y)) |- in_eq_left_2[$2, @h3])
 				]
 			] }]]
 		]]
 }
 
 schema cartesian_is_set_2($A$ cls a, $B$ cls b) {
-	subseteq(cartesian(a, b), power(power(cup(a, b))))	
+	id(subseteq(cartesian(a, b), power(power(cup(a, b)))))[
+		rel_U(is_in(power(power(cup(a, b)))), cartesian(a, b))[
+			cartesian_is_rel(a, b),
+			Ui2[(cls x, cls y) => {
+				cp[cartesian_is_set_21(a, b, x, y)]
+			}],
+			Ui2[(cls x, cls y) => {
+				cp[A(in(x, power(power(cup(a, b)))), eq(x, y)) |-
+					in_eq_left_1[Ae1[@h1], Ae2[@h1]]]
+			}]
+		]
+	]
 }
 
-"`[Pinter]` 정리 1.51."
+"`[Pinter]` 정리 1.51. 곱집합은 집합이다."
 schema cartesian_is_set($A$ cls a: @11, $B$ cls b: @21) {
 	set(a), set(b) |-
-		set(cartesian(a, b))
+		subset_is_set[
+			cartesian_is_set_1(a, b)[@h1, @h2],
+			cartesian_is_set_2(a, b)
+		]
 }
 
 schema rel_composite_associative(cls x, cls y, cls z) {
