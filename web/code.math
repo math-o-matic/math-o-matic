@@ -1906,14 +1906,16 @@ schema doubleton_e(cls x: @11, cls y: @21, cls z: @31) {
 		]
 }
 
+"set(y) 조건을 완화할 수도 있으나, 그러면 y가 집합이 아닐 때의 doubleton의 정의에 너무 의존하게 되므로 그러지 않았다."
 schema doubleton_in_1(cls x, cls y) {
-	set(x) |-
+	set(x), set(y) |-
 		id(in(x, doubleton(x, y)))[cup_i1(?, singleton(y), ?)[self_in_singleton(x)[@h1]]]
 }
 
+"set(x) 조건을 완화할 수도 있으나, 그러면 x가 집합이 아닐 때의 doubleton의 정의에 너무 의존하게 되므로 그러지 않았다."
 schema doubleton_in_2(cls x, cls y) {
-	set(y) |-
-		id(in(y, doubleton(x, y)))[cup_i2(singleton(x), ?, ?)[self_in_singleton(y)[@h1]]]
+	set(x), set(y) |-
+		id(in(y, doubleton(x, y)))[cup_i2(singleton(x), ?, ?)[self_in_singleton(y)[@h2]]]
 }
 
 schema doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
@@ -1921,7 +1923,8 @@ schema doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 		id(eq(doubleton(x, y), doubleton(u, v)))[cup_eq_i[singleton_eq_i[@h1], singleton_eq_i[@h2]]]
 }
 
-schema doubleton_is_universe_1(cls x: @111, cls y) {
+"x, y가 집합이 아닐 때의 doubleton의 정의에 의존하는 정리이므로 참조하는 것을 삼가라."
+@discouraged schema doubleton_is_universe_1(cls x: @111, cls y) {
 	N(set(x)) |-
 		subseteq_to_eq[
 			universe_subseteq_i(doubleton(x, y)),
@@ -1939,7 +1942,8 @@ schema doubleton_is_universe_1(cls x: @111, cls y) {
 		]
 }
 
-schema doubleton_is_universe_2(cls x, cls y: @111) {
+"x, y가 집합이 아닐 때의 doubleton의 정의에 의존하는 정리이므로 참조하는 것을 삼가라."
+@discouraged schema doubleton_is_universe_2(cls x, cls y: @111) {
 	N(set(y)) |-
 		subseteq_to_eq[
 			universe_subseteq_i(doubleton(x, y)),
@@ -1957,7 +1961,8 @@ schema doubleton_is_universe_2(cls x, cls y: @111) {
 		]
 }
 
-schema doubleton_is_universe(cls x: @1111, cls y: @1211) {
+"x, y가 집합이 아닐 때의 doubleton의 정의에 의존하는 정리이므로 참조하는 것을 삼가라."
+@discouraged schema doubleton_is_universe(cls x: @1111, cls y: @1211) {
 	O(N(set(x)), N(set(y))) |-
 		Oeu[
 			@h1,
@@ -1990,7 +1995,7 @@ schema doubleton_eq_e1(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 		doubleton_e[
 			@h3, @h4,
 			in_eq_right_1(doubleton(x, y), doubleton(u, v), x)[
-				doubleton_in_1(x, y)[@h1],
+				doubleton_in_1(x, y)[@h1, @h2],
 				@h5
 			]
 		]
@@ -2001,7 +2006,7 @@ schema doubleton_eq_e2(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 		doubleton_e[
 			@h3, @h4,
 			in_eq_right_1(doubleton(x, y), doubleton(u, v), y)[
-				doubleton_in_2(x, y)[@h2],
+				doubleton_in_2(x, y)[@h1, @h2],
 				@h5
 			]
 		]
@@ -2170,7 +2175,7 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 								)
 							}, x)[
 								Ai[
-									doubleton_in_1(x, y)[@h1],
+									doubleton_in_1(x, y)[@h1, @h2],
 									in_eq_right_1[@h4, eq_reflexive(x)]
 								]
 							]
@@ -2184,7 +2189,7 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 								)
 							}, y)[
 								Ai[
-									doubleton_in_2(x, y)[@h2],
+									doubleton_in_2(x, y)[@h1, @h2],
 									in_eq_right_1[@h4, eq_reflexive(y)]
 								]
 							]
@@ -2315,7 +2320,8 @@ schema power_is_set(cls x: @11) {
 		]]
 }
 
-schema singleton_is_universe(cls x: @111) {
+"x가 집합이 아닐 때의 singleton의 정의에 의존하는 정리이므로 참조하는 것을 삼가라."
+@discouraged schema singleton_is_universe(cls x: @111) {
 	N(set(x)) |-
 		ax_extensional_m(singleton(x), universe())[Ui[(cls z) => { Ei[
 			cp[in(z, singleton(x)) |- universe_in_i[set_i[@h2]]],
@@ -2408,22 +2414,22 @@ schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 				A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u))) |-
 					Ai[
 						eq_symmetric[Oe1[setbuilder_e[in_eq_right_2[
-							doubleton_in_1(u, v)[@h3],
+							doubleton_in_1(u, v)[@h3, @h4],
 							Ae1[@h6]
 						]], NNi[@h1]]],
 						eq_transitive_13[
 							eq_transitive_1[
 								eq_symmetric[Oe1[setbuilder_e[in_eq_right_2[
-									doubleton_in_1(u, v)[@h3],
+									doubleton_in_1(u, v)[@h3, @h4],
 									Ae1[@h6]
 								]], NNi[@h1]]],
 								eq_symmetric[Oe1[setbuilder_e[in_eq_right_2[
-									doubleton_in_2(u, v)[@h4],
+									doubleton_in_2(u, v)[@h3, @h4],
 									Ae1[@h6]
 								]], NNi[@h1]]]
 							],
 							eq_symmetric[Oe1[setbuilder_e[in_eq_right_1[
-								doubleton_in_2(x, y)[@h2],
+								doubleton_in_2(x, y)[@h1, @h2],
 								Ae2[@h6]
 							]], NNi[@h3]]]
 						]
