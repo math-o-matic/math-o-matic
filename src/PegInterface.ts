@@ -189,7 +189,7 @@ export default class PI {
 				throw Error('wut');
 		}
 
-		return new Schema({shouldValidate: false, name, type, params, expr, doc, tex}, scope);
+		return new Schema({shouldValidate: false, annotations: [], name, type, params, expr, doc, tex}, scope);
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope): Schemacall {
@@ -327,11 +327,14 @@ export default class PI {
 		if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 			throw Error('Assertion failed');
 
-		var name = null, axiomatic = false, doc = null;
+		var name: string = null,
+			axiomatic: boolean = false,
+			doc: string = null,
+			annotations: string[] = [];
 
 		if (obj._type == 'defschema') {
 			name = obj.name; axiomatic = obj.axiomatic;
-			doc = obj.doc;
+			doc = obj.doc; annotations = obj.annotations;
 		}
 
 		var scope = parentScope.extend('schema', name, obj.location);
@@ -360,7 +363,7 @@ export default class PI {
 
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new Schema({shouldValidate: true, axiomatic, name, params, def$s, expr, doc}, scope);
+		return new Schema({shouldValidate: true, doc, annotations, axiomatic, name, params, def$s, expr}, scope);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope): Schemacall {

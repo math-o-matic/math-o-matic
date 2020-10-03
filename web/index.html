@@ -240,8 +240,10 @@
 
 				for (var [k, v] of program.scope.schemaMap) {
 					r = `<div class="block">`
-						+ `<p class="label"><a id="schema-${v.proved ? 'p' : 'np'}-${k}" href="#schema-${v.proved ? 'p' : 'np'}-${k}"><b>${
-							(v.axiomatic ? 'axiomatic ' : '')
+						+ `<p class="label"><a id="schema-${v.proved ? 'p' : 'np'}-${k}" href="#schema-${v.proved ? 'p' : 'np'}-${k}">${
+							v.annotations.map(a => `<b class="red">${a}</b> `).join('')
+						}<b>${
+							v.axiomatic ? 'axiomatic ' : ''
 						}schema</b> ${k}</a>${`(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
 						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
 

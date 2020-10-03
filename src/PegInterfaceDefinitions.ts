@@ -35,6 +35,7 @@ export type MetaexprObject = TeeObject | ReductionObject | SchemacallObject | Va
 export interface DefschemaObject {
     _type: 'defschema';
     doc?: string;
+    annotations: string[];
     axiomatic: boolean;
     name: string;
     params?: DefvObject[];

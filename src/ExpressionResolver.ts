@@ -44,6 +44,7 @@ export default class ER {
 
 				return new Schema({
 					shouldValidate: expr.shouldValidate,
+					annotations: expr.annotations,
 					axiomatic: expr.axiomatic,
 					name: null,
 					params: expr.params,
@@ -143,6 +144,7 @@ export default class ER {
 
 				return new Schema({
 					shouldValidate: expr.shouldValidate,
+					annotations: expr.annotations,
 					axiomatic: expr.axiomatic,
 					name: null,
 					params: expr.params,
@@ -172,6 +174,7 @@ export default class ER {
 
 				return new Schema({
 					shouldValidate: expr.shouldValidate,
+					annotations: expr.annotations,
 					axiomatic: expr.axiomatic,
 					name: null,
 					params: expr.params,
