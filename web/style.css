@@ -83,9 +83,14 @@ kbd {
 	margin: 1em 0;
 }
 
+.katex .vlist-r {
+	pointer-events: none;
+}
+
 .katex a {
 	text-decoration: none;
 	color: inherit;
+	pointer-events: auto;
 }
 
 .katex a[href^="#def-"] > :not(.mspace) {
