@@ -98,9 +98,9 @@ export default class Schemacall extends Node {
 				this.schema.name
 					? `\\href{#schema-${this.schema.proved ? 'p' : 'np'}-${this.schema.name}}{\\textsf{${Node.escapeTeX(this.schema.name)}}}`
 					: this.schema.toTeXString(false)
-			) + `(${this.args.map(arg => {
+			) + `\\mathord{\\left(${this.args.map(arg => {
 				return arg.toTeXString(Node.PREC_COMMA);
-			}).join(', ')})`;
+			}).join(', ')}\\right)}`;
 		}
 
 		if (this.schema instanceof Schema)
@@ -115,6 +115,6 @@ export default class Schemacall extends Node {
 				: this.schema.name.length == 1
 					? Node.escapeTeX(this.schema.name)
 					: `\\mathrm{${Node.escapeTeX(this.schema.name)}}`}`
-			+ `(${args.join(', ')})`;
+			+ `\\mathord{\\left(${args.join(', ')}\\right)}`;
 	}
 }

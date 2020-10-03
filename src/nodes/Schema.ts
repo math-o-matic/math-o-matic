@@ -115,12 +115,15 @@ export default class Schema extends Node {
 			this.precedence = Node.PREC_FUNEXPR;
 			return [
 				(this.shouldConsolidate(prec) ? '\\left(' : ''),
+
 				(
 					this.params.length == 1
 					? this.params[0].toTeXString(false)
 					: `\\left(${this.params.map(e => e.toTeXString(Node.PREC_COMMA)).join(', ')}\\right)`
 				),
-				`\\mapsto ${ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(false)}`,
+				'\\mapsto ',
+				ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(false),
+
 				(this.shouldConsolidate(prec) ? '\\right)' : '')
 			].join('');
 		}
@@ -140,8 +143,8 @@ export default class Schema extends Node {
 			if (!root)
 				return `\\href{#${id}}\\mathsf{${Node.escapeTeX(this.name)}}`;
 		
-			return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}(${this.params.map(e => e.toTeXString(Node.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}):`
-						+ '\\\\\\quad' + ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
+			return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}\\mathord{\\left(${this.params.map(e => e.toTeXString(Node.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}\\right)}:\\\\\\quad`
+				+ ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
 		}
 	}
 
@@ -154,9 +157,10 @@ export default class Schema extends Node {
 			return this.makeTeX('def-' + this.name, args, prec);
 		}
 	
-		return `${!this.name
+		return (
+			!this.name
 				? this.toTeXString(false)
-				: `\\href{#def-${this.name}}{${this.name.length == 1 ? Node.escapeTeX(this.name) : `\\mathrm{${Node.escapeTeX(this.name)}}`}}`}`
-			+ `(${args.join(', ')})`;
+				: `\\href{#def-${this.name}}{${this.name.length == 1 ? Node.escapeTeX(this.name) : `\\mathrm{${Node.escapeTeX(this.name)}}`}}`
+		) + `\\mathord{\\left(${args.join(', ')}\\right)}`;
 	}
 }
