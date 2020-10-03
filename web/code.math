@@ -1674,6 +1674,31 @@ cls subsetbuilder(cls x, pr f) {
 	})
 }
 
+schema subsetbuilder_i(cls x: @12, pr f, cls z: @11) {
+	in(z, x), f(z) |-
+		id(in(z, subsetbuilder(x, f)))[
+			setbuilder_i(
+				(cls z) => { A(in(z, x), f(z)) },
+				z
+			)[
+				set_i[@h1],
+				Ai[@h1, @h2]
+			]
+		]
+}
+
+schema subsetbuilder_e(cls x: @121, pr f: @122, cls z: @11) {
+	in(z, subsetbuilder(x, f)) |-
+		Ae2[setbuilder_e[@h1]]
+}
+
+schema subsetbuilder_is_subset(cls x, pr f) {
+	id(subseteq(subsetbuilder(x, f), x))[
+		Ui[(cls z) => { cp[in(z, subsetbuilder(x, f)) |-
+			Ae1[setbuilder_e[@h1]]] }]
+	]
+}
+
 "axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
 axiomatic schema ax_specify(pr f) {
 	U((cls x) => {
@@ -3074,7 +3099,7 @@ schema omega_is_set() {
 }
 
 "`[Pinter]` 정리 6.3."
-schema induce_1($X$ cls x: @11) {
+schema induce_set($X$ cls x: @11) {
 	subseteq(x, omega()), in(ord_zero(), x), Uin(omega(), (cls n) => {
 		I(in(n, x), in(successor(n), x))
 	}) |-
@@ -3089,6 +3114,45 @@ schema induce_1($X$ cls x: @11) {
 		];
 		
 		subseteq_to_eq[@h1, $omega_subseteq_x]
+}
+
+"수학적 귀납법."
+schema induce(pr f) {
+	$foo = (cls z) => {
+		in(z, omega()) |-
+			Eiu[
+				(f(z) |- subsetbuilder_i(omega(), f, z)[@h1, @h2]),
+				(in(z, subsetbuilder(omega(), f)) |- subsetbuilder_e[@h2])
+			]
+	};
+	
+	f(ord_zero()), Uin(omega(), (cls n) => {
+		I(f(n), f(successor(n)))
+	}) |-
+		$c1 = subsetbuilder_is_subset(omega(), f);
+		$c2 = mpE1[@h1, $foo(ord_zero())[zero_in_omega()]];
+		$c3 = id(Uin(omega(), (cls n) => {
+			I(
+				in(n, subsetbuilder(omega(), f)),
+				in(successor(n), subsetbuilder(omega(), f))
+			)
+		}))[Ui[(cls n) => { cp[in(n, omega()) |-
+			cp[in(n, subsetbuilder(omega(), f)) |- mpE1[
+				mp[subsetbuilder_e[@h4], mp[@h3, Ue(?, n)[@h2]]],
+				$foo(successor(n))[successor_in_omega[@h3]]
+			]]
+		] }]];
+		
+		id(Uin(omega(), f))[Ui[(cls n) => { cp[in(n, omega()) |-
+			subsetbuilder_e[in_eq_right_2[@h3, induce_set[$c1, $c2, $c3]]]
+		] }]]
+}
+
+"induce_set의 더 강력한 버전."
+schema induce_set_strong($X$ cls x: @12) {
+	in(ord_zero(), x), Uin(omega(), (cls n) => {
+		I(in(n, x), in(successor(n), x))
+	}) |- id(subseteq(omega(), x))[induce(is_in(x))[@h1, @h2]]
 }
 
 "`[Pinter]`에 따르면 페아노 공리계 제3공리인 것."
