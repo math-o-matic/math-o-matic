@@ -315,13 +315,21 @@ schema swap(st p: @11, st q: @121, st r: @122) {
 	]
 }
 
-schema swap_c(st p, st q, st r) {
-	cp[swap(p, q, r)]
-}
-
 schema swap_m(st p: @11, st q: @121, st r: @122) {
 	I(p, I(q, r)), q |-
 		mp[@h2, swap[@h1]]
+}
+
+"currying."
+schema curry(st p: @111, st q: @112, st r: @12) {
+	I(A(p, q), r) |-
+		cp[p |- cp[q |- mp[Ai[@h2, @h3], @h1]]]
+}
+
+"uncurrying."
+schema uncurry(st p: @11, st q: @121, st r: @122) {
+	I(p, I(q, r)) |-
+		cp[A(p, q) |- mp[Ae2[@h2], mp[Ae1[@h2], @h1]]]
 }
 
 schema O_flip(st p: @11, st q: @12) {
@@ -939,6 +947,28 @@ schema mpUE(pr f, pr g) {
 		mpU[@h1, Ee1U[@h2]]
 }
 
+schema swapU(pr f, pr g, pr h) {
+	U(If(f, If(g, h))) |-
+		id(U(If(g, If(f, h))))[Ui[(cls x) => {
+			swap[id(I(f(x), I(g(x), h(x))))[Ue(?, x)[@h1]]]
+		}]]
+}
+
+schema swapU_c(pr f, pr g, pr h) {
+	cp[swapU(f, g, h)]
+}
+
+schema swapU2(pr2 f, pr2 g, pr2 h) {
+	U2(If2(f, If2(g, h))) |-
+		id(U2(If2(g, If2(f, h))))[Ui2[(cls x, cls y) => {
+			swap(f(x, y), g(x, y), h(x, y))[Ue2(?, x, y)[@h1]]
+		}]]
+}
+
+schema swapU2_c(pr2 f, pr2 g, pr2 h) {
+	cp[swapU2(f ,g, h)]
+}
+
 ############################
 ######## SET THEORY ########
 ############################
@@ -1039,6 +1069,22 @@ st Xin(cls a, pr f) {
 	})
 }
 
+"Xin을 위한 mp."
+schema mpXin($A$ cls a: @11, pr f: @12, pr g: @222) {
+	Xin(a, f), Uin(a, If(f, g)) |-
+		id(Xin(a, g))[mpX(Af(is_in(a), f), Af(is_in(a), g))[
+			@h1,
+			Ui[(cls z) => { cp[A(in(z, a), f(z)) |-
+				Ai[Ae1[@h3], mp(f(z), g(z))[Ae2[@h3], mp[Ae1[@h3], Ue(?, z)[@h2]]]]
+			] }]
+		]]
+}
+
+schema mpXin_Xe_p($A$ cls a: @11, pr f: @12, st p) {
+	Xin(a, f), Uin(a, If(f, (cls z) => { p })) |-
+		Xe_p(p)[XAe2(is_in(a), (cls z) => { p })[mpXin[@h1, @h2]]]
+}
+
 "어떤 class가 집합이라는 것. 어떤 class의 원소면 된다. 독일어 [*Menge] (집합)의 M이다."
 $\left(<<\operatorname{\mathfrak M}>> #1\right)$
 st set(cls x) {
@@ -1109,10 +1155,6 @@ schema eq_Ae2_Ue_Ee1(cls x, cls y, cls w) {
 	eq(x, y) |- Ee1[eq_Ae2_Ue(x, y, w)[@h1]]
 }
 
-schema eq_Ae2_Ue_Ee1_c(cls x, cls y, cls z) {
-	cp[eq_Ae2_Ue_Ee1(x, y, z)]
-}
-
 schema eq_Ae2_Ue_Ee2(cls x, cls y, cls z) {
 	eq(x, y) |- Ee2[eq_Ae2_Ue(x, y, z)[@h1]]
 }
@@ -1155,32 +1197,6 @@ schema in_eq_right_2(cls x: @21, cls y: @22, cls z: @11) {
 				@h2
 			]
 		]
-}
-
-schema swapU(pr f, pr g, pr h) {
-	U(If(f, If(g, h))) |-
-		id(U(If(g, If(f, h))))[Ui[(cls x) => {
-			swap[id(I(f(x), I(g(x), h(x))))[Ue(?, x)[@h1]]]
-		}]]
-}
-
-schema swapU_c(pr f, pr g, pr h) {
-	cp[swapU(f, g, h)]
-}
-
-schema swapU2(pr2 f, pr2 g, pr2 h) {
-	U2(If2(f, If2(g, h))) |-
-		id(U2(If2(g, If2(f, h))))[Ui2[(cls x, cls y) => {
-			swap(f(x, y), g(x, y), h(x, y))[Ue2(?, x, y)[@h1]]
-		}]]
-}
-
-schema swapU2_c(pr2 f, pr2 g, pr2 h) {
-	cp[swapU2(f ,g, h)]
-}
-
-schema eq_Ae2_Ue_Ee1_c_swap(cls x, cls y, cls z) {
-	swap[eq_Ae2_Ue_Ee1_c(x, y, z)]
 }
 
 schema eq_reflexive(cls x) {
@@ -2606,6 +2622,20 @@ cls rel_dom($R$ cls r) {
 	})
 }
 
+schema rel_dom_in_i($R$ cls r: @12, cls x: @111, cls y: @112) {
+	in(v2(x, y), r) |-
+		$set_x = v2_set_e1[set_i[@h1]];
+		
+		id(in(x, rel_dom(r)))[setbuilder_i((cls x) => {
+			X((cls y) => {
+				in(v2(x, y), r)
+			})
+		}, x)[
+			$set_x,
+			Xi((cls y) => {in(v2(x, y), r)}, y)[@h1]
+		]]
+}
+
 "이항관계의 치역(image)."
 $!<prec=200><<\operatorname{im}>>#1$
 cls rel_im($R$ cls r) {
@@ -3301,7 +3331,7 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 }
 
 "[$\gamma\in\mathscr A]가 되기 위한 두 번째 조건."
-schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
+schema recursion_theorem_2($A$ cls a: @12, cls c: @11, cls f) {
 	in(c, a) |-
 		id(in(v2(ord_zero(), c), define_recursively(a, c, f)))[
 			setbuilder_i((cls z) => {
@@ -3321,7 +3351,7 @@ schema recursion_theorem_2($A$ cls a: @11, cls c: @21, cls f: @31) {
 }
 
 "[$\gamma\in\mathscr A]가 되기 위한 세 번째 조건."
-schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
+schema recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) {
 	is_function(f, a, a) |-
 		id(Uin(omega(), (cls n) => {
 			Uin(a, (cls x) => {
@@ -3370,11 +3400,33 @@ schema recursion_theorem_3($A$ cls a: @11, cls c: @21, cls f: @31) {
 "[$\gamma]가 함수가 되기 위한 두 번째 조건."
 schema recursion_theorem_4($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
-		Uin(omega(), (cls n) => {
+		$base = id(Xin(a, (cls x) => {in(v2(ord_zero(), x), define_recursively(a, c, f))}))[
+			Xi((cls x) => {
+				A(in(x, a), in(v2(ord_zero(), x), define_recursively(a, c, f)))
+			}, c)[Ai[@h2, recursion_theorem_2(a, c, f)[@h2]]]
+		];
+		
+		$step = Ui[(cls n) => { cp[in(n, omega()) |-
+			cp[Xin(a, (cls x) => { in(v2(n, x), define_recursively(a, c, f)) }) |-
+				mpXin_Xe_p(?, ?, Xin(a, (cls x) => {in(v2(successor(n), x), define_recursively(a, c, f))}))[
+					@h5,
+					Ui[(cls x) => { cp[in(x, a) |-
+						cp[in(v2(n, x), define_recursively(a, c, f)) |-
+							Xi((cls x) => {
+								A(in(x, a), in(v2(successor(n), x), define_recursively(a, c, f)))
+							}, fcall(f, x))[Ai[
+								fcall_in_codomain[@h3, @h6],
+								mp[@h7, mp[@h6, Ue(?, x)[mp[@h4, Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]]
+							]]]
+					] }]
+				]]
+		] }];
+		
+		induce((cls n) => {
 			Xin(a, (cls x) => {
 				in(v2(n, x), define_recursively(a, c, f))
 			})
-		})
+		})[$base, $step]
 }
 
 "[$\gamma]가 함수가 되기 위한 세 번째 조건."
