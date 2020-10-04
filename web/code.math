@@ -3481,6 +3481,6 @@ cls omega_add(cls n, cls m) {
 }
 
 "[$1+1=2]이다."
-schema one_plus_one_eq_two() {
+schema one_plus_one_is_two() {
 	eq(omega_add(ord_one(), ord_one()), ord_two())
 }
