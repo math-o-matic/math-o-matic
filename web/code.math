@@ -132,6 +132,11 @@ axiomatic schema Ee2(st p: @11, st q: @12) {
 	E(p, q) |- I(q, p)
 }
 
+schema cp2(st p: @11, st q: @12, st r: @1r) {
+	(p, q |- r) |-
+		cp[A(p, q) |- @h1[Ae1[@h2], Ae2[@h2]]]
+}
+
 schema A_flip(st p: @11, st q: @12) {
 	A(p, q) |-
 		Ai[Ae2[@h1], Ae1[@h1]]
@@ -1019,7 +1024,7 @@ st eq(cls x, cls y) {
 
 "[$\neq]."
 $!<prec=350>#1<<\neq>>#2$
-st neq(cls x, cls y) {
+st Neq(cls x, cls y) {
 	N(eq(x, y))
 }
 
@@ -1279,6 +1284,40 @@ st Q(pr f) {
 	})
 }
 
+schema Qi(pr f) {
+	X((cls c) => {
+		U((cls x) => {
+			I(f(x), eq(x, c))
+		})
+	}) |-
+		id(Q(f))[Ui2[(cls x, cls y) => { cp2[
+			f(x), f(y) |-
+				mpX_Xe_p(?, eq(x, y))[
+					@h1,
+					Ui[(cls c) => { cp[
+						U((cls x) => {
+							I(f(x), eq(x, c))
+						}) |-
+							eq_transitive[
+								mp[@h2, Ue(?, x)[@h4]],
+								eq_symmetric[mp[@h3, Ue(?, y)[@h4]]]
+							]
+					] }]
+				]
+		] }]]
+}
+
+schema Qim(pr f, cls c) {
+	U((cls x) => {
+		I(f(x), eq(x, c))
+	}) |-
+		Qi(f)[Xi((cls c) => {
+			U((cls x) => {
+				I(f(x), eq(x, c))
+			})
+		}, c)[@h1]]
+}
+
 "유일 존재 양화(unique existential quantification)."
 $!<prec=249><<\exists!>>#1$
 st Xq(pr f) {
@@ -1481,6 +1520,68 @@ schema setbuilder_def_set_2(pr f, cls x) {
 	]
 }
 
+schema setbuilder_is_setbuilder(pr f: @121, cls x: @11) {
+	eq(x, setbuilder(f)) |-
+		id(U((cls z) => {
+			E(in(z, x), A(set(z), f(z)))
+		}))[syllUE(
+			is_in(x),
+			is_in(setbuilder(f)),
+			(cls z) => {A(set(z), f(z))}
+		)[eq_Ae1[@h1], setbuilder_def(f)]]
+}
+
+"술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
+일반적으로는 [$\{z \in x: f(z)\}]라고 쓰는 것이다."
+$\left\{\in #1<<:>>#2\right\}$
+cls subsetbuilder(cls x, pr f) {
+	setbuilder((cls y) => {
+		A(
+			in(y, x),
+			f(y)
+		)
+	})
+}
+
+schema subsetbuilder_i(cls x: @12, pr f, cls z: @11) {
+	in(z, x), f(z) |-
+		id(in(z, subsetbuilder(x, f)))[
+			setbuilder_i(
+				(cls z) => { A(in(z, x), f(z)) },
+				z
+			)[
+				set_i[@h1],
+				Ai[@h1, @h2]
+			]
+		]
+}
+
+schema subsetbuilder_e(cls x: @121, pr f: @122, cls z: @11) {
+	in(z, subsetbuilder(x, f)) |-
+		Ae2[setbuilder_e[@h1]]
+}
+
+schema subsetbuilder_is_subset(cls x, pr f) {
+	id(subseteq(subsetbuilder(x, f), x))[
+		Ui[(cls z) => { cp[in(z, subsetbuilder(x, f)) |-
+			Ae1[setbuilder_e[@h1]]] }]
+	]
+}
+
+"axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
+axiomatic schema ax_specify(pr f) {
+	U((cls x) => {
+		I(
+			set(x),
+			set(subsetbuilder(x, f))
+		)
+	})
+}
+
+schema ax_specify_m(pr f, cls x: @11) {
+	set(x) |- mp[@h1, Ue(?, x)[ax_specify(f)]]
+}
+
 "교집합."
 $!<prec=300>#1<<\cap>>#2$
 cls cap(cls x, cls y) {
@@ -1667,68 +1768,6 @@ schema bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
 		}]]
 }
 
-schema setbuilder_is_setbuilder(pr f: @121, cls x: @11) {
-	eq(x, setbuilder(f)) |-
-		id(U((cls z) => {
-			E(in(z, x), A(set(z), f(z)))
-		}))[syllUE(
-			is_in(x),
-			is_in(setbuilder(f)),
-			(cls z) => {A(set(z), f(z))}
-		)[eq_Ae1[@h1], setbuilder_def(f)]]
-}
-
-"술어와 집합으로부터 술어를 만족하는 집합의 부분집합을 만든다.
-일반적으로는 [$\{z \in x: f(z)\}]라고 쓰는 것이다."
-$\left\{\in #1<<:>>#2\right\}$
-cls subsetbuilder(cls x, pr f) {
-	setbuilder((cls y) => {
-		A(
-			in(y, x),
-			f(y)
-		)
-	})
-}
-
-schema subsetbuilder_i(cls x: @12, pr f, cls z: @11) {
-	in(z, x), f(z) |-
-		id(in(z, subsetbuilder(x, f)))[
-			setbuilder_i(
-				(cls z) => { A(in(z, x), f(z)) },
-				z
-			)[
-				set_i[@h1],
-				Ai[@h1, @h2]
-			]
-		]
-}
-
-schema subsetbuilder_e(cls x: @121, pr f: @122, cls z: @11) {
-	in(z, subsetbuilder(x, f)) |-
-		Ae2[setbuilder_e[@h1]]
-}
-
-schema subsetbuilder_is_subset(cls x, pr f) {
-	id(subseteq(subsetbuilder(x, f), x))[
-		Ui[(cls z) => { cp[in(z, subsetbuilder(x, f)) |-
-			Ae1[setbuilder_e[@h1]]] }]
-	]
-}
-
-"axiom schema of specification. 어떤 집합에서 임의 술어를 만족시키는 원소들의 class를 만들었을 때 이 class가 집합이라는 뜻이다."
-axiomatic schema ax_specify(pr f) {
-	U((cls x) => {
-		I(
-			set(x),
-			set(subsetbuilder(x, f))
-		)
-	})
-}
-
-schema ax_specify_m(pr f, cls x: @11) {
-	set(x) |- mp[@h1, Ue(?, x)[ax_specify(f)]]
-}
-
 schema cap_is_set_1(cls x, cls y) {
 	set(x) |- id(set(cap(x, y)))[ax_specify_m(is_in(y), ?)[@h1]]
 }
@@ -1777,7 +1816,15 @@ schema supset_is_not_set(cls x: @111, cls y: @22) {
 		Niu[set(y) |- Fi[subset_is_set[@h3, @h2], @h1]]
 }
 
-"empty class."
+"차집합."
+$!<prec=300>#1<<\setminus>>#2$
+cls setminus(cls x, cls y) {
+	setbuilder((cls z) => {
+		A(in(z, x), Nin(z, y))
+	})
+}
+
+"공집합."
 $<<\varnothing>>$
 cls emptyset() {
 	setbuilder((cls z) => { F })
@@ -3188,7 +3235,7 @@ schema induce_set_strong($X$ cls x: @12) {
 "`[Pinter]`에 따르면 페아노 공리계 제3공리인 것."
 schema successor_is_not_zero(cls n) {
 	in(n, omega()) |-
-		id(neq(successor(n), ord_zero()))[
+		id(Neq(successor(n), ord_zero()))[
 			Niu[
 				eq(successor(n), ord_zero()) |-
 					Fi[
@@ -3429,14 +3476,44 @@ schema recursion_theorem_4($A$ cls a: @11, cls c: @21, cls f: @31) {
 		})[$base, $step]
 }
 
+schema recursion_theorem_5_base_($A$ cls a: @11, cls c: @21, cls f: @31, cls d) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		in(v2(ord_zero(), d), define_recursively(a, c, f)) |-
+			Neq(d, c) |-
+				in(setminus(define_recursively(a, c, f), singleton(v2(ord_zero(), d))), recursion_set(a, c, f))
+}
+
+"[$\gamma]가 함수가 되기 위한 세 번째 조건의 base case."
+schema recursion_theorem_5_base($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		Q((cls x) => {
+			in(v2(ord_zero(), x), define_recursively(a, c, f))
+		})
+}
+
+"[$\gamma]가 함수가 되기 위한 세 번째 조건의 step case."
+schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
+	set(a), in(c, a), is_function(f, a, a) |-
+		Uin(omega(), (cls n) => {
+			I(
+				Q((cls x) => {
+					in(v2(n, x), define_recursively(a, c, f))
+				}),
+				Q((cls x) => {
+					in(v2(successor(n), x), define_recursively(a, c, f))
+				})
+			)
+		})
+}
+
 "[$\gamma]가 함수가 되기 위한 세 번째 조건."
 schema recursion_theorem_5($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
-		Uin(omega(), (cls n) => {
+		induce((cls n) => {
 			Q((cls x) => {
 				in(v2(n, x), define_recursively(a, c, f))
 			})
-		})
+		})[recursion_theorem_5_base[@h1, @h2, @h3], recursion_theorem_5_step[@h1, @h2, @h3]]
 }
 
 "[$\gamma:\omega\to A]가 함수이다."
