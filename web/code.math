@@ -1824,6 +1824,28 @@ cls setminus(cls x, cls y) {
 	})
 }
 
+schema setminus_i(cls x: @12, cls y: @212, cls z: @11) {
+	in(z, x), N(in(z, y)) |-
+		id(in(z, setminus(x, y)))[setbuilder_i(
+			(cls z) => {A(in(z, x), Nin(z, y))},
+			z
+		)[
+			set_i[@h1],
+			Ai[@h1, @h2]
+		]]
+}
+
+schema setminus_is_smaller(cls x, cls y) {
+	id(subseteq(setminus(x, y), x))[
+		Ui[(cls z) => { cp[in(z, setminus(x, y)) |- Ae1[setbuilder_e[@h1]]] }]
+	]
+}
+
+schema setminus_e2(cls x: @121, cls y: @122, cls z: @11) {
+	in(z, setminus(x, y)) |-
+		Ae2[setbuilder_e[@h1]]
+}
+
 "공집합."
 $<<\varnothing>>$
 cls emptyset() {
@@ -1920,6 +1942,11 @@ cls singleton(cls x) {
 	setbuilder((cls z) => {
 		O(N(set(x)), eq(z, x))
 	})
+}
+
+schema singleton_e(cls x: @11, cls z: @21) {
+	set(x), in(z, singleton(x)) |-
+		Oe1[setbuilder_e[@h2], NNi[@h1]]
 }
 
 st is_singleton(cls x) {
@@ -2448,6 +2475,26 @@ cls v2(cls x, cls y) {
 	doubleton(singleton(x), doubleton(x, y))
 }
 
+schema v2_set_i(cls x: @11, cls y: @21) {
+	set(x), set(y) |-
+		id(set(v2(x, y)))[
+			doubleton_set_i[
+				singleton_set_i[@h1],
+				doubleton_set_i[@h1, @h2]
+			]
+		]
+}
+
+schema v2_set_e1(cls x: @111, cls y: @112) {
+	set(v2(x, y)) |-
+		singleton_set_e[doubleton_set_e1[@h1]]
+}
+
+schema v2_set_e2(cls x: @111, cls y: @112) {
+	set(v2(x, y)) |-
+		doubleton_set_e2[doubleton_set_e2[@h1]]
+}
+
 schema v2_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 	eq(x, u), eq(y, v) |-
 		id(eq(v2(x, y), v2(u, v)))[
@@ -2531,29 +2578,20 @@ schema v2_eq_e1(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 		Ae1[v2_eq_e[@h1, @h2, @h3, @h4, @h5]]
 }
 
+schema v2_eq_e1_v2(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
+	set(v2(u, v)), eq(v2(x, y), v2(u, v)) |-
+		$set_xy = set_is_set_2[@h1, @h2];
+		$set_x = v2_set_e1[$set_xy];
+		$set_y = v2_set_e2[$set_xy];
+		$set_u = v2_set_e1[@h1];
+		$set_v = v2_set_e2[@h1];
+		
+		v2_eq_e1[$set_x, $set_y, $set_u, $set_v, @h2]
+}
+
 schema v2_eq_e2(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 	set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v)) |-
 		Ae2[v2_eq_e[@h1, @h2, @h3, @h4, @h5]]
-}
-
-schema v2_set_i(cls x: @11, cls y: @21) {
-	set(x), set(y) |-
-		id(set(v2(x, y)))[
-			doubleton_set_i[
-				singleton_set_i[@h1],
-				doubleton_set_i[@h1, @h2]
-			]
-		]
-}
-
-schema v2_set_e1(cls x: @111, cls y: @112) {
-	set(v2(x, y)) |-
-		singleton_set_e[doubleton_set_e1[@h1]]
-}
-
-schema v2_set_e2(cls x: @111, cls y: @112) {
-	set(v2(x, y)) |-
-		doubleton_set_e2[doubleton_set_e2[@h1]]
 }
 
 "순서쌍을 위한 setbuilder. 즉 [$\{(a, b): f(a, b)\}]이다."
@@ -3233,7 +3271,7 @@ schema induce_set_strong($X$ cls x: @12) {
 }
 
 "`[Pinter]`에 따르면 페아노 공리계 제3공리인 것."
-schema successor_is_not_zero(cls n) {
+schema successor_is_not_zero(cls n: @11) {
 	in(n, omega()) |-
 		id(Neq(successor(n), ord_zero()))[
 			Niu[
@@ -3476,19 +3514,78 @@ schema recursion_theorem_4($A$ cls a: @11, cls c: @21, cls f: @31) {
 		})[$base, $step]
 }
 
-schema recursion_theorem_5_base_($A$ cls a: @11, cls c: @21, cls f: @31, cls d) {
-	set(a), in(c, a), is_function(f, a, a) |-
-		in(v2(ord_zero(), d), define_recursively(a, c, f)) |-
-			Neq(d, c) |-
-				in(setminus(define_recursively(a, c, f), singleton(v2(ord_zero(), d))), recursion_set(a, c, f))
-}
-
 "[$\gamma]가 함수가 되기 위한 세 번째 조건의 base case."
 schema recursion_theorem_5_base($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
-		Q((cls x) => {
+		Qim((cls x) => {
 			in(v2(ord_zero(), x), define_recursively(a, c, f))
-		})
+		}, c)[Ui[(cls d) => { cp[in(v2(ord_zero(), d), define_recursively(a, c, f)) |-
+			NNe[Niu[Neq(d, c) |-
+				$c1 = subseteq_subseteq[
+					setminus_is_smaller(define_recursively(a, c, f), singleton(v2(ord_zero(), d))),
+					recursion_theorem_1[@h1, @h2, @h3]
+				];
+				
+				$c2 = setminus_i[
+					recursion_theorem_2(a, c, f)[@h2],
+					Niu[in(v2(ord_zero(), c), singleton(v2(ord_zero(), d))) |-
+						Fi[
+							eq_symmetric[v2_eq_e2[
+								ax_emptyset(), set_i[@h2],
+								ax_emptyset(), v2_set_e2[set_i[@h4]],
+								singleton_e[set_i[@h4], @h6]]],
+							@h5
+						]]
+				];
+				
+				$c3 = Ui[(cls n) => { cp[in(n, omega()) |-
+					Ui[(cls x) => { cp[in(x, a) |-
+						cp[in(v2(n, x), setminus(define_recursively(a, c, f), singleton(v2(ord_zero(), d)))) |-
+							setminus_i[
+								mp[
+									in_subseteq[
+										@h8,
+										setminus_is_smaller(define_recursively(a, c, f), singleton(v2(ord_zero(), d)))
+									],
+									mp[@h7, Ue(?, x)[mp[@h6, Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]
+								],
+								Niu[in(v2(successor(n), fcall(f, x)), singleton(v2(ord_zero(), d))) |-
+									Fi[
+										v2_eq_e1_v2[set_i[@h4], singleton_e[set_i[@h4], @h9]],
+										successor_is_not_zero[@h6]
+									]]
+							]]
+					] }]
+				] }];
+				
+				$gamma_is_smaller = bigcap_is_smaller[id(in(setminus(define_recursively(a, c, f), singleton(v2(ord_zero(), d))), recursion_set(a, c, f)))[
+					setbuilder_i(($G$ cls g) => {
+						A(
+							subseteq(g, cartesian(omega(), a)),
+							A(
+								in(v2(ord_zero(), c), g),
+								Uin(omega(), (cls n) => {
+									Uin(a, (cls x) => {
+										I(
+											in(v2(n, x), g),
+											in(v2(successor(n), fcall(f, x)), g)
+										)
+									})
+								})
+							)
+						)
+					}, ?)[
+						subset_is_set[cartesian_is_set[omega_is_set(), @h1], $c1],
+						Ai[$c1, Ai[$c2, $c3]]
+					]
+				]];
+				
+				Fi[
+					self_in_singleton[set_i[@h4]],
+					setminus_e2[in_subseteq[@h4, $gamma_is_smaller]]
+				]
+			]]
+		] }]]
 }
 
 "[$\gamma]가 함수가 되기 위한 세 번째 조건의 step case."
