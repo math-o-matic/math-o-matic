@@ -174,7 +174,7 @@ reduction =
 		"[" _
 		a:(
 			head:metaexpr _
-			tail:("," _ e:metaexpr _ {return e})*
+			tail:(";" _ e:metaexpr _ {return e})*
 			{return [head].concat(tail)}
 		)?
 		"]"
