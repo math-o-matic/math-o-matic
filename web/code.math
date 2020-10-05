@@ -406,18 +406,18 @@ schema I_distribute_left(st p: @11, st q: @121, st r: @122) {
 schema EOi(st p: @11, st q: @12, st r: @21, st s: @22) {
 	E(p, q), E(r, s) |-
 		Eiu[
-			(O(p, r) |-
+			O(p, r) |-
 				Oeu[
 					@h3;
-					(p |- Oi1(?, s)[mpE1[@h4; @h1]]);
-					(r |- Oi2(q, ?)[mpE1[@h4; @h2]])
-				]);
-			(O(q, s) |-
+					p |- Oi1(?, s)[mpE1[@h4; @h1]];
+					r |- Oi2(q, ?)[mpE1[@h4; @h2]]
+				];
+			O(q, s) |-
 				Oeu[
 					@h3;
-					(q |- Oi1(?, r)[mpE2[@h4; @h1]]);
-					(s |- Oi2(p, ?)[mpE2[@h4; @h2]])
-				])
+					q |- Oi1(?, r)[mpE2[@h4; @h1]];
+					s |- Oi2(p, ?)[mpE2[@h4; @h2]]
+				]
 		]
 }
 
@@ -1260,8 +1260,8 @@ schema eq_transitive_13(cls x: @12, cls y: @11, cls z: @22) {
 schema eq_transitive_El(cls x: @11, cls y: @12, cls z) {
 	eq(x, y) |-
 		Eiu[
-			(eq(z, x) |- eq_transitive[@h2; @h1]);
-			(eq(z, y) |- eq_transitive_23[@h1; @h2])
+			eq(z, x) |- eq_transitive[@h2; @h1];
+			eq(z, y) |- eq_transitive_23[@h1; @h2]
 		]
 }
 
@@ -1689,8 +1689,8 @@ schema cup_eq_i(cls x: @11, cls y: @12, cls u: @21, cls v: @22) {
 					set_i[@h3];
 					Oeu[
 						setbuilder_e[@h3];
-						(in(z, x) |- Oi1(?, in(z, v))[in_eq_right_1[@h4; @h1]]);
-						(in(z, u) |- Oi2(in(z, y), ?)[in_eq_right_1[@h4; @h2]])
+						in(z, x) |- Oi1(?, in(z, v))[in_eq_right_1[@h4; @h1]];
+						in(z, u) |- Oi2(in(z, y), ?)[in_eq_right_1[@h4; @h2]]
 					]
 				]]]
 	};
@@ -2241,8 +2241,8 @@ schema bigcup_singleton_is_self(cls x: @11) {
 	set(x) |-
 		ax_extensional_m(bigcup(singleton(x)), x)[Ui[(cls z) => {
 			Eiu[
-				(in(z, bigcup(singleton(x))) |- bigcup_singleton_to_self(x, z)[@h1; @h2]);
-				(in(z, x) |- self_to_bigcup_singleton[@h1; @h2])
+				in(z, bigcup(singleton(x))) |- bigcup_singleton_to_self(x, z)[@h1; @h2];
+				in(z, x) |- self_to_bigcup_singleton[@h1; @h2]
 			]
 		}]]
 }
@@ -2357,11 +2357,11 @@ cls power(cls x) {
 schema power_def_Ue(cls x, cls y) {
 	set(x) |-
 		Eiu[
-			(in(y, power(x)) |- setbuilder_e[@h2]);
-			(subseteq(y, x) |-
+			in(y, power(x)) |- setbuilder_e[@h2];
+			subseteq(y, x) |-
 				id(in(y, power(x)))[setbuilder_i((cls y) => {
 					subseteq(y, x)
-				}, y)[subset_is_set[@h1; @h2]; @h2]])
+				}, y)[subset_is_set[@h1; @h2]; @h2]]
 		]
 }
 
@@ -2833,8 +2833,8 @@ schema cartesian_is_set_21($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y:
 			id(subseteq(doubleton(x, y), cup(a, b)))[Ui[(cls z) => { cp[in(z, doubleton(x, y)) |-
 				Oeu[
 					doubleton_e[$set_x; $set_y; @h2];
-					(eq(z, x) |- in_eq_left_2[$x_in_cup_ab; @h3]);
-					(eq(z, y) |- in_eq_left_2[$y_in_cup_ab; @h3])
+					eq(z, x) |- in_eq_left_2[$x_in_cup_ab; @h3];
+					eq(z, y) |- in_eq_left_2[$y_in_cup_ab; @h3]
 				]
 			] }]]
 		]];
@@ -2847,8 +2847,8 @@ schema cartesian_is_set_21($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y:
 			id(subseteq(v2(x, y), power(cup(a, b))))[Ui[(cls z) => { cp[in(z, doubleton(singleton(x), doubleton(x, y))) |-
 				Oeu[
 					doubleton_e[singleton_set_i[$set_x]; doubleton_set_i[$set_x; $set_y]; @h2];
-					(eq(z, singleton(x)) |- in_eq_left_2[$1; @h3]);
-					(eq(z, doubleton(x, y)) |- in_eq_left_2[$2; @h3])
+					eq(z, singleton(x)) |- in_eq_left_2[$1; @h3];
+					eq(z, doubleton(x, y)) |- in_eq_left_2[$2; @h3]
 				]
 			] }]]
 		]]
@@ -3236,8 +3236,8 @@ schema induce(pr f) {
 	$foo = (cls z) => {
 		in(z, omega()) |-
 			Eiu[
-				(f(z) |- subsetbuilder_i(omega(), f, z)[@h1; @h2]);
-				(in(z, subsetbuilder(omega(), f)) |- subsetbuilder_e[@h2])
+				f(z) |- subsetbuilder_i(omega(), f, z)[@h1; @h2];
+				in(z, subsetbuilder(omega(), f)) |- subsetbuilder_e[@h2]
 			]
 	};
 	
