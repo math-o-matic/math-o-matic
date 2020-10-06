@@ -1223,6 +1223,11 @@ schema eq_symmetric(cls x: @11, cls y: @12) {
 		]]
 }
 
+schema Neq_symmetric(cls x: @11, cls y: @12) {
+	Neq(x, y) |-
+		id(Neq(y, x))[Niu[eq(y, x) |- Fi[eq_symmetric[@h2]; @h1]]]
+}
+
 schema eq_transitive(cls x: @11, cls y: @12, cls z: @22) {
 	eq(x, y), eq(y, z) |-
 		id(eq(x, z))[
@@ -1307,6 +1312,11 @@ schema Qi(pr f) {
 		] }]]
 }
 
+schema Qe(pr f: @11, cls x, cls y) {
+	Q(f), f(x), f(y) |-
+		mp[Ai[@h2; @h3]; Ue2(?, x, y)[@h1]]
+}
+
 schema Qim(pr f, cls c) {
 	U((cls x) => {
 		I(f(x), eq(x, c))
@@ -1385,7 +1395,7 @@ schema subseteq_to_eq(cls x: @11, cls y: @12) {
 		ax_extensional_m(x, y)[EiU(is_in(x), is_in(y))[@h1; @h2]]
 }
 
-schema eq_subseteq(cls x, cls y, cls z) {
+schema eq_subseteq(cls x: @11, cls y: @12, cls z: @22) {
 	eq(x, y), subseteq(y, z) |-
 		subseteq_subseteq[eq_to_subseteq_1[@h1]; @h2]
 }
@@ -2594,6 +2604,17 @@ schema v2_eq_e2(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 		Ae2[v2_eq_e[@h1; @h2; @h3; @h4; @h5]]
 }
 
+schema v2_eq_e2_v1(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
+	set(v2(x, y)), eq(v2(x, y), v2(u, v)) |-
+		$set_uv = set_is_set_1[@h1; @h2];
+		$set_x = v2_set_e1[@h1];
+		$set_y = v2_set_e2[@h1];
+		$set_u = v2_set_e1[$set_uv];
+		$set_v = v2_set_e2[$set_uv];
+		
+		v2_eq_e2[$set_x; $set_y; $set_u; $set_v; @h2]
+}
+
 "순서쌍을 위한 setbuilder. 즉 [$\{(a, b): f(a, b)\}]이다."
 $\left\{<<:>>#1\right\}$
 cls setbuilder_v2(pr2 f) {
@@ -2918,6 +2939,12 @@ cls make_fun([cls -> cls] f, $A$ cls a) {
 	)
 }
 
+schema make_fun_is_function([cls -> cls] f, $A$ cls a, $B$ cls b) {
+	Uin(a, (cls x) => {
+		in(f(x), b)
+	}) |- is_function(make_fun(f, a), a, b)
+}
+
 "매개변수가 두 개인 메타함수로 함수를 만든다."
 $\left[#1\right]_{<<\in>>#2 \times #3}$
 cls make_fun_v2([(cls, cls) -> cls] f, $A$ cls a, $B$ cls b) {
@@ -3041,7 +3068,7 @@ schema fcall_def_3(cls f, $A$ cls a, $B$ cls b, cls x) {
 		}]]
 }
 
-schema fcall_def(cls f, $A$ cls a, $B$ cls b, cls x) {
+schema fcall_def(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 	is_function(f, a, b), in(x, a) |-
 		mpX_Xe_p(?, in(v2(x, fcall(f, x)), f))[
 			fcall_def_2(f, a, b, x)[@h1; @h2];
@@ -3060,6 +3087,41 @@ schema fcall_def(cls f, $A$ cls a, $B$ cls b, cls x) {
 						]
 					]]
 			}]
+		]
+}
+
+schema fcall_i(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @211, cls y: @212) {
+	is_function(f, a, b), in(v2(x, y), f) |-
+		$x_in_a = cartesian_in_e1[in_subseteq[@h2; fun_subseteq_cartesian[@h1]]];
+		
+		fun_im_Q_m[
+			@h1;
+			$x_in_a;
+			@h2;
+			fcall_def[@h1; $x_in_a]
+		]
+}
+
+schema fcall_e(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21, cls y: @31) {
+	is_function(f, a, b), in(x, a), eq(y, fcall(f, x)) |-
+		in_eq_left_2[
+			fcall_def[@h1; @h2];
+			v2_eq_i[
+				eq_reflexive(x);
+				@h3
+			]
+		]
+}
+
+schema fcall_eq_i(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, $x_1$ cls x1: @31, $x_2$ cls x2: @32) {
+	is_function(f, a, b), in(x1, a), eq(x1, x2) |-
+		fun_im_Q_m[
+			@h1; @h2;
+			fcall_def(f, a, b, x1)[@h1; @h2];
+			in_eq_left_2[
+				fcall_def(f, a, b, x2)[@h1; in_eq_left_1[@h2; @h3]];
+				v2_eq_i[@h3; eq_reflexive(fcall(f, x2))]
+			]
 		]
 }
 
@@ -3285,6 +3347,59 @@ schema successor_is_not_zero(cls n: @11) {
 					]
 			]
 		]
+}
+
+"`[Pinter]` 보조정리 6.6."
+schema omega_in_to_subseteq(cls n: @11, cls m: @21) {
+	$base = Ui[(cls m) => { cp[in(m, ord_zero()) |-
+		NNe[Niu[N(subseteq(m, ord_zero())) |-
+			Fi[@h1; emptyset_def(m)]]]] }];
+			
+	$step = Ui[(cls n) => { cp[in(n, omega()) |-
+		cp[U((cls m) => { I(in(m, n), subseteq(m, n)) }) |-
+			Ui[(cls m) => { cp[in(m, successor(n)) |-
+				$n_subseteq_successor_n = id(subseteq(n, successor(n)))[cup_is_bigger_1(n, singleton(n))];
+				
+				Oeu[
+					cup_e[@h3];
+					in(m, n) |-
+						subseteq_subseteq[
+							mp[@h4; Ue(?, m)[@h2]];
+							$n_subseteq_successor_n
+						];
+					in(m, singleton(n)) |-
+						eq_subseteq[
+							singleton_e[set_i[@h1]; @h4];
+							$n_subseteq_successor_n
+						]
+				]
+			] }]
+		]
+	] }];
+	
+	in(n, omega()), in(m, n) |-
+		mp[@h2; Ue(?, m)[mp[@h1; Ue(?, n)[
+			induce((cls n) => {
+				U((cls m) => {
+					I(in(m, n), subseteq(m, n))
+				})
+			})[$base; $step]
+		]]]]
+}
+
+"`[Pinter]`에 따르면 페아노 공리계 제5공리인 것."
+schema successor_eq_e(cls n: @11, cls m: @21) {
+	in(n, omega()), in(m, omega()), eq(successor(n), successor(m)) |-
+		$base = setbuilder_e[in_eq_right_1[self_in_successor[set_i[@h1]]; @h3]];
+		$base_dual = setbuilder_e[in_eq_right_2[self_in_successor[set_i[@h2]]; @h3]];
+		
+		$c1 = in(n, singleton(m)) |- singleton_e[set_i[@h2]; @h4];
+		$c1_dual = in(m, singleton(n)) |- singleton_e[set_i[@h1]; @h4];
+		
+		NNe[Niu[Neq(n, m) |-
+			$c2 = omega_in_to_subseteq[@h2; Oe2[$base; Niu[in(n, singleton(m)) |- Fi[$c1[@h5]; @h4]]]];
+			$c2_dual = omega_in_to_subseteq[@h1; Oe2[$base_dual; Niu[in(m, singleton(n)) |- Fi[$c1_dual[@h5]; Neq_symmetric[@h4]]]]];
+			Fi[subseteq_to_eq[$c2; $c2_dual]; @h4]]]
 }
 
 st is_recursively_defined($\gamma$ cls g, $A$ cls a, cls c, cls f) {
@@ -3591,7 +3706,7 @@ schema recursion_theorem_5_base($A$ cls a: @11, cls c: @21, cls f: @31) {
 "[$\gamma]가 함수가 되기 위한 세 번째 조건의 step case."
 schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
-		Uin(omega(), (cls n) => {
+		id(Uin(omega(), (cls n) => {
 			I(
 				Q((cls x) => {
 					in(v2(n, x), define_recursively(a, c, f))
@@ -3600,7 +3715,134 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 					in(v2(successor(n), x), define_recursively(a, c, f))
 				})
 			)
-		})
+		}))[Ui[(cls n) => { cp[in(n, omega()) |-
+			cp[Q((cls x) => {
+				in(v2(n, x), define_recursively(a, c, f))
+			}) |-
+				mpXin_Xe_p(?, ?, Q((cls x) => {
+					in(v2(successor(n), x), define_recursively(a, c, f))
+				}))[
+					mp[@h4; Ue(?, n)[recursion_theorem_4[@h1; @h2; @h3]]];
+					Ui[(cls x) => { cp[in(x, a) |-
+						cp[in(v2(n, x), define_recursively(a, c, f)) |-
+							Qim((cls x) => {
+								in(v2(successor(n), x), define_recursively(a, c, f))
+							}, fcall(f, x))[Ui[(cls u) => { cp[in(v2(successor(n), u), define_recursively(a, c, f)) |-
+								NNe[Niu[Neq(u, fcall(f, x)) |-
+									$c1 = subseteq_subseteq[
+										setminus_is_smaller(define_recursively(a, c, f), singleton(v2(successor(n), u)));
+										recursion_theorem_1[@h1; @h2; @h3]
+									];
+
+									$c2 = setminus_i[
+										recursion_theorem_2(a, c, f)[@h2];
+										Niu[in(v2(ord_zero(), c), singleton(v2(successor(n), u))) |-
+											Fi[
+												eq_symmetric[v2_eq_e1_v2[
+													set_i[@h8];
+													singleton_e[set_i[@h8]; @h10]
+												]];
+												successor_is_not_zero[@h4]
+											]]
+									];
+
+									$c3 = Ui[(cls m) => { cp[in(m, omega()) |-
+										Ui[(cls v) => { cp[in(v, a) |-
+											cp[in(v2(m, v), setminus(define_recursively(a, c, f), singleton(v2(successor(n), u)))) |-
+												$bar = in_subseteq[
+													@h12;
+													setminus_is_smaller(define_recursively(a, c, f), singleton(v2(successor(n), u)))
+												];
+												$foo = mp[
+													$bar;
+													mp[@h11; Ue(?, v)[mp[@h10; Ue(?, m)[recursion_theorem_3(a, c, f)[@h3]]]]]
+												];
+
+												$c3_c1 = Neq(successor(m), successor(n)) |-
+													setminus_i[
+														$foo;
+														Niu[in(v2(successor(m), fcall(f, v)), singleton(v2(successor(n), u))) |-
+															Fi[
+																v2_eq_e1_v2[
+																	set_i[@h8];
+																	singleton_e[set_i[@h8]; @h14]
+																];
+																@h13
+															]]
+													];
+
+												$c3_c2 = eq(successor(m), successor(n)) |-
+													in_eq_left_2[
+														setminus_i[
+															mp[@h7; mp[@h6; Ue(?, x)[mp[@h4; Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]];
+															Niu[in(v2(successor(n), fcall(f, x)), singleton(v2(successor(n), u))) |-
+																Fi[
+																	eq_symmetric[v2_eq_e2_v1[set_i[@h14]; singleton_e[set_i[@h8]; @h14]]];
+																	@h9
+																]]
+														];
+														v2_eq_i[
+															@h13;
+															fcall_eq_i[
+																@h3; @h11;
+																mp[
+																	Ai[
+																		in_eq_left_1[
+																			$bar;
+																			v2_eq_i[
+																				successor_eq_e[@h10; @h4; @h13];
+																				eq_reflexive(v)
+																			]
+																		];
+																		@h7
+																	];
+																	Ue2(?, v, x)[@h5]
+																]
+															]
+														]
+													];
+
+												Oeu[
+													lxm(eq(successor(m), successor(n)));
+													$c3_c2; $c3_c1
+												]
+											]
+										] }]
+									] }];
+
+									$gamma_is_smaller = bigcap_is_smaller[id(in(setminus(define_recursively(a, c, f), singleton(v2(successor(n), u))), recursion_set(a, c, f)))[
+										setbuilder_i(($G$ cls g) => {
+											A(
+												subseteq(g, cartesian(omega(), a)),
+												A(
+													in(v2(ord_zero(), c), g),
+													Uin(omega(), (cls n) => {
+														Uin(a, (cls x) => {
+															I(
+																in(v2(n, x), g),
+																in(v2(successor(n), fcall(f, x)), g)
+															)
+														})
+													})
+												)
+											)
+										}, ?)[
+											subset_is_set[cartesian_is_set[omega_is_set(); @h1]; $c1];
+											Ai[$c1; Ai[$c2; $c3]]
+										]
+									]];
+
+									Fi[
+										self_in_singleton[set_i[@h8]];
+										setminus_e2[in_subseteq[@h8; $gamma_is_smaller]]
+									]
+								]]
+							] }]]
+						]
+					] }]
+				]
+			]
+		] }]]
 }
 
 "[$\gamma]가 함수가 되기 위한 세 번째 조건."
@@ -3624,7 +3866,33 @@ schema recursion_theorem_6($A$ cls a: @11, cls c: @21, cls f: @31) {
 "[$\gamma]가 함수이고 재귀적으로 정의된다."
 schema recursion_theorem_7($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
-		is_recursively_defined(define_recursively(a, c, f), a, c, f)
+		$c1 = recursion_theorem_6[@h1; @h2; @h3];
+		
+		$c2 = eq_symmetric[fcall_i[$c1; recursion_theorem_2(a, c, f)[@h2]]];
+		
+		$c3 = Ui[(cls n) => { cp[in(n, omega()) |-
+			mpXin_Xe_p(?, ?, eq(
+				fcall(define_recursively(a, c, f), successor(n)),
+				fcall(f, fcall(define_recursively(a, c, f), n))
+			))[
+				mp[@h4; Ue(?, n)[recursion_theorem_4[@h1; @h2; @h3]]];
+				Ui[(cls x) => { cp[in(x, a) |-
+					cp[in(v2(n, x), define_recursively(a, c, f)) |-
+						eq_transitive[
+							eq_symmetric[fcall_i[
+								$c1;
+								mp[
+									@h6;
+									mp[@h5; Ue(?, x)[mp[@h4; Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]
+								]
+							]];
+							fcall_eq_i[@h3; @h5; fcall_i[$c1; @h6]]
+						]]
+				] }]
+			]
+		] }];
+		
+		id(is_recursively_defined(define_recursively(a, c, f), a, c, f))[Ai[$c1; Ai[$c2; $c3]]]
 }
 
 "[$\gamma]는 여러 개 있지 않다."
@@ -3648,10 +3916,16 @@ schema recursion_theorem($A$ cls a: @11, cls c: @21, cls f: @31) {
 		]
 }
 
+"자연수를 더하는 연산. 단항연산이다."
+$\left(#1<<+_\omega>>\cdot\right)$
+cls omega_add_unary(cls n) {
+	define_recursively(omega(), n, make_fun(($\gamma$ cls g) => { successor(g) }, omega()))
+}
+
 "자연수 덧셈."
 $!<prec=300>#1<<+_\omega>>#2$
 cls omega_add(cls n, cls m) {
-	fcall(define_recursively(omega(), n, make_fun(($\gamma$ cls g) => { successor(g) }, omega())), m)
+	fcall(omega_add_unary(n), m)
 }
 
 "[$1+1=2]이다."
