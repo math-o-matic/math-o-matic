@@ -188,18 +188,56 @@
 
 				<p>위 표는 자동으로 생성되었습니다.</p>`;
 
+				var baseType = program.scope.baseType.name;
+
+				var primitiveTypeList = [...program.scope.typedefMap]
+						.filter(([k, v]) => !v.origin).map(([k, v]) => k);
+
+				var macroTypeList = [...program.scope.typedefMap]
+						.filter(([k, v]) => v.origin).map(([k, v]) => k);
+
+				var primitiveDefinitionList = [...program.scope.defMap]
+						.filter(([k, v]) => !v.expr).map(([k, v]) => k);
+
+				var macroDefinitionList = [...program.scope.defMap]
+						.filter(([k, v]) => v.expr).map(([k, v]) => k);
+				
 				var axiomSchemaList = [...program.scope.schemaMap]
 						.filter(([k, v]) => v.axiomatic).map(([k, v]) => k);
 
 				var notProvedList = [...program.scope.schemaMap]
 						.filter(([k, v]) => !v.proved).map(([k, v]) => k);
 
+				var provedList = [...program.scope.schemaMap]
+						.filter(([k, v]) => !v.axiomatic && v.proved).map(([k, v]) => k);
+				
 				$('#summary').innerHTML = `
 				<ul>
-					<li><b>공리 스키마</b>(${axiomSchemaList.length}): ${
-						axiomSchemaList.map(n => `<a href="#schema-p-${n}">${n}</a>`).join(', ')}
-					<li><b>증명되지 않은 스키마</b>(${notProvedList.length}): ${
-						notProvedList.map(n => `<a href="#schema-np-${n}">${n}</a>`).join(', ')}
+					<li><p><b>타입</b>(${program.scope.typedefMap.size})</p>
+					<ul>
+						<li><b>문장 타입</b>: <a href="#type-${baseType}">${baseType}</a>
+						<li><b>원시 타입</b>(${primitiveTypeList.length}): ${
+							primitiveTypeList.map(n => `<a href="#type-${n}">${n}</a>`).join(', ')}
+						<li><b>매크로</b>(${macroTypeList.length}): ${
+							macroTypeList.map(n => `<a href="#type-${n}">${n}</a>`).join(', ')}
+					</ul>
+
+					<li><p><b>정의</b>(${program.scope.defMap.size})</p>
+					<ul>
+						<li><b>원시 기호</b>(${primitiveDefinitionList.length}): ${
+							primitiveDefinitionList.map(n => `<a href="#def-${n}">${n}</a>`).join(', ')}
+						<li><b>매크로</b>(${macroDefinitionList.length}): ${
+							macroDefinitionList.map(n => `<a href="#def-${n}">${n}</a>`).join(', ')}
+					</ul>
+					
+					<li><p><b>스키마</b>(${program.scope.schemaMap.size})</p>
+					<ul>
+						<li><b>공리</b>(${axiomSchemaList.length}): ${
+							axiomSchemaList.map(n => `<a href="#schema-p-${n}">${n}</a>`).join(', ')}
+						<li><b>증명되지 않음</b>(${notProvedList.length}): ${
+							notProvedList.map(n => `<a href="#schema-np-${n}">${n}</a>`).join(', ')}
+						<li><b>정리</b>(${provedList.length})
+					</ul>
 				</ul>`;
 
 				var arr = {}, r;
