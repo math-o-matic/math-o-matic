@@ -123,15 +123,17 @@ export default class Program {
 			}
 		})(theexpr);
 
-		function getHtmlLine(ctr: string | number, left: any[], h1: string, h2: string | string[], bbb?: boolean) {
+		function getHtmlLine(ctr: string | number, left: any[], h1: string, h2: string | string[], options?) {
 			var padding = left.length;
+
+			var {bbb=false, rrb=false} = options || {};
 	
-			var htmlLeft = left.map(e => `<td class="brb">${e.map(f => ktx(f.toTeXString(true))).join(', ')}</td>`).join('');
+			var htmlLeft = left.map((e, i, a) => `<td class="${rrb && i == a.length - 1 ? 'rrb' : 'brb'}">${e.map(f => ktx(f.toTeXString(true))).join(', ')}</td>`).join('');
 
 			for (var i = 0; i < left.length; i++)
 				while(left[i].length) left[i].pop();
 	
-			return `<tr><th>${ctr}</th>${htmlLeft}<td ${bbb ? 'class="bbb"' : ''} colspan="${ncols-padding}">${h1}</td>${h2 instanceof Array ? h2.map(e => `<td>${e}</td>`).join('') : `<td colspan="2">${h2}</td>`}</tr>`;
+			return `<tr><th>${ctr}</th>${htmlLeft}<td ${bbb ? 'class="bbb" ' : ''}colspan="${ncols-padding}">${h1}</td>${h2 instanceof Array ? h2.map(e => `<td>${e}</td>`).join('') : `<td colspan="2">${h2}</td>`}</tr>`;
 		}
 
 		function exprToHtml(expr, expand?) {
@@ -371,7 +373,7 @@ export default class Program {
 							var emptyleft = Array(left.length + 1).fill([]);
 
 							ret += getHtmlLine(
-								'', emptyleft, '', '', true
+								'', emptyleft, '', '', {bbb: true, rrb: true}
 							);
 						} else {
 							ret += line.leftlines.map((line, i, a) => {
@@ -380,7 +382,7 @@ export default class Program {
 									newleft,
 									exprToHtml(line.expr, true),
 									'assumption',
-									i == a.length - 1
+									{bbb: i == a.length - 1, rrb: true}
 								);
 							}).join('');
 						}

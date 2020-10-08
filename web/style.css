@@ -127,6 +127,12 @@ table.explorer td.brb {
 	width: 1px;
 }
 
+table.explorer td.rrb {
+	border-right: 3px #D32F2F solid;
+	text-align: right;
+	width: 1px;
+}
+
 table.explorer td.bbb {
 	border-bottom: 3px #222 solid;
 }
