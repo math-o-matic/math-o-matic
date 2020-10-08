@@ -33,10 +33,10 @@ export default class ER {
 					args: expr.args.map(arg => ER.substitute(arg, map))
 				});
 			case 'schema':
-				if (!expr.expr) return map.get(expr) || expr;
+				if (!expr.expr) return expr;
 
 				// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
-				if (expr.name) return map.get(expr) || expr;
+				if (expr.name) return expr;
 
 				// 위의 expr.name 조건을 지우면 특수한 경우에 이게 발생할지도 모른다.
 				if (expr.params.some(e => map.has(e)))
