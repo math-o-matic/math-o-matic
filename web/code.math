@@ -102,8 +102,8 @@ axiomatic schema Ne(st p: @1, st q) {
 }
 
 "이중부정 도입(double negation introduction)."
-axiomatic schema NNi(st p: @1) {
-	p |- N(N(p))
+schema NNi(st p: @1) {
+	p |- Niu[N(p) |- Ne(p, F)[@h1; @h2]]
 }
 
 "이중부정 소거(double negation elimination)."
@@ -3032,6 +3032,11 @@ schema fun_subseteq_cartesian(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	is_function(f, a, b) |- Ae1[@h1]
 }
 
+schema fun_in_e1(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @211, cls y: @212) {
+	is_function(f, a, b), in(v2(x, y), f) |-
+		cartesian_in_e1[in_subseteq[@h2; fun_subseteq_cartesian[@h1]]]
+}
+
 schema fun_im_Xq(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	is_function(f, a, b) |- Ae2[@h1]
 }
@@ -3073,7 +3078,7 @@ schema fun_im_Q_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21, $y_1$ 
 		mp[Ai[@h3; @h4]; Ue2(?, y1, y2)[mp[@h2; Ue(?, x)[fun_im_Q[@h1]]]]]
 }
 
-schema fun_is_rel(cls f, $A$ cls a, $B$ cls b) {
+schema fun_is_rel(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 	is_function(f, a, b) |- rel_subset_is_rel[
 		fun_subseteq_cartesian(f, a, b)[@h1];
 		cartesian_is_rel(a, b)
@@ -3180,6 +3185,25 @@ schema fcall_e(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21, cls y: @3
 				eq_reflexive(x);
 				@h3
 			]
+		]
+}
+
+schema fun_eq_i(cls f: @11, cls g: @21, $A$ cls a: @12, $B$ cls b: @13) {
+	$bar = (cls f, cls g, $A$ cls a, $B$ cls b) => {
+		is_function(f, a, b), is_function(g, a, b), Uin(a, (cls x) => {eq(fcall(f, x), fcall(g, x))}) |-
+			$foo = Ui2[(cls x, cls y) => {
+				cp[in(v2(x, y), f) |-
+					$x_in_a = fun_in_e1[@h1; @h4];
+					fcall_e[@h2; $x_in_a; eq_transitive[fcall_i[@h1; @h4]; mp[$x_in_a; Ue(?, x)[@h3]]]]]
+			}];
+
+			id(subseteq(f, g))[rel_U(is_in(g), ?)[fun_is_rel[@h1]; $foo]]
+	};
+	
+	is_function(f, a, b), is_function(g, a, b), Uin(a, (cls x) => {eq(fcall(f, x), fcall(g, x))}) |-
+		subseteq_to_eq[
+			$bar(f, g, a, b)[@h1; @h2; @h3];
+			$bar(g, f, a, b)[@h2; @h1; Ui[(cls x) => { cp[in(x, a) |- eq_symmetric[mp[@h4; Ue(?, x)[@h3]]]] }]]
 		]
 }
 
@@ -4058,9 +4082,32 @@ schema recursion_theorem_7($A$ cls a: @11, cls c: @21, cls f: @31) {
 "[$\gamma]는 여러 개 있지 않다."
 schema recursion_theorem_8($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
-		Q(($\gamma$ cls g) => {
+		id(Q(($\gamma$ cls g) => {
 			is_recursively_defined(g, a, c, f)
-		})
+		}))[Ui2[($\gamma_1$ cls g1, $\gamma_2$ cls g2) => {
+			cp2[is_recursively_defined(g1, a, c, f), is_recursively_defined(g2, a, c, f) |-
+				$g1_is_fun = Ae1[@h4];
+				$g2_is_fun = Ae1[@h5];
+
+				$base = eq_transitive[Ae1[Ae2[@h4]]; eq_symmetric[Ae1[Ae2[@h5]]]];
+
+				$step = Ui[(cls n) => { cp[in(n, omega()) |-
+					cp[eq(fcall(g1, n), fcall(g2, n)) |-
+						eq_transitive[
+							eq_transitive[
+								mp[@h6; Ue(?, n)[Ae2[Ae2[@h4]]]];
+								fcall_eq_i(f, ?, ?)[@h7]
+							];
+							eq_symmetric[mp[@h6; Ue(?, n)[Ae2[Ae2[@h5]]]]]
+						]]
+				] }];
+
+				fun_eq_i[
+					$g1_is_fun; $g2_is_fun;
+					induce((cls n) => {eq(fcall(g1, n), fcall(g2, n))})[$base; $step]
+				]
+			]
+		}]]
 }
 
 "재귀 정리(recursion theorem)."
