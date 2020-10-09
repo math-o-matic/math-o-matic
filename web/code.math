@@ -1181,38 +1181,18 @@ schema eq_transitive(cls x: @11, cls y: @12, cls z: @22) {
 		]
 }
 
-schema eq_transitive_3(cls x: @11, cls y: @12, cls z: @22) {
-	eq(x, y), eq(y, z) |- eq_symmetric[eq_transitive[@h1; @h2]]
-}
-
-schema eq_transitive_2(cls x: @11, cls y: @12, cls z: @21) {
-	eq(x, y), eq(z, y) |- eq_transitive[@h1; eq_symmetric[@h2]]
-}
-
-schema eq_transitive_23(cls x: @11, cls y: @12, cls z: @21) {
-	eq(x, y), eq(z, y) |- eq_symmetric[eq_transitive[@h1; eq_symmetric[@h2]]]
-}
-
-schema eq_transitive_1(cls x: @12, cls y: @11, cls z: @22) {
-	eq(y, x), eq(y, z) |- eq_transitive[eq_symmetric[@h1]; @h2]
-}
-
-schema eq_transitive_13(cls x: @12, cls y: @11, cls z: @22) {
-	eq(y, x), eq(y, z) |- eq_symmetric[eq_transitive[eq_symmetric[@h1]; @h2]]
-}
-
 schema eq_transitive_El(cls x: @11, cls y: @12, cls z) {
 	eq(x, y) |-
 		Eiu[
 			eq(z, x) |- eq_transitive[@h2; @h1];
-			eq(z, y) |- eq_transitive_23[@h1; @h2]
+			eq(z, y) |- eq_symmetric[eq_transitive[@h1; eq_symmetric[@h2]]]
 		]
 }
 
 schema eq_transitive_Er(cls x: @11, cls y: @12, cls z) {
 	eq(x, y) |-
 		Ei[
-			cp[eq(x, z) |- eq_transitive_1[@h1; @h2]];
+			cp[eq(x, z) |- eq_transitive[eq_symmetric[@h1]; @h2]];
 			cp[eq(y, z) |- eq_transitive[@h1; @h2]]
 		]
 }
@@ -2048,7 +2028,7 @@ schema singleton_Q(cls x) {
 	set(x) |-
 		id(Q(is_in(singleton(x))))[Ui2[(cls y, cls z) => {
 			cp[A(in(y, singleton(x)), in(z, singleton(x))) |-
-				eq_transitive_2[Oe1[setbuilder_e[Ae1[@h2]]; NNi[@h1]]; Oe1[setbuilder_e[Ae2[@h2]]; NNi[@h1]]]
+				eq_transitive[Oe1[setbuilder_e[Ae1[@h2]]; NNi[@h1]]; eq_symmetric[Oe1[setbuilder_e[Ae2[@h2]]; NNi[@h1]]]]
 		] }]]
 }
 
@@ -2610,14 +2590,14 @@ schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 									@h1; @h3;
 									Ae1[@h6]
 								];
-								eq_transitive_1[
-									eq_transitive_2[
+								eq_transitive[
+									eq_symmetric[eq_transitive[
 										singleton_eq_e[
 											@h1; @h3;
 											Ae1[@h6]
 										];
-										Ae2[@h7]
-									];
+										eq_symmetric[Ae2[@h7]]
+									]];
 									Ae1[@h7]
 								]
 							]
@@ -2631,22 +2611,22 @@ schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 							doubleton_in_1(u, v)[@h3; @h4];
 							Ae1[@h6]
 						]]; NNi[@h1]]];
-						eq_transitive_13[
-							eq_transitive_1[
-								eq_symmetric[Oe1[setbuilder_e[in_eq_right_2[
+						eq_symmetric[eq_transitive[
+							eq_symmetric[eq_transitive[
+								Oe1[setbuilder_e[in_eq_right_2[
 									doubleton_in_1(u, v)[@h3; @h4];
 									Ae1[@h6]
-								]]; NNi[@h1]]];
+								]]; NNi[@h1]];
 								eq_symmetric[Oe1[setbuilder_e[in_eq_right_2[
 									doubleton_in_2(u, v)[@h3; @h4];
 									Ae1[@h6]
 								]]; NNi[@h1]]]
-							];
+							]];
 							eq_symmetric[Oe1[setbuilder_e[in_eq_right_1[
 								doubleton_in_2(x, y)[@h1; @h2];
 								Ae2[@h6]
 							]]; NNi[@h3]]]
-						]
+						]]
 					]
 			]
 		]
@@ -3336,19 +3316,19 @@ schema self_in_successor(cls x: @11) {
 }
 
 "순서수(ordinal number)로서의 0."
-$<<0_\text{ord}>>$
+$<<0_\omega>>$
 cls ord_zero() {
 	emptyset()
 }
 
 "순서수(ordinal number)로서의 1. 0의 따름 순서수이다."
-$<<1_\text{ord}>>$
+$<<1_\omega>>$
 cls ord_one() {
 	successor(ord_zero())
 }
 
 "순서수(ordinal number)로서의 2. 1의 따름 순서수이다."
-$<<2_\text{ord}>>$
+$<<2_\omega>>$
 cls ord_two() {
 	successor(ord_one())
 }
