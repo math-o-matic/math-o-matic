@@ -2777,16 +2777,36 @@ schema cartesian_in_e2($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @11
 
 "어떤 class가 이항관계이다.
 
-[$R]이 이항관계라 함은 [$R]의 임의 원소가 순서쌍이라는 뜻이다. 정의역(domain)과 치역(image)에 관한 정보는 담지 않도록 한다.
-
-[$V\times V]의 임의 부분집합으로 정의해도 좋을 것이다."
-$\left(<<\mathop\mathrm{relation}>> #1\right)$
+[$R]이 이항관계라 함은 [$R]의 임의 원소가 순서쌍이라는 뜻이다. 정의역(domain)과 치역(image)에 관한 정보는 담지 않도록 한다."
+$\left(<<\operatorname{relation}>> #1\right)$
 st is_rel($R$ cls r) {
-	Uin(r, (cls z) => {
-		X2((cls x, cls y) => {
-			eq(z, v2(x, y))
-		})
-	})
+	subseteq(r, cartesian(universe(), universe()))
+}
+
+$\left(<<\operatorname{relation}>>#1\text{ over }#2\right)$
+st is_rel_over_set($R$ cls r, $A$ cls a) {
+	subseteq(r, cartesian(a, a))
+}
+
+$\left(<<\operatorname{relation}>>#1\text{ over }#2\text{ and } #3\right)$
+st is_rel_over_sets($R$ cls r, $A$ cls a, $B$ cls b) {
+	subseteq(r, cartesian(a, b))
+}
+
+"is_rel의 이전 정의와 새 정의를 잇는 정리."
+schema is_rel_def($R$ cls r: @11) {
+	is_rel(r) |-
+		id(Uin(r, (cls z) => {
+			X2((cls x, cls y) => {
+				eq(z, v2(x, y))
+			})
+		}))[Ui[(cls z) => { cp[in(z, r) |-
+			X2Ae1((cls x, cls y) => {
+				eq(z, v2(x, y))
+			}, (cls x, cls y) => {
+				A(in(x, universe()), in(y, universe()))
+			})[setbuilder_e[in_subseteq[@h2; @h1]]]
+		] }]]
 }
 
 "이항관계의 정의역(domain)."
@@ -2886,7 +2906,7 @@ schema rel_U(pr f, $R$ cls r: @11) {
 	}) |-
 		id(Uin(r, f))[Ui[(cls z) => {cp[in(z, r) |-
 			mpX2_X2e_p(?, f(z))[
-				mp[@h3; Ue(?, z)[@h1]];
+				mp[@h3; Ue(?, z)[is_rel_def[@h1]]];
 				Ui2[(cls x, cls y) => {
 					cp[eq(z, v2(x, y)) |-
 						ax_indiscernible_m1(f, ?, ?)[eq_symmetric[@h4]; mp[in_eq_left_1[@h3; @h4]; Ue2(?, x, y)[@h2]]]]
@@ -2897,22 +2917,33 @@ schema rel_U(pr f, $R$ cls r: @11) {
 
 "곱집합은 이항관계이다."
 schema cartesian_is_rel(cls x, cls y) {
-	id(is_rel(cartesian(x, y)))[Ui[(cls z) => {
-		cp[in(z, cartesian(x, y)) |-
-			X2Ae1((cls a, cls b) => {
-				eq(z, v2(a, b))
-			}, (cls a, cls b) => {
-				A(in(a, x), in(b, y))
-			})[setbuilder_e[@h1]]]
-	}]]
+	id(is_rel(cartesian(x, y)))[
+		Ui[(cls z) => { cp[in(z, cartesian(x, y)) |-
+			id(in(z, cartesian(universe(), universe())))[setbuilder_i((cls z) => {
+				X2((cls a, cls b) => {
+					A(eq(z, v2(a, b)), A(in(a, universe()), in(b, universe())))
+				})
+			}, z)[set_i[@h1]; mpX2(?, (cls a, cls b) => {
+				A(eq(z, v2(a, b)), A(in(a, universe()), in(b, universe())))
+			})[
+				setbuilder_e[@h1];
+				Ui2[(cls a, cls b) => { cp2[eq(z, v2(a, b)), A(in(a, x), in(b, y)) |-
+					Ai[
+						@h2;
+						Ai[
+							universe_in_i[set_i[Ae1[@h3]]];
+							universe_in_i[set_i[Ae2[@h3]]]
+						]
+					]
+				] }]
+			]]]
+		] }]
+	]
 }
 
 schema rel_subset_is_rel(cls x: @11, cls y: @12) {
-	subseteq(x, y), is_rel(y) |- id(is_rel(x))[Uin_subset(x, y, (cls z) => {
-		X2((cls a, cls b) => {
-			eq(z, v2(a, b))
-		})
-	})[@h1; @h2]]
+	subseteq(x, y), is_rel(y) |-
+		id(is_rel(x))[subseteq_subseteq[@h1; @h2]]
 }
 
 schema cartesian_is_set_1($A$ cls a, $B$ cls b) {
