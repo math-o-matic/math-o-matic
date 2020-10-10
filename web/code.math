@@ -2530,13 +2530,13 @@ schema singleton_set_e(cls x: @111) {
 
 "순서쌍(ordered pair). Kuratowski의 정의이다."
 $\left(#1<<,>>#2\right)$
-cls v2(cls x, cls y) {
+cls op(cls x, cls y) {
 	doubleton(singleton(x), doubleton(x, y))
 }
 
-schema v2_set_i(cls x: @11, cls y: @21) {
+schema op_set_i(cls x: @11, cls y: @21) {
 	set(x), set(y) |-
-		id(set(v2(x, y)))[
+		id(set(op(x, y)))[
 			doubleton_set_i[
 				singleton_set_i[@h1];
 				doubleton_set_i[@h1; @h2]
@@ -2544,19 +2544,19 @@ schema v2_set_i(cls x: @11, cls y: @21) {
 		]
 }
 
-schema v2_set_e1(cls x: @111, cls y: @112) {
-	set(v2(x, y)) |-
+schema op_set_e1(cls x: @111, cls y: @112) {
+	set(op(x, y)) |-
 		singleton_set_e[doubleton_set_e1[@h1]]
 }
 
-schema v2_set_e2(cls x: @111, cls y: @112) {
-	set(v2(x, y)) |-
+schema op_set_e2(cls x: @111, cls y: @112) {
+	set(op(x, y)) |-
 		doubleton_set_e2[doubleton_set_e2[@h1]]
 }
 
-schema v2_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
+schema op_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 	eq(x, u), eq(y, v) |-
-		id(eq(v2(x, y), v2(u, v)))[
+		id(eq(op(x, y), op(u, v)))[
 			doubleton_eq_i[
 				singleton_eq_i[@h1];
 				doubleton_eq_i[@h1; @h2]
@@ -2565,8 +2565,8 @@ schema v2_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 }
 
 "`[Pinter]` 정리 1.30."
-schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
-	set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v)) |-
+schema op_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
+	set(x), set(y), set(u), set(v), eq(op(x, y), op(u, v)) |-
 		Oe[
 			doubleton_eq_e[
 				singleton_set_i[@h1];
@@ -2632,67 +2632,67 @@ schema v2_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 		]
 }
 
-schema v2_eq_e1(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
-	set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v)) |-
-		Ae1[v2_eq_e[@h1; @h2; @h3; @h4; @h5]]
+schema op_eq_e1(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
+	set(x), set(y), set(u), set(v), eq(op(x, y), op(u, v)) |-
+		Ae1[op_eq_e[@h1; @h2; @h3; @h4; @h5]]
 }
 
-schema v2_eq_e1_v1(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
-	set(v2(x, y)), eq(v2(x, y), v2(u, v)) |-
+schema op_eq_e1_v1(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
+	set(op(x, y)), eq(op(x, y), op(u, v)) |-
 		$set_uv = set_is_set_1[@h1; @h2];
-		$set_x = v2_set_e1[@h1];
-		$set_y = v2_set_e2[@h1];
-		$set_u = v2_set_e1[$set_uv];
-		$set_v = v2_set_e2[$set_uv];
+		$set_x = op_set_e1[@h1];
+		$set_y = op_set_e2[@h1];
+		$set_u = op_set_e1[$set_uv];
+		$set_v = op_set_e2[$set_uv];
 		
-		v2_eq_e1[$set_x; $set_y; $set_u; $set_v; @h2]
+		op_eq_e1[$set_x; $set_y; $set_u; $set_v; @h2]
 }
 
-schema v2_eq_e1_v2(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
-	set(v2(u, v)), eq(v2(x, y), v2(u, v)) |-
+schema op_eq_e1_v2(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
+	set(op(u, v)), eq(op(x, y), op(u, v)) |-
 		$set_xy = set_is_set_2[@h1; @h2];
-		$set_x = v2_set_e1[$set_xy];
-		$set_y = v2_set_e2[$set_xy];
-		$set_u = v2_set_e1[@h1];
-		$set_v = v2_set_e2[@h1];
+		$set_x = op_set_e1[$set_xy];
+		$set_y = op_set_e2[$set_xy];
+		$set_u = op_set_e1[@h1];
+		$set_v = op_set_e2[@h1];
 		
-		v2_eq_e1[$set_x; $set_y; $set_u; $set_v; @h2]
+		op_eq_e1[$set_x; $set_y; $set_u; $set_v; @h2]
 }
 
-schema v2_eq_e2(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
-	set(x), set(y), set(u), set(v), eq(v2(x, y), v2(u, v)) |-
-		Ae2[v2_eq_e[@h1; @h2; @h3; @h4; @h5]]
+schema op_eq_e2(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
+	set(x), set(y), set(u), set(v), eq(op(x, y), op(u, v)) |-
+		Ae2[op_eq_e[@h1; @h2; @h3; @h4; @h5]]
 }
 
-schema v2_eq_e2_v1(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
-	set(v2(x, y)), eq(v2(x, y), v2(u, v)) |-
+schema op_eq_e2_v1(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
+	set(op(x, y)), eq(op(x, y), op(u, v)) |-
 		$set_uv = set_is_set_1[@h1; @h2];
-		$set_x = v2_set_e1[@h1];
-		$set_y = v2_set_e2[@h1];
-		$set_u = v2_set_e1[$set_uv];
-		$set_v = v2_set_e2[$set_uv];
+		$set_x = op_set_e1[@h1];
+		$set_y = op_set_e2[@h1];
+		$set_u = op_set_e1[$set_uv];
+		$set_v = op_set_e2[$set_uv];
 		
-		v2_eq_e2[$set_x; $set_y; $set_u; $set_v; @h2]
+		op_eq_e2[$set_x; $set_y; $set_u; $set_v; @h2]
 }
 
-schema v2_eq_e2_v2(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
-	set(v2(u, v)), eq(v2(x, y), v2(u, v)) |-
+schema op_eq_e2_v2(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
+	set(op(u, v)), eq(op(x, y), op(u, v)) |-
 		$set_xy = set_is_set_2[@h1; @h2];
-		$set_x = v2_set_e1[$set_xy];
-		$set_y = v2_set_e2[$set_xy];
-		$set_u = v2_set_e1[@h1];
-		$set_v = v2_set_e2[@h1];
+		$set_x = op_set_e1[$set_xy];
+		$set_y = op_set_e2[$set_xy];
+		$set_u = op_set_e1[@h1];
+		$set_v = op_set_e2[@h1];
 		
-		v2_eq_e2[$set_x; $set_y; $set_u; $set_v; @h2]
+		op_eq_e2[$set_x; $set_y; $set_u; $set_v; @h2]
 }
 
 "순서쌍을 위한 setbuilder. 즉 [$\{(a, b): f(a, b)\}]이다."
 $\left\{<<:>>#1\right\}$
-cls setbuilder_v2(pr2 f) {
+cls setbuilder_op(pr2 f) {
 	setbuilder((cls z) => {
 		X2((cls a, cls b) => {
 			A(
-				eq(z, v2(a, b)),
+				eq(z, op(a, b)),
 				f(a, b)
 			)
 		})
@@ -2701,7 +2701,7 @@ cls setbuilder_v2(pr2 f) {
 
 "순서쌍을 위한 setbuilder2. 즉 [$\{f(a, b): g(a, b)\}]이다."
 $\left\{#1<<:>>#2\right\}$
-cls setbuilder2_v2([(cls, cls) -> cls] f, pr2 g) {
+cls setbuilder2_op([(cls, cls) -> cls] f, pr2 g) {
 	setbuilder((cls z) => {
 		X2((cls a, cls b) => {
 			A(
@@ -2715,24 +2715,24 @@ cls setbuilder2_v2([(cls, cls) -> cls] f, pr2 g) {
 "곱집합(cartesian product)."
 $!<prec=300>#1<<\times>>#2$
 cls cartesian($A$ cls a, $B$ cls b) {
-	setbuilder_v2((cls x, cls y) => {
+	setbuilder_op((cls x, cls y) => {
 		A(in(x, a), in(y, b))
 	})
 }
 
 schema cartesian_in_i($A$ cls a: @12, $B$ cls b: @22, cls x: @11, cls y: @21) {
 	in(x, a), in(y, b) |-
-		id(in(v2(x, y), cartesian(a, b)))[setbuilder_i((cls z) => {
+		id(in(op(x, y), cartesian(a, b)))[setbuilder_i((cls z) => {
 			X2((cls u, cls v) => {
-				A(eq(z, v2(u, v)), A(in(u, a), in(v, b)))
+				A(eq(z, op(u, v)), A(in(u, a), in(v, b)))
 			})
 		}, ?)[
-			v2_set_i[set_i[@h1]; set_i[@h2]];
+			op_set_i[set_i[@h1]; set_i[@h2]];
 			Xi2((cls u, cls v) => {
-				A(eq(v2(x, y), v2(u, v)), A(in(u, a), in(v, b)))
+				A(eq(op(x, y), op(u, v)), A(in(u, a), in(v, b)))
 			}, x, y)[
 				Ai[
-					eq_reflexive(v2(x, y));
+					eq_reflexive(op(x, y));
 					Ai[@h1; @h2]
 				]
 			]
@@ -2740,18 +2740,18 @@ schema cartesian_in_i($A$ cls a: @12, $B$ cls b: @22, cls x: @11, cls y: @21) {
 }
 
 schema cartesian_in_e($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
-	in(v2(x, y), cartesian(a, b)) |-
-		$set_v2_xy = set_i[@h1];
-		$set_x = v2_set_e1[$set_v2_xy];
-		$set_y = v2_set_e2[$set_v2_xy];
+	in(op(x, y), cartesian(a, b)) |-
+		$set_op_xy = set_i[@h1];
+		$set_x = op_set_e1[$set_op_xy];
+		$set_y = op_set_e2[$set_op_xy];
 		
 		mpX2_X2e_p(?, A(in(x, a), in(y, b)))[
 			setbuilder_e((cls z) => {
 				X2((cls u, cls v) => {
-					A(eq(z, v2(u, v)), A(in(u, a), in(v, b)))
+					A(eq(z, op(u, v)), A(in(u, a), in(v, b)))
 				})
 			}, ?)[@h1];
-			Ui2[(cls u, cls v) => { cp[A(eq(v2(x, y), v2(u, v)), A(in(u, a), in(v, b))) |-
+			Ui2[(cls u, cls v) => { cp[A(eq(op(x, y), op(u, v)), A(in(u, a), in(v, b))) |-
 				$foo = Ae2[@h2];
 				$u_in_a = Ae1[$foo];
 				$v_in_b = Ae2[$foo];
@@ -2760,19 +2760,19 @@ schema cartesian_in_e($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112
 				$Ae1h4 = Ae1[@h2];
 
 				Ai[
-					in_eq_left_2[$u_in_a; v2_eq_e1[$set_x; $set_y; $u_is_set; $v_is_set; $Ae1h4]];
-					in_eq_left_2[$v_in_b; v2_eq_e2[$set_x; $set_y; $u_is_set; $v_is_set; $Ae1h4]]
+					in_eq_left_2[$u_in_a; op_eq_e1[$set_x; $set_y; $u_is_set; $v_is_set; $Ae1h4]];
+					in_eq_left_2[$v_in_b; op_eq_e2[$set_x; $set_y; $u_is_set; $v_is_set; $Ae1h4]]
 				]
 			] }]
 		]
 }
 
 schema cartesian_in_e1($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
-	in(v2(x, y), cartesian(a, b)) |- Ae1[cartesian_in_e[@h1]]
+	in(op(x, y), cartesian(a, b)) |- Ae1[cartesian_in_e[@h1]]
 }
 
 schema cartesian_in_e2($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
-	in(v2(x, y), cartesian(a, b)) |- Ae2[cartesian_in_e[@h1]]
+	in(op(x, y), cartesian(a, b)) |- Ae2[cartesian_in_e[@h1]]
 }
 
 "어떤 class가 이항관계이다.
@@ -2798,11 +2798,11 @@ schema is_rel_def($R$ cls r: @11) {
 	is_rel(r) |-
 		id(Uin(r, (cls z) => {
 			X2((cls x, cls y) => {
-				eq(z, v2(x, y))
+				eq(z, op(x, y))
 			})
 		}))[Ui[(cls z) => { cp[in(z, r) |-
 			X2Ae1((cls x, cls y) => {
-				eq(z, v2(x, y))
+				eq(z, op(x, y))
 			}, (cls x, cls y) => {
 				A(in(x, universe()), in(y, universe()))
 			})[setbuilder_e[in_subseteq[@h2; @h1]]]
@@ -2814,22 +2814,22 @@ $!<prec=200><<\operatorname{dom}>>#1$
 cls rel_dom($R$ cls r) {
 	setbuilder((cls x) => {
 		X((cls y) => {
-			in(v2(x, y), r)
+			in(op(x, y), r)
 		})
 	})
 }
 
 schema rel_dom_in_i($R$ cls r: @12, cls x: @111, cls y: @112) {
-	in(v2(x, y), r) |-
-		$set_x = v2_set_e1[set_i[@h1]];
+	in(op(x, y), r) |-
+		$set_x = op_set_e1[set_i[@h1]];
 		
 		id(in(x, rel_dom(r)))[setbuilder_i((cls x) => {
 			X((cls y) => {
-				in(v2(x, y), r)
+				in(op(x, y), r)
 			})
 		}, x)[
 			$set_x;
-			Xi((cls y) => {in(v2(x, y), r)}, y)[@h1]
+			Xi((cls y) => {in(op(x, y), r)}, y)[@h1]
 		]]
 }
 
@@ -2838,7 +2838,7 @@ $!<prec=200><<\operatorname{im}>>#1$
 cls rel_im($R$ cls r) {
 	setbuilder((cls y) => {
 		X((cls x) => {
-			in(v2(x, y), r)
+			in(op(x, y), r)
 		})
 	})
 }
@@ -2848,7 +2848,7 @@ $#1\mathord{\left[#2\right]}{}^{<<\scriptscriptstyle\dag>>}$
 cls rel_im_set($R$ cls r, $A$ cls a) {
 	setbuilder((cls y) => {
 		Xin(a, (cls x) => {
-			in(v2(x, y), r)
+			in(op(x, y), r)
 		})
 	})
 }
@@ -2858,17 +2858,17 @@ schema rel_im_set_eq_i($R$ cls r, $A$ cls a: @11, $B$ cls b: @12) {
 		id(eq(rel_im_set(r, a), rel_im_set(r, b)))[setbuilder_eq_i(
 			(cls y) => {
 				Xin(a, (cls x) => {
-					in(v2(x, y), r)
+					in(op(x, y), r)
 				})
 			},
 			(cls y) => {
 				Xin(b, (cls x) => {
-					in(v2(x, y), r)
+					in(op(x, y), r)
 				})
 			}
 		)[Ui[(cls y) => {
 			Xin_eq(?, ?, (cls x) => {
-				in(v2(x, y), r)
+				in(op(x, y), r)
 			})[@h1]
 		}]]]
 }
@@ -2876,19 +2876,19 @@ schema rel_im_set_eq_i($R$ cls r, $A$ cls a: @11, $B$ cls b: @12) {
 "이항관계의 역(inverse)."
 $!<prec=190>{#1}^{<<-1>>}$
 cls rel_inverse(cls x) {
-	setbuilder_v2((cls a, cls b) => {
-		in(v2(b, a), x)
+	setbuilder_op((cls a, cls b) => {
+		in(op(b, a), x)
 	})
 }
 
 "이항관계의 합성(composition)."
 $!<prec=300>#1 <<\circ>> #2$
 cls rel_composite(cls x, cls y) {
-	setbuilder_v2((cls a, cls c) => {
+	setbuilder_op((cls a, cls c) => {
 		X((cls b) => {
 			A(
-				in(v2(a, b), y),
-				in(v2(b, c), x)
+				in(op(a, b), y),
+				in(op(b, c), x)
 			)
 		})
 	})
@@ -2900,15 +2900,15 @@ cls rel_composite(cls x, cls y) {
 schema rel_U(pr f, $R$ cls r: @11) {
 	is_rel(r), U2((cls x, cls y) => {
 		I(
-			in(v2(x, y), r),
-			f(v2(x, y))
+			in(op(x, y), r),
+			f(op(x, y))
 		)
 	}) |-
 		id(Uin(r, f))[Ui[(cls z) => {cp[in(z, r) |-
 			mpX2_X2e_p(?, f(z))[
 				mp[@h3; Ue(?, z)[is_rel_def[@h1]]];
 				Ui2[(cls x, cls y) => {
-					cp[eq(z, v2(x, y)) |-
+					cp[eq(z, op(x, y)) |-
 						ax_indiscernible_m1(f, ?, ?)[eq_symmetric[@h4]; mp[in_eq_left_1[@h3; @h4]; Ue2(?, x, y)[@h2]]]]
 				}]
 			]
@@ -2921,13 +2921,13 @@ schema cartesian_is_rel(cls x, cls y) {
 		Ui[(cls z) => { cp[in(z, cartesian(x, y)) |-
 			id(in(z, cartesian(universe(), universe())))[setbuilder_i((cls z) => {
 				X2((cls a, cls b) => {
-					A(eq(z, v2(a, b)), A(in(a, universe()), in(b, universe())))
+					A(eq(z, op(a, b)), A(in(a, universe()), in(b, universe())))
 				})
 			}, z)[set_i[@h1]; mpX2(?, (cls a, cls b) => {
-				A(eq(z, v2(a, b)), A(in(a, universe()), in(b, universe())))
+				A(eq(z, op(a, b)), A(in(a, universe()), in(b, universe())))
 			})[
 				setbuilder_e[@h1];
-				Ui2[(cls a, cls b) => { cp2[eq(z, v2(a, b)), A(in(a, x), in(b, y)) |-
+				Ui2[(cls a, cls b) => { cp2[eq(z, op(a, b)), A(in(a, x), in(b, y)) |-
 					Ai[
 						@h2;
 						Ai[
@@ -2952,10 +2952,10 @@ schema cartesian_is_set_1($A$ cls a, $B$ cls b) {
 }
 
 schema cartesian_is_set_21($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
-	in(v2(x, y), cartesian(a, b)) |-
-		$set_v2_xy = set_i[@h1];
-		$set_x = v2_set_e1[$set_v2_xy];
-		$set_y = v2_set_e2[$set_v2_xy];
+	in(op(x, y), cartesian(a, b)) |-
+		$set_op_xy = set_i[@h1];
+		$set_x = op_set_e1[$set_op_xy];
+		$set_y = op_set_e2[$set_op_xy];
 		
 		$x_in_cup_ab = cup_i1(?, b, ?)[cartesian_in_e1[@h1]];
 		$y_in_cup_ab = cup_i2(a, ?, ?)[cartesian_in_e2[@h1]];
@@ -2977,12 +2977,12 @@ schema cartesian_is_set_21($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y:
 			] }]]
 		]];
 		
-		id(in(v2(x, y), power(power(cup(a, b)))))[setbuilder_i(
+		id(in(op(x, y), power(power(cup(a, b)))))[setbuilder_i(
 			(cls z) => {subseteq(z, power(cup(a, b)))},
 			?
 		)[
-			v2_set_i[$set_x; $set_y];
-			id(subseteq(v2(x, y), power(cup(a, b))))[Ui[(cls z) => { cp[in(z, doubleton(singleton(x), doubleton(x, y))) |-
+			op_set_i[$set_x; $set_y];
+			id(subseteq(op(x, y), power(cup(a, b))))[Ui[(cls z) => { cp[in(z, doubleton(singleton(x), doubleton(x, y))) |-
 				Oeu[
 					doubleton_e[singleton_set_i[$set_x]; doubleton_set_i[$set_x; $set_y]; @h2];
 					eq(z, singleton(x)) |- in_eq_left_2[$1; @h3];
@@ -3029,10 +3029,10 @@ st is_function(cls f, $A$ cls a, $B$ cls b) {
 		Uin(a, (cls x) => {
 			A(
 				Xin(b, (cls y) => {
-					in(v2(x, y), f)
+					in(op(x, y), f)
 				}),
 				Q((cls y) => {
-					in(v2(x, y), f)
+					in(op(x, y), f)
 				})
 			)
 		})
@@ -3044,7 +3044,7 @@ schema fun_subseteq_cartesian(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 }
 
 schema fun_in_e1(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @211, cls y: @212) {
-	is_function(f, a, b), in(v2(x, y), f) |-
+	is_function(f, a, b), in(op(x, y), f) |-
 		cartesian_in_e1[in_subseteq[@h2; fun_subseteq_cartesian[@h1]]]
 }
 
@@ -3058,7 +3058,7 @@ schema fun_im_Xq_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 }
 
 schema fun_im_X(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	is_function(f, a, b) |- id(Uin(a, (cls x) => {Xin(b, (cls y) => {in(v2(x, y), f)})}))[
+	is_function(f, a, b) |- id(Uin(a, (cls x) => {Xin(b, (cls y) => {in(op(x, y), f)})}))[
 		Ui[(cls x) => {
 			cp[(
 				in(x, a) |-
@@ -3074,7 +3074,7 @@ schema fun_im_X_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 }
 
 schema fun_im_Q(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
-	is_function(f, a, b) |- id(Uin(a, (cls x) => {Q((cls y) => {in(v2(x, y), f)})}))[
+	is_function(f, a, b) |- id(Uin(a, (cls x) => {Q((cls y) => {in(op(x, y), f)})}))[
 		Ui[(cls x) => {
 			cp[(
 				in(x, a) |-
@@ -3085,7 +3085,7 @@ schema fun_im_Q(cls f: @11, $A$ cls a: @12, $B$ cls b: @13) {
 }
 
 schema fun_im_Q_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21, $y_1$ cls y1: @312, $y_2$ cls y2: @412) {
-	is_function(f, a, b), in(x, a), in(v2(x, y1), f), in(v2(x, y2), f) |-
+	is_function(f, a, b), in(x, a), in(op(x, y1), f), in(op(x, y2), f) |-
 		mp[Ai[@h3; @h4]; Ue2(?, y1, y2)[mp[@h2; Ue(?, x)[fun_im_Q[@h1]]]]]
 }
 
@@ -3113,23 +3113,23 @@ cls fcall(cls f, cls x) {
 
 schema fcall_def_0(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 	is_function(f, a, b), in(x, a), in(y, rel_im_set(f, singleton(x))) |-
-		mpX_Xe_p(?, in(v2(x, y), f))[
+		mpX_Xe_p(?, in(op(x, y), f))[
 			setbuilder_e[@h3];
-			Ui[(cls z) => { cp[A(in(z, singleton(x)), in(v2(z, y), f)) |-
-				in_eq_left_1[Ae2[@h4]; v2_eq_i[Oe1[setbuilder_e[Ae1[@h4]]; NNi[set_i[@h2]]]; eq_reflexive(y)]]]
+			Ui[(cls z) => { cp[A(in(z, singleton(x)), in(op(z, y), f)) |-
+				in_eq_left_1[Ae2[@h4]; op_eq_i[Oe1[setbuilder_e[Ae1[@h4]]; NNi[set_i[@h2]]]; eq_reflexive(y)]]]
 			}]
 		]
 }
 
 schema fcall_def_1(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
-	is_function(f, a, b), in(x, a), in(y, b), in(v2(x, y), f) |-
+	is_function(f, a, b), in(x, a), in(y, b), in(op(x, y), f) |-
 		id(in(y, rel_im_set(f, singleton(x))))[setbuilder_i(
 			(cls y) => {
-				X((cls z) => {A(in(z, singleton(x)), in(v2(z, y), f))})
+				X((cls z) => {A(in(z, singleton(x)), in(op(z, y), f))})
 			}, y
 		)[
 			set_i[@h3];
-			Xi((cls z) => {A(in(z, singleton(x)), in(v2(z, y), f))}, x)[Ai[self_in_singleton[set_i[@h2]]; @h4]]
+			Xi((cls z) => {A(in(z, singleton(x)), in(op(z, y), f))}, x)[Ai[self_in_singleton[set_i[@h2]]; @h4]]
 		]]
 }
 
@@ -3137,7 +3137,7 @@ schema fcall_def_2(cls f, $A$ cls a, $B$ cls b, cls x) {
 	is_function(f, a, b), in(x, a) |-
 			mpX(?, is_in(rel_im_set(f, singleton(x))))[
 				fun_im_X_m[@h1; @h2];
-				Ui[(cls y) => { cp[A(in(y, b), in(v2(x, y), f)) |-
+				Ui[(cls y) => { cp[A(in(y, b), in(op(x, y), f)) |-
 					fcall_def_1(f, a, b, x, y)[@h1; @h2; Ae1[@h3]; Ae2[@h3]]] }]
 			]
 }
@@ -3156,13 +3156,13 @@ schema fcall_def_3(cls f, $A$ cls a, $B$ cls b, cls x) {
 
 schema fcall_def(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 	is_function(f, a, b), in(x, a) |-
-		mpX_Xe_p(?, in(v2(x, fcall(f, x)), f))[
+		mpX_Xe_p(?, in(op(x, fcall(f, x)), f))[
 			fcall_def_2(f, a, b, x)[@h1; @h2];
 			Ui[(cls y) => {
 				cp[in(y, rel_im_set(f, singleton(x))) |-
 					in_eq_left_2[
 						fcall_def_0(f, a, b, x, y)[@h1; @h2; @h3];
-						v2_eq_i[
+						op_eq_i[
 							eq_reflexive(x);
 							bigcup_singleton_is_element[
 								id(is_singleton(rel_im_set(f, singleton(x))))[
@@ -3177,7 +3177,7 @@ schema fcall_def(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 }
 
 schema fcall_i(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @211, cls y: @212) {
-	is_function(f, a, b), in(v2(x, y), f) |-
+	is_function(f, a, b), in(op(x, y), f) |-
 		$x_in_a = cartesian_in_e1[in_subseteq[@h2; fun_subseteq_cartesian[@h1]]];
 		
 		fun_im_Q_m[
@@ -3192,7 +3192,7 @@ schema fcall_e(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21, cls y: @3
 	is_function(f, a, b), in(x, a), eq(y, fcall(f, x)) |-
 		in_eq_left_2[
 			fcall_def[@h1; @h2];
-			v2_eq_i[
+			op_eq_i[
 				eq_reflexive(x);
 				@h3
 			]
@@ -3203,7 +3203,7 @@ schema fun_eq_i(cls f: @11, cls g: @21, $A$ cls a: @12, $B$ cls b: @13) {
 	$bar = (cls f, cls g, $A$ cls a, $B$ cls b) => {
 		is_function(f, a, b), is_function(g, a, b), Uin(a, (cls x) => {eq(fcall(f, x), fcall(g, x))}) |-
 			$foo = Ui2[(cls x, cls y) => {
-				cp[in(v2(x, y), f) |-
+				cp[in(op(x, y), f) |-
 					$x_in_a = fun_in_e1[@h1; @h4];
 					fcall_e[@h2; $x_in_a; eq_transitive[fcall_i[@h1; @h4]; mp[$x_in_a; Ue(?, x)[@h3]]]]]
 			}];
@@ -3229,7 +3229,7 @@ schema fcall_in_codomain(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21)
 	is_function(f, a, b), in(x, a) |-
 		mpX_Xe_p(?, in(fcall(f, x), b))[
 			fun_im_X_m[@h1; @h2];
-			Ui[(cls y) => { cp[A(in(y, b), in(v2(x, y), f)) |-
+			Ui[(cls y) => { cp[A(in(y, b), in(op(x, y), f)) |-
 				in_eq_left_1[Ae1[@h3]; fun_im_Q_m[@h1; @h2; Ae2[@h3]; fcall_def(f, a, b, x)[@h1; @h2]]]] }]
 		]
 }
@@ -3239,7 +3239,7 @@ $\left[#1\right]_{<<\in>>#2}$
 cls make_fun([cls -> cls] f, $A$ cls a) {
 	setbuilder2(
 		(cls z) => {
-			v2(z, f(z))
+			op(z, f(z))
 		},
 		(cls z) => {
 			in(z, a)
@@ -3254,7 +3254,7 @@ schema make_fun_is_function([cls -> cls] f, $A$ cls a, $B$ cls b) {
 		$c1 = id(subseteq(make_fun(f, a), cartesian(a, b)))[Ui[(cls w) => { cp[in(w, make_fun(f, a)) |-
 			mpX_Xe_p(?, in(w, cartesian(a, b)))[
 				setbuilder_e[@h2];
-				Ui[(cls z) => { cp2[eq(w, v2(z, f(z))), in(z, a) |-
+				Ui[(cls z) => { cp2[eq(w, op(z, f(z))), in(z, a) |-
 					in_eq_left_2[cartesian_in_i[@h4; mp[@h4; Ue(?, z)[@h1]]]; @h3]] }]
 			]
 		] }]];
@@ -3262,28 +3262,28 @@ schema make_fun_is_function([cls -> cls] f, $A$ cls a, $B$ cls b) {
 		$c23 = Ui[(cls x) => { cp[in(x, a) |-
 			$fx_in_b = mp[@h2; Ue(?, x)[@h1]];
 			$c2 = Xi((cls y) => {
-				A(in(y, b), in(v2(x, y), make_fun(f, a)))
+				A(in(y, b), in(op(x, y), make_fun(f, a)))
 			}, f(x))[
 				Ai[
 					$fx_in_b;
-					id(in(v2(x, f(x)), make_fun(f, a)))[setbuilder2_i(
-						(cls x) => { v2(x, f(x)) },
+					id(in(op(x, f(x)), make_fun(f, a)))[setbuilder2_i(
+						(cls x) => { op(x, f(x)) },
 						is_in(a),
 						x
-					)[v2_set_i[set_i[@h2]; set_i[$fx_in_b]]; @h2]]
+					)[op_set_i[set_i[@h2]; set_i[$fx_in_b]]; @h2]]
 				]
 			];
 			
-			$c3 = Qim((cls y) => {in(v2(x, y), make_fun(f, a))}, f(x))[
-				Ui[(cls y) => { cp[in(v2(x, y), make_fun(f, a)) |-
+			$c3 = Qim((cls y) => {in(op(x, y), make_fun(f, a))}, f(x))[
+				Ui[(cls y) => { cp[in(op(x, y), make_fun(f, a)) |-
 					mpX_Xe_p(?, eq(y, f(x)))[
 						setbuilder_e[@h3];
-						Ui[(cls z) => { cp[A(eq(v2(x, y), v2(z, f(z))), in(z, a)) |-
-							$v2_eq = Ae1[@h4];
+						Ui[(cls z) => { cp[A(eq(op(x, y), op(z, f(z))), in(z, a)) |-
+							$op_eq = Ae1[@h4];
 
 							ax_indiscernible_m2((cls z) => {eq(y, f(z))}, ?, ?)[
-								v2_eq_e1_v1[set_i[@h3]; $v2_eq];
-								v2_eq_e2_v1[set_i[@h3]; $v2_eq]
+								op_eq_e1_v1[set_i[@h3]; $op_eq];
+								op_eq_e2_v1[set_i[@h3]; $op_eq]
 							]
 						] }]
 					]
@@ -3300,22 +3300,22 @@ schema make_fun_fcall([cls -> cls] f, $A$ cls a: @22, $B$ cls b, cls x: @21) {
 	Uin(a, (cls x) => {in(f(x), b)}), in(x, a) |-
 		eq_symmetric[fcall_i[
 			make_fun_is_function(f, a, b)[@h1];
-			id(in(v2(x, f(x)), make_fun(f, a)))[
+			id(in(op(x, f(x)), make_fun(f, a)))[
 				setbuilder2_i(
-					(cls x) => { v2(x, f(x)) },
+					(cls x) => { op(x, f(x)) },
 					is_in(a),
 					x
-				)[v2_set_i[set_i[@h2]; set_i[mp[@h2; Ue(?, x)[@h1]]]]; @h2]
+				)[op_set_i[set_i[@h2]; set_i[mp[@h2; Ue(?, x)[@h1]]]]; @h2]
 			]
 		]]
 }
 
 "매개변수가 두 개인 메타함수로 함수를 만든다."
 $\left[#1\right]_{<<\in>>#2 \times #3}$
-cls make_fun_v2([(cls, cls) -> cls] f, $A$ cls a, $B$ cls b) {
-	setbuilder2_v2(
+cls make_fun_op([(cls, cls) -> cls] f, $A$ cls a, $B$ cls b) {
+	setbuilder2_op(
 		(cls x, cls y) => {
-			v2(v2(x, y), f(x, y))
+			op(op(x, y), f(x, y))
 		},
 		(cls x, cls y) => {
 			A(in(x, a), in(y, b))
@@ -3619,12 +3619,12 @@ cls recursion_set($A$ cls a, cls c, cls f) {
 		A(
 			subseteq(g, cartesian(omega(), a)),
 			A(
-				in(v2(ord_zero(), c), g),
+				in(op(ord_zero(), c), g),
 				Uin(omega(), (cls n) => {
 					Uin(a, (cls x) => {
 						I(
-							in(v2(n, x), g),
-							in(v2(successor(n), fcall(f, x)), g)
+							in(op(n, x), g),
+							in(op(successor(n), fcall(f, x)), g)
 						)
 					})
 				})
@@ -3653,12 +3653,12 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 					A(
 						subseteq(g, cartesian(omega(), a)),
 						A(
-							in(v2(ord_zero(), c), g),
+							in(op(ord_zero(), c), g),
 							Uin(omega(), (cls n) => {
 								Uin(a, (cls x) => {
 									I(
-										in(v2(n, x), g),
-										in(v2(successor(n), fcall(f, x)), g)
+										in(op(n, x), g),
+										in(op(successor(n), fcall(f, x)), g)
 									)
 								})
 							})
@@ -3679,16 +3679,16 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 							id(Uin(omega(), (cls n) => {
 								Uin(a, (cls x) => {
 									I(
-										in(v2(n, x), cartesian(omega(), a)),
-										in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
+										in(op(n, x), cartesian(omega(), a)),
+										in(op(successor(n), fcall(f, x)), cartesian(omega(), a))
 									)
 								})
 							}))[
 								Ui((cls n) => {
 									I(in(n, omega()), Uin(a, (cls x) => {
 										I(
-											in(v2(n, x), cartesian(omega(), a)),
-											in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
+											in(op(n, x), cartesian(omega(), a)),
+											in(op(successor(n), fcall(f, x)), cartesian(omega(), a))
 										)
 									}))
 								})[(cls n) => {
@@ -3696,19 +3696,19 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 										in(n, omega()) |-
 											id(Uin(a, (cls x) => {
 												I(
-													in(v2(n, x), cartesian(omega(), a)),
-													in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
+													in(op(n, x), cartesian(omega(), a)),
+													in(op(successor(n), fcall(f, x)), cartesian(omega(), a))
 												)
 											}))[
 												Ui((cls x) => {
 													I(in(x, a), I(
-														in(v2(n, x), cartesian(omega(), a)),
-														in(v2(successor(n), fcall(f, x)), cartesian(omega(), a))
+														in(op(n, x), cartesian(omega(), a)),
+														in(op(successor(n), fcall(f, x)), cartesian(omega(), a))
 													))
 												})[(cls x) => {
 													cp[
 														in(x, a) |-
-															cp[in(v2(n, x), cartesian(omega(), a)) |-
+															cp[in(op(n, x), cartesian(omega(), a)) |-
 																cartesian_in_i[
 																	successor_in_omega[@h4];
 																	fcall_in_codomain[@h3; @h5]
@@ -3729,13 +3729,13 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 "[$\gamma\in\mathscr A]가 되기 위한 두 번째 조건."
 schema recursion_theorem_2($A$ cls a: @12, cls c: @11, cls f) {
 	in(c, a) |-
-		id(in(v2(ord_zero(), c), define_recursively(a, c, f)))[
+		id(in(op(ord_zero(), c), define_recursively(a, c, f)))[
 			setbuilder_i((cls z) => {
 				U(($G$ cls g) => {
 					I(in(g, recursion_set(a, c, f)), in(z, g))
 				})
-			}, v2(ord_zero(), c))[
-				v2_set_i[
+			}, op(ord_zero(), c))[
+				op_set_i[
 				set_i[zero_in_omega()];
 				set_i[@h1]
 			];
@@ -3752,21 +3752,21 @@ schema recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) {
 		id(Uin(omega(), (cls n) => {
 			Uin(a, (cls x) => {
 				I(
-					in(v2(n, x), define_recursively(a, c, f)),
-					in(v2(successor(n), fcall(f, x)), define_recursively(a, c, f))
+					in(op(n, x), define_recursively(a, c, f)),
+					in(op(successor(n), fcall(f, x)), define_recursively(a, c, f))
 				)
 			})
 		}))[Ui[(cls n) => {
 			cp[in(n, omega()) |-
 				Ui[(cls x) => {
 					cp[in(x, a) |-
-						cp[in(v2(n, x), define_recursively(a, c, f)) |-
-							id(in(v2(successor(n), fcall(f, x)), define_recursively(a, c, f)))[setbuilder_i((cls z) => {
+						cp[in(op(n, x), define_recursively(a, c, f)) |-
+							id(in(op(successor(n), fcall(f, x)), define_recursively(a, c, f)))[setbuilder_i((cls z) => {
 								U(($G$ cls g) => {
 									I(in(g, recursion_set(a, c, f)), in(z, g))
 								})
-							}, v2(successor(n), fcall(f, x)))[
-								v2_set_i[
+							}, op(successor(n), fcall(f, x)))[
+								op_set_i[
 									successor_is_set[set_i[@h2]];
 									set_i[fcall_in_codomain[@h1; @h3]]
 								];
@@ -3774,10 +3774,10 @@ schema recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) {
 									setbuilder_e[@h4];
 									UIm(
 										($G$ cls g) => {
-											I(in(g, recursion_set(a, c, f)), in(v2(n, x), g))
+											I(in(g, recursion_set(a, c, f)), in(op(n, x), g))
 										},
 										($G$ cls g) => {
-											I(in(g, recursion_set(a, c, f)), in(v2(successor(n), fcall(f, x)), g))
+											I(in(g, recursion_set(a, c, f)), in(op(successor(n), fcall(f, x)), g))
 										}
 									)[Ui[($G$ cls g) => {
 										I_distribute_left[cp[in(g, recursion_set(a, c, f)) |-
@@ -3796,20 +3796,20 @@ schema recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) {
 "[$\gamma]가 함수가 되기 위한 두 번째 조건."
 schema recursion_theorem_4($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
-		$base = id(Xin(a, (cls x) => {in(v2(ord_zero(), x), define_recursively(a, c, f))}))[
+		$base = id(Xin(a, (cls x) => {in(op(ord_zero(), x), define_recursively(a, c, f))}))[
 			Xi((cls x) => {
-				A(in(x, a), in(v2(ord_zero(), x), define_recursively(a, c, f)))
+				A(in(x, a), in(op(ord_zero(), x), define_recursively(a, c, f)))
 			}, c)[Ai[@h2; recursion_theorem_2(a, c, f)[@h2]]]
 		];
 		
 		$step = Ui[(cls n) => { cp[in(n, omega()) |-
-			cp[Xin(a, (cls x) => { in(v2(n, x), define_recursively(a, c, f)) }) |-
-				mpXin_Xe_p(?, ?, Xin(a, (cls x) => {in(v2(successor(n), x), define_recursively(a, c, f))}))[
+			cp[Xin(a, (cls x) => { in(op(n, x), define_recursively(a, c, f)) }) |-
+				mpXin_Xe_p(?, ?, Xin(a, (cls x) => {in(op(successor(n), x), define_recursively(a, c, f))}))[
 					@h5;
 					Ui[(cls x) => { cp[in(x, a) |-
-						cp[in(v2(n, x), define_recursively(a, c, f)) |-
+						cp[in(op(n, x), define_recursively(a, c, f)) |-
 							Xi((cls x) => {
-								A(in(x, a), in(v2(successor(n), x), define_recursively(a, c, f)))
+								A(in(x, a), in(op(successor(n), x), define_recursively(a, c, f)))
 							}, fcall(f, x))[Ai[
 								fcall_in_codomain[@h3; @h6];
 								mp[@h7; mp[@h6; Ue(?, x)[mp[@h4; Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]]
@@ -3820,7 +3820,7 @@ schema recursion_theorem_4($A$ cls a: @11, cls c: @21, cls f: @31) {
 		
 		induce((cls n) => {
 			Xin(a, (cls x) => {
-				in(v2(n, x), define_recursively(a, c, f))
+				in(op(n, x), define_recursively(a, c, f))
 			})
 		})[$base; $step]
 }
@@ -3829,21 +3829,21 @@ schema recursion_theorem_4($A$ cls a: @11, cls c: @21, cls f: @31) {
 schema recursion_theorem_5_base($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
 		Qim((cls x) => {
-			in(v2(ord_zero(), x), define_recursively(a, c, f))
-		}, c)[Ui[(cls d) => { cp[in(v2(ord_zero(), d), define_recursively(a, c, f)) |-
+			in(op(ord_zero(), x), define_recursively(a, c, f))
+		}, c)[Ui[(cls d) => { cp[in(op(ord_zero(), d), define_recursively(a, c, f)) |-
 			NNe[Niu[Neq(d, c) |-
 				$c1 = subseteq_subseteq[
-					setminus_is_smaller(define_recursively(a, c, f), singleton(v2(ord_zero(), d)));
+					setminus_is_smaller(define_recursively(a, c, f), singleton(op(ord_zero(), d)));
 					recursion_theorem_1[@h1; @h2; @h3]
 				];
 				
 				$c2 = setminus_i[
 					recursion_theorem_2(a, c, f)[@h2];
-					Niu[in(v2(ord_zero(), c), singleton(v2(ord_zero(), d))) |-
+					Niu[in(op(ord_zero(), c), singleton(op(ord_zero(), d))) |-
 						Fi[
-							eq_symmetric[v2_eq_e2[
+							eq_symmetric[op_eq_e2[
 								ax_emptyset(); set_i[@h2];
-								ax_emptyset(); v2_set_e2[set_i[@h4]];
+								ax_emptyset(); op_set_e2[set_i[@h4]];
 								singleton_e[set_i[@h4]; @h6]]];
 							@h5
 						]]
@@ -3851,35 +3851,35 @@ schema recursion_theorem_5_base($A$ cls a: @11, cls c: @21, cls f: @31) {
 				
 				$c3 = Ui[(cls n) => { cp[in(n, omega()) |-
 					Ui[(cls x) => { cp[in(x, a) |-
-						cp[in(v2(n, x), setminus(define_recursively(a, c, f), singleton(v2(ord_zero(), d)))) |-
+						cp[in(op(n, x), setminus(define_recursively(a, c, f), singleton(op(ord_zero(), d)))) |-
 							setminus_i[
 								mp[
 									in_subseteq[
 										@h8;
-										setminus_is_smaller(define_recursively(a, c, f), singleton(v2(ord_zero(), d)))
+										setminus_is_smaller(define_recursively(a, c, f), singleton(op(ord_zero(), d)))
 									];
 									mp[@h7; Ue(?, x)[mp[@h6; Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]
 								];
-								Niu[in(v2(successor(n), fcall(f, x)), singleton(v2(ord_zero(), d))) |-
+								Niu[in(op(successor(n), fcall(f, x)), singleton(op(ord_zero(), d))) |-
 									Fi[
-										v2_eq_e1_v2[set_i[@h4]; singleton_e[set_i[@h4]; @h9]];
+										op_eq_e1_v2[set_i[@h4]; singleton_e[set_i[@h4]; @h9]];
 										successor_is_not_zero[@h6]
 									]]
 							]]
 					] }]
 				] }];
 				
-				$gamma_is_smaller = bigcap_is_smaller[id(in(setminus(define_recursively(a, c, f), singleton(v2(ord_zero(), d))), recursion_set(a, c, f)))[
+				$gamma_is_smaller = bigcap_is_smaller[id(in(setminus(define_recursively(a, c, f), singleton(op(ord_zero(), d))), recursion_set(a, c, f)))[
 					setbuilder_i(($G$ cls g) => {
 						A(
 							subseteq(g, cartesian(omega(), a)),
 							A(
-								in(v2(ord_zero(), c), g),
+								in(op(ord_zero(), c), g),
 								Uin(omega(), (cls n) => {
 									Uin(a, (cls x) => {
 										I(
-											in(v2(n, x), g),
-											in(v2(successor(n), fcall(f, x)), g)
+											in(op(n, x), g),
+											in(op(successor(n), fcall(f, x)), g)
 										)
 									})
 								})
@@ -3905,36 +3905,36 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 		id(Uin(omega(), (cls n) => {
 			I(
 				Q((cls x) => {
-					in(v2(n, x), define_recursively(a, c, f))
+					in(op(n, x), define_recursively(a, c, f))
 				}),
 				Q((cls x) => {
-					in(v2(successor(n), x), define_recursively(a, c, f))
+					in(op(successor(n), x), define_recursively(a, c, f))
 				})
 			)
 		}))[Ui[(cls n) => { cp[in(n, omega()) |-
 			cp[Q((cls x) => {
-				in(v2(n, x), define_recursively(a, c, f))
+				in(op(n, x), define_recursively(a, c, f))
 			}) |-
 				mpXin_Xe_p(?, ?, Q((cls x) => {
-					in(v2(successor(n), x), define_recursively(a, c, f))
+					in(op(successor(n), x), define_recursively(a, c, f))
 				}))[
 					mp[@h4; Ue(?, n)[recursion_theorem_4[@h1; @h2; @h3]]];
 					Ui[(cls x) => { cp[in(x, a) |-
-						cp[in(v2(n, x), define_recursively(a, c, f)) |-
+						cp[in(op(n, x), define_recursively(a, c, f)) |-
 							Qim((cls x) => {
-								in(v2(successor(n), x), define_recursively(a, c, f))
-							}, fcall(f, x))[Ui[(cls u) => { cp[in(v2(successor(n), u), define_recursively(a, c, f)) |-
+								in(op(successor(n), x), define_recursively(a, c, f))
+							}, fcall(f, x))[Ui[(cls u) => { cp[in(op(successor(n), u), define_recursively(a, c, f)) |-
 								NNe[Niu[Neq(u, fcall(f, x)) |-
 									$c1 = subseteq_subseteq[
-										setminus_is_smaller(define_recursively(a, c, f), singleton(v2(successor(n), u)));
+										setminus_is_smaller(define_recursively(a, c, f), singleton(op(successor(n), u)));
 										recursion_theorem_1[@h1; @h2; @h3]
 									];
 
 									$c2 = setminus_i[
 										recursion_theorem_2(a, c, f)[@h2];
-										Niu[in(v2(ord_zero(), c), singleton(v2(successor(n), u))) |-
+										Niu[in(op(ord_zero(), c), singleton(op(successor(n), u))) |-
 											Fi[
-												eq_symmetric[v2_eq_e1_v2[
+												eq_symmetric[op_eq_e1_v2[
 													set_i[@h8];
 													singleton_e[set_i[@h8]; @h10]
 												]];
@@ -3944,10 +3944,10 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 
 									$c3 = Ui[(cls m) => { cp[in(m, omega()) |-
 										Ui[(cls v) => { cp[in(v, a) |-
-											cp[in(v2(m, v), setminus(define_recursively(a, c, f), singleton(v2(successor(n), u)))) |-
+											cp[in(op(m, v), setminus(define_recursively(a, c, f), singleton(op(successor(n), u)))) |-
 												$bar = in_subseteq[
 													@h12;
-													setminus_is_smaller(define_recursively(a, c, f), singleton(v2(successor(n), u)))
+													setminus_is_smaller(define_recursively(a, c, f), singleton(op(successor(n), u)))
 												];
 												$foo = mp[
 													$bar;
@@ -3957,9 +3957,9 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 												$c3_c1 = Neq(successor(m), successor(n)) |-
 													setminus_i[
 														$foo;
-														Niu[in(v2(successor(m), fcall(f, v)), singleton(v2(successor(n), u))) |-
+														Niu[in(op(successor(m), fcall(f, v)), singleton(op(successor(n), u))) |-
 															Fi[
-																v2_eq_e1_v2[
+																op_eq_e1_v2[
 																	set_i[@h8];
 																	singleton_e[set_i[@h8]; @h14]
 																];
@@ -3971,20 +3971,20 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 													in_eq_left_2[
 														setminus_i[
 															mp[@h7; mp[@h6; Ue(?, x)[mp[@h4; Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]];
-															Niu[in(v2(successor(n), fcall(f, x)), singleton(v2(successor(n), u))) |-
+															Niu[in(op(successor(n), fcall(f, x)), singleton(op(successor(n), u))) |-
 																Fi[
-																	eq_symmetric[v2_eq_e2_v1[set_i[@h14]; singleton_e[set_i[@h8]; @h14]]];
+																	eq_symmetric[op_eq_e2_v1[set_i[@h14]; singleton_e[set_i[@h8]; @h14]]];
 																	@h9
 																]]
 														];
-														v2_eq_i[
+														op_eq_i[
 															@h13;
 															fcall_eq_i(f, ?, ?)[
 																mp[
 																	Ai[
 																		in_eq_left_1[
 																			$bar;
-																			v2_eq_i[
+																			op_eq_i[
 																				successor_eq_e[@h10; @h4; @h13];
 																				eq_reflexive(v)
 																			]
@@ -4005,17 +4005,17 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 										] }]
 									] }];
 
-									$gamma_is_smaller = bigcap_is_smaller[id(in(setminus(define_recursively(a, c, f), singleton(v2(successor(n), u))), recursion_set(a, c, f)))[
+									$gamma_is_smaller = bigcap_is_smaller[id(in(setminus(define_recursively(a, c, f), singleton(op(successor(n), u))), recursion_set(a, c, f)))[
 										setbuilder_i(($G$ cls g) => {
 											A(
 												subseteq(g, cartesian(omega(), a)),
 												A(
-													in(v2(ord_zero(), c), g),
+													in(op(ord_zero(), c), g),
 													Uin(omega(), (cls n) => {
 														Uin(a, (cls x) => {
 															I(
-																in(v2(n, x), g),
-																in(v2(successor(n), fcall(f, x)), g)
+																in(op(n, x), g),
+																in(op(successor(n), fcall(f, x)), g)
 															)
 														})
 													})
@@ -4045,7 +4045,7 @@ schema recursion_theorem_5($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_function(f, a, a) |-
 		induce((cls n) => {
 			Q((cls x) => {
-				in(v2(n, x), define_recursively(a, c, f))
+				in(op(n, x), define_recursively(a, c, f))
 			})
 		})[recursion_theorem_5_base[@h1; @h2; @h3]; recursion_theorem_5_step[@h1; @h2; @h3]]
 }
@@ -4072,7 +4072,7 @@ schema recursion_theorem_7($A$ cls a: @11, cls c: @21, cls f: @31) {
 			))[
 				mp[@h4; Ue(?, n)[recursion_theorem_4[@h1; @h2; @h3]]];
 				Ui[(cls x) => { cp[in(x, a) |-
-					cp[in(v2(n, x), define_recursively(a, c, f)) |-
+					cp[in(op(n, x), define_recursively(a, c, f)) |-
 						eq_transitive[
 							eq_symmetric[fcall_i[
 								$c1;
