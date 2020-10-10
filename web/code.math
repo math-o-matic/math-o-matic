@@ -1991,7 +1991,7 @@ schema universe_is_not_set() {
 
 클래스 개념이 있는 집합론에서 고유 클래스는 정의에 의해 어떤 클래스의 원소가 될 수 없으므로 고유 클래스로는 싱글턴 클래스를 만들 수 없다. 그러나 우리의 체계에서는 고유 클래스에 대해서도 singleton을 호출할 수 있다. 그러나 만들어지는 클래스는 원소의 개수가 1이 아니게 되므로 싱글턴이 되지는 않는다.
 
-만약 [$\{x\} = \{z: z=x\}]로 정의한다면 [$x]가 고유 클래스일 때 [$\{x\}]가 조용히 공집합이 되는데, 이는 공집합 공리에 의해 집합이 된다. 그러므로 순서쌍이 Kuratowski의 정의에 따라 [$(x, y) = \{\{x\}, \{x, y\}\}]와 같이 정의될 때, 이주 지저분한 이유에 의해서 [$(x, y)\in A\times B]이어도 [$y\in B]임을 유도할 수 없는 등의 문제가 있었다. 이때 [$\{x, y\} = \{x\}\cup\{y\}]이다.
+만약 [$\{x\} = \{z: z=x\}]로 정의한다면 [$x]가 고유 클래스일 때 [$\{x\}]가 조용히 공집합이 되는데, 이는 공집합 공리에 의해 집합이 된다. 그러므로 순서쌍이 Kuratowski의 정의에 따라 [$.(x, y) = \{\{x\}, \{x, y\}\}]와 같이 정의될 때, 이주 지저분한 이유에 의해서 [$.(x, y)\in A\times B]이어도 [$y\in B]임을 유도할 수 없는 등의 문제가 있었다. 이때 [$\{x, y\} = \{x\}\cup\{y\}]이다.
 
 그러므로 조용히 공집합이 되는 것보다 마치 에러를 던지듯 [$V]가 되는 것이 낫다고 판단하였다. 이는 [~http://www.qedeq.org/current/doc/math/qedeq_set_theory_v1_en.pdf]의 Definition 11과 같은 방식의 정의이다. 집합에 대해서만 잘 정의되는 개념을 고유 클래스에 적용하면 고유 클래스가 만들어지는 패턴을 일반적으로 적용하면 될 듯하다.
 
@@ -2896,7 +2896,7 @@ cls rel_composite(cls x, cls y) {
 
 "이항관계를 위한 U.
 
-[$R]이 이항관계일 때 임의의 [$(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
+[$R]이 이항관계일 때 임의의 [$.(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
 schema rel_U(pr f, $R$ cls r: @11) {
 	is_rel(r), U2((cls x, cls y) => {
 		I(
@@ -3021,7 +3021,7 @@ schema rel_composite_associative(cls x, cls y, cls z) {
 
 "어떤 [$\langle f, A, B\rangle]가 함수이다.
 
-[$f\subseteq A\times B]이고 임의의 [$x\in A]에 대해 [$(x, y)\in f]를 만족하는 유일한 [$y]가 존재한다는 뜻이다."
+[$f\subseteq A\times B]이고 임의의 [$x\in A]에 대해 [$.(x, y)\in f]를 만족하는 유일한 [$y]가 존재한다는 뜻이다."
 $<<\mathop\mathrm{function}>>\left(#1: #2 \to #3\right)$
 st is_function(cls f, $A$ cls a, $B$ cls b) {
 	A(
@@ -3104,7 +3104,7 @@ schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
 
 [ul
 	[*] [$f]가 함수이고 [$x]가 [$f]의 정의역 밖일 경우 [$\varnothing]이 된다.
-	[*] 일반적으로 [$(x, y)\in f]인 [$y]를 전부 합집합 한 것이다.
+	[*] 일반적으로 [$.(x, y)\in f]인 [$y]를 전부 합집합 한 것이다.
 ]"
 $#1\mathord{\left(#2\right)}{}^{<<\scriptscriptstyle\dag>>}$
 cls fcall(cls f, cls x) {
