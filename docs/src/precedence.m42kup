@@ -10,7 +10,7 @@
 
 [table
 	우선순위(밖) [*] 우선순위(안) [*] 연산자 [**]
-	PREC_FUNEXPR [*] PREC_COMMA, 0 [*] [$(\texttt{...\#1})\mapsto \texttt{\#2}] [**]
+	PREC_FUNEXPR [*] PREC_COMMA, 0 [*] [$.(\texttt{...\#1})\mapsto \texttt{\#2}] [**]
 	0 [*] PREC_COLONEQQ, PREC_COLONEQQ [*] [$\texttt{\#1}\coloneqq\texttt{\#2}] [**]
 	0 [*] 0, PREC_COMMA [*] [$\texttt{\#1}(\texttt{...\#2})] [**]
 	0 [*] 0, PREC_COMMA [*] [$`\texttt{\#1}[\texttt{...\#2}]`] [**]

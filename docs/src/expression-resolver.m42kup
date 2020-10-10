@@ -6,9 +6,9 @@ funcall을 한 단계만 푼다. fun이 funcall이면 그것을 [;expand0Funcall
 
 [table
 	변환 전 [*] 변환 후 [**]
-	[$(x \mapsto f(x))(y)] [*] [$f(y)] [**]
-	[$(x \mapsto y \mapsto f(x, y))(z)] [*] [$y \mapsto f(z, y)] [**]
-	[$(x \mapsto y \mapsto f(x, y))(z)(w)] [*] [$(y \mapsto f(z, y))(w)] [**]
+	[$.(x \mapsto f(x))(y)] [*] [$f(y)] [**]
+	[$.(x \mapsto y \mapsto f(x, y))(z)] [*] [$y \mapsto f(z, y)] [**]
+	[$.(x \mapsto y \mapsto f(x, y))(z)(w)] [*] [$.(y \mapsto f(z, y))(w)] [**]
 	[$`(x \mapsto y \mapsto z \mapsto f(x, y, z))(w)(v)(u)`] [*] [$`(y \mapsto z \mapsto f(w, y, z))(v)(u)`]
 ]
 

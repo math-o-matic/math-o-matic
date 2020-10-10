@@ -72,7 +72,7 @@
 	[*] 대상언어(object language)의 문장이다.
 ]]
 
-예를 들어 [$p, q, r]이 대상언어의 문장이라면 [$(\vdash r)\vdash (p, q\vdash r)]이 메타언어의 문장이다. math-o-matic 체계에서의 추론 규칙은 [$\vdash\mathrm I] 및 [$\vdash\mathrm E]의 두 개이며 각각 [$\vdash]의 도입과 소거에 관한 것이다. 다음과 같이 정해져 있다.
+예를 들어 [$p, q, r]이 대상언어의 문장이라면 [$.(\vdash r)\vdash (p, q\vdash r)]이 메타언어의 문장이다. math-o-matic 체계에서의 추론 규칙은 [$\vdash\mathrm I] 및 [$\vdash\mathrm E]의 두 개이며 각각 [$\vdash]의 도입과 소거에 관한 것이다. 다음과 같이 정해져 있다.
 
 [table
 	[~~()../assets/1.jpg] [*] [~~()../assets/2.jpg] [**]
@@ -81,7 +81,7 @@
 	단 [$p, q, \ldots, r]의 개수는 0이어도 된다.
 ]
 
-위의 두 규칙으로부터 [$p, q, \ldots, r\vdash s]가 ["[$p, q, \ldots, r]로부터 [$s]를 증명할 수 있다]라는 뜻이라 생각할 수 있을 것이다. 두 규칙의 적용 예시로서 weakening의 일종인 [$(\vdash r)\vdash (p, q\vdash r)]은 임의의 공리계에서 다음과 같이 유도할 수 있다.
+위의 두 규칙으로부터 [$p, q, \ldots, r\vdash s]가 ["[$p, q, \ldots, r]로부터 [$s]를 증명할 수 있다]라는 뜻이라 생각할 수 있을 것이다. 두 규칙의 적용 예시로서 weakening의 일종인 [$.(\vdash r)\vdash (p, q\vdash r)]은 임의의 공리계에서 다음과 같이 유도할 수 있다.
 
 [;;
 1 ┃ ⊦ r                    가정
