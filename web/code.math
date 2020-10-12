@@ -2775,38 +2775,22 @@ schema cartesian_in_e2($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @11
 	in(op(x, y), cartesian(a, b)) |- Ae2[cartesian_in_e[@h1]]
 }
 
-"어떤 class가 이항관계이다.
-
-[$R]이 이항관계라 함은 [$R]의 임의 원소가 순서쌍이라는 뜻이다. 정의역(domain)과 치역(image)에 관한 정보는 담지 않도록 한다."
-$\left(<<\operatorname{relation}>> #1\right)$
-st is_rel($R$ cls r) {
-	subseteq(r, cartesian(universe(), universe()))
-}
-
-$\left(<<\operatorname{relation}>>#1\text{ over }#2\right)$
-st is_rel_over_set($R$ cls r, $A$ cls a) {
-	subseteq(r, cartesian(a, a))
-}
-
 $\left(<<\operatorname{relation}>>#1\text{ over }#2\text{ and } #3\right)$
 st is_rel_over_sets($R$ cls r, $A$ cls a, $B$ cls b) {
 	subseteq(r, cartesian(a, b))
 }
 
-"is_rel의 이전 정의와 새 정의를 잇는 정리."
-schema is_rel_def($R$ cls r: @11) {
-	is_rel(r) |-
-		id(Uin(r, (cls z) => {
-			X2((cls x, cls y) => {
-				eq(z, op(x, y))
-			})
-		}))[Ui[(cls z) => { cp[in(z, r) |-
-			X2Ae1((cls x, cls y) => {
-				eq(z, op(x, y))
-			}, (cls x, cls y) => {
-				A(in(x, universe()), in(y, universe()))
-			})[setbuilder_e[in_subseteq[@h2; @h1]]]
-		] }]]
+$\left(<<\operatorname{relation}>>#1\text{ over }#2\right)$
+st is_rel_over_set($R$ cls r, $A$ cls a) {
+	is_rel_over_sets(r, a, a)
+}
+
+"어떤 class가 이항관계이다.
+
+[$R]이 이항관계라 함은 [$R]의 임의 원소가 순서쌍이라는 뜻이다. 정의역(domain)과 치역(image)에 관한 정보는 담지 않도록 한다."
+$\left(<<\operatorname{relation}>> #1\right)$
+st is_rel($R$ cls r) {
+	is_rel_over_set(r, universe())
 }
 
 "이항관계의 정의역(domain)."
@@ -2906,7 +2890,10 @@ schema rel_U(pr f, $R$ cls r: @11) {
 	}) |-
 		id(Uin(r, f))[Ui[(cls z) => {cp[in(z, r) |-
 			mpX2_X2e_p(?, f(z))[
-				mp[@h3; Ue(?, z)[is_rel_def[@h1]]];
+				X2Ae1(
+				(cls x, cls y) => { eq(z, op(x, y)) },
+				(cls x, cls y) => { A(in(x, universe()), in(y, universe())) }
+			)[setbuilder_e[in_subseteq[@h3; @h1]]];
 				Ui2[(cls x, cls y) => {
 					cp[eq(z, op(x, y)) |-
 						ax_indiscernible_m1(f, ?, ?)[eq_symmetric[@h4]; mp[in_eq_left_1[@h3; @h4]; Ue2(?, x, y)[@h2]]]]
