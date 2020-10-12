@@ -20,17 +20,15 @@
   "main": "dist/math.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
-    "lint": "eslint src/**/*.js"
+    "build": "webpack"
   },
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
     "error-stack-parser": "^2.0.6",
-    "eslint": "^6.8.0",
     "pegjs": "^0.10.0",
-    "raw-loader": "^4.0.1",
-    "terser-webpack-plugin": "^4.2.2",
+    "raw-loader": "^4.0.2",
+    "terser-webpack-plugin": "^4.2.3",
     "ts-loader": "^8.0.4",
     "typescript": "^4.0.3",
     "webpack": "^4.44.2",
