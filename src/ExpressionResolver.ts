@@ -5,13 +5,6 @@ function iscall(a: Metaexpr): a is Schemacall {
 	return a._type == 'schemacall';
 }
 
-function callee(a: Metaexpr) {
-	if (iscall(a)) return a.schema;
-
-	console.log(a);
-	throw Error();
-}
-
 function makecall(a: Metaexpr, args: Expr0[]): Schemacall {
 	if (a._type == 'typevar' || a._type == 'schema') {
 		return new Schemacall({
@@ -97,12 +90,12 @@ export default class ER {
 			throw Error('Illegal type');
 		}
 
-		if (iscall(callee(expr))) {
-			var schema = ER.expandCallOnce(callee(expr));
+		if (iscall(expr.schema)) {
+			var schema = ER.expandCallOnce(expr.schema);
 			return makecall(schema, expr.args);
 		}
 
-		var callee_ = callee(expr);
+		var callee_ = expr.schema;
 
 		while (callee_._type == '$var') {
 			callee_ = callee_.expr;
@@ -231,22 +224,22 @@ export default class ER {
 			}
 
 			if (iscall(a) && iscall(b)) {
-				if (iscall(callee(a))) {
+				if (iscall(a.schema)) {
 					return recurseWrap(
 						ER.expandCallOnce(a), b, depth + 1
 					);
 				}
 
-				if (iscall(callee(b))) {
+				if (iscall(b.schema)) {
 					return recurseWrap(
 						a, ER.expandCallOnce(b), depth + 1
 					);
 				}
 
-				if (callee(a) == callee(b) || !callee(a).expr && !callee(b).expr) {
-					if (callee(a) != callee(b)) return false;
+				if (a.schema == b.schema || !a.schema.expr && !b.schema.expr) {
+					if (a.schema != b.schema) return false;
 
-					if (!callee(a).expr && !callee(b).expr) {
+					if (!a.schema.expr && !b.schema.expr) {
 						for (var i = 0; i < a.args.length; i++) {
 							if (!recurseWrap(a.args[i], b.args[i], depth + 1)) return false;
 						}
@@ -261,7 +254,7 @@ export default class ER {
 					}
 				}
 
-				if (callee(a).expr) {
+				if (a.schema.expr) {
 					return recurseWrap(ER.expandCallOnce(a), b, depth + 1);
 				}
 
@@ -269,13 +262,13 @@ export default class ER {
 			}
 
 			if (iscall(a)) {
-				if (iscall(callee(a))) {
+				if (iscall(a.schema)) {
 					return recurseWrap(
 						ER.expandCallOnce(a), b, depth + 1
 					);
 				}
 
-				if (!callee(a).expr) return false;
+				if (!a.schema.expr) return false;
 
 				return recurseWrap(
 					ER.expandCallOnce(a), b, depth + 1
@@ -283,13 +276,13 @@ export default class ER {
 			}
 
 			if (iscall(b)) {
-				if (iscall(callee(b))) {
+				if (iscall(b.schema)) {
 					return recurseWrap(
 						a, ER.expandCallOnce(b), depth + 1
 					);
 				}
 
-				if (!callee(b).expr) return false;
+				if (!b.schema.expr) return false;
 
 				return recurseWrap(
 					a, ER.expandCallOnce(b), depth + 1
@@ -344,37 +337,6 @@ export default class ER {
 		var ret = recurseWrap(a, b, 0);
 		if (ret) ER.nequalstrue++;
 		return ret;
-	}
-
-	public static chain(tees: Tee[]) {
-		if (!tees.every(tee => tee._type == 'tee')) {
-			throw Error('no');
-		}
-
-		return ER.expandMetaAndFuncalls(tees.reduceRight((r, l) => {
-			for (var i = 0; i < r.left.length; i++) {
-				if (ER.equals(l.right, r.left[i])) {
-					var newleft = r.left.slice(0, i)
-						.concat(l.left)
-						.concat(r.left.slice(i + 1));
-
-					return new Tee({
-						left: newleft,
-						right: r.right
-					});
-				}
-			}
-
-			throw Error(`Chaining failed:
-
---- LEFT ---
-${l}
-------------
-
---- RIGHT ---
-${r}
--------------`);
-		}));
 	}
 }
 
