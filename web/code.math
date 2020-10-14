@@ -1631,6 +1631,20 @@ schema ax_specify_m(pr f, cls x: @11) {
 	set(x) |- mp[@h1; Ue(?, x)[ax_specify(f)]]
 }
 
+"descriptor operator. [$f]를 만족하는 클래스가 존재하고 유일하다면 그 클래스이며 아니면 [$V]이다.
+
+즉 Principia Mathematica의 inverted iota 연산자 같은 것이다. Metamath의 [~(href=http://us.metamath.org/mpeuni/df-iota.html)df-iota]에서 본 것이다."
+cls instantiate(pr f) {
+	setbuilder((cls z) => {
+		O(
+			N(Xq(f)),
+			X((cls x) => {
+				A(f(x), in(z, x))
+			})
+		)
+	})
+}
+
 "교집합."
 $!<prec=300>#1<<\cap>>#2$
 cls cap(cls x, cls y) {
@@ -3484,6 +3498,27 @@ st is_semigroup($S$ cls s, $\ast$ cls f) {
 		is_magma(s, f),
 		bin_op_associative(f, s)
 	)
+}
+
+"[$e]가 [$.(S, \ast)]의 항등원이다."
+$\left(<<\operatorname{identity\ el.}>>#1\text{ of }\left(#2,#3\right)\right)$
+st is_identity_element(cls e, $S$ cls s, $\ast$ cls f) {
+	A(
+		in(e, s),
+		Uin(s, (cls a) => {
+			A(
+				eq(bin_op_call(f, e, a), a),
+				eq(bin_op_call(f, a, e), a)
+			)
+		})
+	)
+}
+
+"[$.(S, \ast)]의 항등원(존재한다면)."
+cls identity_element($S$ cls s, $\ast$ cls f) {
+	instantiate((cls e) => {
+		is_identity_element(e, s, f)
+	})
 }
 
 "대수학에서의 모노이드(monoid)."
