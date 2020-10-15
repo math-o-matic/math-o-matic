@@ -101,6 +101,11 @@ axiomatic schema Ne(st p: @1, st q) {
 	p, N(p) |- q
 }
 
+schema Nec1(st p: @11, st q) {
+	N(p) |-
+		cp[p |- Ne(p, q)[@h2; @h1]]
+}
+
 "이중부정 도입(double negation introduction)."
 schema NNi(st p: @1) {
 	p |- Niu[N(p) |- Ne(p, F)[@h1; @h2]]
@@ -460,6 +465,9 @@ type [(cls, cls) -> st] pr2;
 
 "class 세 개를 받는 술어 타입."
 type [(cls, cls, cls) -> st] pr3;
+
+"class 하나를 받는 메타함수 타입."
+type [cls -> cls] fun;
 
 "pr 타입을 위한 A."
 $\left(#1<<\land>>#2\right)$
@@ -1234,6 +1242,13 @@ schema subseteq_eq(cls x, cls y, cls z) {
 		subseteq_subseteq[@h1; eq_to_subseteq_1[@h2]]
 }
 
+schema call_eq_i(fun f, cls x: @11, cls y: @12) {
+	eq(x, y) |-
+		ax_indiscernible_m1(
+			(cls y) => {eq(f(x), f(y))}, x, y
+		)[@h1; eq_reflexive(f(x))]
+}
+
 "어떤 class 내에서의 forall."
 $!<prec=249><<\forall>>_{\in #1}#2$
 st Uin(cls a, pr f) {
@@ -1555,7 +1570,7 @@ schema setbuilder_is_setbuilder(pr f: @121, cls x: @11) {
 
 "술어를 만족하는 집합 [$z]에 대해 [$f(z)]를 포함하는 클래스를 만든다. 일반적으로 [$\{f(z): g(z)\}]라고 쓰는 것이다."
 $\left\{#1<<:>>#2\right\}$
-cls setbuilder2([cls -> cls] f, pr g) {
+cls setbuilder2(fun f, pr g) {
 	setbuilder((cls w) => {
 		X((cls z) => {
 			A(
@@ -1566,7 +1581,7 @@ cls setbuilder2([cls -> cls] f, pr g) {
 	})
 }
 
-schema setbuilder2_i([cls -> cls] f, pr g, cls z) {
+schema setbuilder2_i(fun f, pr g, cls z) {
 	set(f(z)), g(z) |-
 		id(in(f(z), setbuilder2(f, g)))[setbuilder_i(
 			(cls w) => {X((cls z) => {
@@ -1633,16 +1648,47 @@ schema ax_specify_m(pr f, cls x: @11) {
 
 "descriptor operator. [$f]를 만족하는 클래스가 존재하고 유일하다면 그 클래스이며 아니면 [$V]이다.
 
-즉 Principia Mathematica의 inverted iota 연산자 같은 것이다. Metamath의 [~(href=http://us.metamath.org/mpeuni/df-iota.html)df-iota]에서 본 것이다."
+즉 Principia Mathematica의 inverted iota 연산자 같은 것이다. Metamath의 [~(href=http://us.metamath.org/mpeuni/df-iota.html)df-iota]를 참조하였으나 꽤 다르게 정의되었다."
 cls instantiate(pr f) {
 	setbuilder((cls z) => {
-		O(
-			N(Xq(f)),
+		I(
+			Xq(f),
 			X((cls x) => {
 				A(f(x), in(z, x))
 			})
 		)
 	})
+}
+
+schema instantiate_eq_i(pr f: @11, cls x) {
+	Q(f), f(x) |-
+		$foo = Ui[(cls z) => {
+			$c1 = cp[in(z, x) |-
+				id(in(z, instantiate(f)))[setbuilder_i(
+					(cls z) => {
+						I(Xq(f), X((cls x) => {
+							A(f(x), in(z, x))
+						}))
+					},
+					z
+				)[
+					set_i[@h3];
+					weaken(?, Xq(f))[Xi((cls x) => {
+						A(f(x), in(z, x))
+					}, x)[Ai[@h2; @h3]]]
+				]]];
+
+			$c2 = cp[in(z, instantiate(f)) |-
+				mpX_Xe_p(?, in(z, x))[
+					mp[Ai[Xi(f, x)[@h2]; @h1]; setbuilder_e[@h3]];
+					Ui[(cls y) => { cp2[f(y), in(z, y) |-
+						in_eq_right_2[@h5; Qe(f, x, y)[@h1; @h2; @h4]]] }]
+				]];
+
+			Ei[$c1; $c2]
+		}];
+		
+		ax_extensional_m(x, instantiate(f))[$foo]
 }
 
 "교집합."
@@ -3233,11 +3279,11 @@ schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
 	[*] 일반적으로 [$.(x, y)\in f]인 [$y]를 전부 합집합 한 것이다.
 ]"
 $#1\mathord{\left(#2\right)}{}^{<<\scriptscriptstyle\dag>>}$
-cls fcall(cls f, cls x) {
+cls funcall(cls f, cls x) {
 	bigcup(rel_im_set(f, singleton(x)))
 }
 
-schema fcall_def_0(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
+schema funcall_def_0(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 	is_fun(f, a, b), in(x, a), in(y, rel_im_set(f, singleton(x))) |-
 		mpX_Xe_p(?, in(pair(x, y), f))[
 			setbuilder_e[@h3];
@@ -3247,7 +3293,7 @@ schema fcall_def_0(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 		]
 }
 
-schema fcall_def_1(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
+schema funcall_def_1(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 	is_fun(f, a, b), in(x, a), in(y, b), in(pair(x, y), f) |-
 		id(in(y, rel_im_set(f, singleton(x))))[setbuilder_i(
 			(cls y) => {
@@ -3259,40 +3305,40 @@ schema fcall_def_1(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 		]]
 }
 
-schema fcall_def_2(cls f, $A$ cls a, $B$ cls b, cls x) {
+schema funcall_def_2(cls f, $A$ cls a, $B$ cls b, cls x) {
 	is_fun(f, a, b), in(x, a) |-
 			mpX(?, is_in(rel_im_set(f, singleton(x))))[
 				fun_im_X_m[@h1; @h2];
 				Ui[(cls y) => { cp[A(in(y, b), in(pair(x, y), f)) |-
-					fcall_def_1(f, a, b, x, y)[@h1; @h2; Ae1[@h3]; Ae2[@h3]]] }]
+					funcall_def_1(f, a, b, x, y)[@h1; @h2; Ae1[@h3]; Ae2[@h3]]] }]
 			]
 }
 
-schema fcall_def_3(cls f, $A$ cls a, $B$ cls b, cls x) {
+schema funcall_def_3(cls f, $A$ cls a, $B$ cls b, cls x) {
 	is_fun(f, a, b), in(x, a) |-
 		id(Q(is_in(rel_im_set(f, singleton(x)))))[Ui2[($y_1$ cls y1, $y_2$ cls y2) => {
 			cp[A(in(y1, rel_im_set(f, singleton(x))), in(y2, rel_im_set(f, singleton(x)))) |-
 				fun_im_Q_m[
 					@h1; @h2;
-					fcall_def_0(f, a, b, x, y1)[@h1; @h2; Ae1[@h3]];
-					fcall_def_0(f, a, b, x, y2)[@h1; @h2; Ae2[@h3]]
+					funcall_def_0(f, a, b, x, y1)[@h1; @h2; Ae1[@h3]];
+					funcall_def_0(f, a, b, x, y2)[@h1; @h2; Ae2[@h3]]
 				]]
 		}]]
 }
 
-schema fcall_def(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
+schema funcall_def(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 	is_fun(f, a, b), in(x, a) |-
-		mpX_Xe_p(?, in(pair(x, fcall(f, x)), f))[
-			fcall_def_2(f, a, b, x)[@h1; @h2];
+		mpX_Xe_p(?, in(pair(x, funcall(f, x)), f))[
+			funcall_def_2(f, a, b, x)[@h1; @h2];
 			Ui[(cls y) => {
 				cp[in(y, rel_im_set(f, singleton(x))) |-
 					in_eq_left_2[
-						fcall_def_0(f, a, b, x, y)[@h1; @h2; @h3];
+						funcall_def_0(f, a, b, x, y)[@h1; @h2; @h3];
 						pair_eq_i[
 							eq_reflexive(x);
 							bigcup_singleton_is_element[
 								id(is_singleton(rel_im_set(f, singleton(x))))[
-									XQ_to_Xq[fcall_def_2(f, a, b, x)[@h1; @h2]; fcall_def_3(f, a, b, x)[@h1; @h2]]
+									XQ_to_Xq[funcall_def_2(f, a, b, x)[@h1; @h2]; funcall_def_3(f, a, b, x)[@h1; @h2]]
 								];
 								@h3
 							]
@@ -3302,7 +3348,7 @@ schema fcall_def(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 		]
 }
 
-schema fcall_i(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @211, cls y: @212) {
+schema funcall_i(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @211, cls y: @212) {
 	is_fun(f, a, b), in(pair(x, y), f) |-
 		$x_in_a = cartesian_in_e1[in_subseteq[@h2; fun_subseteq_cartesian[@h1]]];
 		
@@ -3310,14 +3356,14 @@ schema fcall_i(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @211, cls y: @
 			@h1;
 			$x_in_a;
 			@h2;
-			fcall_def[@h1; $x_in_a]
+			funcall_def[@h1; $x_in_a]
 		]
 }
 
-schema fcall_e(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21, cls y: @31) {
-	is_fun(f, a, b), in(x, a), eq(y, fcall(f, x)) |-
+schema funcall_e(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21, cls y: @31) {
+	is_fun(f, a, b), in(x, a), eq(y, funcall(f, x)) |-
 		in_eq_left_2[
-			fcall_def[@h1; @h2];
+			funcall_def[@h1; @h2];
 			pair_eq_i[
 				eq_reflexive(x);
 				@h3
@@ -3327,42 +3373,42 @@ schema fcall_e(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21, cls y: @3
 
 schema fun_eq_i(cls f: @11, cls g: @21, $A$ cls a: @12, $B$ cls b: @13) {
 	$bar = (cls f, cls g, $A$ cls a, $B$ cls b) => {
-		is_fun(f, a, b), is_fun(g, a, b), Uin(a, (cls x) => {eq(fcall(f, x), fcall(g, x))}) |-
+		is_fun(f, a, b), is_fun(g, a, b), Uin(a, (cls x) => {eq(funcall(f, x), funcall(g, x))}) |-
 			$foo = Ui2[(cls x, cls y) => {
 				cp[in(pair(x, y), f) |-
 					$x_in_a = fun_in_e1[@h1; @h4];
-					fcall_e[@h2; $x_in_a; eq_transitive[fcall_i[@h1; @h4]; mp[$x_in_a; Ue(?, x)[@h3]]]]]
+					funcall_e[@h2; $x_in_a; eq_transitive[funcall_i[@h1; @h4]; mp[$x_in_a; Ue(?, x)[@h3]]]]]
 			}];
 
 			id(subseteq(f, g))[rel_U(is_in(g), ?, ?, ?)[fun_is_rel[@h1]; $foo]]
 	};
 	
-	is_fun(f, a, b), is_fun(g, a, b), Uin(a, (cls x) => {eq(fcall(f, x), fcall(g, x))}) |-
+	is_fun(f, a, b), is_fun(g, a, b), Uin(a, (cls x) => {eq(funcall(f, x), funcall(g, x))}) |-
 		subseteq_to_eq[
 			$bar(f, g, a, b)[@h1; @h2; @h3];
 			$bar(g, f, a, b)[@h2; @h1; Ui[(cls x) => { cp[in(x, a) |- eq_symmetric[mp[@h4; Ue(?, x)[@h3]]]] }]]
 		]
 }
 
-schema fcall_eq_i(cls f, $x_1$ cls x1: @11, $x_2$ cls x2: @12) {
+schema funcall_eq_i(cls f, $x_1$ cls x1: @11, $x_2$ cls x2: @12) {
 	eq(x1, x2) |-
-		id(eq(fcall(f, x1), fcall(f, x2)))[
+		id(eq(funcall(f, x1), funcall(f, x2)))[
 			bigcup_eq_i[rel_im_set_eq_i(f, ?, ?)[singleton_eq_i[@h1]]]
 		]
 }
 
-schema fcall_in_codomain(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
+schema funcall_in_codomain(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x: @21) {
 	is_fun(f, a, b), in(x, a) |-
-		mpX_Xe_p(?, in(fcall(f, x), b))[
+		mpX_Xe_p(?, in(funcall(f, x), b))[
 			fun_im_X_m[@h1; @h2];
 			Ui[(cls y) => { cp[A(in(y, b), in(pair(x, y), f)) |-
-				in_eq_left_1[Ae1[@h3]; fun_im_Q_m[@h1; @h2; Ae2[@h3]; fcall_def(f, a, b, x)[@h1; @h2]]]] }]
+				in_eq_left_1[Ae1[@h3]; fun_im_Q_m[@h1; @h2; Ae2[@h3]; funcall_def(f, a, b, x)[@h1; @h2]]]] }]
 		]
 }
 
 "매개변수가 하나인 메타함수로 함수를 만든다."
 $\left[#1\right]_{<<\in>>#2}$
-cls make_fun([cls -> cls] f, $A$ cls a) {
+cls make_fun(fun f, $A$ cls a) {
 	setbuilder2(
 		(cls z) => {
 			pair(z, f(z))
@@ -3373,7 +3419,7 @@ cls make_fun([cls -> cls] f, $A$ cls a) {
 	)
 }
 
-schema make_fun_is_fun([cls -> cls] f, $A$ cls a, $B$ cls b) {
+schema make_fun_is_fun(fun f, $A$ cls a, $B$ cls b) {
 	Uin(a, (cls x) => {
 		in(f(x), b)
 	}) |-
@@ -3422,9 +3468,9 @@ schema make_fun_is_fun([cls -> cls] f, $A$ cls a, $B$ cls b) {
 		id(is_fun(make_fun(f, a), a, b))[Ai[$c1; $c23]]
 }
 
-schema make_fun_fcall([cls -> cls] f, $A$ cls a: @22, $B$ cls b, cls x: @21) {
+schema make_fun_funcall(fun f, $A$ cls a: @22, $B$ cls b, cls x: @21) {
 	Uin(a, (cls x) => {in(f(x), b)}), in(x, a) |-
-		eq_symmetric[fcall_i[
+		eq_symmetric[funcall_i[
 			make_fun_is_fun(f, a, b)[@h1];
 			id(in(pair(x, f(x)), make_fun(f, a)))[
 				setbuilder2_i(
@@ -3462,7 +3508,7 @@ st is_bin_op($\ast$ cls f, $A$ cls a) {
 "이항연산을 위한 함수 호출의 syntactic sugar."
 $\left(#2\mathbin{#1}#3\right){}^{<<\scriptscriptstyle\dag>>}$
 cls bin_op_call($\ast$ cls f, cls x, cls y) {
-	fcall(f, pair(x, y))
+	funcall(f, pair(x, y))
 }
 
 $\left(#1\ <<\text{is associative on}>>\ #2\right)$
@@ -3816,11 +3862,11 @@ st is_recursively_defined($\gamma$ cls g, $A$ cls a, cls c, cls f) {
 	A(
 		is_fun(g, omega(), a),
 		A(
-			eq(fcall(g, ord_zero()), c),
+			eq(funcall(g, ord_zero()), c),
 			Uin(omega(), (cls n) => {
 				eq(
-					fcall(g, successor(n)),
-					fcall(f, fcall(g, n))
+					funcall(g, successor(n)),
+					funcall(f, funcall(g, n))
 				)
 			})
 		)
@@ -3838,7 +3884,7 @@ cls recursion_set($A$ cls a, cls c, cls f) {
 					Uin(a, (cls x) => {
 						I(
 							in(pair(n, x), g),
-							in(pair(successor(n), fcall(f, x)), g)
+							in(pair(successor(n), funcall(f, x)), g)
 						)
 					})
 				})
@@ -3872,7 +3918,7 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 								Uin(a, (cls x) => {
 									I(
 										in(pair(n, x), g),
-										in(pair(successor(n), fcall(f, x)), g)
+										in(pair(successor(n), funcall(f, x)), g)
 									)
 								})
 							})
@@ -3894,7 +3940,7 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 								Uin(a, (cls x) => {
 									I(
 										in(pair(n, x), cartesian(omega(), a)),
-										in(pair(successor(n), fcall(f, x)), cartesian(omega(), a))
+										in(pair(successor(n), funcall(f, x)), cartesian(omega(), a))
 									)
 								})
 							}))[
@@ -3902,7 +3948,7 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 									I(in(n, omega()), Uin(a, (cls x) => {
 										I(
 											in(pair(n, x), cartesian(omega(), a)),
-											in(pair(successor(n), fcall(f, x)), cartesian(omega(), a))
+											in(pair(successor(n), funcall(f, x)), cartesian(omega(), a))
 										)
 									}))
 								})[(cls n) => {
@@ -3911,13 +3957,13 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 											id(Uin(a, (cls x) => {
 												I(
 													in(pair(n, x), cartesian(omega(), a)),
-													in(pair(successor(n), fcall(f, x)), cartesian(omega(), a))
+													in(pair(successor(n), funcall(f, x)), cartesian(omega(), a))
 												)
 											}))[
 												Ui((cls x) => {
 													I(in(x, a), I(
 														in(pair(n, x), cartesian(omega(), a)),
-														in(pair(successor(n), fcall(f, x)), cartesian(omega(), a))
+														in(pair(successor(n), funcall(f, x)), cartesian(omega(), a))
 													))
 												})[(cls x) => {
 													cp[
@@ -3925,7 +3971,7 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 															cp[in(pair(n, x), cartesian(omega(), a)) |-
 																cartesian_in_i[
 																	successor_in_omega[@h4];
-																	fcall_in_codomain[@h3; @h5]
+																	funcall_in_codomain[@h3; @h5]
 																]]
 													]
 												}]
@@ -3967,7 +4013,7 @@ schema recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) {
 			Uin(a, (cls x) => {
 				I(
 					in(pair(n, x), define_recursively(a, c, f)),
-					in(pair(successor(n), fcall(f, x)), define_recursively(a, c, f))
+					in(pair(successor(n), funcall(f, x)), define_recursively(a, c, f))
 				)
 			})
 		}))[Ui[(cls n) => {
@@ -3975,14 +4021,14 @@ schema recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) {
 				Ui[(cls x) => {
 					cp[in(x, a) |-
 						cp[in(pair(n, x), define_recursively(a, c, f)) |-
-							id(in(pair(successor(n), fcall(f, x)), define_recursively(a, c, f)))[setbuilder_i((cls z) => {
+							id(in(pair(successor(n), funcall(f, x)), define_recursively(a, c, f)))[setbuilder_i((cls z) => {
 								U(($G$ cls g) => {
 									I(in(g, recursion_set(a, c, f)), in(z, g))
 								})
-							}, pair(successor(n), fcall(f, x)))[
+							}, pair(successor(n), funcall(f, x)))[
 								pair_set_i[
 									successor_is_set[set_i[@h2]];
-									set_i[fcall_in_codomain[@h1; @h3]]
+									set_i[funcall_in_codomain[@h1; @h3]]
 								];
 								mp[
 									setbuilder_e[@h4];
@@ -3991,7 +4037,7 @@ schema recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) {
 											I(in(g, recursion_set(a, c, f)), in(pair(n, x), g))
 										},
 										($G$ cls g) => {
-											I(in(g, recursion_set(a, c, f)), in(pair(successor(n), fcall(f, x)), g))
+											I(in(g, recursion_set(a, c, f)), in(pair(successor(n), funcall(f, x)), g))
 										}
 									)[Ui[($G$ cls g) => {
 										I_distribute_left[cp[in(g, recursion_set(a, c, f)) |-
@@ -4024,8 +4070,8 @@ schema recursion_theorem_4($A$ cls a: @11, cls c: @21, cls f: @31) {
 						cp[in(pair(n, x), define_recursively(a, c, f)) |-
 							Xi((cls x) => {
 								A(in(x, a), in(pair(successor(n), x), define_recursively(a, c, f)))
-							}, fcall(f, x))[Ai[
-								fcall_in_codomain[@h3; @h6];
+							}, funcall(f, x))[Ai[
+								funcall_in_codomain[@h3; @h6];
 								mp[@h7; mp[@h6; Ue(?, x)[mp[@h4; Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]]
 							]]]
 					] }]
@@ -4074,7 +4120,7 @@ schema recursion_theorem_5_base($A$ cls a: @11, cls c: @21, cls f: @31) {
 									];
 									mp[@h7; Ue(?, x)[mp[@h6; Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]
 								];
-								Niu[in(pair(successor(n), fcall(f, x)), singleton(pair(ord_zero(), d))) |-
+								Niu[in(pair(successor(n), funcall(f, x)), singleton(pair(ord_zero(), d))) |-
 									Fi[
 										pair_eq_e1_v2[set_i[@h4]; singleton_e[set_i[@h4]; @h9]];
 										successor_is_not_zero[@h6]
@@ -4093,7 +4139,7 @@ schema recursion_theorem_5_base($A$ cls a: @11, cls c: @21, cls f: @31) {
 									Uin(a, (cls x) => {
 										I(
 											in(pair(n, x), g),
-											in(pair(successor(n), fcall(f, x)), g)
+											in(pair(successor(n), funcall(f, x)), g)
 										)
 									})
 								})
@@ -4137,8 +4183,8 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 						cp[in(pair(n, x), define_recursively(a, c, f)) |-
 							Qim((cls x) => {
 								in(pair(successor(n), x), define_recursively(a, c, f))
-							}, fcall(f, x))[Ui[(cls u) => { cp[in(pair(successor(n), u), define_recursively(a, c, f)) |-
-								NNe[Niu[Neq(u, fcall(f, x)) |-
+							}, funcall(f, x))[Ui[(cls u) => { cp[in(pair(successor(n), u), define_recursively(a, c, f)) |-
+								NNe[Niu[Neq(u, funcall(f, x)) |-
 									$c1 = subseteq_subseteq[
 										setminus_is_smaller(define_recursively(a, c, f), singleton(pair(successor(n), u)));
 										recursion_theorem_1[@h1; @h2; @h3]
@@ -4171,7 +4217,7 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 												$c3_c1 = Neq(successor(m), successor(n)) |-
 													setminus_i[
 														$foo;
-														Niu[in(pair(successor(m), fcall(f, v)), singleton(pair(successor(n), u))) |-
+														Niu[in(pair(successor(m), funcall(f, v)), singleton(pair(successor(n), u))) |-
 															Fi[
 																pair_eq_e1_v2[
 																	set_i[@h8];
@@ -4185,7 +4231,7 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 													in_eq_left_2[
 														setminus_i[
 															mp[@h7; mp[@h6; Ue(?, x)[mp[@h4; Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]];
-															Niu[in(pair(successor(n), fcall(f, x)), singleton(pair(successor(n), u))) |-
+															Niu[in(pair(successor(n), funcall(f, x)), singleton(pair(successor(n), u))) |-
 																Fi[
 																	eq_symmetric[pair_eq_e2_v1[set_i[@h14]; singleton_e[set_i[@h8]; @h14]]];
 																	@h9
@@ -4193,7 +4239,7 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 														];
 														pair_eq_i[
 															@h13;
-															fcall_eq_i(f, ?, ?)[
+															funcall_eq_i(f, ?, ?)[
 																mp[
 																	Ai[
 																		in_eq_left_1[
@@ -4229,7 +4275,7 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 														Uin(a, (cls x) => {
 															I(
 																in(pair(n, x), g),
-																in(pair(successor(n), fcall(f, x)), g)
+																in(pair(successor(n), funcall(f, x)), g)
 															)
 														})
 													})
@@ -4277,25 +4323,25 @@ schema recursion_theorem_7($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_fun(f, a, a) |-
 		$c1 = recursion_theorem_6[@h1; @h2; @h3];
 		
-		$c2 = eq_symmetric[fcall_i[$c1; recursion_theorem_2(a, c, f)[@h2]]];
+		$c2 = eq_symmetric[funcall_i[$c1; recursion_theorem_2(a, c, f)[@h2]]];
 		
 		$c3 = Ui[(cls n) => { cp[in(n, omega()) |-
 			mpXin_Xe_p(?, ?, eq(
-				fcall(define_recursively(a, c, f), successor(n)),
-				fcall(f, fcall(define_recursively(a, c, f), n))
+				funcall(define_recursively(a, c, f), successor(n)),
+				funcall(f, funcall(define_recursively(a, c, f), n))
 			))[
 				mp[@h4; Ue(?, n)[recursion_theorem_4[@h1; @h2; @h3]]];
 				Ui[(cls x) => { cp[in(x, a) |-
 					cp[in(pair(n, x), define_recursively(a, c, f)) |-
 						eq_transitive[
-							eq_symmetric[fcall_i[
+							eq_symmetric[funcall_i[
 								$c1;
 								mp[
 									@h6;
 									mp[@h5; Ue(?, x)[mp[@h4; Ue(?, n)[recursion_theorem_3(a, c, f)[@h3]]]]]
 								]
 							]];
-							fcall_eq_i(f, ?, ?)[fcall_i[$c1; @h6]]
+							funcall_eq_i(f, ?, ?)[funcall_i[$c1; @h6]]
 						]]
 				] }]
 			]
@@ -4317,11 +4363,11 @@ schema recursion_theorem_8($A$ cls a: @11, cls c: @21, cls f: @31) {
 				$base = eq_transitive[Ae1[Ae2[@h4]]; eq_symmetric[Ae1[Ae2[@h5]]]];
 
 				$step = Ui[(cls n) => { cp[in(n, omega()) |-
-					cp[eq(fcall(g1, n), fcall(g2, n)) |-
+					cp[eq(funcall(g1, n), funcall(g2, n)) |-
 						eq_transitive[
 							eq_transitive[
 								mp[@h6; Ue(?, n)[Ae2[Ae2[@h4]]]];
-								fcall_eq_i(f, ?, ?)[@h7]
+								funcall_eq_i(f, ?, ?)[@h7]
 							];
 							eq_symmetric[mp[@h6; Ue(?, n)[Ae2[Ae2[@h5]]]]]
 						]]
@@ -4329,7 +4375,7 @@ schema recursion_theorem_8($A$ cls a: @11, cls c: @21, cls f: @31) {
 
 				fun_eq_i[
 					$g1_is_fun; $g2_is_fun;
-					induce((cls n) => {eq(fcall(g1, n), fcall(g2, n))})[$base; $step]
+					induce((cls n) => {eq(funcall(g1, n), funcall(g2, n))})[$base; $step]
 				]
 			]
 		}]]
@@ -4360,9 +4406,9 @@ schema successor_is_fun() {
 	]
 }
 
-schema successor_fcall(cls n: @11) {
+schema successor_funcall(cls n: @11) {
 	in(n, omega()) |-
-		make_fun_fcall(
+		make_fun_funcall(
 			($\gamma$ cls g) => { successor(g) },
 			omega(), omega(), ?
 		)[
@@ -4385,12 +4431,12 @@ schema omega_add_unary_ird(cls n) {
 "자연수 덧셈."
 $!<prec=300>#1<<+_\omega>>#2$
 cls omega_add(cls n, cls m) {
-	fcall(omega_add_unary(n), m)
+	funcall(omega_add_unary(n), m)
 }
 
 schema omega_add_in_omega(cls n: @11, cls m: @21) {
 	in(n, omega()), in(m, omega()) |-
-		id(in(omega_add(n, m), omega()))[fcall_in_codomain[
+		id(in(omega_add(n, m), omega()))[funcall_in_codomain[
 			Ae1[omega_add_unary_ird(n)[@h1]];
 			@h2
 		]]
@@ -4406,7 +4452,7 @@ schema omega_add_step(cls n: @11, cls m: @21) {
 	in(n, omega()), in(m, omega()) |-
 		id(eq(omega_add(n, successor(m)), successor(omega_add(n, m))))[eq_transitive[
 			mp[@h2; Ue(?, m)[Ae2[Ae2[omega_add_unary_ird(n)[@h1]]]]];
-			successor_fcall[omega_add_in_omega[@h1; @h2]]
+			successor_funcall[omega_add_in_omega[@h1; @h2]]
 		]]
 }
 
