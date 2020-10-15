@@ -1649,6 +1649,7 @@ schema ax_specify_m(pr f, cls x: @11) {
 "descriptor operator. [$f]를 만족하는 클래스가 존재하고 유일하다면 그 클래스이며 아니면 [$V]이다.
 
 즉 Principia Mathematica의 inverted iota 연산자 같은 것이다. Metamath의 [~(href=http://us.metamath.org/mpeuni/df-iota.html)df-iota]를 참조하였으나 꽤 다르게 정의되었다."
+$\left(<<\operatorname{the}>>#1\right)$
 cls instantiate(pr f) {
 	setbuilder((cls z) => {
 		I(
@@ -1689,6 +1690,16 @@ schema instantiate_eq_i(pr f: @11, cls x) {
 		}];
 		
 		ax_extensional_m(x, instantiate(f))[$foo]
+}
+
+schema instantiate_def(pr f: @11) {
+	Xq(f) |-
+		mpX_Xe_p(?, f(instantiate(f)))[
+			Ae1[@h1];
+			Ui[(cls x) => { cp[f(x) |-
+				ax_indiscernible_m1(f, ?, ?)[instantiate_eq_i(f, x)[Ae2[@h1]; @h2]; @h2]
+			] }]
+		]
 }
 
 "교집합."
@@ -3547,7 +3558,7 @@ st is_semigroup($S$ cls s, $\ast$ cls f) {
 }
 
 "[$e]가 [$.(S, \ast)]의 항등원이다."
-$\left(<<\operatorname{identity\ el.}>>#1\text{ of }\left(#2,#3\right)\right)$
+$\left(<<\operatorname{id.\ el.}>>#1\text{ of }\mathord{\left(#2,#3\right)}\right)$
 st is_identity_element(cls e, $S$ cls s, $\ast$ cls f) {
 	A(
 		in(e, s),
@@ -3560,7 +3571,22 @@ st is_identity_element(cls e, $S$ cls s, $\ast$ cls f) {
 	)
 }
 
+"항등원은 여러 개 있지 않다."
+schema identity_element_Q($S$ cls s, $\ast$ cls f) {
+	id(Q((cls e) => { is_identity_element(e, s, f) }))[Ui2[($e_1$ cls e1, $e_2$ cls e2) => {
+		cp2[is_identity_element(e1, s, f), is_identity_element(e2, s, f) |-
+		$e1_in_s = Ae1[@h1];
+		$e2_in_s = Ae1[@h2];
+		
+		eq_transitive[
+			eq_symmetric[Ae2[mp[$e1_in_s; Ue(?, e1)[Ae2[@h2]]]]];
+			Ae1[mp[$e2_in_s; Ue(?, e2)[Ae2[@h1]]]]
+		]]
+	}]]
+}
+
 "[$.(S, \ast)]의 항등원(존재한다면)."
+$\left(<<\operatorname{id.\ el.\ of}>>\mathord{\left(#1,#2\right)}\right)$
 cls identity_element($S$ cls s, $\ast$ cls f) {
 	instantiate((cls e) => {
 		is_identity_element(e, s, f)
@@ -3572,12 +3598,39 @@ $\left(<<\operatorname{monoid}>>\left(#1,#2\right)\right)$
 st is_monoid($M$ cls m, $\ast$ cls f) {
 	A(
 		is_semigroup(m, f),
-		Xin(m, (cls e) => {
-			Uin(m, (cls a) => {
-				A(
-					eq(bin_op_call(f, e, a), a),
-					eq(bin_op_call(f, a, e), a)
-				)
+		X((cls e) => {
+			is_identity_element(e, m, f)
+		})
+	)
+}
+
+"[$b]가 [$.(S, \ast)]에서 [$a]의 역원이다."
+$\left(#1\ <<\mathrm{is\ inv.\ of}>>\ #2\text{ in }\mathord{\left(#3,#4\right)}\right)$
+st is_inverse_element(cls b, cls a, $S$ cls s, $\ast$ cls f) {
+	A(
+		in(b, s),
+		A(
+			eq(bin_op_call(f, a, b), identity_element(s, f)),
+			eq(bin_op_call(f, b, a), identity_element(s, f))
+		)
+	)
+}
+
+$\left(<<\mathrm{inv.\ of}>>\ #1\text{ in }\mathord{\left(#2,#3\right)}\right)$
+cls inverse_element(cls a, $S$ cls s, $\ast$ cls f) {
+	instantiate((cls b) => {
+		is_inverse_element(b, a, s, f)
+	})
+}
+
+"대수학에서의 군(group)."
+$\left(<<\operatorname{group}>>\left(#1,#2\right)\right)$
+st is_group($G$ cls g, $\ast$ cls f) {
+	A(
+		is_monoid(g, f),
+		Uin(g, (cls a) => {
+			X((cls b) => {
+				is_inverse_element(b, a, g, f)
 			})
 		})
 	)
