@@ -13,15 +13,15 @@ math-o-matic은 공리계(axiomatic system)를 만들고, 그 공리계 상에�
 ```
 "[$1+1=2]이다."
 schema one_plus_one_is_two() {
-    id(eq(omega_add(ord_one(), ord_one()), ord_two()))[
-        omega_add_one(ord_one())[successor_in_omega[zero_in_omega()]]
-    ]
+    omega_add_one(ord_one())[
+        successor_in_omega[zero_in_omega()][as in(ord_one(), omega())]
+    ][as eq(omega_add(ord_one(), ord_one()), ord_two())]
 }
 ```
 
 위와 같은 코드를 작성하면&hellip;
 
-<p align="center"><img src="https://i.imgur.com/pzaUcTZ.png" width="500px"><br>
+<p align="center"><img src="https://i.imgur.com/RvQeHtO.png" width="500px"><br>
 <code>1 + 1 = 2</code>의 증명</p>
 
 위와 같이 `1 + 1 = 2`를 증명할 수 있습니다. 증명은 math-o-matic 프로그램에 의해 검증되며, 증명이 잘 되었다면 이름이 초록색으로 표시됩니다. 또 증명탐색기가 사람이 읽을 수 있도록 증명과정을 표시하는데, 초록색인 것은 이미 증명된 정리들이며 파란색인 것은 이미 정의된 개념들입니다.
