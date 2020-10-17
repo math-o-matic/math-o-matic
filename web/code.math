@@ -1482,7 +1482,7 @@ schema setbuilder_ec(pr f, cls z) {
 }
 
 "setbuilder를 도입한다."
-schema setbuilder_i(pr f, cls z: @11) {
+schema setbuilder_i(pr f: @r21, cls z: @11) {
 	set(z), f(z) |-
 		mp[
 			Ai[@h1; @h2];
@@ -1586,11 +1586,7 @@ cls setbuilder2(fun f, pr g) {
 
 schema setbuilder2_i(fun f, pr g, cls z) {
 	set(f(z)), g(z) |-
-		setbuilder_i(
-			(cls w) => {X((cls z) => {
-				A(eq(w, f(z)), g(z))
-			})}, f(z)
-		)[
+		setbuilder_i[
 			@h1;
 			Xi(($z'$ cls zz) => {
 				A(eq(f(z), f(zz)), g(zz))
@@ -1612,10 +1608,7 @@ cls subsetbuilder(cls x, pr f) {
 
 schema subsetbuilder_i(cls x: @12, pr f, cls z: @11) {
 	in(z, x), f(z) |-
-		setbuilder_i(
-			(cls z) => { A(in(z, x), f(z)) },
-			z
-		)[
+		setbuilder_i[
 			set_i[@h1];
 			Ai[@h1; @h2]
 		][as in(z, subsetbuilder(x, f))]
@@ -1665,14 +1658,7 @@ schema instantiate_eq_i(pr f: @11, cls x) {
 	Q(f), f(x) |-
 		$foo = Ui[(cls z) => {
 			$c1 = cp[in(z, x) |-
-				setbuilder_i(
-					(cls z) => {
-						I(Xq(f), X((cls x) => {
-							A(f(x), in(z, x))
-						}))
-					},
-					z
-				)[
+				setbuilder_i[
 					set_i[@h3];
 					weaken(?, Xq(f))[Xi((cls x) => {
 						A(f(x), in(z, x))
@@ -1763,7 +1749,7 @@ cls cup(cls x, cls y) {
 
 schema cup_i1(cls x: @12, cls y, cls z: @11) {
 	in(z, x) |-
-		setbuilder_i((cls z) => {O(in(z, x), in(z, y))}, ?)[
+		setbuilder_i[
 			set_i[@h1];
 			Oi1(?, in(z, y))[@h1]
 		][as in(z, cup(x, y))]
@@ -1771,7 +1757,7 @@ schema cup_i1(cls x: @12, cls y, cls z: @11) {
 
 schema cup_i2(cls x, cls y: @12, cls z: @11) {
 	in(z, y) |-
-		setbuilder_i((cls z) => {O(in(z, x), in(z, y))}, ?)[
+		setbuilder_i[
 			set_i[@h1];
 			Oi2(in(z, x), ?)[@h1]
 		][as in(z, cup(x, y))]
@@ -1806,7 +1792,7 @@ schema cup_eq_i(cls x: @11, cls y: @12, cls u: @21, cls v: @22) {
 	$foo = (cls x, cls y, cls u, cls v, cls z) => {
 		eq(x, y), eq(u, v) |-
 			cp[in(z, cup(x, u)) |-
-				setbuilder_i((cls z) => { O(in(z, y), in(z, v)) }, z)[
+				setbuilder_i[
 					set_i[@h3];
 					Oeu[
 						setbuilder_e[@h3];
@@ -1846,11 +1832,7 @@ schema bigcap_i($A$ cls a, cls z) {
 	set(z), Uin(a, (cls x) => {
 		in(z, x)
 	}) |-
-		setbuilder_i((cls z) => {
-			Uin(a, (cls x) => {
-				in(z, x)
-			})
-		}, z)[@h1; @h2]
+		setbuilder_i[@h1; @h2]
 		[as in(z, bigcap(a))]
 }
 
@@ -1865,11 +1847,7 @@ schema bigcap_e($A$ cls a, cls z) {
 
 schema bigcup_i($A$ cls a: @12, cls x: @11, cls z: @21) {
 	in(x, a), in(z, x) |-
-		setbuilder_i((cls z) => {
-			X((cls w) => {
-				A(in(w, a), in(z, w))
-			})
-		}, z)[
+		setbuilder_i[
 			set_i[@h2];
 			Xi((cls w) => {
 				A(in(w, a), in(z, w))
@@ -1958,10 +1936,7 @@ cls setminus(cls x, cls y) {
 
 schema setminus_i(cls x: @12, cls y: @212, cls z: @11) {
 	in(z, x), N(in(z, y)) |-
-		setbuilder_i(
-			(cls z) => {A(in(z, x), Nin(z, y))},
-			z
-		)[
+		setbuilder_i[
 			set_i[@h1];
 			Ai[@h1; @h2]
 		][as in(z, setminus(x, y))]
@@ -2003,7 +1978,7 @@ cls universe() {
 
 schema universe_in_i(cls x: @11) {
 	set(x) |-
-		setbuilder_i((cls z) => {T}, x)[@h1; Ti()]
+		setbuilder_i[@h1; Ti()]
 		[as in(x, universe())]
 }
 
@@ -2042,9 +2017,7 @@ schema russell_set_is_not_set() {
 	Niu[set(russell_set()) |-
 		$russell_in_russell = NNe[Niu[Nin(russell_set(), russell_set()) |-
 			Fi[
-				setbuilder_i((cls z) => {
-					Nin(z, z)
-				}, ?)[
+				setbuilder_i[
 					@h1;
 					@h2
 				][as in(russell_set(), russell_set())];
@@ -2087,13 +2060,10 @@ st is_singleton(cls x) {
 
 schema self_in_singleton(cls x: @11) {
 	set(x) |-
-		setbuilder_i((cls z) => {
-			O(N(set(x)), eq(z, x))
-		}, x)[
+		setbuilder_i[
 			@h1;
 			Oi2(N(set(x)), ?)[eq_reflexive(x)]
-		]
-		[as in(x, singleton(x))]
+		][as in(x, singleton(x))]
 }
 
 schema singleton_Q(cls x) {
@@ -2178,14 +2148,11 @@ schema doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 		subseteq_to_eq[
 			universe_subseteq_i(doubleton(x, y));
 			Ui[(cls z) => {cp[in(z, universe()) |-
-				setbuilder_i(
-					Of(is_in(singleton(x)), is_in(singleton(y))), z
-				)[
+				setbuilder_i[
 					set_i[@h2];
-					Oi1(?, in(z, singleton(y)))[setbuilder_i(
-						(cls z) => {O(N(set(x)), eq(z, x))},
-						z
-					)[set_i[@h2]; Oi1(?, eq(z, x))[@h1]][as in(z, singleton(x))]]
+					Oi1(?, in(z, singleton(y)))[setbuilder_i[
+						set_i[@h2]; Oi1(?, eq(z, x))[@h1]
+					][as in(z, singleton(x))]]
 				][as in(z, doubleton(x, y))]
 			]}]
 			[as subseteq(universe(), doubleton(x, y))]
@@ -2198,14 +2165,11 @@ schema doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 		subseteq_to_eq[
 			universe_subseteq_i(doubleton(x, y));
 			Ui[(cls z) => {cp[in(z, universe()) |-
-				setbuilder_i(
-					Of(is_in(singleton(x)), is_in(singleton(y))), z
-				)[
+				setbuilder_i[
 					set_i[@h2];
-					Oi2(in(z, singleton(x)), ?)[setbuilder_i(
-						(cls z) => {O(N(set(y)), eq(z, y))},
-						z
-					)[set_i[@h2]; Oi1(?, eq(z, y))[@h1]][as in(z, singleton(y))]]
+					Oi2(in(z, singleton(x)), ?)[setbuilder_i[
+						set_i[@h2]; Oi1(?, eq(z, y))[@h1]
+					][as in(z, singleton(y))]]
 				][as in(z, doubleton(x, y))]
 			]}][as subseteq(universe(), doubleton(x, y))]
 		]
@@ -2364,12 +2328,13 @@ schema bigcup_singleton_to_self(cls x: @11, cls z: @21) {
 
 schema self_to_bigcup_singleton(cls x: @11, cls z: @21) {
 	set(x), in(z, x) |-
-		setbuilder_i((cls z) => {
-			X((cls w) => {A(in(w, singleton(x)), in(z, w))})
-		}, z)[set_i[@h2]; Xi((cls w) => {A(in(w, singleton(x)), in(z, w))}, x)[Ai[
-			self_in_singleton[@h1];
-			@h2
-		]]][as in(z, bigcup(singleton(x)))]
+		setbuilder_i[
+			set_i[@h2];
+			Xi((cls w) => {A(in(w, singleton(x)), in(z, w))}, x)[Ai[
+				self_in_singleton[@h1];
+				@h2
+			]]
+		][as in(z, bigcup(singleton(x)))]
 }
 
 schema bigcup_singleton_is_self(cls x: @11) {
@@ -2407,11 +2372,7 @@ schema bigcup_doubleton_to_cup(cls x: @11, cls y: @21, cls w: @31) {
 
 schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 	set(x), set(y), in(w, cup(x, y)) |-
-		setbuilder_i((cls w) => {
-			X((cls z) => {
-				A(in(z, doubleton(x, y)), in(w, z))
-			})
-		}, w)[
+		setbuilder_i[
 			set_i[@h3];
 			Oe[
 				cup_e[@h3];
@@ -2444,8 +2405,7 @@ schema cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
 						]
 				]
 			]
-		]
-		[as in(w, bigcup(doubleton(x, y)))]
+		][as in(w, bigcup(doubleton(x, y)))]
 }
 
 schema bigcup_doubleton_is_cup(cls x: @11, cls y: @21) {
@@ -2493,9 +2453,7 @@ schema power_def_Ue(cls x, cls y) {
 		Eiu[
 			in(y, power(x)) |- setbuilder_e[@h2];
 			subseteq(y, x) |-
-				setbuilder_i((cls y) => {
-					subseteq(y, x)
-				}, y)[subset_is_set[@h1; @h2]; @h2]
+				setbuilder_i[subset_is_set[@h1; @h2]; @h2]
 				[as in(y, power(x))]
 		]
 }
@@ -2575,9 +2533,7 @@ schema power_is_set(cls x: @11) {
 	N(set(x)) |-
 		ax_extensional_m(singleton(x), universe())[Ui[(cls z) => { Ei[
 			cp[in(z, singleton(x)) |- universe_in_i[set_i[@h2]]];
-			cp[in(z, universe()) |- setbuilder_i(
-				(cls z) => {O(N(set(x)), eq(z, x))}, z
-			)[
+			cp[in(z, universe()) |- setbuilder_i[
 				set_i[@h2];
 				Oi1(?, eq(z, x))[@h1]
 			][as in(z, singleton(x))]]
@@ -2796,11 +2752,7 @@ cls cartesian($A$ cls a, $B$ cls b) {
 
 schema cartesian_in_i($A$ cls a: @12, $B$ cls b: @22, cls x: @11, cls y: @21) {
 	in(x, a), in(y, b) |-
-		setbuilder_i((cls z) => {
-			X2((cls u, cls v) => {
-				A(eq(z, pair(u, v)), A(in(u, a), in(v, b)))
-			})
-		}, ?)[
+		setbuilder_i[
 			pair_set_i[set_i[@h1]; set_i[@h2]];
 			Xi2((cls u, cls v) => {
 				A(eq(pair(x, y), pair(u, v)), A(in(u, a), in(v, b)))
@@ -2881,11 +2833,7 @@ schema rel_dom_in_i($R$ cls r: @12, cls x: @111, cls y: @112) {
 	in(pair(x, y), r) |-
 		$set_x = pair_set_e1[set_i[@h1]];
 		
-		setbuilder_i((cls x) => {
-			X((cls y) => {
-				in(pair(x, y), r)
-			})
-		}, x)[
+		setbuilder_i[
 			$set_x;
 			Xi((cls y) => {in(pair(x, y), r)}, y)[@h1]
 		][as in(x, rel_dom(r))]
@@ -3104,24 +3052,23 @@ schema rel_U(pr f, $R$ cls r: @11, $A$ cls a: @12, $B$ cls b: @13) {
 "곱집합은 이항관계이다."
 schema cartesian_is_rel(cls x, cls y) {
 	Ui[(cls z) => { cp[in(z, cartesian(x, y)) |-
-		setbuilder_i((cls z) => {
-			X2((cls a, cls b) => {
+		setbuilder_i[
+			set_i[@h1];
+			mpX2(?, (cls a, cls b) => {
 				A(eq(z, pair(a, b)), A(in(a, universe()), in(b, universe())))
-			})
-		}, z)[set_i[@h1]; mpX2(?, (cls a, cls b) => {
-			A(eq(z, pair(a, b)), A(in(a, universe()), in(b, universe())))
-		})[
-			setbuilder_e[@h1];
-			Ui2[(cls a, cls b) => { cp2[eq(z, pair(a, b)), A(in(a, x), in(b, y)) |-
-				Ai[
-					@h2;
+			})[
+				setbuilder_e[@h1];
+				Ui2[(cls a, cls b) => { cp2[eq(z, pair(a, b)), A(in(a, x), in(b, y)) |-
 					Ai[
-						universe_in_i[set_i[Ae1[@h3]]];
-						universe_in_i[set_i[Ae2[@h3]]]
+						@h2;
+						Ai[
+							universe_in_i[set_i[Ae1[@h3]]];
+							universe_in_i[set_i[Ae2[@h3]]]
+						]
 					]
-				]
-			] }]
-		]][as in(z, cartesian(universe(), universe()))]
+				] }]
+			]
+		][as in(z, cartesian(universe(), universe()))]
 	] }]
 	[as is_rel(cartesian(x, y))]
 }
@@ -3145,14 +3092,14 @@ schema cartesian_is_set_21($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y:
 		$x_in_cup_ab = cup_i1(?, b, ?)[cartesian_in_e1[@h1]];
 		$y_in_cup_ab = cup_i2(a, ?, ?)[cartesian_in_e2[@h1]];
 		
-		$1 = setbuilder_i((cls z) => {subseteq(z, cup(a, b))}, ?)[
+		$1 = setbuilder_i[
 			singleton_set_i(x)[$set_x];
 			Ui[(cls z) => { cp[in(z, singleton(x)) |-
 				in_eq_left_2[$x_in_cup_ab; Oe1[setbuilder_e[@h2]; NNi[$set_x]]]] }]
 			[as subseteq(singleton(x), cup(a, b))]
 		][as in(singleton(x), power(cup(a, b)))];
 		
-		$2 = setbuilder_i((cls z) => {subseteq(z, cup(a, b))}, ?)[
+		$2 = setbuilder_i[
 			doubleton_set_i[$set_x; $set_y];
 			Ui[(cls z) => { cp[in(z, doubleton(x, y)) |-
 				Oeu[
@@ -3163,10 +3110,7 @@ schema cartesian_is_set_21($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y:
 			] }][as subseteq(doubleton(x, y), cup(a, b))]
 		][as in(doubleton(x, y), power(cup(a, b)))];
 		
-		setbuilder_i(
-			(cls z) => {subseteq(z, power(cup(a, b)))},
-			?
-		)[
+		setbuilder_i[
 			pair_set_i[$set_x; $set_y];
 			Ui[(cls z) => { cp[in(z, doubleton(singleton(x), doubleton(x, y))) |-
 				Oeu[
@@ -3308,11 +3252,7 @@ schema funcall_def_0(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 
 schema funcall_def_1(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 	is_fun(f, a, b), in(x, a), in(y, b), in(pair(x, y), f) |-
-		setbuilder_i(
-			(cls y) => {
-				X((cls z) => {A(in(z, singleton(x)), in(pair(z, y), f))})
-			}, y
-		)[
+		setbuilder_i[
 			set_i[@h3];
 			Xi((cls z) => {A(in(z, singleton(x)), in(pair(z, y), f))}, x)[Ai[self_in_singleton[set_i[@h2]]; @h4]]
 		][as in(y, rel_im_set(f, singleton(x)))]
@@ -3816,7 +3756,7 @@ schema induce_set($X$ cls x: @11) {
 		[as is_successor_set(x)];
 		
 		$omega_subseteq_x =
-			bigcap_is_smaller[setbuilder_i((cls z) => { is_successor_set(z) }, x)[
+			bigcap_is_smaller[setbuilder_i((cls z) => { is_successor_set(z) }, ?)[
 				subset_is_set[omega_is_set(); @h1];
 				$x_is_successor_set
 			]]
@@ -3984,22 +3924,7 @@ cls define_recursively($A$ cls a, cls c, cls f) {
 schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 	set(a), in(c, a), is_fun(f, a, a) |-
 		bigcap_is_smaller[
-			setbuilder_i(($G$ cls g) => {
-				A(
-					subseteq(g, cartesian(omega(), a)),
-					A(
-						in(pair(ord_zero(), c), g),
-						Uin(omega(), (cls n) => {
-							Uin(a, (cls x) => {
-								I(
-									in(pair(n, x), g),
-									in(pair(successor(n), funcall(f, x)), g)
-								)
-							})
-						})
-					)
-				)
-			}, cartesian(omega(), a))[
+			setbuilder_i[
 				cartesian_is_set[
 					omega_is_set();
 					@h1
@@ -4062,11 +3987,7 @@ schema recursion_theorem_1($A$ cls a: @11, cls c: @21, cls f: @31) {
 "[$\gamma\in\mathscr A]가 되기 위한 두 번째 조건."
 schema recursion_theorem_2($A$ cls a: @12, cls c: @11, cls f) {
 	in(c, a) |-
-		setbuilder_i((cls z) => {
-			U(($G$ cls g) => {
-				I(in(g, recursion_set(a, c, f)), in(z, g))
-			})
-		}, pair(ord_zero(), c))[
+		setbuilder_i[
 			pair_set_i[
 			set_i[zero_in_omega()];
 			set_i[@h1]
@@ -4086,11 +4007,7 @@ schema recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) {
 				Ui[(cls x) => {
 					cp[in(x, a) |-
 						cp[in(pair(n, x), define_recursively(a, c, f)) |-
-							setbuilder_i((cls z) => {
-								U(($G$ cls g) => {
-									I(in(g, recursion_set(a, c, f)), in(z, g))
-								})
-							}, pair(successor(n), funcall(f, x)))[
+							setbuilder_i[
 								pair_set_i[
 									successor_is_set[set_i[@h2]];
 									set_i[funcall_in_codomain[@h1; @h3]]
@@ -4203,22 +4120,7 @@ schema recursion_theorem_5_base($A$ cls a: @11, cls c: @21, cls f: @31) {
 				] }];
 				
 				$gamma_is_smaller = bigcap_is_smaller[
-					setbuilder_i(($G$ cls g) => {
-						A(
-							subseteq(g, cartesian(omega(), a)),
-							A(
-								in(pair(ord_zero(), c), g),
-								Uin(omega(), (cls n) => {
-									Uin(a, (cls x) => {
-										I(
-											in(pair(n, x), g),
-											in(pair(successor(n), funcall(f, x)), g)
-										)
-									})
-								})
-							)
-						)
-					}, ?)[
+					setbuilder_i[
 						subset_is_set[cartesian_is_set[omega_is_set(); @h1]; $c1];
 						Ai[$c1; Ai[$c2; $c3]]
 					]
@@ -4331,22 +4233,7 @@ schema recursion_theorem_5_step($A$ cls a: @11, cls c: @21, cls f: @31) {
 									] }];
 
 									$gamma_is_smaller = bigcap_is_smaller[
-										setbuilder_i(($G$ cls g) => {
-											A(
-												subseteq(g, cartesian(omega(), a)),
-												A(
-													in(pair(ord_zero(), c), g),
-													Uin(omega(), (cls n) => {
-														Uin(a, (cls x) => {
-															I(
-																in(pair(n, x), g),
-																in(pair(successor(n), funcall(f, x)), g)
-															)
-														})
-													})
-												)
-											)
-										}, ?)[
+										setbuilder_i[
 											subset_is_set[cartesian_is_set[omega_is_set(); @h1]; $c1];
 											Ai[$c1; Ai[$c2; $c3]]
 										][as in(setminus(define_recursively(a, c, f), singleton(pair(successor(n), u))), recursion_set(a, c, f))]
