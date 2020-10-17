@@ -273,7 +273,10 @@ funexpr =
 		{return p || []}
 	)
 	"=>" _
-	"{" _ expr:expr0 _ "}"
+	expr:(
+		expr0
+		/ "{" _ e:expr0 _ "}" {return e}
+	)
 	{
 		return {
 			_type: 'funexpr',
@@ -296,16 +299,21 @@ schemaexpr =
 		{return p || []}
 	)
 	"=>" _
-	"{" _
-	defdollars: (d:defdollar _ {return d})* _
-	expr:metaexpr _
-	"}"
+	foo:(
+		expr:metaexpr_internal_1
+		{return {defdollars: [], expr}}
+		/ "{" _
+		defdollars: (d:defdollar _ {return d})* _
+		expr:metaexpr _
+		"}"
+		{return {defdollars, expr}}
+	)
 	{
 		return {
 			_type: 'schemaexpr',
 			params,
-			def$s: defdollars,
-			expr,
+			def$s: foo.defdollars,
+			expr: foo.expr,
 			location: location()
 		}
 	}

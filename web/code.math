@@ -472,61 +472,61 @@ type [cls -> cls] fun;
 "pr 타입을 위한 A."
 $\left(#1<<\land>>#2\right)$
 pr Af(pr f, pr g) {
-	(cls z) => { A(f(z), g(z)) }
+	(cls z) => A(f(z), g(z))
 }
 
 "pr 타입을 위한 O."
 $\left(#1<<\lor>>#2\right)$
 pr Of(pr f, pr g) {
-	(cls z) => { O(f(z), g(z)) }
+	(cls z) => O(f(z), g(z))
 }
 
 "pr 타입을 위한 I."
 $\left(#1<<\to>>#2\right)$
 pr If(pr f, pr g) {
-	(cls z) => { I(f(z), g(z)) }
+	(cls z) => I(f(z), g(z))
 }
 
 "pr 타입을 위한 E."
 $\left(#1<<\leftrightarrow>>#2\right)$
 pr Ef(pr f, pr g) {
-	(cls z) => { E(f(z), g(z)) }
+	(cls z) => E(f(z), g(z))
 }
 
 "pr 타입을 위한 N."
 $\left(<<\neg>>#1\right)$
 pr Nf(pr f) {
-	(cls z) => { N(f(z)) }
+	(cls z) => N(f(z))
 }
 
 "pr2 타입을 위한 A."
 $\left(#1<<\land>>#2\right)$
 pr2 Af2(pr2 f, pr2 g) {
-	(cls x, cls y) => { A(f(x, y), g(x, y)) }
+	(cls x, cls y) => A(f(x, y), g(x, y))
 }
 
 "pr2 타입을 위한 O."
 $\left(#1<<\lor>>#2\right)$
 pr2 Of2(pr2 f, pr2 g) {
-	(cls x, cls y) => { O(f(x, y), g(x, y)) }
+	(cls x, cls y) => O(f(x, y), g(x, y))
 }
 
 "pr2 타입을 위한 I."
 $\left(#1<<\to>>#2\right)$
 pr2 If2(pr2 f, pr2 g) {
-	(cls x, cls y) => { I(f(x, y), g(x, y)) }
+	(cls x, cls y) => I(f(x, y), g(x, y))
 }
 
 "pr2 타입을 위한 E."
 $\left(#1<<\leftrightarrow>>#2\right)$
 pr2 Ef2(pr2 f, pr2 g) {
-	(cls x, cls y) => { E(f(x, y), g(x, y)) }
+	(cls x, cls y) => E(f(x, y), g(x, y))
 }
 
 "pr2 타입을 위한 N."
 $\left(<<\neg>>#1\right)$
 pr2 Nf2(pr2 f) {
-	(cls x, cls y) => { N(f(x, y)) }
+	(cls x, cls y) => N(f(x, y))
 }
 
 "보편 양화(universal quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다]."
@@ -584,7 +584,7 @@ axiomatic schema Ui(pr f: @1) {
 
 schema Ui2(pr2 f: @1) {
 	f |- id(U2(f))[
-		Ui[(cls x) => { Ui[(cls y) => { @h1(x, y) }] }]
+		Ui[(cls x) => Ui[(cls y) => @h1(x, y)]]
 	]
 }
 
@@ -616,7 +616,7 @@ schema contrapose_U(pr f: @111, pr g: @112) {
 schema mpU(pr f: @11, pr g: @212) {
 	U(f), U(If(f, g)) |-
 		id(U(g))[Ui[(cls x) => {
-			mp[Ue(?, x)[@h1]; Ue(?, x)[id(U((cls x) => { I(f(x), g(x)) }))[@h2]]]
+			mp[Ue(?, x)[@h1]; Ue(?, x)[id(U((cls x) => I(f(x), g(x))))[@h2]]]
 		}]]
 }
 
