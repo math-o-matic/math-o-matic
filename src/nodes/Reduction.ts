@@ -48,12 +48,16 @@ export default class Reduction extends Node {
 	
 			var derefs = subject.params.map((p, i) => {
 				if (guesses && guesses[i]) return guesses[i];
+
+				// @ts-ignore
+				var tee = ExpressionResolver.expandMeta(subject.expr) as Tee;
 	
 				return this.query(
 					p.guess,
-					// @ts-ignore
-					(ExpressionResolver.expandMeta(subject.expr) as Tee).left,
-					leftargs
+					tee.left,
+					leftargs,
+					tee.right,
+					expected
 				);
 			});
 	
@@ -135,14 +139,25 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 				&& this.leftargs.every(l => l.isProved(hyps));
 	}
 
-	public query(guess, left, leftargs) {
+	public query(guess, left, leftargs, right, expected) {
 		if (guess.length == 0) throw this.error('wut');
 
-		if (!(1 <= guess[0] * 1 && guess[0] * 1 <= leftargs.length))
-			throw this.error(`Cannot dereference @${guess}: antecedent index out of range`);
+		var lef, ret;
 
-		var lef = left[guess[0] * 1 - 1];
-		var ret = leftargs[guess[0] * 1 - 1];
+		if (guess[0] == 'r') {
+			if (!expected) {
+				throw this.error(`Cannot dereference @${guess}`);
+			}
+
+			lef = right;
+			ret = expected;
+		} else {
+			if (!(1 <= guess[0] * 1 && guess[0] * 1 <= leftargs.length))
+				throw this.error(`Cannot dereference @${guess}: antecedent index out of range`);
+
+			lef = left[guess[0] * 1 - 1];
+			ret = leftargs[guess[0] * 1 - 1];
+		}
 
 		var that = this;
 
