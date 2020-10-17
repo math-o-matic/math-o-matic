@@ -1,9 +1,16 @@
 import Node, { Precedence } from './Node';
 import Schemacall from './Schemacall';
 
-import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
+import ExpressionResolver, { Expr0, Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
 import Tee from './Tee';
+
+interface ReductionArgumentType {
+	subject: Metaexpr;
+	guesses: Expr0[];
+	leftargs: Metaexpr[];
+	expected: Metaexpr;
+}
 
 export default class Reduction extends Node {
 	public readonly _type = 'reduction';
@@ -14,7 +21,7 @@ export default class Reduction extends Node {
 	public readonly reduced;
 	public readonly type;
 
-	constructor ({subject, guesses, leftargs}, scope?: Scope) {
+	constructor ({subject, guesses, leftargs, expected}: ReductionArgumentType, scope?: Scope) {
 		super(scope);
 
 		if (guesses) {
@@ -44,6 +51,7 @@ export default class Reduction extends Node {
 	
 				return this.query(
 					p.guess,
+					// @ts-ignore
 					(ExpressionResolver.expandMeta(subject.expr) as Tee).left,
 					leftargs
 				);
@@ -100,7 +108,23 @@ ${ExpressionResolver.expandMetaAndFuncalls(leftargs[i])}
 			}
 		}
 
-		this.reduced = tee.right;
+		if (expected) {
+			if (!ExpressionResolver.equals(tee.right, expected)) {
+				throw this.error(`RHS failed to match:
+
+--- EXPECTED ---
+${ExpressionResolver.expandMetaAndFuncalls(tee.right)}
+----------------
+
+--- RECEIVED ---
+${ExpressionResolver.expandMetaAndFuncalls(expected)}
+----------------`);
+			}
+
+			this.reduced = expected;
+		} else {
+			this.reduced = tee.right;
+		}
 	}
 
 	public isProved(hyps?): boolean {

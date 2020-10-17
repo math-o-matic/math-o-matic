@@ -402,10 +402,13 @@ export default class PI {
 			return PI.metaexpr(obj, scope);
 		});
 
+		var expected = obj.expected && PI.metaexpr(obj.expected, scope);
+
 		return new Reduction({
 			subject,
 			guesses,
-			leftargs
+			leftargs,
+			expected
 		}, scope);
 	}
 }

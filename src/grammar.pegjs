@@ -178,14 +178,22 @@ reduction =
 			{return [head].concat(tail)}
 		)?
 		"]"
-		{return a || []}
+		b:(
+			_ '[' _
+			'as' __
+			m:metaexpr
+			']'
+			{return m}
+		)?
+		{return {a: a || [], b: b || null}}
 	)+
 	{
 		var ret = {
 			_type: 'reduction',
 			subject,
 			guesses,
-			leftargs: leftargs[0],
+			leftargs: leftargs[0].a,
+			expected: leftargs[0].b,
 			location: location()
 		};
 
@@ -194,7 +202,8 @@ reduction =
 				_type: 'reduction',
 				subject: ret,
 				guesses: null,
-				leftargs: leftargs[i],
+				leftargs: leftargs[i].a,
+				expected: leftargs[i].b,
 				location: location()
 			};
 		}
@@ -260,6 +269,7 @@ funcall =
 		}
 	}
 
+// (T t) => expr0
 // (T t) => { expr0 }
 funexpr =
 	params:(
@@ -286,7 +296,8 @@ funexpr =
 		}
 	}
 
-// (T t) => { metaexpr }
+// (T t) => metaexpr_internal_1
+// (T t) => { $foo = ...; metaexpr }
 schemaexpr =
 	params:(
 		"(" _
@@ -456,7 +467,8 @@ plain_var =
 	}
 
 keyword =
-	"axiomatic"
+	"as"
+	/ "axiomatic"
 	/ "base"
 	/ "schema"
 	/ "type";
