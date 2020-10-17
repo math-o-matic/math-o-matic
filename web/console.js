@@ -1,7 +1,5 @@
 (() => {
 
-CodeMirror.keyMap.basic['Shift-Tab'] = 'indentLess';
-
 var codemirror = CodeMirror(el => {
 	el.id = 'console-input';
 	$('.console-wrap').appendChild(el);
@@ -13,19 +11,20 @@ var codemirror = CodeMirror(el => {
 	tabSize: 4,
 	indentWithTabs: true,
 	inputStyle: 'textarea',
-	viewportMargin: Infinity
+	viewportMargin: Infinity,
+	keyMap: 'sublime'
 });
 
 var hintWorker = null;
 
 function hint() {
-	return new Promise((resolve, reject) => {
-		if (typeof program == 'undefined') reject();
+	return new Promise((resolve, _reject) => {
+		if (typeof program == 'undefined') return;
 
 		const cursor = codemirror.getCursor();
 		var str = codemirror.getRange({line:0,ch:0}, cursor);
 		var keyword = str.match(/[a-z0-9_]*$/i);
-		if (!keyword) reject();
+		if (!keyword) return;
 		keyword = keyword[0];
 
 		var names = [...program.scope.defMap.keys()]
