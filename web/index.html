@@ -141,8 +141,6 @@
 				console.log('--- HTML GENERATION START ---');
 				start = new Date();
 
-				var scope = program.scopeMap.get(filename);
-
 				var precedenceMap = new Map();
 
 				var baseType = null,
@@ -285,8 +283,8 @@
 					}
 				}
 				
-				bar(scope);
-				foo(scope);
+				bar(program.scope);
+				foo(program.scope);
 
 				end = new Date();
 				console.log('--- HTML GENERATION END ---');
@@ -407,6 +405,29 @@
 							xhr.send();
 						});
 					});
+
+					var visitedFiles = [filename];
+
+					searchDatabase = [];
+
+					function foo(scope) {
+						searchDatabase = searchDatabase
+							.concat([...scope.defMap.keys()])
+							.concat([...scope.schemaMap.keys()]);
+					}
+
+					function bar(scope) {
+						for (var [k, s] of scope.importMap) {
+							if (visitedFiles.includes(k)) continue;
+							visitedFiles.push(k);
+
+							bar(s);
+							foo(s);
+						}
+					}
+
+					bar(program.scope);
+					foo(program.scope);
 
 					var end = new Date();
 					console.log(program);

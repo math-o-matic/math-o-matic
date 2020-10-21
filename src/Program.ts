@@ -13,6 +13,10 @@ export default class Program {
 	}
 
 	public async loadModule(filename, loader): Promise<Scope> {
+		return this.scope = await this.loadModuleInternal(filename, loader);
+	}
+
+	private async loadModuleInternal(filename, loader): Promise<Scope> {
 		if (this.scopeMap.has(filename)) {
 			return this.scopeMap.get(filename);
 		}
@@ -33,7 +37,7 @@ export default class Program {
 			
 			switch (line._type) {
 				case 'import':
-					var scope2 = await this.loadModule(line.filename, loader);
+					var scope2 = await this.loadModuleInternal(line.filename, loader);
 					scope.importMap.set(line.filename, scope2);
 					break;
 				case 'typedef':
@@ -110,11 +114,11 @@ export default class Program {
 			DOWN = '&#x25BC;',
 			UP = '&#x25B2;';
 		
-		if (!this.scope.schemaMap.has(name)) {
+		if (!this.scope.hasSchema(name)) {
 			throw Error('wut');
 		}
 	
-		var theexpr = this.scope.schemaMap.get(name);
+		var theexpr = this.scope.getSchema(name);
 	
 		var ncols = (function recurse(expr: any) {
 			switch (expr._type) {

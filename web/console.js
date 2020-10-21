@@ -1,5 +1,7 @@
 (() => {
 
+CodeMirror.keyMap.sublime['Shift-Ctrl-Enter'] = null;
+
 var codemirror = CodeMirror(el => {
 	el.id = 'console-input';
 	$('.console-wrap').appendChild(el);
@@ -27,12 +29,9 @@ function hint() {
 		if (!keyword) return;
 		keyword = keyword[0];
 
-		var names = [...program.scope.defMap.keys()]
-			.concat([...program.scope.schemaMap.keys()]);
-
 		if (hintWorker) hintWorker.terminate();
 		hintWorker = new Worker('hintWorker.js');
-		hintWorker.postMessage([keyword, names]);
+		hintWorker.postMessage([keyword, searchDatabase]);
 		hintWorker.onmessage = e => {
 			resolve({
 				list: e.data.map(({name, match}) => ({
