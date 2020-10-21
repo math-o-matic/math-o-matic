@@ -1,56 +1,70 @@
 import Scope from './Scope';
 import PegInterface from './PegInterface';
 import ExpressionResolver, { Metaexpr } from './ExpressionResolver';
-import Schema from './nodes/Schema';
-import Typevar from './nodes/Typevar';
-import Tee from './nodes/Tee';
-import Schemacall from './nodes/Schemacall';
-import Type from './nodes/Type';
-import $var from './nodes/$var';
 
 export default class Program {
 	public scope = new Scope(null);
+	public readonly parser;
+	public readonly importMapAll: Map<string, Scope> = new Map();
 	
-	constructor() {}
+	constructor(parser) {
+		if (!parser) throw Error('no');
+		this.parser = parser;
+	}
 
-	public feed(lines) {
+	public async feedModule(filename, loader): Promise<Scope> {
+		if (this.importMapAll.has(filename)) {
+			return this.importMapAll.get(filename);
+		}
+
+		var scope = new Scope(null);
+
+		var code = await loader(filename);
+		var parsed = this.parser.parse(code);
+		this.feed(parsed, scope);
+
+		this.importMapAll.set(filename, scope);
+		return scope;
+	}
+
+	public async feed(lines, scope: Scope=this.scope) {
 		lines.forEach(line => {
 			switch (line._type) {
 				case 'typedef':
-					var type = PegInterface.type(line, this.scope);
+					var type = PegInterface.type(line, scope);
 
-					if (this.scope.hasType(type.name)) {
-						throw type.scope.error(`Type ${type.name} has already been declared`);
+					if (scope.hasType(type.name)) {
+						throw scope.error(`Type ${type.name} has already been declared`);
 					}
 
-					this.scope.addType(type);
+					scope.addType(type);
 					break;
 				case 'defv':
-					var typevar = PegInterface.typevar(line, this.scope);
+					var typevar = PegInterface.typevar(line, scope);
 
-					if (this.scope.hasTypevar(typevar.name)) {
+					if (scope.hasTypevar(typevar.name)) {
 						throw typevar.scope.error(`Definition ${typevar.name} has already been declared`);
 					}
 
-					this.scope.addTypevar(typevar);
+					scope.addTypevar(typevar);
 					break;
 				case 'defun':
-					var fun = PegInterface.fun(line, this.scope);
+					var fun = PegInterface.fun(line, scope);
 
-					if (this.scope.hasTypevar(fun.name)) {
+					if (scope.hasTypevar(fun.name)) {
 						throw fun.scope.error(`Definition ${fun.name} has already been declared`);
 					}
 
-					this.scope.addFun(fun);
+					scope.addFun(fun);
 					break;
 				case 'defschema':
-					var schema = PegInterface.schema(line, this.scope);
+					var schema = PegInterface.schema(line, scope);
 
-					if (this.scope.hasSchema(schema.name)) {
+					if (scope.hasSchema(schema.name)) {
 						throw schema.scope.error(`Schema ${schema.name} has already been declared`);
 					}
 
-					this.scope.addSchema(schema);
+					scope.addSchema(schema);
 					break;
 				default:
 					throw Error(`Unknown line type ${line._type}`);

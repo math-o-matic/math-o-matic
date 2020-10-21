@@ -478,7 +478,7 @@ annotation =
 	/ '@deprecated'
 
 ident =
-	$(!keyword [a-zA-Z0-9_]+)
+	$(!(keyword ![a-zA-Z0-9_]) [a-zA-Z0-9_]+)
 
 at_ident =
 	$('@' [a-zA-Z0-9_]+)

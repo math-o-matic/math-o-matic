@@ -124,7 +124,7 @@
 
 			var loading = false;
 
-			function load(code) {
+			async function load(code) {
 				if (loading) return;
 				loading = true;
 
@@ -150,8 +150,8 @@
 				console.log('--- PROCESS START ---');
 				start = new Date();
 
-				program = new math.Program();
-				program.feed(parsed);
+				program = new math.Program(parser);
+				await program.feed(parsed);
 
 				end = new Date();
 				console.log(program);
@@ -377,9 +377,9 @@
 				$('#reload').value = 'loading...';
 				setTimeout(() => {
 					var xhr = new XMLHttpRequest();
-					xhr.addEventListener('load', () => {
+					xhr.addEventListener('load', async () => {
 						try {
-							load(xhr.responseText);
+							await load(xhr.responseText);
 						} finally {
 							$('#reload').value = 'reload';
 							reloading = false;

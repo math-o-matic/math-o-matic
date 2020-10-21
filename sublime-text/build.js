@@ -22,7 +22,7 @@ var code = fs.readFileSync(process.argv[2], 'utf-8');
 try {
 	var parser = pegjs.generate(math.grammar, {cache: true});
 	var parsed = parser.parse(code);
-	program = new math.Program();
+	program = new math.Program(parser);
 	program.feed(parsed);
 } catch (e) {
 	console.error(formatError(e));
