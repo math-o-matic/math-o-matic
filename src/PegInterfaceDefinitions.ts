@@ -1,3 +1,9 @@
+export interface ImportObject {
+    _type: 'import';
+    filename: string;
+    location: LocationObject;
+}
+
 export interface TypedefObject {
     _type: 'typedef';
     doc?: string;

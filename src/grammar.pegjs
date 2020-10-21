@@ -2,7 +2,8 @@ start =
 	_ lines:(a:line _ {return a})* {return lines}
 
 line =
-	typedef
+	import
+	/ typedef
 	/ defv
 	/ defun
 	/ defschema
@@ -16,6 +17,18 @@ evaluable_internal =
 	/ defun
 	/ defschema
 	/ metaexpr
+
+import =
+	'import' __
+	filename:ident _
+	sem
+	{
+		return {
+			_type: 'import',
+			filename,
+			location: location()
+		}
+	}
 
 typedef =
 	doc:(documentation __)?
@@ -470,6 +483,7 @@ keyword =
 	"as"
 	/ "axiomatic"
 	/ "base"
+	/ "import"
 	/ "schema"
 	/ "type";
 

@@ -5,31 +5,37 @@ import ExpressionResolver, { Metaexpr } from './ExpressionResolver';
 export default class Program {
 	public scope = new Scope(null);
 	public readonly parser;
-	public readonly importMapAll: Map<string, Scope> = new Map();
+	public readonly scopeMap: Map<string, Scope> = new Map();
 	
 	constructor(parser) {
 		if (!parser) throw Error('no');
 		this.parser = parser;
 	}
 
-	public async feedModule(filename, loader): Promise<Scope> {
-		if (this.importMapAll.has(filename)) {
-			return this.importMapAll.get(filename);
+	public async loadModule(filename, loader): Promise<Scope> {
+		if (this.scopeMap.has(filename)) {
+			return this.scopeMap.get(filename);
 		}
 
 		var scope = new Scope(null);
 
 		var code = await loader(filename);
 		var parsed = this.parser.parse(code);
-		this.feed(parsed, scope);
+		await this.feed(parsed, scope, loader);
 
-		this.importMapAll.set(filename, scope);
+		this.scopeMap.set(filename, scope);
 		return scope;
 	}
 
-	public async feed(lines, scope: Scope=this.scope) {
-		lines.forEach(line => {
+	public async feed(lines, scope: Scope=this.scope, loader) {
+		for (var i = 0; i < lines.length; i++) {
+			var line = lines[i];
+			
 			switch (line._type) {
+				case 'import':
+					var scope2 = await this.loadModule(line.filename, loader);
+					scope.importMap.set(line.filename, scope2);
+					break;
 				case 'typedef':
 					var type = PegInterface.type(line, scope);
 
@@ -69,7 +75,7 @@ export default class Program {
 				default:
 					throw Error(`Unknown line type ${line._type}`);
 			}
-		});
+		};
 	}
 
 	public evaluate(line) {

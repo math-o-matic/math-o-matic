@@ -17,14 +17,15 @@ function formatError(e) {
 	return `Error at ${obj[0].functionName} (${obj[0].fileName}:${obj[0].lineNumber}:${obj[0].columnNumber}): ${e.message}\n\n${e.stack}`;
 }
 
-var code = fs.readFileSync(process.argv[2], 'utf-8');
-
-try {
-	var parser = pegjs.generate(math.grammar, {cache: true});
-	var parsed = parser.parse(code);
-	program = new math.Program(parser);
-	program.feed(parsed);
-} catch (e) {
-	console.error(formatError(e));
-	return;
-}
+(async () => {
+	try {
+		var parser = pegjs.generate(math.grammar, {cache: true});
+		program = new math.Program(parser);
+		await program.loadModule(process.argv[2], filename => {
+			return fs.readFileSync(filename + '.math', 'utf-8');
+		});
+	} catch (e) {
+		console.error(formatError(e));
+		return;
+	}
+})();

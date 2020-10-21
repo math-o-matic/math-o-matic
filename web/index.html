@@ -33,7 +33,7 @@
 			var evalParser = peg.generate(math.grammar, {
 				cache: true,
 				allowedStartRules: ['evaluable']
-			})
+			});
 			end = new Date();
 			console.log('--- PARSER GENERATION END ---');
 			console.log(`Parser generation ended in ${end - start} ms`);
@@ -49,7 +49,7 @@
 		<div style="position:fixed;top:5px;right:5px;z-index:10000;">
 			<div>
 				<input id="button-expand-all" type="button" class="colored" value="expand all" style="text-transform: uppercase;">
-				<input id="reload" type="button" class="colored" value="" style="text-transform: uppercase;">
+				<input id="reload" type="button" class="colored" value="reload" style="text-transform: uppercase;">
 				<input id="button-show-console" type="button" class="colored" value="console" style="text-transform: uppercase;">
 			</div>
 		</div>
@@ -67,7 +67,7 @@
 		<h1>math-o-matic</h1>
 		<a href="https://github.com/logico-philosophical/math-o-matic">repo</a> &middot; <a href="../docs/build/index.html">docs</a>
 		<h2>개요</h2>
-		이 페이지는 math-o-matic으로 만들고 있는 공리계를 보여 줍니다. 우상단의 로드 버튼을 눌러서 공리계를 로드하세요. 장치의 계산 성능에 따라 수 초 가량의 시간이 걸릴 수 있습니다.
+		이 페이지는 math-o-matic으로 만들고 있는 공리계를 보여 줍니다. 페이지 하단에 있는 버튼 중 하나를 눌러서 공리계를 로드하세요. 장치의 계산 성능에 따라 수 초 가량의 시간이 걸릴 수 있습니다.
 		<h2>로컬에서 실행하는 방법</h2>
 		<p>로컬에서 file 스킴으로 페이지를 불러왔을 경우 CORS 정책에 의해 페이지가 작동하지 않을 수 있습니다. 이때 다음과 같은 해결책이 있습니다.</p>
 		<ul>
@@ -77,7 +77,7 @@
 		<h2>핫키</h2>
 		<ul>
 			<li><kbd>X</kbd>: 증명 전부 펼치기
-			<li><kbd>R</kbd>, <kbd>F7</kbd>: 로드, 다시 로드
+			<li><kbd>R</kbd>, <kbd>F7</kbd>: 다시 로드
 			<li><kbd>C</kbd>: 콘솔 여닫기
 			<li><kbd>Backspace</kbd>, <kbd>J</kbd>: 뒤로가기
 			<li><kbd>K</kbd>: 앞으로 가기
@@ -85,7 +85,7 @@
 		<h2>몇 가지 컨트롤에 관하여</h2>
 		<ul>
 			<li>expand all 버튼은 <kbd>X</kbd> 키를 눌러 클릭할 수 있으며 증명탐색을 전부 활성화합니다. 성능에 부정적 영향이 있을 수 있습니다.
-			<li>reload 버튼은 <kbd>R</kbd> 키를 눌러 클릭할 수 있으며 <a href="./code.math">code.math</a> 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.
+			<li>reload 버튼은 <kbd>R</kbd> 키를 눌러 클릭할 수 있으며 파일을 다시 불러와서 목록을 재작성합니다. 단 그 과정에서 에러가 발생하였을 경우 이전 목록이 보존되므로 새로운 코드를 작성할 때 유용하게 사용할 수 있습니다.
 			<li>콘솔은 <kbd>C</kbd> 키를 눌러 열 수 있으며 REPL 기능을 제공합니다. <kbd>Ctrl</kbd> + <kbd>L</kbd>을 누르면 콘솔 내용이 지워집니다.
 		</ul>
 		<h2>참조</h2>
@@ -95,10 +95,9 @@
 		<h2>연산자 우선순위</h2>
 		<div id="precedence">[로드하세요]</div>
 		<h2>목록</h2>
+		<div id="list"></div>
 		<div id="summary"></div>
-		<p>이하의 내용은
-			<a href="./code.math">code.math</a>에 있는 코드를 렌더링 한 것입니다.</p>
-		<div id="all">[로드하세요]</div>
+		<div id="all"></div>
 		<script>
 			var katexOpts = {
 				trust: context => {
@@ -120,58 +119,180 @@
 				return ret;
 			}
 
+			var fileList = [
+				['propositional', '명제논리'],
+				['predicate', '술어논리'],
+				['set', '집합론'],
+				['relation', '이항관계'],
+				['function', '함수'],
+				['abstract_algebra', '추상대수학'],
+				['natural', '자연수 집합']
+			];
+
+			var filename = null;
+
+			$('#list').innerHTML = fileList.map(([k, v]) => {
+				return `<input type="button" value="${v}" style="border:1px #222 solid" onclick="filename='${k}';reload()"> `;
+			}).join('');
+
 			var expansionList = [];
 
-			var loading = false;
-
-			async function load(code) {
-				if (loading) return;
-				loading = true;
-
-				try {
-
-				var start, end;
-
-				console.log('--- PARSE START ---');
-				start = new Date();
-				var parsed;
-				try {
-					parsed = parser.parse(code);
-				} catch (e) {
-					console.error(`Error: ${e.message}\n    at code.math:${e.location.start.line}:${e.location.start.column}`);
-					console.log('--- PARSE FAILED ---');
-					return;
-				}
-
-				end = new Date();
-				console.log(parsed);
-				console.log('--- PARSE END ---');
-				console.log(`Parse ended in ${end - start} ms`);
-				console.log('--- PROCESS START ---');
-				start = new Date();
-
-				program = new math.Program(parser);
-				await program.feed(parsed);
-
-				end = new Date();
-				console.log(program);
-				console.log('--- PROCESS END ---');
-				console.log(`Process ended in ${end - start} ms`);
+			function generateHtml() {
 				console.log('--- HTML GENERATION START ---');
 				start = new Date();
 
+				var scope = program.scopeMap.get(filename);
+
 				var precedenceMap = new Map();
 
-				for (var [k, v] of program.scope.defMap) {
-					var prec = v.precedence;
-					if (prec) {
-						if (precedenceMap.has(prec)) {
-							precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
-						} else {
-							precedenceMap.set(prec, [k]);
-						}	
+				var baseType = null,
+					primitiveTypeList = [],
+					macroTypeList = [],
+					primitiveDefinitionList = [],
+					macroDefinitionList = [],
+					axiomSchemaList = [],
+					notProvedList = [],
+					provedList = [];
+				
+				var arr = {};
+
+				function foo(scope) {
+					for (var [k, v] of scope.defMap) {
+						var prec = v.precedence;
+						if (prec) {
+							if (precedenceMap.has(prec)) {
+								precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
+							} else {
+								precedenceMap.set(prec, [k]);
+							}	
+						}
+					}
+
+					baseType = baseType
+						|| (scope.baseType ? scope.baseType.name : null);
+
+					primitiveTypeList = primitiveTypeList.concat(
+						[...scope.typedefMap]
+							.filter(([k, v]) => !v.origin).map(([k, v]) => k)
+					);
+
+					macroTypeList = macroTypeList.concat(
+						[...scope.typedefMap]
+							.filter(([k, v]) => v.origin).map(([k, v]) => k)
+					);
+
+					primitiveDefinitionList = primitiveDefinitionList.concat(
+						[...scope.defMap]
+							.filter(([k, v]) => !v.expr).map(([k, v]) => k)
+					);
+
+					macroDefinitionList = macroDefinitionList.concat(
+						[...scope.defMap]
+							.filter(([k, v]) => v.expr).map(([k, v]) => k)
+					);
+					
+					axiomSchemaList = axiomSchemaList.concat(
+						[...scope.schemaMap]
+							.filter(([k, v]) => v.axiomatic).map(([k, v]) => k)
+					);
+
+					notProvedList = notProvedList.concat(
+						[...scope.schemaMap]
+							.filter(([k, v]) => !v.proved).map(([k, v]) => k)
+					);
+
+					provedList = provedList.concat(
+						[...scope.schemaMap]
+							.filter(([k, v]) => !v.axiomatic && v.proved).map(([k, v]) => k)
+					);
+
+					for (var [k, v] of scope.typedefMap) {
+						arr[v._id] = `<div class="block">`
+							+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>${
+								(v.isBaseType ? 'base ' : '')
+							}type</b> ${k}</a></p>`
+							+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+
+							+ '<p class="label"><b>description</b></p>'
+							+ (
+								v.doc
+								? `<p class="description">${m42kup.render(v.doc)}</p>`
+								: '<p class="description"><i>No description provided.</i></p>'
+							)
+							+ `</div>`;
+					}
+
+					for (var [k, v] of scope.defMap) {
+						arr[v._id] = `<div class="block">`
+							+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple
+									? ': ' + v.type
+									: `(${v.params.map(p => p.toSimpleString()).join(', ')})`
+										+ `: ${v.type.resolve().to}`
+							}</p>`
+							+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+
+							+ '<p class="label"><b>description</b></p>'
+							+ (
+								v.doc
+								? `<p class="description">${m42kup.render(v.doc)}</p>`
+								: '<p class="description"><i>No description provided.</i></p>'
+							)
+							+ `</div>`;
+					}
+
+					for (var [k, v] of scope.schemaMap) {
+						arr[v._id] = `<div class="block">`
+							+ `<p class="label"><a id="schema-${v.proved ? 'p' : 'np'}-${k}" href="#schema-${v.proved ? 'p' : 'np'}-${k}">${
+								v.annotations.map(a => `<b class="red">${a}</b> `).join('')
+							}<b>${
+								v.axiomatic ? 'axiomatic ' : ''
+							}schema</b> ${k}</a>${`(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
+							+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+
+							+ (
+								v.expr
+									? v.axiomatic
+										? ''
+										: '<p class="label"><b>proof explorer</b></p>'
+											+ (
+												expansionList.includes(k)
+													? `<p>${program.getProofExplorer(k, ktx)}</p>`
+													: `<p><input type="button" value="show" class="colored button-expand-proof" onclick="this.parentElement.innerHTML = program.getProofExplorer('${k}', ktx);expansionList.push('${k}');"></p>`
+											)
+									: ''
+							)
+
+							+ '<p class="label"><b>description</b></p>'
+							+ (
+								v.doc
+								? `<p class="description">${m42kup.render(v.doc)}</p>`
+								: '<p class="description"><i>No description provided.</i></p>'
+							)
+
+							+ `</div>`;
 					}
 				}
+
+				var printedImports = [filename];
+
+				function bar(scope) {
+					for (var [k, s] of scope.importMap) {
+						if (printedImports.includes(k)) continue;
+						printedImports.push(k);
+
+						bar(s);
+						foo(s);
+					}
+				}
+				
+				bar(scope);
+				foo(scope);
+
+				end = new Date();
+				console.log('--- HTML GENERATION END ---');
+				console.log(`HTML generation ended in ${end - start} ms`);
+				console.log('--- HTML RENDER START ---');
+				start = new Date();
 
 				precedenceMap = [...precedenceMap].sort((a, b) => a[0] - b[0]);
 
@@ -179,7 +300,7 @@
 				<p>현재 연산자 우선순위는 다음과 같습니다.</p>
 
 				<table>
-					<tr><td>우선순위</td><td>연산자</td></tr>
+					<tr><th>우선순위</th><th>연산자</th></tr>
 					${precedenceMap.map(([k, v]) => {
 						return `<tr><td>${k}</td><td>${v.map(w => {
 							return `<a href="#def-${w}">${w}</a>`;
@@ -188,33 +309,10 @@
 				</table>
 
 				<p>위 표는 자동으로 생성되었습니다.</p>`;
-
-				var baseType = program.scope.baseType.name;
-
-				var primitiveTypeList = [...program.scope.typedefMap]
-						.filter(([k, v]) => !v.origin).map(([k, v]) => k);
-
-				var macroTypeList = [...program.scope.typedefMap]
-						.filter(([k, v]) => v.origin).map(([k, v]) => k);
-
-				var primitiveDefinitionList = [...program.scope.defMap]
-						.filter(([k, v]) => !v.expr).map(([k, v]) => k);
-
-				var macroDefinitionList = [...program.scope.defMap]
-						.filter(([k, v]) => v.expr).map(([k, v]) => k);
-				
-				var axiomSchemaList = [...program.scope.schemaMap]
-						.filter(([k, v]) => v.axiomatic).map(([k, v]) => k);
-
-				var notProvedList = [...program.scope.schemaMap]
-						.filter(([k, v]) => !v.proved).map(([k, v]) => k);
-
-				var provedList = [...program.scope.schemaMap]
-						.filter(([k, v]) => !v.axiomatic && v.proved).map(([k, v]) => k);
 				
 				$('#summary').innerHTML = `
 				<ul>
-					<li><p><b>타입</b>(${program.scope.typedefMap.size})</p>
+					<li><p><b>타입</b>(${primitiveTypeList.length + macroTypeList.length})</p>
 					<ul>
 						<li><b>문장 타입</b>: <a href="#type-${baseType}">${baseType}</a>
 						<li><b>원시 타입</b>(${primitiveTypeList.length}): ${
@@ -223,7 +321,7 @@
 							macroTypeList.map(n => `<a href="#type-${n}">${n}</a>`).join(', ')}
 					</ul>
 
-					<li><p><b>정의</b>(${program.scope.defMap.size})</p>
+					<li><p><b>정의</b>(${primitiveDefinitionList.length + macroDefinitionList.length})</p>
 					<ul>
 						<li><b>원시 기호</b>(${primitiveDefinitionList.length}): ${
 							primitiveDefinitionList.map(n => `<a href="#def-${n}">${n}</a>`).join(', ')}
@@ -231,7 +329,7 @@
 							macroDefinitionList.map(n => `<a href="#def-${n}">${n}</a>`).join(', ')}
 					</ul>
 					
-					<li><p><b>스키마</b>(${program.scope.schemaMap.size})</p>
+					<li><p><b>스키마</b>(${axiomSchemaList.length + notProvedList.length + provedList.length})</p>
 					<ul>
 						<li><b>공리</b>(${axiomSchemaList.length}): ${
 							axiomSchemaList.map(n => `<a href="#schema-p-${n}">${n}</a>`).join(', ')}
@@ -241,96 +339,12 @@
 					</ul>
 				</ul>`;
 
-				var arr = {}, r;
-
-				for (var [k, v] of program.scope.typedefMap) {
-					r = `<div class="block">`
-						+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>${
-							(v.isBaseType ? 'base ' : '')
-						}type</b> ${k}</a></p>`
-						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
-
-						+ '<p class="label"><b>description</b></p>'
-						+ (
-							v.doc
-							? `<p class="description">${m42kup.render(v.doc)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-						+ `</div>`;
-
-					arr[v._id] = r;
-				}
-
-				for (var [k, v] of program.scope.defMap) {
-					r = `<div class="block">`
-						+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple
-								? ''
-								: `(${v.params.map(p => p.toSimpleString()).join(', ')})`
-									+ `: ${v.type.resolve().to}`
-						}</p>`
-						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
-
-						+ '<p class="label"><b>description</b></p>'
-						+ (
-							v.doc
-							? `<p class="description">${m42kup.render(v.doc)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-						+ `</div>`;
-
-					arr[v._id] = r;
-				}
-
-				for (var [k, v] of program.scope.schemaMap) {
-					r = `<div class="block">`
-						+ `<p class="label"><a id="schema-${v.proved ? 'p' : 'np'}-${k}" href="#schema-${v.proved ? 'p' : 'np'}-${k}">${
-							v.annotations.map(a => `<b class="red">${a}</b> `).join('')
-						}<b>${
-							v.axiomatic ? 'axiomatic ' : ''
-						}schema</b> ${k}</a>${`(${v.params.map(p => p.toSimpleString()).join(', ')})`}</p>`
-						+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
-
-						+ (
-							v.expr
-								? v.axiomatic
-									? ''
-									: '<p class="label"><b>proof explorer</b></p>'
-										+ (
-											expansionList.includes(k)
-												? `<p>${program.getProofExplorer(k, ktx)}</p>`
-												: `<p><input type="button" value="show" class="colored button-expand-proof" onclick="this.parentElement.innerHTML = program.getProofExplorer('${k}', ktx);expansionList.push('${k}');"></p>`
-										)
-								: ''
-						)
-
-						+ '<p class="label"><b>description</b></p>'
-						+ (
-							v.doc
-							? `<p class="description">${m42kup.render(v.doc)}</p>`
-							: '<p class="description"><i>No description provided.</i></p>'
-						)
-
-						+ `</div>`;
-
-					arr[v._id] = r;
-				}
-
-				end = new Date();
-				console.log('--- HTML GENERATION END ---');
-				console.log(`HTML generation ended in ${end - start} ms`);
-				console.log('--- HTML RENDER START ---');
-				start = new Date();
-
 				$('#all').innerHTML =
 					Object.keys(arr).sort((l, r) => l._id - r._id).map(k => arr[k]).join('');
 
 				end = new Date();
 				console.log('--- HTML RENDER END ---');
 				console.log(`HTML render ended in ${end - start} ms`);
-
-				} finally {
-					loading = false;
-				}
 			}
 
 			hotkeys('r,f7', (evt, handler) => {
@@ -368,31 +382,42 @@
 			$('#button-expand-all').addEventListener('click', expandAll);
 
 			var reloading = false;
-			$('#reload').value = 'load';
 
-			function reload() {
+			async function reload() {
+				if (!filename) return;
 				if (reloading) return;
 				reloading = true;
 
-				$('#reload').value = 'loading...';
-				setTimeout(() => {
-					var xhr = new XMLHttpRequest();
-					xhr.addEventListener('load', async () => {
-						try {
-							await load(xhr.responseText);
-						} finally {
-							$('#reload').value = 'reload';
-							reloading = false;
-						}
+				try {
+					console.log('--- PROGRAM START ---');
+					var start = new Date();
+
+					$('#reload').value = 'reloading...';
+					program = new math.Program(parser);
+					await program.loadModule(filename, async filename => {
+						return await new Promise((resolve, reject) => {
+							var xhr = new XMLHttpRequest();
+							xhr.addEventListener('load', () => {
+								resolve(xhr.responseText);
+							});
+							xhr.addEventListener('error', () => {
+								reject();
+							});
+							xhr.open('GET', `../math/${filename}.math`);
+							xhr.send();
+						});
 					});
-					xhr.addEventListener('error', () => {
-						console.log('LOAD FAILED');
-						$('#reload').value = 'reload';
-						reloading = false;
-					});
-					xhr.open('GET', './code.math');
-					xhr.send();
-				}, 0);
+
+					var end = new Date();
+					console.log(program);
+					console.log('--- PROGRAM END ---');
+					console.log(`Program ended in ${end - start} ms`);
+
+					generateHtml();
+				} finally {
+					$('#reload').value = 'reload';
+					reloading = false;
+				}
 			}
 
 			$('#reload').addEventListener('click', reload);

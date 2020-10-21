@@ -9,6 +9,8 @@ import $var from './nodes/$var';
 export type NestedTypeInput = string | NestedTypeInput[];
 
 export default class Scope {
+	public readonly importMap: Map<string, Scope> = new Map();
+	
 	public readonly typedefMap: Map<string, Type> = new Map();
 	public readonly defMap: Map<string, Typevar | Schema> = new Map();
 	public readonly schemaMap: Map<string, Schema> = new Map();
@@ -53,7 +55,8 @@ export default class Scope {
 	 */
 	public hasOwnType(name: NestedTypeInput): boolean {
 		if (typeof name == 'string') {
-			return this.typedefMap.has(name);
+			return this.typedefMap.has(name)
+				|| [...this.importMap.values()].some(s => s.hasOwnType(name));
 		}
 
 		if (!(name instanceof Array))
@@ -129,7 +132,11 @@ export default class Scope {
 				throw this.error(`Type ${name} is not defined`);
 
 			return this.typedefMap.has(name)
-				? this.typedefMap.get(name) : (!!this.parent && this.parent.getType(name));
+				? this.typedefMap.get(name)
+				: (!!this.parent && this.parent.getType(name))
+					|| [...this.importMap.values()].filter(s => {
+						return s.hasType(name)
+					})[0].getType(name);
 		}
 
 		if (!(name instanceof Array))
@@ -152,12 +159,13 @@ export default class Scope {
 	}
 
 	public hasOwnTypevar(name: string): boolean {
-		return this.defMap.has(name);
+		return this.defMap.has(name)
+			|| [...this.importMap.values()].some(s => s.hasOwnTypevar(name));
 	}
 
 	public hasTypevar(name: string): boolean {
-		return this.hasOwnTypevar(name) ||
-			(!!this.parent && this.parent.hasTypevar(name));
+		return this.hasOwnTypevar(name)
+			|| (!!this.parent && this.parent.hasTypevar(name));
 	}
 
 	public addTypevar(typevar: Typevar | Schema): Typevar | Schema {
@@ -190,11 +198,16 @@ export default class Scope {
 			throw this.error(`Definition ${name} is not defined`);
 
 		return this.defMap.has(name)
-			? this.defMap.get(name) : (!!this.parent && this.parent.getTypevar(name));
+			? this.defMap.get(name)
+			: (!!this.parent && this.parent.getTypevar(name))
+				|| [...this.importMap.values()].filter(s => {
+					return s.hasTypevar(name)
+				})[0].getTypevar(name);
 	}
 
 	public hasOwnSchema(name: string): boolean {
-		return this.schemaMap.has(name) || this.defMap.has(name);
+		return this.schemaMap.has(name) || this.defMap.has(name)
+			|| [...this.importMap.values()].some(s => s.hasOwnSchema(name));
 	}
 
 	public hasSchema(name: string): boolean {
@@ -221,11 +234,15 @@ export default class Scope {
 			? this.schemaMap.get(name)
 			: this.defMap.has(name)
 				? this.defMap.get(name)
-				: (!!this.parent && this.parent.getSchema(name));
+				: (!!this.parent && this.parent.getSchema(name))
+					|| [...this.importMap.values()].filter(s => {
+						return s.hasSchema(name)
+					})[0].getSchema(name);
 	}
 
 	public hasOwn$(name: string): boolean {
-		return this.$Map.has(name);
+		return this.$Map.has(name)
+			|| [...this.importMap.values()].some(s => s.hasOwn$(name));
 	}
 
 	public has$(name: string): boolean {
@@ -249,6 +266,10 @@ export default class Scope {
 			throw this.error(`$var ${name} is not defined`);
 
 		return this.$Map.has(name)
-			? this.$Map.get(name) : (!!this.parent && this.parent.get$(name));
+			? this.$Map.get(name)
+			: (!!this.parent && this.parent.get$(name))
+				|| [...this.importMap.values()].filter(s => {
+					return s.has$(name)
+				})[0].get$(name);
 	}
 }

@@ -18,9 +18,9 @@ export default class StackTrace {
 			+ (
 				this.stack.length
 					? this.stack.map(([type, name, location]) => {
-						return `${type} ${name || '<anonymous>'} (${filename || 'code.math'}:${location.start.line}:${location.start.column})`;
+						return `${type} ${name || '<anonymous>'} (${filename || '<unknown>'}:${location.start.line}:${location.start.column})`;
 					}).join('\n\tat ')
-					: `<root> (${filename || 'code.math'}:1:1)`
+					: `<root> (${filename || '<unknown>'}:1:1)`
 			)
 		);
 	}
