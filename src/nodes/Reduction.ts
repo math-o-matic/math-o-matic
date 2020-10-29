@@ -4,6 +4,8 @@ import Funcall from './Funcall';
 import ExpressionResolver, { Expr0, Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
 import Tee from './Tee';
+import Fun from './Fun';
+import MetaType from './MetaType';
 
 interface ReductionArgumentType {
 	subject: Metaexpr;
@@ -13,8 +15,6 @@ interface ReductionArgumentType {
 }
 
 export default class Reduction extends Node {
-	public readonly _type = 'reduction';
-
 	public readonly subject: Metaexpr;
 	public readonly guesses;
 	public readonly leftargs;
@@ -39,7 +39,7 @@ export default class Reduction extends Node {
 			}
 		}
 
-		if (subject._type == 'fun') {
+		if (subject instanceof Fun) {
 			subject.params.forEach((p, i) => {
 				if (!(guesses && guesses[i]) && !p.guess) {
 					throw this.error(`Argument #${i + 1} could not be guessed`);
@@ -69,7 +69,7 @@ export default class Reduction extends Node {
 			throw this.error('Something\'s wrong');
 		}
 	
-		if (!(subject.type._type == 'metatype' && subject.type.isSimple))
+		if (!(subject.type instanceof MetaType && subject.type.isSimple))
 			throw this.error('Subject is not reducible');
 	
 		if (!(leftargs instanceof Array)
@@ -94,7 +94,7 @@ export default class Reduction extends Node {
 
 		var tee = ExpressionResolver.expandMetaAndFuncalls(subject);
 
-		if (tee._type != 'tee') {
+		if (!(tee instanceof Tee)) {
 			throw this.error('Assertion failed');
 		}
 
@@ -169,7 +169,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 			if (/[0-9]/.test(guess[ptr])) {
 				var n = guess[ptr] * 1;
 
-				if (lef._type == 'tee' && node._type == 'tee') {
+				if (lef instanceof Tee && node instanceof Tee) {
 					if (lef.left.length != node.left.length) {
 						throw that.error(`Cannot dereference @${guess}: antecedent length mismatch`);
 					}
@@ -202,7 +202,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 
 				return recurse(guess, lef.args[n - 1], node.args[n - 1], ptr + 1);
 			} else if (guess[ptr] == 'r') {
-				if (lef._type == 'tee' && node._type == 'tee') {
+				if (lef instanceof Tee && node instanceof Tee) {
 					return recurse(guess, lef.right, node.right, ptr + 1);
 				}
 

@@ -2,8 +2,6 @@ import Node, { Precedence } from './Node';
 import Type from './Type';
 
 export default class MetaType extends Node {
-	public readonly _type = 'metatype';
-
 	public readonly isFunctional: boolean;
 	public readonly isSimple: boolean;
 	public readonly name: string;

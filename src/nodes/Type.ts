@@ -1,8 +1,6 @@
 import Node from './Node';
 
 export default class Type extends Node {
-	public readonly _type = 'type';
-
 	public readonly isBaseType: boolean;
 	public readonly isFunctional: boolean;
 	public readonly isSimple: boolean;

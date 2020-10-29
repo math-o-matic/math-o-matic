@@ -12,8 +12,6 @@ interface TypevarArgumentType {
 }
 
 export default class Typevar extends Node {
-	public readonly _type = 'typevar';
-
 	public readonly isParam: boolean;
 	public readonly guess: string;
 	public readonly type: Type;

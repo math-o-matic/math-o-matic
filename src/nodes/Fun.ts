@@ -21,8 +21,6 @@ interface FunArgumentType {
 }
 
 export default class Fun extends Node {
-	public readonly _type = 'fun';
-
 	public readonly shouldValidate;
 	public readonly annotations: string[];
 	public readonly axiomatic: boolean;

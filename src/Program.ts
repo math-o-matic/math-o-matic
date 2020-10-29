@@ -1,6 +1,12 @@
 import Scope from './Scope';
 import PegInterface from './PegInterface';
 import ExpressionResolver, { Metaexpr } from './ExpressionResolver';
+import Reduction from './nodes/Reduction';
+import Fun from './nodes/Fun';
+import Tee from './nodes/Tee';
+import Funcall from './nodes/Funcall';
+import Typevar from './nodes/Typevar';
+import $var from './nodes/$var';
 
 export default class Program {
 	public scope = new Scope(null);
@@ -121,29 +127,29 @@ export default class Program {
 		var theexpr = this.scope.getSchema(name);
 	
 		var ncols = (function recurse(expr: Metaexpr) {
-			switch (expr._type) {
-				case 'reduction':
-					return Math.max(
-						...expr.leftargs.map(recurse),
-						((expr.subject._type == 'fun' && expr.subject.name)
-							|| (expr.subject._type == 'funcall' && expr.subject.fun.name)
-								? 0 : recurse(expr.subject)),
-						1
-					);
-				case 'fun':
-					return Math.max(
-						...expr.def$s.map($ => recurse($.expr)),
-						recurse(expr.expr)
-					 ) + 1;
-				case 'tee':
-					return Math.max(
-						...expr.left.map(recurse),
-						...expr.def$s.map($ => recurse($.expr)),
-						recurse(expr.right)
-					) + 1;
-				case 'funcall':
-				default:
-					return 1;
+			if (expr instanceof Reduction) {
+				return Math.max(
+					...expr.leftargs.map(recurse),
+					((expr.subject instanceof Fun && expr.subject.name)
+						|| (expr.subject instanceof Funcall
+								&& 'name' in expr.subject.fun
+								&& expr.subject.fun.name)
+							? 0 : recurse(expr.subject)),
+					1
+				);
+			} else if (expr instanceof Fun) {
+				return Math.max(
+					...expr.def$s.map($ => recurse($.expr)),
+					recurse(expr.expr)
+				) + 1;
+			} else if (expr instanceof Tee) {
+				return Math.max(
+					...expr.left.map(recurse),
+					...expr.def$s.map($ => recurse($.expr)),
+					recurse(expr.right)
+				) + 1;
+			} else {
+				return 1;
 			}
 		})(theexpr);
 
@@ -193,189 +199,189 @@ export default class Program {
 				}];
 			}
 
-			switch (expr._type) {
-				case 'reduction':
-					var leftarglines = [];
-					var leftargnums = expr.leftargs.map(l => {
-						if (hypnumMap.has(l)) return hypnumMap.get(l);
-						if ($Map.has(l)) return $Map.get(l);
+			if (expr instanceof Reduction) {
+				var leftarglines = [];
+				var leftargnums = expr.leftargs.map(l => {
+					if (hypnumMap.has(l)) return hypnumMap.get(l);
+					if ($Map.has(l)) return $Map.get(l);
 
-						var lines = getTree(l, hypnumMap, $Map);
-						leftarglines = leftarglines.concat(lines);
-						return lines[lines.length - 1].ctr;
-					});
-					
-					var args = null;
-					var subjectlines = [];
-					var subjectnum = hypnumMap.get(expr.subject)
-						|| $Map.get(expr.subject)
-						|| (expr.subject._type == 'funcall' && $Map.has(expr.subject.fun)
-							? (args = expr.subject.args, $Map.get(expr.subject.fun))
-							: false)
-						|| ((s => s._type == 'fun' && s.name
-								|| s._type == 'funcall' && s.fun.name)(expr.subject)
-							? expr.subject
-							: (subjectlines = getTree(expr.subject, hypnumMap, $Map))[subjectlines.length-1].ctr);
+					var lines = getTree(l, hypnumMap, $Map);
+					leftarglines = leftarglines.concat(lines);
+					return lines[lines.length - 1].ctr;
+				});
+				
+				var args = null;
+				var subjectlines = [];
+				var subjectnum = hypnumMap.get(expr.subject)
+					|| $Map.get(expr.subject)
+					|| (expr.subject instanceof Funcall && $Map.has(expr.subject.fun)
+						? (args = expr.subject.args, $Map.get(expr.subject.fun))
+						: false)
+					|| ((s => s instanceof Fun && s.name
+							|| s instanceof Funcall && 'name' in s.fun && s.fun.name)(expr.subject)
+						? expr.subject
+						: (subjectlines = getTree(expr.subject, hypnumMap, $Map))[subjectlines.length-1].ctr);
 
-					return [
-						...leftarglines,
-						...subjectlines,
-						{
-							_type: 'E',
-							ctr: ++ctr,
-							subject: subjectnum,
-							args,
-							leftargs: leftargnums,
-							reduced: expr.reduced
-						}
-					];
-				case 'funcall':
-					if (hypnumMap.has(expr.fun)) {
-						return [{
-							_type: 'RC',
-							ctr: ++ctr,
-							schema: hypnumMap.get(expr.fun),
-							args: expr.args,
-							expr
-						}];
+				return [
+					...leftarglines,
+					...subjectlines,
+					{
+						_type: 'E',
+						ctr: ++ctr,
+						subject: subjectnum,
+						args,
+						leftargs: leftargnums,
+						reduced: expr.reduced
 					}
+				];
+			} else if (expr instanceof Funcall) {
+				if (hypnumMap.has(expr.fun)) {
+					return [{
+						_type: 'RC',
+						ctr: ++ctr,
+						schema: hypnumMap.get(expr.fun),
+						args: expr.args,
+						expr
+					}];
+				}
 
-					if ($Map.has(expr.fun)) {
-						return [{
-							_type: 'RC',
-							ctr: ++ctr,
-							schema: $Map.get(expr.fun),
-							args: expr.args,
-							expr
-						}];
-					}
+				if ($Map.has(expr.fun)) {
+					return [{
+						_type: 'RC',
+						ctr: ++ctr,
+						schema: $Map.get(expr.fun),
+						args: expr.args,
+						expr
+					}];
+				}
 
-					if (expr.fun.shouldValidate && expr.fun.name) {
-						return [{
-							_type: 'RCX',
-							ctr: ++ctr,
-							expr
-						}];
-					}
+				// @ts-ignore
+				if (expr.fun.shouldValidate && expr.fun.name) {
+					return [{
+						_type: 'RCX',
+						ctr: ++ctr,
+						expr
+					}];
+				}
 
-					if (!expr.fun.shouldValidate) {
-						return [{
-							_type: 'NP',
-							ctr: ++ctr,
-							expr
-						}];
-					}
-
-					var schemalines = getTree(expr.fun, hypnumMap, $Map);
-
-					return [
-						...schemalines,
-						{
-							_type: 'RC',
-							ctr: ++ctr,
-							schema: schemalines[schemalines.length - 1].ctr,
-							args: expr.args,
-							expr
-						}
-					];
-				case 'typevar':
+				// @ts-ignore
+				if (!expr.fun.shouldValidate) {
 					return [{
 						_type: 'NP',
 						ctr: ++ctr,
 						expr
 					}];
-				case 'fun':
-					if (expr.shouldValidate && expr.name && expr != theexpr) {
-						return [{
-							_type: 'RS',
-							ctr: ++ctr,
-							expr
-						}];
-					}
+				}
 
-					if (!expr.expr) {
-						return [{
-							_type: 'NP',
-							ctr: ++ctr,
-							expr
-						}];
-					}
+				var schemalines = getTree(expr.fun, hypnumMap, $Map);
 
-					$Map = new Map($Map);
-
-					var start = ctr + 1;
-
-					var $lines = [];
-					
-					expr.def$s.forEach($ => {
-						var lines = getTree($.expr, hypnumMap, $Map);
-						$lines = $lines.concat(lines);
-
-						var $num = lines[lines.length - 1].ctr;
-						$Map.set($, $num);
-					});
-
-					return [{
-						_type: 'V',
-						$lines,
-						lines: getTree(expr.expr, hypnumMap, $Map),
-						// getHtmlLine 함수가 이 배열을 조작하기 때문에
-						// shallow copy 해야 한다.
-						params: expr.params.slice(),
-						ctr: [start ,ctr]
-					}];
-				case 'tee':
-					hypnumMap = new Map(hypnumMap);
-					var leftlines = [];
-
-					var start = ctr + 1;
-
-					expr.left.forEach(l => {
-						hypnumMap.set(l, ++ctr);
-						leftlines.push({
-							_type: 'H',
-							ctr,
-							expr: l
-						});
-					});
-
-					$Map = new Map($Map);
-
-					var $lines = [];
-					expr.def$s.forEach($ => {
-						var lines = getTree($.expr, hypnumMap, $Map);
-						$lines = $lines.concat(lines);
-
-						var $num = lines[lines.length - 1].ctr;
-						$Map.set($, $num);
-					});
-
-					return [{
-						_type: 'T',
-						leftlines,
-						$lines,
-						rightlines: getTree(expr.right, hypnumMap, $Map),
-						ctr: [start, ctr]
-					}];
-				case '$var':
-					if (!$Map.has(expr)) {
-						throw Error(`${expr.name} is not defined`);
-					}
-
-					return [{
-						_type: 'R',
+				return [
+					...schemalines,
+					{
+						_type: 'RC',
 						ctr: ++ctr,
-						num: $Map.get(expr),
-						expr: expr.expr
-					}];
-				default:
-					// @ts-ignore
-					console.error(expr.error(`Unknown type ${expr._type}`));
+						schema: schemalines[schemalines.length - 1].ctr,
+						args: expr.args,
+						expr
+					}
+				];
+			} else if (expr instanceof Typevar) {
+				return [{
+					_type: 'NP',
+					ctr: ++ctr,
+					expr
+				}];
+			} else if (expr instanceof Fun) {
+				if (expr.shouldValidate && expr.name && expr != theexpr) {
 					return [{
-						_type: '?',
+						_type: 'RS',
 						ctr: ++ctr,
 						expr
 					}];
+				}
+
+				if (!expr.expr) {
+					return [{
+						_type: 'NP',
+						ctr: ++ctr,
+						expr
+					}];
+				}
+
+				$Map = new Map($Map);
+
+				var start = ctr + 1;
+
+				var $lines = [];
+				
+				expr.def$s.forEach($ => {
+					var lines = getTree($.expr, hypnumMap, $Map);
+					$lines = $lines.concat(lines);
+
+					var $num = lines[lines.length - 1].ctr;
+					$Map.set($, $num);
+				});
+
+				return [{
+					_type: 'V',
+					$lines,
+					lines: getTree(expr.expr, hypnumMap, $Map),
+					// getHtmlLine 함수가 이 배열을 조작하기 때문에
+					// shallow copy 해야 한다.
+					params: expr.params.slice(),
+					ctr: [start ,ctr]
+				}];
+			} else if (expr instanceof Tee) {
+				hypnumMap = new Map(hypnumMap);
+				var leftlines = [];
+
+				var start = ctr + 1;
+
+				expr.left.forEach(l => {
+					hypnumMap.set(l, ++ctr);
+					leftlines.push({
+						_type: 'H',
+						ctr,
+						expr: l
+					});
+				});
+
+				$Map = new Map($Map);
+
+				var $lines = [];
+				expr.def$s.forEach($ => {
+					var lines = getTree($.expr, hypnumMap, $Map);
+					$lines = $lines.concat(lines);
+
+					var $num = lines[lines.length - 1].ctr;
+					$Map.set($, $num);
+				});
+
+				return [{
+					_type: 'T',
+					leftlines,
+					$lines,
+					rightlines: getTree(expr.right, hypnumMap, $Map),
+					ctr: [start, ctr]
+				}];
+			} else if (expr instanceof $var) {
+				if (!$Map.has(expr)) {
+					throw Error(`${expr.name} is not defined`);
+				}
+
+				return [{
+					_type: 'R',
+					ctr: ++ctr,
+					num: $Map.get(expr),
+					expr: expr.expr
+				}];
+			} else {
+				console.log('Unknown metaexpr', expr);
+				return [{
+					_type: '?',
+					ctr: ++ctr,
+					expr
+				}];
 			}
 		})(theexpr, new Map(), new Map());
 

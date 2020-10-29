@@ -4,6 +4,7 @@ import MetaType from './MetaType';
 import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
 import $var from './$var';
+import Type from './Type';
 
 interface TeeInput {
 	left: Metaexpr[];
@@ -12,7 +13,6 @@ interface TeeInput {
 }
 
 export default class Tee extends Node {
-	public readonly _type = 'tee';
 	public precedence = Node.PREC_COMMA;
 
 	public readonly left;
@@ -24,15 +24,18 @@ export default class Tee extends Node {
 		super(scope);
 		
 		if (!(left instanceof Array
-				&& left.every(l => ['type', 'metatype'].includes(l.type._type)))) {
+				&& left.every(l => {
+					return l.type instanceof Type
+						|| l.type instanceof MetaType;
+				}))) {
 			console.log(left);
 			throw this.error('Assertion failed');
 		}
 
-		if (def$s && !(def$s instanceof Array && def$s.every($ => $._type == '$var')))
+		if (def$s && !(def$s instanceof Array && def$s.every($ => $ instanceof $var)))
 			throw this.error('Assertion failed');
 
-		if (!['type', 'metatype'].includes(right.type._type)) {
+		if (!(right.type instanceof Type || right.type instanceof MetaType)) {
 			console.log(right);
 			throw this.error('Assertion failed');
 		}

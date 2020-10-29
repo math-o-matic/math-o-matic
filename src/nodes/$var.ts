@@ -10,8 +10,6 @@ interface $varInput {
 }
 
 export default class $var extends Node {
-    public readonly _type = '$var';
-
     public readonly type: Type | MetaType;
     public readonly name: string;
     public readonly expr: Metaexpr;

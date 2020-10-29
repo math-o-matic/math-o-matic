@@ -12,11 +12,9 @@ interface FuncallArgumentType {
 }
 
 export default class Funcall extends Node {
-	public readonly _type = 'funcall';
-
 	public readonly type: Type | MetaType;
-	public readonly fun;
-	public readonly args;
+	public readonly fun: Metaexpr;
+	public readonly args: Expr0[];
 
 	constructor ({fun, args}: FuncallArgumentType, scope?: Scope) {
 		super(scope);
@@ -54,7 +52,7 @@ export default class Funcall extends Node {
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {
-		var args = this.args.map(arg => {
+		var args: any = this.args.map(arg => {
 			if (arg instanceof Typevar) return `${arg.name}<${arg._id}>`;
 			return arg.toIndentedString(indent + 1);
 		});
@@ -67,32 +65,33 @@ export default class Funcall extends Node {
 	
 			args = args.join(', ');
 	
-			if (this.fun.shouldValidate) {
-				return [
-					`${this.fun.name || `(${this.fun})`}(`,
-					args,
-					')'
-				].join('');
+			if ('shouldValidate' in this.fun && this.fun.shouldValidate) {
+				return `${this.fun.name || `(${this.fun})`}(${args})`;
 			} else {
 				return [
-					`${this.fun._type != 'fun' || !this.fun.name ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
-					args,
-					')'
+					this.fun instanceof Fun || !('name' in this.fun && this.fun.name)
+						? '(' + this.fun.toIndentedString(indent) + ')'
+						: this.fun.name,
+					`(${args})`
 				].join('');
 			}
-		}
-		else {
+		} else {
 			args = args.join(',\n' + '\t'.repeat(indent + 1));
 			
-			if (this.fun.shouldValidate) {
+			if ('shouldValidate' in this.fun && this.fun.shouldValidate) {
 				return [
-					`${this.fun.name || `(${this.fun.toIndentedString(indent)})`}(`,
+					this.fun.name || `(${this.fun.toIndentedString(indent)})`,
+					'(',
 					'\t' + args,
 					')'
 				].join('\n' + '\t'.repeat(indent));
 			} else {
 				return [
-					`${this.fun._type != 'fun' || !this.fun.name ? '(' + this.fun.toIndentedString(indent) + ')' : this.fun.name}(`,
+					(
+						this.fun instanceof Fun || !('name' in this.fun && this.fun.name)
+							? '(' + this.fun.toIndentedString(indent) + ')'
+							: this.fun.name
+					) + '(',
 					'\t' + args,
 					')'
 				].join('\n' + '\t'.repeat(indent));
@@ -101,7 +100,7 @@ export default class Funcall extends Node {
 	}
 
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		if (this.fun.shouldValidate) {
+		if ('shouldValidate' in this.fun && this.fun.shouldValidate) {
 			return (
 				this.fun.name
 					? `\\href{#schema-${this.fun.proved ? 'p' : 'np'}-${this.fun.name}}{\\textsf{${Node.escapeTeX(this.fun.name)}}}`
@@ -118,11 +117,12 @@ export default class Funcall extends Node {
 			return arg.toTeXString(Node.PREC_COMMA);
 		});
 
-		return `${!this.fun.name || this.fun._type == 'typevar'
+		return (
+			!('name' in this.fun && this.fun.name) || this.fun instanceof Typevar
 				? this.fun.toTeXString(false)
 				: this.fun.name.length == 1
 					? Node.escapeTeX(this.fun.name)
-					: `\\mathrm{${Node.escapeTeX(this.fun.name)}}`}`
-			+ `\\mathord{\\left(${args.join(', ')}\\right)}`;
+					: `\\mathrm{${Node.escapeTeX(this.fun.name)}}`
+		) + `\\mathord{\\left(${args.join(', ')}\\right)}`;
 	}
 }
