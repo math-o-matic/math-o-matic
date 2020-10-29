@@ -69,7 +69,7 @@ export default class Funcall extends Node {
 				return `${this.fun.name || `(${this.fun})`}(${args})`;
 			} else {
 				return [
-					this.fun instanceof Fun || !('name' in this.fun && this.fun.name)
+					!(this.fun instanceof Fun) || !('name' in this.fun && this.fun.name)
 						? '(' + this.fun.toIndentedString(indent) + ')'
 						: this.fun.name,
 					`(${args})`
@@ -88,7 +88,7 @@ export default class Funcall extends Node {
 			} else {
 				return [
 					(
-						this.fun instanceof Fun || !('name' in this.fun && this.fun.name)
+						!(this.fun instanceof Fun) || !('name' in this.fun && this.fun.name)
 							? '(' + this.fun.toIndentedString(indent) + ')'
 							: this.fun.name
 					) + '(',
