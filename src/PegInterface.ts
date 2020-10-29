@@ -189,7 +189,7 @@ export default class PI {
 				throw Error('wut');
 		}
 
-		return new Fun({shouldValidate: false, annotations: [], name, type, params, expr, doc, tex}, scope);
+		return new Fun({isSchema: false, annotations: [], name, type, params, expr, doc, tex}, scope);
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope): Funcall {
@@ -363,7 +363,7 @@ export default class PI {
 
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new Fun({shouldValidate: true, doc, annotations, axiomatic, name, params, def$s, expr}, scope);
+		return new Fun({isSchema: true, doc, annotations, axiomatic, name, params, def$s, expr}, scope);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope): Funcall {

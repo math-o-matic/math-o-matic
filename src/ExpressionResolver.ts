@@ -36,7 +36,7 @@ export default class ER {
 				throw Error('Parameter collision');
 
 			return new Fun({
-				shouldValidate: expr.shouldValidate,
+				isSchema: expr.isSchema,
 				annotations: expr.annotations,
 				axiomatic: expr.axiomatic,
 				name: null,
@@ -135,7 +135,7 @@ export default class ER {
 			if (expr.type instanceof Type && expr.name) return expr;
 
 			return new Fun({
-				shouldValidate: expr.shouldValidate,
+				isSchema: expr.isSchema,
 				annotations: expr.annotations,
 				axiomatic: expr.axiomatic,
 				name: null,
@@ -164,7 +164,7 @@ export default class ER {
 			if (expr.type instanceof Type && expr.name) return expr;
 
 			return new Fun({
-				shouldValidate: expr.shouldValidate,
+				isSchema: expr.isSchema,
 				annotations: expr.annotations,
 				axiomatic: expr.axiomatic,
 				name: null,

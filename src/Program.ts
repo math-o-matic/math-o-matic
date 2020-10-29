@@ -292,7 +292,7 @@ export default class Program {
 					expr
 				}];
 			} else if (expr instanceof Fun) {
-				if (expr.shouldValidate && expr.name && expr != theexpr) {
+				if (expr.isSchema && expr.name && expr != theexpr) {
 					return [{
 						_type: 'RS',
 						ctr: ++ctr,

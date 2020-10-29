@@ -65,7 +65,7 @@ export default class Funcall extends Node {
 	
 			args = args.join(', ');
 	
-			if ('shouldValidate' in this.fun && this.fun.shouldValidate) {
+			if ('isSchema' in this.fun && this.fun.isSchema) {
 				return `${this.fun.name || `(${this.fun})`}(${args})`;
 			} else {
 				return [
@@ -78,7 +78,7 @@ export default class Funcall extends Node {
 		} else {
 			args = args.join(',\n' + '\t'.repeat(indent + 1));
 			
-			if ('shouldValidate' in this.fun && this.fun.shouldValidate) {
+			if ('isSchema' in this.fun && this.fun.isSchema) {
 				return [
 					this.fun.name || `(${this.fun.toIndentedString(indent)})`,
 					'(',
@@ -100,7 +100,7 @@ export default class Funcall extends Node {
 	}
 
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		if ('shouldValidate' in this.fun && this.fun.shouldValidate) {
+		if ('isSchema' in this.fun && this.fun.isSchema) {
 			return (
 				this.fun.name
 					? `\\href{#schema-${this.fun.proved ? 'p' : 'np'}-${this.fun.name}}{\\textsf{${Node.escapeTeX(this.fun.name)}}}`

@@ -8,7 +8,7 @@ import Typevar from './Typevar';
 import $var from './$var';
 
 interface FunArgumentType {
-	shouldValidate: boolean;
+	isSchema: boolean;
 	annotations: string[];
 	axiomatic?: boolean;
 	type?: Type | MetaType;
@@ -21,7 +21,7 @@ interface FunArgumentType {
 }
 
 export default class Fun extends Node {
-	public readonly shouldValidate;
+	public readonly isSchema;
 	public readonly annotations: string[];
 	public readonly axiomatic: boolean;
 	public readonly name: string;
@@ -35,11 +35,11 @@ export default class Fun extends Node {
 	 * name, expr 중 하나 이상 있어야 하고 type, expr 중
 	 * 한 개만 있어야 한다.
 	 */
-	constructor ({doc, tex, shouldValidate, annotations, axiomatic, type, /* nullable */ name, params, def$s, expr}: FunArgumentType, scope?: Scope) {
+	constructor ({doc, tex, isSchema, annotations, axiomatic, type, /* nullable */ name, params, def$s, expr}: FunArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;
-		this.shouldValidate = shouldValidate;
+		this.isSchema = isSchema;
 		this.annotations = annotations;
 
 		if (tex) {
@@ -126,7 +126,7 @@ export default class Fun extends Node {
 			].join('');
 		}
 
-		if (!this.shouldValidate) {
+		if (!this.isSchema) {
 			if (!root)
 				return `\\href{#def-${this.name}}\\mathrm{${Node.escapeTeX(this.name)}}`;
 		
