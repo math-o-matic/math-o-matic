@@ -62,4 +62,16 @@ export default class Typevar extends Node {
 		
 		return `\\href{#${id}}{${tex}}`;
 	}
+
+	public toTeXStringWithId(prec?: Precedence, root?: boolean): string {
+		if (!this.isParam) throw Error('wut');
+
+		var id =`id-${this._id}`;
+
+		return [
+			`\\htmlId{${id}}{`,
+			this.toTeXString(prec, root),
+			`}`
+		].join('');
+	}
 }

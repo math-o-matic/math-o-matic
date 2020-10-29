@@ -141,7 +141,7 @@ export default class Fun extends Node {
 			if (!root)
 				return `\\href{#${id}}\\mathsf{${Node.escapeTeX(this.name)}}`;
 		
-			return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}\\mathord{\\left(${this.params.map(e => e.toTeXString(Node.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}\\right)}:\\\\\\quad`
+			return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}\\mathord{\\left(${this.params.map(e => e.toTeXStringWithId(Node.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}\\right)}:\\\\\\quad`
 				+ ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
 		}
 	}

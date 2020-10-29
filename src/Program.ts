@@ -158,7 +158,7 @@ export default class Program {
 
 			var {bbb=false, rrb=false} = options || {};
 	
-			var htmlLeft = left.map((e, i, a) => `<td class="${rrb && i == a.length - 1 ? 'rrb' : 'brb'}">${e.map(f => ktx(f.toTeXString(true))).join(', ')}</td>`).join('');
+			var htmlLeft = left.map((e, i, a) => `<td class="${rrb && i == a.length - 1 ? 'rrb' : 'brb'}">${e.map(f => ktx(f.toTeXStringWithId(true))).join(', ')}</td>`).join('');
 
 			for (var i = 0; i < left.length; i++)
 				while(left[i].length) left[i].pop();

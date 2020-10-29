@@ -101,9 +101,18 @@
 		<script>
 			var katexOpts = {
 				trust: context => {
-					if (context.command != '\\href') return false;
-					if (context.protocol != '_relative') return false;
-					return true;
+					if (context.command == '\\href'
+							&& context.protocol == '_relative')
+						return true;
+					
+					if (context.command == '\\htmlId')
+						return true;
+					
+					return false;
+				},
+				strict: (errorCode, errorMsg, token) => {
+					if (errorCode == 'htmlExtension') return 'ignore';
+					return 'warn';
 				}
 			}
 
