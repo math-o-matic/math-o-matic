@@ -124,7 +124,7 @@ export default class ER {
 				args = expr.args;
 			
 			// @ts-ignore
-			if (!fun.expr || fun.name && !fun.shouldValidate)
+			if (!fun.expr || fun.name && !fun.isSchema)
 				return new Funcall({fun, args});
 
 			return ER.expandMeta(ER.call(fun, args));
@@ -175,7 +175,7 @@ export default class ER {
 			var fun = ER.expandMetaAndFuncalls(expr.fun);
 			var args = expr.args.map(ER.expandMetaAndFuncalls);
 
-			if (!fun.expr || fun.name && !fun.shouldValidate)
+			if (!fun.expr || fun.name && !fun.isSchema)
 				return new Funcall({fun, args});
 
 			return ER.expandMetaAndFuncalls(ER.call(fun, args));

@@ -256,7 +256,7 @@ export default class Program {
 				}
 
 				// @ts-ignore
-				if (expr.fun.shouldValidate && expr.fun.name) {
+				if (expr.fun.isSchema && expr.fun.name) {
 					return [{
 						_type: 'RCX',
 						ctr: ++ctr,
@@ -265,7 +265,7 @@ export default class Program {
 				}
 
 				// @ts-ignore
-				if (!expr.fun.shouldValidate) {
+				if (!expr.fun.isSchema) {
 					return [{
 						_type: 'NP',
 						ctr: ++ctr,
