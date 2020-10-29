@@ -7,21 +7,21 @@ import Scope from '../Scope';
 import Typevar from './Typevar';
 import $var from './$var';
 
-interface SchemaArgumentType {
+interface FunArgumentType {
 	shouldValidate: boolean;
 	annotations: string[];
 	axiomatic?: boolean;
 	type?: Type | MetaType;
 	name?: string;
-	params?: (Typevar | Schema)[];
+	params?: (Typevar | Fun)[];
 	def$s?: $var[];
 	expr?: Metaexpr;
 	doc?: string;
 	tex?: string;
 }
 
-export default class Schema extends Node {
-	public readonly _type = 'schema';
+export default class Fun extends Node {
+	public readonly _type = 'fun';
 
 	public readonly shouldValidate;
 	public readonly annotations: string[];
@@ -37,7 +37,7 @@ export default class Schema extends Node {
 	 * name, expr 중 하나 이상 있어야 하고 type, expr 중
 	 * 한 개만 있어야 한다.
 	 */
-	constructor ({doc, tex, shouldValidate, annotations, axiomatic, type, /* nullable */ name, params, def$s, expr}: SchemaArgumentType, scope?: Scope) {
+	constructor ({doc, tex, shouldValidate, annotations, axiomatic, type, /* nullable */ name, params, def$s, expr}: FunArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;

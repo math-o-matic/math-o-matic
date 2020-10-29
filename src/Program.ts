@@ -120,17 +120,17 @@ export default class Program {
 	
 		var theexpr = this.scope.getSchema(name);
 	
-		var ncols = (function recurse(expr: any) {
+		var ncols = (function recurse(expr: Metaexpr) {
 			switch (expr._type) {
 				case 'reduction':
 					return Math.max(
 						...expr.leftargs.map(recurse),
-						((expr.subject._type == 'schema' && expr.subject.name)
-							|| (expr.subject._type == 'schemacall' && expr.subject.schema.name)
+						((expr.subject._type == 'fun' && expr.subject.name)
+							|| (expr.subject._type == 'funcall' && expr.subject.fun.name)
 								? 0 : recurse(expr.subject)),
 						1
 					);
-				case 'schema':
+				case 'fun':
 					return Math.max(
 						...expr.def$s.map($ => recurse($.expr)),
 						recurse(expr.expr)
@@ -141,7 +141,7 @@ export default class Program {
 						...expr.def$s.map($ => recurse($.expr)),
 						recurse(expr.right)
 					) + 1;
-				case 'schemacall':
+				case 'funcall':
 				default:
 					return 1;
 			}
@@ -209,11 +209,11 @@ export default class Program {
 					var subjectlines = [];
 					var subjectnum = hypnumMap.get(expr.subject)
 						|| $Map.get(expr.subject)
-						|| (expr.subject._type == 'schemacall' && $Map.has(expr.subject.schema)
-							? (args = expr.subject.args, $Map.get(expr.subject.schema))
+						|| (expr.subject._type == 'funcall' && $Map.has(expr.subject.fun)
+							? (args = expr.subject.args, $Map.get(expr.subject.fun))
 							: false)
-						|| ((s => s._type == 'schema' && s.name
-								|| s._type == 'schemacall' && s.schema.name)(expr.subject)
+						|| ((s => s._type == 'fun' && s.name
+								|| s._type == 'funcall' && s.fun.name)(expr.subject)
 							? expr.subject
 							: (subjectlines = getTree(expr.subject, hypnumMap, $Map))[subjectlines.length-1].ctr);
 
@@ -229,28 +229,28 @@ export default class Program {
 							reduced: expr.reduced
 						}
 					];
-				case 'schemacall':
-					if (hypnumMap.has(expr.schema)) {
+				case 'funcall':
+					if (hypnumMap.has(expr.fun)) {
 						return [{
 							_type: 'RC',
 							ctr: ++ctr,
-							schema: hypnumMap.get(expr.schema),
+							schema: hypnumMap.get(expr.fun),
 							args: expr.args,
 							expr
 						}];
 					}
 
-					if ($Map.has(expr.schema)) {
+					if ($Map.has(expr.fun)) {
 						return [{
 							_type: 'RC',
 							ctr: ++ctr,
-							schema: $Map.get(expr.schema),
+							schema: $Map.get(expr.fun),
 							args: expr.args,
 							expr
 						}];
 					}
 
-					if (expr.schema.shouldValidate && expr.schema.name) {
+					if (expr.fun.shouldValidate && expr.fun.name) {
 						return [{
 							_type: 'RCX',
 							ctr: ++ctr,
@@ -258,7 +258,7 @@ export default class Program {
 						}];
 					}
 
-					if (!expr.schema.shouldValidate) {
+					if (!expr.fun.shouldValidate) {
 						return [{
 							_type: 'NP',
 							ctr: ++ctr,
@@ -266,7 +266,7 @@ export default class Program {
 						}];
 					}
 
-					var schemalines = getTree(expr.schema, hypnumMap, $Map);
+					var schemalines = getTree(expr.fun, hypnumMap, $Map);
 
 					return [
 						...schemalines,
@@ -284,7 +284,7 @@ export default class Program {
 						ctr: ++ctr,
 						expr
 					}];
-				case 'schema':
+				case 'fun':
 					if (expr.shouldValidate && expr.name && expr != theexpr) {
 						return [{
 							_type: 'RS',

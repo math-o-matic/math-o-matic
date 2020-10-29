@@ -1,5 +1,5 @@
 import Node, { Precedence } from './Node';
-import Schemacall from './Schemacall';
+import Funcall from './Funcall';
 
 import ExpressionResolver, { Expr0, Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
@@ -39,7 +39,7 @@ export default class Reduction extends Node {
 			}
 		}
 
-		if (subject._type == 'schema') {
+		if (subject._type == 'fun') {
 			subject.params.forEach((p, i) => {
 				if (!(guesses && guesses[i]) && !p.guess) {
 					throw this.error(`Argument #${i + 1} could not be guessed`);
@@ -61,8 +61,8 @@ export default class Reduction extends Node {
 				);
 			});
 	
-			subject = new Schemacall({
-				schema: subject,
+			subject = new Funcall({
+				fun: subject,
 				args: derefs,
 			}, scope);
 		} else if (guesses) {
@@ -182,15 +182,15 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 				}
 
 				while (true) {
-					if (!lef.schema || !node.schema) {
+					if (!lef.fun || !node.fun) {
 						throw that.error(`Cannot dereference @${guess}`);
 					}
 
-					if (ExpressionResolver.equals(lef.schema, node.schema)) {
+					if (ExpressionResolver.equals(lef.fun, node.fun)) {
 						break;
 					}
 
-					if (!node.schema.expr) {
+					if (!node.fun.expr) {
 						throw that.error(`Cannot dereference @${guess}`);
 					}
 

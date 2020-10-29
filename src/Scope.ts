@@ -1,6 +1,6 @@
 import Type from './nodes/Type';
 import Typevar from './nodes/Typevar';
-import Schema from './nodes/Schema';
+import Fun from './nodes/Fun';
 
 import StackTrace from './StackTrace';
 import { Metaexpr } from './ExpressionResolver';
@@ -12,8 +12,8 @@ export default class Scope {
 	public readonly importMap: Map<string, Scope> = new Map();
 	
 	public readonly typedefMap: Map<string, Type> = new Map();
-	public readonly defMap: Map<string, Typevar | Schema> = new Map();
-	public readonly schemaMap: Map<string, Schema> = new Map();
+	public readonly defMap: Map<string, Typevar | Fun> = new Map();
+	public readonly schemaMap: Map<string, Fun> = new Map();
 	public readonly $Map: Map<string, $var> = new Map();
 	public readonly hypotheses: Metaexpr[] = [];
 
@@ -168,7 +168,7 @@ export default class Scope {
 			|| (!!this.parent && this.parent.hasTypevar(name));
 	}
 
-	public addTypevar(typevar: Typevar | Schema): Typevar | Schema {
+	public addTypevar(typevar: Typevar | Fun): Typevar | Fun {
 		if (!(typevar instanceof Typevar))
 			throw this.error('Illegal argument type');
 
@@ -179,8 +179,8 @@ export default class Scope {
 		return typevar;
 	}
 
-	public addFun(fun: Schema): Schema {
-		if (!(fun instanceof Schema))
+	public addFun(fun: Fun): Fun {
+		if (!(fun instanceof Fun))
 			throw this.error('Illegal argument type');
 
 		if (!fun.name)
@@ -193,7 +193,7 @@ export default class Scope {
 		return fun;
 	}
 
-	public getTypevar(name: string): Typevar | Schema {
+	public getTypevar(name: string): Typevar | Fun {
 		if (!this.hasTypevar(name))
 			throw this.error(`Definition ${name} is not defined`);
 
@@ -215,8 +215,8 @@ export default class Scope {
 			|| (!!this.parent && this.parent.hasSchema(name));
 	}
 
-	public addSchema(schema: Schema): Schema {
-		if (!(schema instanceof Schema))
+	public addSchema(schema: Fun): Fun {
+		if (!(schema instanceof Fun))
 			throw this.error('Illegal argument type');
 
 		if (this.hasOwnSchema(schema.name))
@@ -226,7 +226,7 @@ export default class Scope {
 		return schema;
 	}
 
-	public getSchema(name: string): Typevar | Schema {
+	public getSchema(name: string): Typevar | Fun {
 		if (!this.hasSchema(name))
 			throw this.error(`Schema ${name} is not defined`);
 

@@ -6,8 +6,8 @@
 import Type from './nodes/Type';
 import Typevar from './nodes/Typevar';
 import Tee from './nodes/Tee';
-import Schema from './nodes/Schema';
-import Schemacall from './nodes/Schemacall';
+import Fun from './nodes/Fun';
+import Funcall from './nodes/Funcall';
 import Reduction from './nodes/Reduction';
 
 import { Expr0, Metaexpr } from './ExpressionResolver';
@@ -99,7 +99,7 @@ export default class PI {
 		});
 	}
 
-	public static typevar(obj: DefvObject | VarObject, parentScope: Scope): Typevar | Schema {
+	public static typevar(obj: DefvObject | VarObject, parentScope: Scope): Typevar | Fun {
 		if (!['defv', 'var'].includes(obj._type)) {
 			throw Error('Assertion failed');
 		}
@@ -131,7 +131,7 @@ export default class PI {
 		}, scope);
 	}
 
-	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): Schema {
+	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): Fun {
 		if (obj._type != 'defun' && obj._type != 'funexpr')
 			throw Error('Assertion failed');
 
@@ -189,22 +189,22 @@ export default class PI {
 				throw Error('wut');
 		}
 
-		return new Schema({shouldValidate: false, annotations: [], name, type, params, expr, doc, tex}, scope);
+		return new Fun({shouldValidate: false, annotations: [], name, type, params, expr, doc, tex}, scope);
 	}
 
-	public static funcall(obj: FuncallObject, parentScope: Scope): Schemacall {
+	public static funcall(obj: FuncallObject, parentScope: Scope): Funcall {
 		if (obj._type != 'funcall')
 			throw Error('Assertion failed');
 
 		var scope = parentScope.extend('funcall', 'name' in obj.schema ? obj.schema.name : null, obj.location);
 
-		var schema = PI.expr0(obj.schema, scope);
+		var fun = PI.expr0(obj.schema, scope);
 
 		var args = obj.args.map(arg => {
 			return PI.expr0(arg, scope);
 		});
 
-		return new Schemacall({schema, args}, scope);
+		return new Funcall({fun, args}, scope);
 	}
 
 	public static metaexpr(obj: MetaexprObject, parentScope: Scope): Metaexpr {
@@ -323,7 +323,7 @@ export default class PI {
 		return new $var({name: obj.name, expr}, scope);
 	}
 
-	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope): Schema {
+	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope): Fun {
 		if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 			throw Error('Assertion failed');
 
@@ -363,23 +363,23 @@ export default class PI {
 
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new Schema({shouldValidate: true, doc, annotations, axiomatic, name, params, def$s, expr}, scope);
+		return new Fun({shouldValidate: true, doc, annotations, axiomatic, name, params, def$s, expr}, scope);
 	}
 
-	public static schemacall(obj: SchemacallObject, parentScope: Scope): Schemacall {
+	public static schemacall(obj: SchemacallObject, parentScope: Scope): Funcall {
 		if (obj._type != 'schemacall')
 			throw Error('Assertion failed');
 
 		var scope = parentScope.extend('schemacall', 'name' in obj.schema ? obj.schema.name : null, obj.location);
 
-		var schema = PI.metaexpr(obj.schema, scope);
+		var fun = PI.metaexpr(obj.schema, scope);
 
 		var args = obj.args.map(obj => {
 			return PI.expr0(obj, scope);
 		});
 
-		return new Schemacall({
-			schema,
+		return new Funcall({
+			fun,
 			args
 		}, scope);
 	}

@@ -1,14 +1,14 @@
-export type Expr0 = Schemacall | Schema | Typevar;
-export type Metaexpr = Tee | Reduction | Schemacall | Schema | $var | Expr0;
+export type Expr0 = Funcall | Fun | Typevar;
+export type Metaexpr = Tee | Reduction | Funcall | Fun | $var | Expr0;
 
-function iscall(a: Metaexpr): a is Schemacall {
-	return a._type == 'schemacall';
+function iscall(a: Metaexpr): a is Funcall {
+	return a._type == 'funcall';
 }
 
-function makecall(a: Metaexpr, args: Expr0[]): Schemacall {
-	if (a._type == 'typevar' || a._type == 'schema') {
-		return new Schemacall({
-			schema: a,
+function makecall(a: Metaexpr, args: Expr0[]): Funcall {
+	if (a._type == 'typevar' || a._type == 'fun') {
+		return new Funcall({
+			fun: a,
 			args
 		});
 	}
@@ -18,14 +18,14 @@ function makecall(a: Metaexpr, args: Expr0[]): Schemacall {
 }
 
 export default class ER {
-	public static substitute(expr: Metaexpr, map: Map<Typevar | Schema, Expr0>): Metaexpr {
+	public static substitute(expr: Metaexpr, map: Map<Typevar | Fun, Expr0>): Metaexpr {
 		switch (expr._type) {
-			case 'schemacall':
-				return new Schemacall({
-					schema: ER.substitute(expr.schema, map),
+			case 'funcall':
+				return new Funcall({
+					fun: ER.substitute(expr.fun, map),
 					args: expr.args.map(arg => ER.substitute(arg, map))
 				});
-			case 'schema':
+			case 'fun':
 				if (!expr.expr) return expr;
 
 				// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
@@ -35,7 +35,7 @@ export default class ER {
 				if (expr.params.some(e => map.has(e)))
 					throw Error('Parameter collision');
 
-				return new Schema({
+				return new Fun({
 					shouldValidate: expr.shouldValidate,
 					annotations: expr.annotations,
 					axiomatic: expr.axiomatic,
@@ -63,7 +63,7 @@ export default class ER {
 	}
 
 	public static call(callee: Metaexpr, args: Expr0[]): Metaexpr {
-		if (callee._type != 'schema') {
+		if (callee._type != 'fun') {
 			console.log(callee);
 			throw Error('Illegal type');
 		}
@@ -90,18 +90,18 @@ export default class ER {
 			throw Error('Illegal type');
 		}
 
-		if (iscall(expr.schema)) {
-			var schema = ER.expandCallOnce(expr.schema);
-			return makecall(schema, expr.args);
+		if (iscall(expr.fun)) {
+			var fun = ER.expandCallOnce(expr.fun);
+			return makecall(fun, expr.args);
 		}
 
-		var callee_ = expr.schema;
+		var callee_ = expr.fun;
 
 		while (callee_._type == '$var') {
 			callee_ = callee_.expr;
 		}
 
-		if (callee_._type != 'schema') {
+		if (callee_._type != 'fun') {
 			throw Error('Something\'s wrong');
 		}
 
@@ -120,22 +120,22 @@ export default class ER {
 				var right = ER.expandMeta(expr.right);
 
 				return new Tee({left, right});
-			case 'schemacall':
-				var schema = ER.expandMeta(expr.schema),
+			case 'funcall':
+				var fun = ER.expandMeta(expr.fun),
 					args = expr.args;
 				
 				// @ts-ignore
-				if (!schema.expr || schema.name && !schema.shouldValidate)
-			 		return new Schemacall({schema, args});
+				if (!fun.expr || fun.name && !fun.shouldValidate)
+			 		return new Funcall({fun, args});
 
-				return ER.expandMeta(ER.call(schema, args));
+				return ER.expandMeta(ER.call(fun, args));
 			case 'reduction':
 				return ER.expandMeta(expr.reduced);
-			case 'schema':
+			case 'fun':
 				if (!expr.expr) return expr;
 				if (expr.type._type == 'type' && expr.name) return expr;
 
-				return new Schema({
+				return new Fun({
 					shouldValidate: expr.shouldValidate,
 					annotations: expr.annotations,
 					axiomatic: expr.axiomatic,
@@ -161,11 +161,11 @@ export default class ER {
 				var right = ER.expandMetaAndFuncalls(expr.right);
 
 				return new Tee({left, right});
-			case 'schema':
+			case 'fun':
 				if (!expr.expr) return expr;
 				if (expr.type._type == 'type' && expr.name) return expr;
 
-				return new Schema({
+				return new Fun({
 					shouldValidate: expr.shouldValidate,
 					annotations: expr.annotations,
 					axiomatic: expr.axiomatic,
@@ -173,14 +173,14 @@ export default class ER {
 					params: expr.params,
 					expr: ER.expandMetaAndFuncalls(expr.expr)
 				});
-			case 'schemacall':
-				var schema = ER.expandMetaAndFuncalls(expr.schema);
+			case 'funcall':
+				var fun = ER.expandMetaAndFuncalls(expr.fun);
 				var args = expr.args.map(ER.expandMetaAndFuncalls);
 
-				if (!schema.expr || schema.name && !schema.shouldValidate)
-			 		return new Schemacall({schema, args});
+				if (!fun.expr || fun.name && !fun.shouldValidate)
+			 		return new Funcall({fun, args});
 
-				return ER.expandMetaAndFuncalls(ER.call(schema, args));
+				return ER.expandMetaAndFuncalls(ER.call(fun, args));
 			case 'reduction':
 				return ER.expandMetaAndFuncalls(expr.reduced);
 			case 'typevar':
@@ -224,22 +224,22 @@ export default class ER {
 			}
 
 			if (iscall(a) && iscall(b)) {
-				if (iscall(a.schema)) {
+				if (iscall(a.fun)) {
 					return recurseWrap(
 						ER.expandCallOnce(a), b, depth + 1
 					);
 				}
 
-				if (iscall(b.schema)) {
+				if (iscall(b.fun)) {
 					return recurseWrap(
 						a, ER.expandCallOnce(b), depth + 1
 					);
 				}
 
-				if (a.schema == b.schema || !a.schema.expr && !b.schema.expr) {
-					if (a.schema != b.schema) return false;
+				if (a.fun == b.fun || !a.fun.expr && !b.fun.expr) {
+					if (a.fun != b.fun) return false;
 
-					if (!a.schema.expr && !b.schema.expr) {
+					if (!a.fun.expr && !b.fun.expr) {
 						for (var i = 0; i < a.args.length; i++) {
 							if (!recurseWrap(a.args[i], b.args[i], depth + 1)) return false;
 						}
@@ -248,13 +248,13 @@ export default class ER {
 					}
 
 					if (a.args.every((_, i) => {
-						return recurseWrap(a.args[i], (b as Schemacall).args[i], depth + 1);
+						return recurseWrap(a.args[i], (b as Funcall).args[i], depth + 1);
 					})) {
 						return true;
 					}
 				}
 
-				if (a.schema.expr) {
+				if (a.fun.expr) {
 					return recurseWrap(ER.expandCallOnce(a), b, depth + 1);
 				}
 
@@ -262,13 +262,13 @@ export default class ER {
 			}
 
 			if (iscall(a)) {
-				if (iscall(a.schema)) {
+				if (iscall(a.fun)) {
 					return recurseWrap(
 						ER.expandCallOnce(a), b, depth + 1
 					);
 				}
 
-				if (!a.schema.expr) return false;
+				if (!a.fun.expr) return false;
 
 				return recurseWrap(
 					ER.expandCallOnce(a), b, depth + 1
@@ -276,13 +276,13 @@ export default class ER {
 			}
 
 			if (iscall(b)) {
-				if (iscall(b.schema)) {
+				if (iscall(b.fun)) {
 					return recurseWrap(
 						a, ER.expandCallOnce(b), depth + 1
 					);
 				}
 
-				if (!b.schema.expr) return false;
+				if (!b.fun.expr) return false;
 
 				return recurseWrap(
 					a, ER.expandCallOnce(b), depth + 1
@@ -343,7 +343,7 @@ export default class ER {
 // 순환 참조를 피하기 위하여 export 후 import 한다.
 import $var from "./nodes/$var";
 import Reduction from "./nodes/Reduction";
-import Schema from "./nodes/Schema";
-import Schemacall from "./nodes/Schemacall";
+import Fun from "./nodes/Fun";
+import Funcall from "./nodes/Funcall";
 import Tee from "./nodes/Tee";
 import Typevar from "./nodes/Typevar";
