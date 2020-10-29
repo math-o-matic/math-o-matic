@@ -303,3 +303,17 @@ table.explorer td.bbb {
 	background-color: #f2f2f2;
 	color: unset;
 }
+
+.flicker {
+	animation: flicker 1s 1 normal!important;
+}
+
+@keyframes flicker {
+	0%, 100% {
+		background-color: transparent;
+	}
+  
+	25% {
+		background-color: #FFFF00;
+	}
+}

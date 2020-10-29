@@ -45,25 +45,6 @@
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-		<div id="search-background" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index:5000;display:none;"></div>
-		<div style="position:fixed;top:5px;right:5px;z-index:10000;">
-			<div>
-				<input id="button-expand-all" type="button" class="colored" value="expand all" style="text-transform: uppercase;">
-				<input id="reload" type="button" class="colored" value="reload" style="text-transform: uppercase;">
-				<input id="button-show-console" type="button" class="colored" value="console" style="text-transform: uppercase;">
-			</div>
-		</div>
-		<div class="console-wrap-wrap" style="display:none">
-		  <div class="console-wrap">
-		    <div id="console-display-wrap">
-		    	<table id="console-display" style="margin: 0"></table>
-		    	<div id="search-dropdown" style="display: none;">
-						<ul></ul>
-					</div>
-		    </div>
-	    	<script src="./console.js"></script>
-	    </div>
-	  </div>
 		<h1>math-o-matic</h1>
 		<a href="https://github.com/logico-philosophical/math-o-matic">repo</a> &middot; <a href="../docs/build/index.html">docs</a>
 		<h2>개요</h2>
@@ -98,6 +79,25 @@
 		<div id="list"></div>
 		<div id="summary"></div>
 		<div id="all"></div>
+		<div id="search-background" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index:5000;display:none;"></div>
+		<div style="position:fixed;top:5px;right:5px;z-index:10000;">
+			<div>
+				<input id="button-expand-all" type="button" class="colored" value="expand all" style="text-transform: uppercase;">
+				<input id="reload" type="button" class="colored" value="reload" style="text-transform: uppercase;">
+				<input id="button-show-console" type="button" class="colored" value="console" style="text-transform: uppercase;">
+			</div>
+		</div>
+		<div class="console-wrap-wrap" style="display:none">
+			<div class="console-wrap">
+				<div id="console-display-wrap">
+					<table id="console-display" style="margin: 0"></table>
+					<div id="search-dropdown" style="display: none;">
+						<ul></ul>
+					</div>
+				</div>
+				<script src="./console.js"></script>
+			</div>
+		</div>
 		<script>
 			var katexOpts = {
 				trust: context => {
@@ -372,6 +372,33 @@
 			hotkeys('x', (evt, handler) => {
 				evt.preventDefault();
 				expandAll();
+			});
+
+			document.body.addEventListener('click', evt => {
+				var $a = evt.target;
+
+				while (!($a instanceof HTMLAnchorElement)) {
+					$a = $a.parentElement;
+
+					if (!$a) return;
+				}
+
+				var match = $a.getAttribute('href').match(/^#id-[0-9]+$/);
+
+				if (match) {
+					var $el = $(match[0]);
+
+					if ($el) {
+						if ($el.classList.contains('flicker')) {
+							return;
+						}
+
+						$el.classList.add('flicker');
+						$el.addEventListener('animationend', evt => {
+							$el.classList.remove('flicker');
+						});
+					}
+				}
 			});
 
 			function expandAll() {
