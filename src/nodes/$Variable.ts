@@ -4,17 +4,17 @@ import MetaType from "./MetaType";
 import Node, { Precedence } from "./Node";
 import Type from "./Type";
 
-interface $varArgumentType {
+interface $VariableArgumentType {
     name: string;
     expr: Metaexpr;
 }
 
-export default class $var extends Node {
+export default class $Variable extends Node {
     public readonly type: Type | MetaType;
     public readonly name: string;
     public readonly expr: Metaexpr;
 
-    constructor({name, expr}: $varArgumentType, scope?: Scope) {
+    constructor({name, expr}: $VariableArgumentType, scope?: Scope) {
         super(scope);
 
         if (!name || !expr) {

@@ -1,4 +1,4 @@
-import $var from "./nodes/$var";
+import $Variable from "./nodes/$Variable";
 import Reduction from "./nodes/Reduction";
 import Fun from "./nodes/Fun";
 import Funcall from "./nodes/Funcall";
@@ -7,7 +7,7 @@ import Variable from "./nodes/Variable";
 import Type from "./nodes/Type";
 
 export type Expr0 = Funcall | Fun | Variable;
-export type Metaexpr = Tee | Reduction | Funcall | Fun | $var | Expr0;
+export type Metaexpr = Tee | Reduction | Funcall | Fun | $Variable | Expr0;
 
 function iscall(a: Metaexpr): a is Funcall {
 	return a instanceof Funcall;
@@ -62,7 +62,7 @@ export default class ER {
 			});
 		} else if (expr instanceof Reduction) {
 			return ER.substitute(expr.reduced, map);
-		} else if (expr instanceof $var) {
+		} else if (expr instanceof $Variable) {
 			return ER.substitute(expr.expr, map);
 		} else {
 			console.log(expr);
@@ -105,7 +105,7 @@ export default class ER {
 
 		var callee_: Metaexpr = expr.fun;
 
-		while (callee_ instanceof $var) {
+		while (callee_ instanceof $Variable) {
 			callee_ = callee_.expr;
 		}
 
@@ -152,7 +152,7 @@ export default class ER {
 			});
 		} else if (expr instanceof Variable) {
 			return expr;
-		} else if (expr instanceof $var) {
+		} else if (expr instanceof $Variable) {
 			return ER.expandMeta(expr.expr);
 		} else {
 			console.log(expr);
@@ -191,7 +191,7 @@ export default class ER {
 			return ER.expandMetaAndFuncalls(expr.reduced);
 		} else if (expr instanceof Variable) {
 			return expr;
-		} else if (expr instanceof $var) {
+		} else if (expr instanceof $Variable) {
 			return ER.expandMetaAndFuncalls(expr.expr);
 		} else {
 			console.log(expr);
@@ -221,11 +221,11 @@ export default class ER {
 				return recurseWrap(a, b.reduced, depth + 1);
 			}
 
-			if (a instanceof $var) {
+			if (a instanceof $Variable) {
 				return recurseWrap(a.expr, b, depth + 1);
 			}
 
-			if (b instanceof $var) {
+			if (b instanceof $Variable) {
 				return recurseWrap(a, b.expr, depth + 1);
 			}
 

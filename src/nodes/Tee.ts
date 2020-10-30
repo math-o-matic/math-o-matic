@@ -2,12 +2,12 @@ import Node, { Precedence } from './Node';
 import MetaType from './MetaType';
 import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
-import $var from './$var';
+import $Variable from './$Variable';
 import Type from './Type';
 
 interface TeeArgumentType {
 	left: Metaexpr[];
-	def$s?: $var[];
+	def$s?: $Variable[];
 	right: Metaexpr;
 }
 
@@ -15,7 +15,7 @@ export default class Tee extends Node {
 	public precedence = Node.PREC_COMMA;
 
 	public readonly left;
-	public readonly def$s: $var[];
+	public readonly def$s: $Variable[];
 	public readonly right;
 	public readonly type: MetaType;
 
@@ -31,7 +31,7 @@ export default class Tee extends Node {
 			throw this.error('Assertion failed');
 		}
 
-		if (def$s && !(def$s instanceof Array && def$s.every($ => $ instanceof $var)))
+		if (def$s && !(def$s instanceof Array && def$s.every($ => $ instanceof $Variable)))
 			throw this.error('Assertion failed');
 
 		if (!(right.type instanceof Type || right.type instanceof MetaType)) {

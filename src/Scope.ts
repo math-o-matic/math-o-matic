@@ -3,7 +3,7 @@ import Variable from './nodes/Variable';
 import Fun from './nodes/Fun';
 import StackTrace from './StackTrace';
 import { Metaexpr } from './ExpressionResolver';
-import $var from './nodes/$var';
+import $Variable from './nodes/$Variable';
 
 export type NestedTypeInput = string | NestedTypeInput[];
 
@@ -13,7 +13,7 @@ export default class Scope {
 	public readonly typedefMap: Map<string, Type> = new Map();
 	public readonly defMap: Map<string, Variable | Fun> = new Map();
 	public readonly schemaMap: Map<string, Fun> = new Map();
-	public readonly $Map: Map<string, $var> = new Map();
+	public readonly $Map: Map<string, $Variable> = new Map();
 	public readonly hypotheses: Metaexpr[] = [];
 
 	public readonly parent: Scope;
@@ -249,20 +249,20 @@ export default class Scope {
 			|| (!!this.parent && this.parent.has$(name));
 	}
 
-	public add$($: $var): $var {
-		if (!($ instanceof $var))
+	public add$($: $Variable): $Variable {
+		if (!($ instanceof $Variable))
 			throw this.error('Illegal argument type');
 
 		if (this.hasOwn$($.name))
-			throw this.error(`$var ${$.name} has already been declared`);
+			throw this.error(`$ variable ${$.name} has already been declared`);
 
 		this.$Map.set($.name, $);
 		return $;
 	}
 
-	public get$(name: string): $var {
+	public get$(name: string): $Variable {
 		if (!this.has$(name))
-			throw this.error(`$var ${name} is not defined`);
+			throw this.error(`$ variable ${name} is not defined`);
 
 		return this.$Map.has(name)
 			? this.$Map.get(name)

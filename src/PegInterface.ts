@@ -12,7 +12,7 @@ import Reduction from './nodes/Reduction';
 import { Expr0, Metaexpr } from './ExpressionResolver';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
-import $var from './nodes/$var';
+import $Variable from './nodes/$Variable';
 
 function typeObjToString(obj: TypeObject): string {
 	if (obj._type != 'type')
@@ -311,7 +311,7 @@ export default class PI {
 		return new Tee({left, def$s, right}, scope);
 	}
 
-	public static def$(obj: Def$Object, parentScope: Scope): $var {
+	public static def$(obj: Def$Object, parentScope: Scope): $Variable {
 		if (obj._type != 'def$')
 			throw Error('Assertion failed');
 		
@@ -319,7 +319,7 @@ export default class PI {
 		
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new $var({name: obj.name, expr}, scope);
+		return new $Variable({name: obj.name, expr}, scope);
 	}
 
 	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope): Fun {

@@ -6,7 +6,7 @@ import Fun from './nodes/Fun';
 import Tee from './nodes/Tee';
 import Funcall from './nodes/Funcall';
 import Variable from './nodes/Variable';
-import $var from './nodes/$var';
+import $Variable from './nodes/$Variable';
 import { EvaluableObject, LineObject } from './PegInterfaceDefinitions';
 
 export default class Program {
@@ -364,7 +364,7 @@ export default class Program {
 					rightlines: getTree(expr.right, hypnumMap, $Map),
 					ctr: [start, ctr]
 				}];
-			} else if (expr instanceof $var) {
+			} else if (expr instanceof $Variable) {
 				if (!$Map.has(expr)) {
 					throw Error(`${expr.name} is not defined`);
 				}

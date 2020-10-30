@@ -4,7 +4,7 @@ import MetaType from './MetaType';
 import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
 import Variable from './Variable';
-import $var from './$var';
+import $Variable from './$Variable';
 
 interface FunArgumentType {
 	isSchema: boolean;
@@ -13,7 +13,7 @@ interface FunArgumentType {
 	type?: Type | MetaType;
 	name?: string;
 	params?: (Variable | Fun)[];
-	def$s?: $var[];
+	def$s?: $Variable[];
 	expr?: Metaexpr;
 	doc?: string;
 	tex?: string;
@@ -25,7 +25,7 @@ export default class Fun extends Node {
 	public readonly axiomatic: boolean;
 	public readonly name: string;
 	public readonly params;
-	public readonly def$s: $var[];
+	public readonly def$s: $Variable[];
 	public readonly expr: Metaexpr;
 	public readonly type: Type | MetaType;
 	public readonly proved: boolean;
