@@ -87,7 +87,7 @@ export default class Reduction extends Metaexpr {
 				throw Node.error(`Illegal argument type (expected ${paramTypes[i]}): ${leftargTypes[i]}`, scope);
 		}
 
-		super(scope, subject.type.right);
+		super(scope, null, null, subject.type.right);
 
 		this.subject = subject;
 		this.leftargs = leftargs;

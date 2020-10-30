@@ -11,9 +11,8 @@ export default class Type extends Node implements Nameable {
 	public readonly to: Type;
 
 	constructor (o) {
-		super(null);
+		super(null, o.doc, null);
 
-		this.doc = o.doc;
 		this.isBaseType = !!o.base;
 
 		if (o.origin) {

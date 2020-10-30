@@ -12,7 +12,7 @@ export default class MetaType extends Node implements Nameable {
 	public readonly to: MetaType;
 
 	constructor (o) {
-		super(null);
+		super(null, null, null);
 
 		if (typeof o.functional != 'boolean')
 			throw Node.error('typeof o.functional != \'boolean\'', null);

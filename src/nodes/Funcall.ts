@@ -38,7 +38,7 @@ export default class Funcall extends Expr0 {
 			}
 		}
 
-		super(scope, resolvedType.to);
+		super(scope, null, null, resolvedType.to);
 		
 		this.fun = fun;
 		this.args = args;

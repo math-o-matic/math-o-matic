@@ -1,6 +1,4 @@
 import Scope from '../Scope';
-import MetaType from './MetaType';
-import Type from './Type';
 
 var ctr = 0;
 
@@ -9,16 +7,18 @@ export type Precedence = boolean | number | [number, number];
 export default abstract class Node {
 	public readonly _id: number;
 
-	public doc: string;
-	public tex: string;
+	public readonly doc: string;
+	public readonly tex: string;
 	public precedence: Precedence;
 
 	public static readonly PREC_FUNEXPR = 1000;
 	public static readonly PREC_COMMA = 1000;
 	public static readonly PREC_COLONEQQ = 100000;
 
-	constructor (scope: Scope) {
+	constructor (scope: Scope, doc: string, tex: string) {
 		this._id = ++ctr;
+		this.doc = doc;
+		this.tex = tex;
 	}
 
 	public toString() {

@@ -57,8 +57,18 @@ export default class Fun extends Expr0 implements Nameable {
 		if (expr !== null && !(expr instanceof Node))
 			throw Node.error('Assertion failed', scope);
 		
+		var precedence = false;
+
+		if (tex) {
+			var parsed = Node.parseTeX(tex);
+			precedence = parsed.precedence;
+			tex = parsed.code;
+		} else {
+			tex = null;
+		}
+		
 		super(
-			scope,
+			scope, doc, tex,
 			type || new (expr.type instanceof Type ? Type : MetaType)({
 				functional: true,
 				from: params.map(variable => variable.type),
@@ -66,27 +76,14 @@ export default class Fun extends Expr0 implements Nameable {
 			})
 		);
 
-		this.doc = doc;
 		this.isSchema = isSchema;
 		this.annotations = annotations;
-
-		if (tex) {
-			var {precedence, code} = Node.parseTeX(tex);
-
-			this.precedence = precedence;
-			this.tex = code;
-		} else {
-			this.precedence = false;
-			this.tex = null;
-		}
-
+		this.precedence = precedence;
 		this.axiomatic = axiomatic;
 		this.name = name;
-
 		this.params = params;
 		this.def$s = def$s || [];
 		this.expr = expr;
-
 		this.proved = this.isProved();
 	}
 

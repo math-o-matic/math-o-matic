@@ -40,7 +40,7 @@ export default class Tee extends Metaexpr {
 			throw Node.error('RHS of a rule cannot be a schema', scope);
 		}
 
-		super(scope, new MetaType({
+		super(scope, null, null, new MetaType({
 			functional: false,
 			left: left.map(e => e.type),
 			right: right.type

@@ -4,10 +4,10 @@ import Node from "./Node";
 import Type from "./Type";
 
 export default abstract class Metaexpr extends Node {
-    public type: Type | MetaType;
+    public readonly type: Type | MetaType;
 
-    constructor(scope: Scope, type: Type | MetaType) {
-        super(scope);
+    constructor(scope: Scope, doc: string, tex: string, type: Type | MetaType) {
+        super(scope, doc, tex);
 
         if (!type) throw Node.error('Assertion failed', scope);
 

@@ -20,10 +20,7 @@ export default class Variable extends Expr0 implements Nameable {
 	public readonly name: string;
 
 	constructor ({doc, tex, type, name, isParam, guess}: VariableArgumentType, scope?: Scope) {
-		super(scope, type);
-
-		this.doc = doc;
-		this.tex = tex;
+		super(scope, doc, tex, type);
 
 		this.isParam = !!isParam;
 		this.guess = guess || null;
