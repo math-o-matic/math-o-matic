@@ -284,7 +284,7 @@
 	</p></li><li><p> expr0.fun이 funcall일 경우 expr0.fun을 expand0FuncallOnce 한 expr0 반환.
 	</p></li><li><p> expr0.fun이 본체가 없을 경우 에러.
 	</p></li><li><p> expr0.fun의 본체에서 expr0.fun의 매개변수를 expr0의 인자로 substitute0한 것을 반환.
-</p></li></ol><h2><code>equals0(a, b)</code></h2><p>두 expr0(funcall / fun / typevar) 표현식 a, b의 구조가 같은지를 판단한다.</p><h3>알고리즘</h3><ol><li><p> a, b가 funcall인 경우
+</p></li></ol><h2><code>equals0(a, b)</code></h2><p>두 expr0(funcall / fun / var) 표현식 a, b의 구조가 같은지를 판단한다.</p><h3>알고리즘</h3><ol><li><p> a, b가 funcall인 경우
 	</p><ol><li><p> a.fun이 funcall일 경우 <code>equals0(expand0FuncallOnce(a), b)</code> 반환.
 		</p></li><li><p> b.fun이 funcall일 경우 <code>equals0(a, expand0FuncallOnce(b))</code> 반환.
 		</p></li><li><p> a.fun 및 b.fun이 본체가 없을 경우

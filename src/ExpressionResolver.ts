@@ -3,10 +3,10 @@ import Reduction from "./nodes/Reduction";
 import Fun from "./nodes/Fun";
 import Funcall from "./nodes/Funcall";
 import Tee from "./nodes/Tee";
-import Typevar from "./nodes/Typevar";
+import Variable from "./nodes/Variable";
 import Type from "./nodes/Type";
 
-export type Expr0 = Funcall | Fun | Typevar;
+export type Expr0 = Funcall | Fun | Variable;
 export type Metaexpr = Tee | Reduction | Funcall | Fun | $var | Expr0;
 
 function iscall(a: Metaexpr): a is Funcall {
@@ -14,7 +14,7 @@ function iscall(a: Metaexpr): a is Funcall {
 }
 
 function makecall(a: Metaexpr, args: Expr0[]): Funcall {
-	if (a instanceof Typevar || a instanceof Fun) {
+	if (a instanceof Variable || a instanceof Fun) {
 		return new Funcall({
 			fun: a,
 			args
@@ -26,7 +26,7 @@ function makecall(a: Metaexpr, args: Expr0[]): Funcall {
 }
 
 export default class ER {
-	public static substitute(expr: Metaexpr, map: Map<Typevar | Fun, Expr0>): Metaexpr {
+	public static substitute(expr: Metaexpr, map: Map<Variable | Fun, Expr0>): Metaexpr {
 		if (expr instanceof Funcall) {
 			return new Funcall({
 				fun: ER.substitute(expr.fun, map),
@@ -51,7 +51,7 @@ export default class ER {
 				params: expr.params,
 				expr: ER.substitute(expr.expr, map)
 			});
-		} else if (expr instanceof Typevar) {
+		} else if (expr instanceof Variable) {
 			return map.get(expr) || expr;
 		} else if (expr instanceof Tee) {
 			var left = expr.left.map(e => ER.substitute(e, map));
@@ -150,7 +150,7 @@ export default class ER {
 				params: expr.params,
 				expr: ER.expandMeta(expr.expr)
 			});
-		} else if (expr instanceof Typevar) {
+		} else if (expr instanceof Variable) {
 			return expr;
 		} else if (expr instanceof $var) {
 			return ER.expandMeta(expr.expr);
@@ -189,7 +189,7 @@ export default class ER {
 			return ER.expandMetaAndFuncalls(ER.call(fun, args));
 		} else if (expr instanceof Reduction) {
 			return ER.expandMetaAndFuncalls(expr.reduced);
-		} else if (expr instanceof Typevar) {
+		} else if (expr instanceof Variable) {
 			return expr;
 		} else if (expr instanceof $var) {
 			return ER.expandMetaAndFuncalls(expr.expr);
@@ -313,7 +313,7 @@ export default class ER {
 				var len = a.type.resolve().from.length;
 
 				for (var i = 0; i < len; i++) {
-					placeholders.push(new Typevar({
+					placeholders.push(new Variable({
 						isParam: true,
 						type: a.type.resolve().from[i],
 						name: '$' + i

@@ -5,8 +5,9 @@ import Reduction from './nodes/Reduction';
 import Fun from './nodes/Fun';
 import Tee from './nodes/Tee';
 import Funcall from './nodes/Funcall';
-import Typevar from './nodes/Typevar';
+import Variable from './nodes/Variable';
 import $var from './nodes/$var';
+import { EvaluableObject, LineObject } from './PegInterfaceDefinitions';
 
 export default class Program {
 	public scope = new Scope(null);
@@ -37,7 +38,7 @@ export default class Program {
 		return scope;
 	}
 
-	public async feed(lines, scope: Scope=this.scope, loader) {
+	public async feed(lines: LineObject[], scope: Scope=this.scope, loader) {
 		for (var i = 0; i < lines.length; i++) {
 			var line = lines[i];
 			
@@ -56,18 +57,18 @@ export default class Program {
 					scope.addType(type);
 					break;
 				case 'defv':
-					var typevar = PegInterface.typevar(line, scope);
+					var variable = PegInterface.variable(line, scope);
 
-					if (scope.hasTypevar(typevar.name)) {
-						throw typevar.scope.error(`Definition ${typevar.name} has already been declared`);
+					if (scope.hasVariable(variable.name)) {
+						throw variable.scope.error(`Definition ${variable.name} has already been declared`);
 					}
 
-					scope.addTypevar(typevar);
+					scope.addVariable(variable);
 					break;
 				case 'defun':
 					var fun = PegInterface.fun(line, scope);
 
-					if (scope.hasTypevar(fun.name)) {
+					if (scope.hasVariable(fun.name)) {
 						throw fun.scope.error(`Definition ${fun.name} has already been declared`);
 					}
 
@@ -83,34 +84,33 @@ export default class Program {
 					scope.addSchema(schema);
 					break;
 				default:
+					// @ts-ignore
 					throw Error(`Unknown line type ${line._type}`);
 			}
 		};
 	}
 
-	public evaluate(line) {
+	public evaluate(line: EvaluableObject) {
 		switch (line._type) {
 			case 'typedef':
+				return PegInterface.type(line, this.scope);
 			case 'defv':
+				return PegInterface.variable(line, this.scope);
 			case 'defun':
+				return PegInterface.fun(line, this.scope);
 			case 'defschema':
-			case 'tee':
-			case 'reduction':
-			case 'schemacall':
-			case 'var':
 			case 'schemaexpr':
-				return PegInterface[({
-					typedef: 'type',
-					defv: 'typevar',
-					defun: 'fun',
-					defschema: 'schema',
-					tee: 'tee',
-					reduction: 'reduction',
-					schemacall: 'schemacall',
-					var: 'metavar',
-					schemaexpr: 'schemaexpr'
-				})[line._type]](line, this.scope);
+				return PegInterface.schema(line, this.scope);
+			case 'tee':
+				return PegInterface.tee(line, this.scope);
+			case 'reduction':
+				return PegInterface.reduction(line, this.scope);
+			case 'schemacall':
+				return PegInterface.schemacall(line, this.scope);
+			case 'var':
+				return PegInterface.metavar(line, this.scope);
 			default:
+				// @ts-ignore
 				throw Error(`Unknown line type ${line._type}`);
 		}
 	}
@@ -285,7 +285,7 @@ export default class Program {
 						expr
 					}
 				];
-			} else if (expr instanceof Typevar) {
+			} else if (expr instanceof Variable) {
 				return [{
 					_type: 'NP',
 					ctr: ++ctr,

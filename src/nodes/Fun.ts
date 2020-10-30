@@ -3,7 +3,7 @@ import Type from './Type';
 import MetaType from './MetaType';
 import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
-import Typevar from './Typevar';
+import Variable from './Variable';
 import $var from './$var';
 
 interface FunArgumentType {
@@ -12,7 +12,7 @@ interface FunArgumentType {
 	axiomatic?: boolean;
 	type?: Type | MetaType;
 	name?: string;
-	params?: (Typevar | Fun)[];
+	params?: (Variable | Fun)[];
 	def$s?: $var[];
 	expr?: Metaexpr;
 	doc?: string;
@@ -71,7 +71,7 @@ export default class Fun extends Node {
 		this.name = name;
 
 		if (!(params instanceof Array)
-				|| params.map(e => e instanceof Typevar).some(e => !e))
+				|| params.map(e => e instanceof Variable).some(e => !e))
 			throw this.error('Assertion failed');
 		
 		if (expr !== null && !(expr instanceof Node))
@@ -79,7 +79,7 @@ export default class Fun extends Node {
 
 		this.type = type || new (expr.type instanceof Type ? Type : MetaType)({
 			functional: true,
-			from: params.map(typevar => typevar.type),
+			from: params.map(variable => variable.type),
 			to: expr.type
 		});
 

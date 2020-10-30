@@ -2,7 +2,7 @@ import Scope from '../Scope';
 import Node, {Precedence} from './Node';
 import Type from './Type';
 
-interface TypevarArgumentType {
+interface VariableArgumentType {
 	doc?: string;
 	tex?: string;
 	type: Type;
@@ -11,13 +11,13 @@ interface TypevarArgumentType {
 	guess?: string;
 }
 
-export default class Typevar extends Node {
+export default class Variable extends Node {
 	public readonly isParam: boolean;
 	public readonly guess: string;
 	public readonly type: Type;
 	public readonly name: string;
 
-	constructor ({doc, tex, type, name, isParam, guess}: TypevarArgumentType, scope?: Scope) {
+	constructor ({doc, tex, type, name, isParam, guess}: VariableArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;

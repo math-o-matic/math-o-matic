@@ -1,5 +1,5 @@
 import Node, { Precedence } from './Node';
-import Typevar from './Typevar';
+import Variable from './Variable';
 import MetaType from './MetaType';
 import Type from './Type';
 import Scope from '../Scope';
@@ -53,13 +53,13 @@ export default class Funcall extends Node {
 
 	public toIndentedString(indent: number, root?: boolean): string {
 		var args: any = this.args.map(arg => {
-			if (arg instanceof Typevar) return `${arg.name}<${arg._id}>`;
+			if (arg instanceof Variable) return `${arg.name}<${arg._id}>`;
 			return arg.toIndentedString(indent + 1);
 		});
 	
 		if (args.join('').length <= 50) {
 			args = this.args.map(arg => {
-				if (arg instanceof Typevar) return `${arg.name}<${arg._id}>`;
+				if (arg instanceof Variable) return `${arg.name}<${arg._id}>`;
 				return arg.toIndentedString(indent);
 			});
 	
@@ -118,7 +118,7 @@ export default class Funcall extends Node {
 		});
 
 		return (
-			!('name' in this.fun && this.fun.name) || this.fun instanceof Typevar
+			!('name' in this.fun && this.fun.name) || this.fun instanceof Variable
 				? this.fun.toTeXString(false)
 				: this.fun.name.length == 1
 					? Node.escapeTeX(this.fun.name)

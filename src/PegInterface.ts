@@ -4,7 +4,7 @@
  */
 
 import Type from './nodes/Type';
-import Typevar from './nodes/Typevar';
+import Variable from './nodes/Variable';
 import Tee from './nodes/Tee';
 import Fun from './nodes/Fun';
 import Funcall from './nodes/Funcall';
@@ -98,21 +98,21 @@ export default class PI {
 		});
 	}
 
-	public static typevar(obj: DefvObject | VarObject, parentScope: Scope): Typevar | Fun {
+	public static variable(obj: DefvObject | VarObject, parentScope: Scope): Variable | Fun {
 		if (!['defv', 'var'].includes(obj._type)) {
 			throw Error('Assertion failed');
 		}
 
-		var scope = parentScope.extend('typevar', obj.name, obj.location);
+		var scope = parentScope.extend('variable', obj.name, obj.location);
 
 		if (obj._type == 'var') {
 			if (obj.type != 'normal') {
 				throw scope.error(`Variable type ${obj.type} not allowed`);
 			}
 
-			if (!scope.hasTypevar(obj.name))
+			if (!scope.hasVariable(obj.name))
 				throw scope.error(`Undefined identifier ${obj.name}`);
-			return scope.getTypevar(obj.name);
+			return scope.getVariable(obj.name);
 		}
 
 		if (!scope.hasType(typeObjToNestedArr(obj.type)))
@@ -120,7 +120,7 @@ export default class PI {
 
 		var type = scope.getType(typeObjToNestedArr(obj.type));
 
-		return new Typevar({
+		return new Variable({
 			type,
 			isParam: !!obj.isParam,
 			guess: obj.guess || null,
@@ -152,12 +152,12 @@ export default class PI {
 			if (!scope.hasType(typeObjToNestedArr(tvo.type)))
 				throw scope.error(`Type ${typeObjToString(tvo.type)} is not defined`);
 
-			var tv = PI.typevar(tvo, scope);
+			var tv = PI.variable(tvo, scope);
 
-			if (scope.hasOwnTypevar(tv.name))
+			if (scope.hasOwnVariable(tv.name))
 				throw tv.scope.error(`Parameter ${tv.name} has already been declared`);
 
-			return scope.addTypevar(tv);
+			return scope.addVariable(tv);
 		});
 		var expr = null;
 
@@ -175,7 +175,7 @@ export default class PI {
 				} else {
 					type = new Type({
 						functional: true,
-						from: params.map(typevar => typevar.type),
+						from: params.map(variable => variable.type),
 						to: rettype
 					});
 				}
@@ -244,7 +244,7 @@ export default class PI {
 			case 'funexpr':
 				return PI.fun(obj, scope);
 			case 'var':
-				return PI.typevar(obj, scope);
+				return PI.variable(obj, scope);
 			default:
 				throw Error('wut');
 		}
@@ -342,12 +342,12 @@ export default class PI {
 			if (!scope.hasType(typeObjToNestedArr(tvo.type)))
 				throw scope.error(`Type ${typeObjToString(tvo.type)} is not defined`);
 
-			var tv = PI.typevar(tvo, scope);
+			var tv = PI.variable(tvo, scope);
 
-			if (scope.hasOwnTypevar(tv.name))
+			if (scope.hasOwnVariable(tv.name))
 				throw tv.scope.error(`Parameter ${tv.name} has already been declared`);
 			
-			return scope.addTypevar(tv);
+			return scope.addVariable(tv);
 		});
 
 		var def$s = obj.def$s.map($ => {

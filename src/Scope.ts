@@ -1,5 +1,5 @@
 import Type from './nodes/Type';
-import Typevar from './nodes/Typevar';
+import Variable from './nodes/Variable';
 import Fun from './nodes/Fun';
 import StackTrace from './StackTrace';
 import { Metaexpr } from './ExpressionResolver';
@@ -9,9 +9,9 @@ export type NestedTypeInput = string | NestedTypeInput[];
 
 export default class Scope {
 	public readonly importMap: Map<string, Scope> = new Map();
-	
+
 	public readonly typedefMap: Map<string, Type> = new Map();
-	public readonly defMap: Map<string, Typevar | Fun> = new Map();
+	public readonly defMap: Map<string, Variable | Fun> = new Map();
 	public readonly schemaMap: Map<string, Fun> = new Map();
 	public readonly $Map: Map<string, $var> = new Map();
 	public readonly hypotheses: Metaexpr[] = [];
@@ -157,25 +157,25 @@ export default class Scope {
 		});
 	}
 
-	public hasOwnTypevar(name: string): boolean {
+	public hasOwnVariable(name: string): boolean {
 		return this.defMap.has(name)
-			|| [...this.importMap.values()].some(s => s.hasOwnTypevar(name));
+			|| [...this.importMap.values()].some(s => s.hasOwnVariable(name));
 	}
 
-	public hasTypevar(name: string): boolean {
-		return this.hasOwnTypevar(name)
-			|| (!!this.parent && this.parent.hasTypevar(name));
+	public hasVariable(name: string): boolean {
+		return this.hasOwnVariable(name)
+			|| (!!this.parent && this.parent.hasVariable(name));
 	}
 
-	public addTypevar(typevar: Typevar | Fun): Typevar | Fun {
-		if (!(typevar instanceof Typevar))
+	public addVariable(variable: Variable | Fun): Variable | Fun {
+		if (!(variable instanceof Variable))
 			throw this.error('Illegal argument type');
 
-		if (this.hasOwnTypevar(typevar.name))
-			throw this.error(`Definition ${typevar.name} has already been declared`);
+		if (this.hasOwnVariable(variable.name))
+			throw this.error(`Definition ${variable.name} has already been declared`);
 
-		this.defMap.set(typevar.name, typevar);
-		return typevar;
+		this.defMap.set(variable.name, variable);
+		return variable;
 	}
 
 	public addFun(fun: Fun): Fun {
@@ -185,23 +185,23 @@ export default class Scope {
 		if (!fun.name)
 			throw this.error('Cannot add anonymous fun to scope');
 
-		if (this.hasOwnTypevar(fun.name))
+		if (this.hasOwnVariable(fun.name))
 			throw this.error(`Definition ${fun.name} has already been declared`);
 
 		this.defMap.set(fun.name, fun);
 		return fun;
 	}
 
-	public getTypevar(name: string): Typevar | Fun {
-		if (!this.hasTypevar(name))
+	public getVariable(name: string): Variable | Fun {
+		if (!this.hasVariable(name))
 			throw this.error(`Definition ${name} is not defined`);
 
 		return this.defMap.has(name)
 			? this.defMap.get(name)
-			: (!!this.parent && this.parent.getTypevar(name))
+			: (!!this.parent && this.parent.getVariable(name))
 				|| [...this.importMap.values()].filter(s => {
-					return s.hasTypevar(name)
-				})[0].getTypevar(name);
+					return s.hasVariable(name)
+				})[0].getVariable(name);
 	}
 
 	public hasOwnSchema(name: string): boolean {
@@ -225,7 +225,7 @@ export default class Scope {
 		return schema;
 	}
 
-	public getSchema(name: string): Typevar | Fun {
+	public getSchema(name: string): Variable | Fun {
 		if (!this.hasSchema(name))
 			throw this.error(`Schema ${name} is not defined`);
 

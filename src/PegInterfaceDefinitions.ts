@@ -1,3 +1,15 @@
+export type LineObject = ImportObject
+        | TypedefObject
+        | DefvObject
+        | DefunObject
+        | DefschemaObject;
+
+export type EvaluableObject = TypedefObject
+        | DefvObject
+        | DefunObject
+        | DefschemaObject
+        | MetaexprObject;
+
 export interface ImportObject {
     _type: 'import';
     filename: string;
