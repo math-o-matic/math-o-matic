@@ -25,13 +25,13 @@ function makecall(a: Metaexpr, args: Expr0[]): Funcall {
 	throw Error();
 }
 
-export default class ER {
+export default class ExpressionResolver {
 	public static substitute(expr: Metaexpr, map: Map<Variable | Fun, Expr0>): Metaexpr {
 		if (expr instanceof Funcall) {
 			return new Funcall({
-				fun: ER.substitute(expr.fun, map),
+				fun: ExpressionResolver.substitute(expr.fun, map),
 				// @ts-ignore
-				args: expr.args.map(arg => ER.substitute(arg, map))
+				args: expr.args.map(arg => ExpressionResolver.substitute(arg, map))
 			});
 		} else if (expr instanceof Fun) {
 			if (!expr.expr) return expr;
@@ -49,21 +49,21 @@ export default class ER {
 				axiomatic: expr.axiomatic,
 				name: null,
 				params: expr.params,
-				expr: ER.substitute(expr.expr, map)
+				expr: ExpressionResolver.substitute(expr.expr, map)
 			});
 		} else if (expr instanceof Variable) {
 			return map.get(expr) || expr;
 		} else if (expr instanceof Tee) {
-			var left = expr.left.map(e => ER.substitute(e, map));
-			var right = ER.substitute(expr.right, map);
+			var left = expr.left.map(e => ExpressionResolver.substitute(e, map));
+			var right = ExpressionResolver.substitute(expr.right, map);
 
 			return new Tee({
 				left, right
 			});
 		} else if (expr instanceof Reduction) {
-			return ER.substitute(expr.reduced, map);
+			return ExpressionResolver.substitute(expr.reduced, map);
 		} else if (expr instanceof $Variable) {
-			return ER.substitute(expr.expr, map);
+			return ExpressionResolver.substitute(expr.expr, map);
 		} else {
 			console.log(expr);
 			throw Error('Unknown metaexpr');
@@ -90,7 +90,7 @@ export default class ER {
 			map.set(callee.params[i], args[i]);
 		}
 
-		return ER.substitute(callee.expr, map);
+		return ExpressionResolver.substitute(callee.expr, map);
 	}
 
 	public static expandCallOnce(expr: Metaexpr): Metaexpr {
@@ -99,7 +99,7 @@ export default class ER {
 		}
 
 		if (iscall(expr.fun)) {
-			var fun = ER.expandCallOnce(expr.fun);
+			var fun = ExpressionResolver.expandCallOnce(expr.fun);
 			return makecall(fun, expr.args);
 		}
 
@@ -117,27 +117,27 @@ export default class ER {
 			throw Error('Could not expand');
 		}
 
-		return ER.call(callee_, expr.args);
+		return ExpressionResolver.call(callee_, expr.args);
 	}
 
 	// expand0은 하지 않는다.
 	public static expandMeta(expr: Metaexpr): Metaexpr {
 		if (expr instanceof Tee) {
-			var left = expr.left.map(ER.expandMeta);
-			var right = ER.expandMeta(expr.right);
+			var left = expr.left.map(ExpressionResolver.expandMeta);
+			var right = ExpressionResolver.expandMeta(expr.right);
 
 			return new Tee({left, right});
 		} else if (expr instanceof Funcall) {
-			var fun = ER.expandMeta(expr.fun),
+			var fun = ExpressionResolver.expandMeta(expr.fun),
 				args = expr.args;
 			
 			// @ts-ignore
 			if (!fun.expr || fun.name && !fun.isSchema)
 				return new Funcall({fun, args});
 
-			return ER.expandMeta(ER.call(fun, args));
+			return ExpressionResolver.expandMeta(ExpressionResolver.call(fun, args));
 		} else if (expr instanceof Reduction) {
-			return ER.expandMeta(expr.reduced);
+			return ExpressionResolver.expandMeta(expr.reduced);
 		} else if (expr instanceof Fun) {
 			if (!expr.expr) return expr;
 			if (expr.type instanceof Type && expr.name) return expr;
@@ -148,12 +148,12 @@ export default class ER {
 				axiomatic: expr.axiomatic,
 				name: null,
 				params: expr.params,
-				expr: ER.expandMeta(expr.expr)
+				expr: ExpressionResolver.expandMeta(expr.expr)
 			});
 		} else if (expr instanceof Variable) {
 			return expr;
 		} else if (expr instanceof $Variable) {
-			return ER.expandMeta(expr.expr);
+			return ExpressionResolver.expandMeta(expr.expr);
 		} else {
 			console.log(expr);
 			throw Error('Unknown metaexpr');
@@ -163,8 +163,8 @@ export default class ER {
 	// expr0의 이름 없는 funcall까지 풀음.
 	public static expandMetaAndFuncalls(expr: Metaexpr) {
 		if (expr instanceof Tee) {
-			var left = expr.left.map(ER.expandMetaAndFuncalls);
-			var right = ER.expandMetaAndFuncalls(expr.right);
+			var left = expr.left.map(ExpressionResolver.expandMetaAndFuncalls);
+			var right = ExpressionResolver.expandMetaAndFuncalls(expr.right);
 
 			return new Tee({left, right});
 		} else if (expr instanceof Fun) {
@@ -177,22 +177,22 @@ export default class ER {
 				axiomatic: expr.axiomatic,
 				name: null,
 				params: expr.params,
-				expr: ER.expandMetaAndFuncalls(expr.expr)
+				expr: ExpressionResolver.expandMetaAndFuncalls(expr.expr)
 			});
 		} else if (expr instanceof Funcall) {
-			var fun = ER.expandMetaAndFuncalls(expr.fun);
-			var args = expr.args.map(ER.expandMetaAndFuncalls);
+			var fun = ExpressionResolver.expandMetaAndFuncalls(expr.fun);
+			var args = expr.args.map(ExpressionResolver.expandMetaAndFuncalls);
 
 			if (!fun.expr || fun.name && !fun.isSchema)
 				return new Funcall({fun, args});
 
-			return ER.expandMetaAndFuncalls(ER.call(fun, args));
+			return ExpressionResolver.expandMetaAndFuncalls(ExpressionResolver.call(fun, args));
 		} else if (expr instanceof Reduction) {
-			return ER.expandMetaAndFuncalls(expr.reduced);
+			return ExpressionResolver.expandMetaAndFuncalls(expr.reduced);
 		} else if (expr instanceof Variable) {
 			return expr;
 		} else if (expr instanceof $Variable) {
-			return ER.expandMetaAndFuncalls(expr.expr);
+			return ExpressionResolver.expandMetaAndFuncalls(expr.expr);
 		} else {
 			console.log(expr);
 			throw Error('Unknown metaexpr');
@@ -232,13 +232,13 @@ export default class ER {
 			if (iscall(a) && iscall(b)) {
 				if (iscall(a.fun)) {
 					return recurseWrap(
-						ER.expandCallOnce(a), b, depth + 1
+						ExpressionResolver.expandCallOnce(a), b, depth + 1
 					);
 				}
 
 				if (iscall(b.fun)) {
 					return recurseWrap(
-						a, ER.expandCallOnce(b), depth + 1
+						a, ExpressionResolver.expandCallOnce(b), depth + 1
 					);
 				}
 
@@ -264,37 +264,37 @@ export default class ER {
 				}
 
 				if (aHasFunExpr) {
-					return recurseWrap(ER.expandCallOnce(a), b, depth + 1);
+					return recurseWrap(ExpressionResolver.expandCallOnce(a), b, depth + 1);
 				}
 
-				return recurseWrap(a, ER.expandCallOnce(b), depth + 1);
+				return recurseWrap(a, ExpressionResolver.expandCallOnce(b), depth + 1);
 			}
 
 			if (iscall(a)) {
 				if (iscall(a.fun)) {
 					return recurseWrap(
-						ER.expandCallOnce(a), b, depth + 1
+						ExpressionResolver.expandCallOnce(a), b, depth + 1
 					);
 				}
 
 				if (!('expr' in a.fun && a.fun.expr)) return false;
 
 				return recurseWrap(
-					ER.expandCallOnce(a), b, depth + 1
+					ExpressionResolver.expandCallOnce(a), b, depth + 1
 				);
 			}
 
 			if (iscall(b)) {
 				if (iscall(b.fun)) {
 					return recurseWrap(
-						a, ER.expandCallOnce(b), depth + 1
+						a, ExpressionResolver.expandCallOnce(b), depth + 1
 					);
 				}
 
 				if (!('expr' in b.fun && b.fun.expr)) return false;
 
 				return recurseWrap(
-					a, ER.expandCallOnce(b), depth + 1
+					a, ExpressionResolver.expandCallOnce(b), depth + 1
 				);
 			}
 
@@ -342,9 +342,9 @@ export default class ER {
 		// 	return ret;
 		// }
 
-		ER.nequalscall++;
+		ExpressionResolver.nequalscall++;
 		var ret = recurseWrap(a, b, 0);
-		if (ret) ER.nequalstrue++;
+		if (ret) ExpressionResolver.nequalstrue++;
 		return ret;
 	}
 }
