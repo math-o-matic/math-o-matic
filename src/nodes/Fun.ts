@@ -1,10 +1,13 @@
 import Node, { Precedence } from './Node';
 import Type from './Type';
 import MetaType from './MetaType';
-import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
+import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
 import Variable from './Variable';
 import $Variable from './$Variable';
+import Expr0 from './Expr0';
+import Metaexpr from './Metaexpr';
+import Nameable from './Nameable';
 
 interface FunArgumentType {
 	isSchema: boolean;
@@ -12,22 +15,22 @@ interface FunArgumentType {
 	axiomatic?: boolean;
 	type?: Type | MetaType;
 	name?: string;
-	params?: (Variable | Fun)[];
+	params?: Variable[];
 	def$s?: $Variable[];
 	expr?: Metaexpr;
 	doc?: string;
 	tex?: string;
 }
 
-export default class Fun extends Node {
-	public readonly isSchema;
+export default class Fun extends Expr0 implements Nameable {
+
+	public readonly isSchema: boolean;
 	public readonly annotations: string[];
 	public readonly axiomatic: boolean;
 	public readonly name: string;
-	public readonly params;
+	public readonly params: Variable[];
 	public readonly def$s: $Variable[];
 	public readonly expr: Metaexpr;
-	public readonly type: Type | MetaType;
 	public readonly proved: boolean;
 
 	/*
@@ -35,7 +38,33 @@ export default class Fun extends Node {
 	 * 한 개만 있어야 한다.
 	 */
 	constructor ({doc, tex, isSchema, annotations, axiomatic, type, /* nullable */ name, params, def$s, expr}: FunArgumentType, scope?: Scope) {
-		super(scope);
+		if (!name && !expr)
+			throw Node.error('Anonymous fun cannot be primitive', scope);
+
+		if (type && expr)
+			throw Node.error('no', scope);
+
+		if (!type && !expr)
+			throw Node.error('Cannot guess the type of a primitive fun', scope);
+
+		if (name !== null && typeof name != 'string')
+			throw Node.error('Assertion failed', scope);
+		
+		if (!(params instanceof Array)
+				|| params.map(e => e instanceof Variable).some(e => !e))
+			throw Node.error('Assertion failed', scope);
+		
+		if (expr !== null && !(expr instanceof Node))
+			throw Node.error('Assertion failed', scope);
+		
+		super(
+			scope,
+			type || new (expr.type instanceof Type ? Type : MetaType)({
+				functional: true,
+				from: params.map(variable => variable.type),
+				to: expr.type
+			})
+		);
 
 		this.doc = doc;
 		this.isSchema = isSchema;
@@ -51,37 +80,8 @@ export default class Fun extends Node {
 			this.tex = null;
 		}
 
-		if (!name && !expr)
-			throw this.error('Anonymous fun cannot be primitive');
-
-		if (type && expr)
-			throw this.error('no');
-
-		if (!type && !expr)
-			throw this.error('Cannot guess the type of a primitive fun');
-
-		if (name !== null && typeof name != 'string')
-			throw this.error('Assertion failed');
-
-		if (expr && !(expr.type instanceof Type || expr.type instanceof MetaType)) {
-			throw this.error('Assertion failed');
-		}
-
 		this.axiomatic = axiomatic;
 		this.name = name;
-
-		if (!(params instanceof Array)
-				|| params.map(e => e instanceof Variable).some(e => !e))
-			throw this.error('Assertion failed');
-		
-		if (expr !== null && !(expr instanceof Node))
-			throw this.error('Assertion failed');
-
-		this.type = type || new (expr.type instanceof Type ? Type : MetaType)({
-			functional: true,
-			from: params.map(variable => variable.type),
-			to: expr.type
-		});
 
 		this.params = params;
 		this.def$s = def$s || [];

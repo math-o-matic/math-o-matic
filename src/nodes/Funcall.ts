@@ -1,47 +1,46 @@
 import Node, { Precedence } from './Node';
 import Variable from './Variable';
-import MetaType from './MetaType';
-import Type from './Type';
 import Scope from '../Scope';
 import Fun from './Fun';
-import { Expr0, Metaexpr } from '../ExpressionResolver';
+import Expr0 from './Expr0';
+import Metaexpr from './Metaexpr';
+import { isNameable } from './Nameable';
 
 interface FuncallArgumentType {
 	fun: Metaexpr;
 	args: Expr0[];
 }
 
-export default class Funcall extends Node {
-	public readonly type: Type | MetaType;
+export default class Funcall extends Expr0 {
+	
 	public readonly fun: Metaexpr;
 	public readonly args: Expr0[];
 
 	constructor ({fun, args}: FuncallArgumentType, scope?: Scope) {
-		super(scope);
-
 		if (fun.type.isSimple) {
-			var name = 'name' in fun ? fun.name : '<anonymous>';
-			throw this.error(`${name} is not callable`);
+			var name = isNameable(fun) ? fun.name : '<anonymous>';
+			throw Node.error(`${name} is not callable`, scope);
 		}
 
 		if (!(args instanceof Array) || args.map(e => e instanceof Node).some(e => !e))
-			throw this.error('Assertion failed');
+			throw Node.error('Assertion failed', scope);
 			 
 		var resolvedType = fun.type.resolve(),
 			paramTypes = resolvedType.from,
 			argTypes = args.map(e => e.type);
 
 		if (paramTypes.length != argTypes.length)
-			throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
+			throw Node.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`, scope);
 
 		for (var i = 0; i < paramTypes.length; i++) {
 			if (!paramTypes[i].equals(argTypes[i])) {
-				throw this.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
+				throw Node.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, scope);
 			}
 		}
+
+		super(scope, resolvedType.to);
 		
 		this.fun = fun;
-		this.type = resolvedType.to;
 		this.args = args;
 	}
 
@@ -64,12 +63,12 @@ export default class Funcall extends Node {
 			});
 	
 			args = args.join(', ');
-	
-			if ('isSchema' in this.fun && this.fun.isSchema) {
+			
+			if (this.fun instanceof Fun && this.fun.isSchema) {
 				return `${this.fun.name || `(${this.fun})`}(${args})`;
 			} else {
 				return [
-					!(this.fun instanceof Fun) || !('name' in this.fun && this.fun.name)
+					!(this.fun instanceof Fun) || !this.fun.name
 						? '(' + this.fun.toIndentedString(indent) + ')'
 						: this.fun.name,
 					`(${args})`
@@ -78,7 +77,7 @@ export default class Funcall extends Node {
 		} else {
 			args = args.join(',\n' + '\t'.repeat(indent + 1));
 			
-			if ('isSchema' in this.fun && this.fun.isSchema) {
+			if (this.fun instanceof Fun && this.fun.isSchema) {
 				return [
 					this.fun.name || `(${this.fun.toIndentedString(indent)})`,
 					'(',
@@ -100,7 +99,7 @@ export default class Funcall extends Node {
 	}
 
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		if ('isSchema' in this.fun && this.fun.isSchema) {
+		if (this.fun instanceof Fun && this.fun.isSchema) {
 			return (
 				this.fun.name
 					? `\\href{#schema-${this.fun.proved ? 'p' : 'np'}-${this.fun.name}}{\\textsf{${Node.escapeTeX(this.fun.name)}}}`
@@ -118,7 +117,7 @@ export default class Funcall extends Node {
 		});
 
 		return (
-			!('name' in this.fun && this.fun.name) || this.fun instanceof Variable
+			!(isNameable(this.fun) && this.fun.name) || this.fun instanceof Variable
 				? this.fun.toTeXString(false)
 				: this.fun.name.length == 1
 					? Node.escapeTeX(this.fun.name)

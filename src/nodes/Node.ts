@@ -8,9 +8,7 @@ export type Precedence = boolean | number | [number, number];
 
 export default abstract class Node {
 	public readonly _id: number;
-	public readonly scope: Scope;
 
-	public type: Type | MetaType;
 	public doc: string;
 	public tex: string;
 	public precedence: Precedence;
@@ -19,9 +17,8 @@ export default abstract class Node {
 	public static readonly PREC_COMMA = 1000;
 	public static readonly PREC_COLONEQQ = 100000;
 
-	constructor (scope?: Scope) {
+	constructor (scope: Scope) {
 		this._id = ++ctr;
-		this.scope = scope;
 	}
 
 	public toString() {
@@ -31,9 +28,9 @@ export default abstract class Node {
 	public abstract toIndentedString(indent: number, root?: boolean): string;
 	public abstract toTeXString(prec?: Precedence, root?: boolean): string;
 
-	public error(message) {
-		if (this.scope) {
-			return this.scope.error(message);
+	public static error(message: string, scope: Scope) {
+		if (scope) {
+			return scope.error(message);
 		} else {
 			return new Error(message);
 		}

@@ -9,10 +9,11 @@ import Tee from './nodes/Tee';
 import Fun from './nodes/Fun';
 import Funcall from './nodes/Funcall';
 import Reduction from './nodes/Reduction';
-import { Expr0, Metaexpr } from './ExpressionResolver';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
 import $Variable from './nodes/$Variable';
+import Metaexpr from './nodes/Metaexpr';
+import Expr0 from './nodes/Expr0';
 
 function typeObjToString(obj: TypeObject): string {
 	if (obj._type != 'type')
@@ -155,9 +156,9 @@ export default class PI {
 			var tv = PI.variable(tvo, scope);
 
 			if (scope.hasOwnVariable(tv.name))
-				throw tv.scope.error(`Parameter ${tv.name} has already been declared`);
+				throw scope.error(`Parameter ${tv.name} has already been declared`);
 
-			return scope.addVariable(tv);
+			return scope.addVariable(tv) as Variable;
 		});
 		var expr = null;
 
@@ -345,9 +346,9 @@ export default class PI {
 			var tv = PI.variable(tvo, scope);
 
 			if (scope.hasOwnVariable(tv.name))
-				throw tv.scope.error(`Parameter ${tv.name} has already been declared`);
+				throw scope.error(`Parameter ${tv.name} has already been declared`);
 			
-			return scope.addVariable(tv);
+			return scope.addVariable(tv) as Variable;
 		});
 
 		var def$s = obj.def$s.map($ => {

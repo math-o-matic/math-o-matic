@@ -1,38 +1,39 @@
+import Nameable from './Nameable';
 import Node, { Precedence } from './Node';
 import Type from './Type';
 
-export default class MetaType extends Node {
+export default class MetaType extends Node implements Nameable {
 	public readonly isFunctional: boolean;
 	public readonly isSimple: boolean;
 	public readonly name: string;
-	public readonly left;
-	public readonly right;
+	public readonly left: (Type | MetaType)[];
+	public readonly right: Type | MetaType;
 	public readonly from: Type[];
 	public readonly to: MetaType;
 
 	constructor (o) {
-		super();
+		super(null);
 
 		if (typeof o.functional != 'boolean')
-			throw this.error('typeof o.functional != \'boolean\'');
+			throw Node.error('typeof o.functional != \'boolean\'', null);
 		
 		this.isFunctional = o.functional;
 		this.isSimple = !o.functional;
 
 		if (!o.functional) {
 			if (!(o.left instanceof Array))
-				throw this.error('left should be an array');
+				throw Node.error('left should be an array', null);
 
 			this.left = o.left;
 			this.right = o.right;
 		} else {
 			if (o.from.some(f => !(f instanceof Type)))
-				throw this.error('o.from.some(f => !(f instanceof Type))');
+				throw Node.error('o.from.some(f => !(f instanceof Type))', null);
 			if (!(o.to instanceof MetaType))
-				throw this.error('!(o.to instanceof MetaType)');
+				throw Node.error('!(o.to instanceof MetaType)', null);
 
 			if (o.to.isFunctional)
-				throw this.error('Functional metatype in functional metatype is not supported');
+				throw Node.error('Functional metatype in functional metatype is not supported', null);
 
 			this.from = o.from;
 			this.to = o.to;

@@ -1,9 +1,10 @@
 import Node, { Precedence } from './Node';
 import MetaType from './MetaType';
-import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
+import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
 import $Variable from './$Variable';
 import Type from './Type';
+import Metaexpr from './Metaexpr';
 
 interface TeeArgumentType {
 	left: Metaexpr[];
@@ -11,46 +12,44 @@ interface TeeArgumentType {
 	right: Metaexpr;
 }
 
-export default class Tee extends Node {
-	public precedence = Node.PREC_COMMA;
+export default class Tee extends Metaexpr {
 
 	public readonly left;
 	public readonly def$s: $Variable[];
 	public readonly right;
-	public readonly type: MetaType;
 
 	constructor ({left, def$s, right}: TeeArgumentType, scope?: Scope) {
-		super(scope);
-		
 		if (!(left instanceof Array
 				&& left.every(l => {
 					return l.type instanceof Type
 						|| l.type instanceof MetaType;
 				}))) {
 			console.log(left);
-			throw this.error('Assertion failed');
+			throw Node.error('Assertion failed', scope);
 		}
 
 		if (def$s && !(def$s instanceof Array && def$s.every($ => $ instanceof $Variable)))
-			throw this.error('Assertion failed');
+			throw Node.error('Assertion failed', scope);
 
 		if (!(right.type instanceof Type || right.type instanceof MetaType)) {
 			console.log(right);
-			throw this.error('Assertion failed');
+			throw Node.error('Assertion failed', scope);
 		}
 
 		if (right.type.isFunctional) {
-			throw this.error('RHS of a rule cannot be a schema');
+			throw Node.error('RHS of a rule cannot be a schema', scope);
 		}
+
+		super(scope, new MetaType({
+			functional: false,
+			left: left.map(e => e.type),
+			right: right.type
+		}));
 
 		this.left = left;
 		this.def$s = def$s || [];
 		this.right = right;
-		this.type = new MetaType({
-			functional: false,
-			left: left.map(e => e.type),
-			right: right.type
-		});
+		this.precedence = Node.PREC_COMMA;
 	}
 
 	public isProved(hyps?) {

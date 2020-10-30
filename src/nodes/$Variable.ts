@@ -1,5 +1,5 @@
-import { Metaexpr } from "../ExpressionResolver";
 import Scope from "../Scope";
+import Metaexpr from "./Metaexpr";
 import MetaType from "./MetaType";
 import Node, { Precedence } from "./Node";
 import Type from "./Type";
@@ -9,19 +9,18 @@ interface $VariableArgumentType {
     expr: Metaexpr;
 }
 
-export default class $Variable extends Node {
-    public readonly type: Type | MetaType;
+export default class $Variable extends Metaexpr {
+
     public readonly name: string;
     public readonly expr: Metaexpr;
 
     constructor ({name, expr}: $VariableArgumentType, scope?: Scope) {
-        super(scope);
+        super(scope, expr.type);
 
         if (!name || !expr) {
-            throw this.error('Assertion failed');
+            throw Node.error('Assertion failed', scope);
         }
 
-        this.type = expr.type;
         this.name = name;
         this.expr = expr;
     }
@@ -40,5 +39,4 @@ export default class $Variable extends Node {
     public toTeXString(prec?: Precedence, root?: boolean): string {
         return `\\mathtt{${Node.escapeTeX(this.name)}}`;
     }
-
 }

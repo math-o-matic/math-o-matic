@@ -5,9 +5,8 @@ import Funcall from "./nodes/Funcall";
 import Tee from "./nodes/Tee";
 import Variable from "./nodes/Variable";
 import Type from "./nodes/Type";
-
-export type Expr0 = Funcall | Fun | Variable;
-export type Metaexpr = Tee | Reduction | Funcall | Fun | $Variable | Expr0;
+import Metaexpr from "./nodes/Metaexpr";
+import Expr0 from "./nodes/Expr0";
 
 function iscall(a: Metaexpr): a is Funcall {
 	return a instanceof Funcall;
@@ -242,8 +241,8 @@ export default class ExpressionResolver {
 					);
 				}
 
-				var aHasFunExpr = 'expr' in a.fun && a.fun.expr,
-					bHasFunExpr = 'expr' in b.fun && b.fun.expr;
+				var aHasFunExpr = (a.fun instanceof Fun) && a.fun.expr,
+					bHasFunExpr = (b.fun instanceof Fun) && b.fun.expr;
 
 				if (a.fun == b.fun || !aHasFunExpr && !bHasFunExpr) {
 					if (a.fun != b.fun) return false;
@@ -277,7 +276,7 @@ export default class ExpressionResolver {
 					);
 				}
 
-				if (!('expr' in a.fun && a.fun.expr)) return false;
+				if (!(a.fun instanceof Fun && a.fun.expr)) return false;
 
 				return recurseWrap(
 					ExpressionResolver.expandCallOnce(a), b, depth + 1
@@ -291,7 +290,7 @@ export default class ExpressionResolver {
 					);
 				}
 
-				if (!('expr' in b.fun && b.fun.expr)) return false;
+				if (!(b.fun instanceof Fun && b.fun.expr)) return false;
 
 				return recurseWrap(
 					a, ExpressionResolver.expandCallOnce(b), depth + 1
@@ -299,7 +298,9 @@ export default class ExpressionResolver {
 			}
 
 			if (a instanceof Tee) {
-				b = b as Tee;
+				if (!(b instanceof Tee)) {
+					throw Error('Assertion failed');
+				}
 
 				for (var i = 0; i < a.left.length; i++) {
 					if (!recurseWrap(a.left[i], b.left[i], depth + 1)) return false;

@@ -2,8 +2,8 @@ import Type from './nodes/Type';
 import Variable from './nodes/Variable';
 import Fun from './nodes/Fun';
 import StackTrace from './StackTrace';
-import { Metaexpr } from './ExpressionResolver';
 import $Variable from './nodes/$Variable';
+import Metaexpr from './nodes/Metaexpr';
 
 export type NestedTypeInput = string | NestedTypeInput[];
 

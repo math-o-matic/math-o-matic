@@ -1,4 +1,6 @@
 import Scope from '../Scope';
+import Expr0 from './Expr0';
+import Nameable from './Nameable';
 import Node, {Precedence} from './Node';
 import Type from './Type';
 
@@ -11,14 +13,14 @@ interface VariableArgumentType {
 	guess?: string;
 }
 
-export default class Variable extends Node {
+export default class Variable extends Expr0 implements Nameable {
 	public readonly isParam: boolean;
 	public readonly guess: string;
 	public readonly type: Type;
 	public readonly name: string;
 
 	constructor ({doc, tex, type, name, isParam, guess}: VariableArgumentType, scope?: Scope) {
-		super(scope);
+		super(scope, type);
 
 		this.doc = doc;
 		this.tex = tex;
@@ -27,9 +29,8 @@ export default class Variable extends Node {
 		this.guess = guess || null;
 
 		if (typeof name != 'string')
-			throw this.error('Assertion failed');
+			throw Node.error('Assertion failed', scope);
 
-		this.type = type;
 		this.name = name;
 	}
 

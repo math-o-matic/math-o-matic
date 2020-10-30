@@ -1,6 +1,7 @@
+import Nameable from './Nameable';
 import Node from './Node';
 
-export default class Type extends Node {
+export default class Type extends Node implements Nameable {
 	public readonly isBaseType: boolean;
 	public readonly isFunctional: boolean;
 	public readonly isSimple: boolean;
@@ -10,37 +11,37 @@ export default class Type extends Node {
 	public readonly to: Type;
 
 	constructor (o) {
-		super();
+		super(null);
 
 		this.doc = o.doc;
 		this.isBaseType = !!o.base;
 
 		if (o.origin) {
 			if (typeof o.name != 'string')
-				throw this.error('typeof o.name != \'string\'');
+				throw Node.error('typeof o.name != \'string\'', null);
 			this.name = o.name;
 
 			if (!(o.origin instanceof Type))
-				throw this.error('!(o.origin instanceof Type)');
+				throw Node.error('!(o.origin instanceof Type)', null);
 
 			this.isFunctional = o.origin.isFunctional;
 			this.isSimple = o.origin.isSimple;
 			this.origin = o.origin;
 		} else {
 			if (typeof o.functional != 'boolean')
-				throw this.error('typeof o.functional != \'boolean\'');
+				throw Node.error('typeof o.functional != \'boolean\'', null);
 			this.isFunctional = o.functional;
 			this.isSimple = !o.functional;
 
 			if (!o.functional) {
 				if (typeof o.name != 'string')
-					throw this.error('typeof o.name != \'string\'');
+					throw Node.error('typeof o.name != \'string\'', null);
 				this.name = o.name;
 			} else {
 				if (o.from.map(f => f instanceof Type).some(e => !e))
-					throw this.error('o.from.map(f => f instanceof Type).some(e => !e)');
+					throw Node.error('o.from.map(f => f instanceof Type).some(e => !e)', null);
 				if (!(o.to instanceof Type))
-					throw this.error('!(o.to instanceof Type)');
+					throw Node.error('!(o.to instanceof Type)', null);
 
 				this.from = o.from;
 				this.to = o.to;

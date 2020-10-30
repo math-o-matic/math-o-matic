@@ -54,7 +54,7 @@ export default class Program {
 					var variable = PegInterface.variable(line, scope);
 
 					if (scope.hasVariable(variable.name)) {
-						throw variable.scope.error(`Definition ${variable.name} has already been declared`);
+						throw scope.error(`Definition ${variable.name} has already been declared`);
 					}
 
 					scope.addVariable(variable);
@@ -63,7 +63,7 @@ export default class Program {
 					var fun = PegInterface.fun(line, scope);
 
 					if (scope.hasVariable(fun.name)) {
-						throw fun.scope.error(`Definition ${fun.name} has already been declared`);
+						throw scope.error(`Definition ${fun.name} has already been declared`);
 					}
 
 					scope.addFun(fun);
@@ -72,7 +72,7 @@ export default class Program {
 					var schema = PegInterface.schema(line, scope);
 
 					if (scope.hasSchema(schema.name)) {
-						throw schema.scope.error(`Schema ${schema.name} has already been declared`);
+						throw scope.error(`Schema ${schema.name} has already been declared`);
 					}
 
 					scope.addSchema(schema);

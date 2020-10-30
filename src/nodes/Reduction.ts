@@ -1,10 +1,12 @@
 import Node, { Precedence } from './Node';
 import Funcall from './Funcall';
-import ExpressionResolver, { Expr0, Metaexpr } from '../ExpressionResolver';
+import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
 import Tee from './Tee';
 import Fun from './Fun';
 import MetaType from './MetaType';
+import Metaexpr from './Metaexpr';
+import Expr0 from './Expr0';
 
 interface ReductionArgumentType {
 	subject: Metaexpr;
@@ -13,7 +15,7 @@ interface ReductionArgumentType {
 	expected: Metaexpr;
 }
 
-export default class Reduction extends Node {
+export default class Reduction extends Metaexpr {
 	public readonly subject: Metaexpr;
 	public readonly guesses;
 	public readonly leftargs;
@@ -21,19 +23,17 @@ export default class Reduction extends Node {
 	public readonly type;
 
 	constructor ({subject, guesses, leftargs, expected}: ReductionArgumentType, scope?: Scope) {
-		super(scope);
-
 		if (guesses) {
-			var resolvedType = subject.type.resolve(),
+			let resolvedType = subject.type.resolve(),
 				paramTypes = resolvedType.from,
 				argTypes = guesses.map(e => e && e.type);
 
 			if (paramTypes.length != argTypes.length)
-				throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`);
+				throw Node.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`, scope);
 
 			for (var i = 0; i < paramTypes.length; i++) {
 				if (argTypes[i] && !paramTypes[i].equals(argTypes[i])) {
-					throw this.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`);
+					throw Node.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, scope);
 				}
 			}
 		}
@@ -41,7 +41,7 @@ export default class Reduction extends Node {
 		if (subject instanceof Fun) {
 			subject.params.forEach((p, i) => {
 				if (!(guesses && guesses[i]) && !p.guess) {
-					throw this.error(`Argument #${i + 1} could not be guessed`);
+					throw Node.error(`Argument #${i + 1} could not be guessed`, scope);
 				}
 			});
 	
@@ -51,12 +51,13 @@ export default class Reduction extends Node {
 				// @ts-ignore
 				var tee = ExpressionResolver.expandMeta(subject.expr) as Tee;
 	
-				return this.query(
+				return Reduction.query(
 					p.guess,
 					tee.left,
 					leftargs,
 					tee.right,
-					expected
+					expected,
+					scope
 				);
 			});
 	
@@ -65,41 +66,41 @@ export default class Reduction extends Node {
 				args: derefs,
 			}, scope);
 		} else if (guesses) {
-			throw this.error('Something\'s wrong');
+			throw Node.error('Something\'s wrong', scope);
 		}
 	
 		if (!(subject.type instanceof MetaType && subject.type.isSimple))
-			throw this.error('Subject is not reducible');
+			throw Node.error('Subject is not reducible', scope);
 	
 		if (!(leftargs instanceof Array)
 				|| leftargs.map(e => e instanceof Node).some(e => !e))
-			throw this.error('Assertion failed');
-		
-		this.subject = subject;
-		this.leftargs = leftargs;
+			throw Node.error('Assertion failed', scope);
 
 		var paramTypes = subject.type.left,
 			leftargTypes = leftargs.map(e => e.type);
 
 		if (paramTypes.length != leftargTypes.length)
-			throw this.error(`Invalid number of arguments (expected ${paramTypes.length}): ${leftargTypes.length}`);
+			throw Node.error(`Invalid number of arguments (expected ${paramTypes.length}): ${leftargTypes.length}`, scope);
 
 		for (let i = 0; i < paramTypes.length; i++) {
 			if (!paramTypes[i].equals(leftargTypes[i]))
-				throw this.error(`Illegal argument type (expected ${paramTypes[i]}): ${leftargTypes[i]}`);
+				throw Node.error(`Illegal argument type (expected ${paramTypes[i]}): ${leftargTypes[i]}`, scope);
 		}
 
-		this.type = subject.type.right;
+		super(scope, subject.type.right);
+
+		this.subject = subject;
+		this.leftargs = leftargs;
 
 		var tee = ExpressionResolver.expandMetaAndFuncalls(subject);
 
 		if (!(tee instanceof Tee)) {
-			throw this.error('Assertion failed');
+			throw Node.error('Assertion failed', scope);
 		}
 
 		for (let i = 0; i < tee.left.length; i++) {
 			if (!ExpressionResolver.equals(tee.left[i], leftargs[i])) {
-				throw this.error(`LHS #${i + 1} failed to match:
+				throw Node.error(`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
 ${ExpressionResolver.expandMetaAndFuncalls(tee.left[i])}
@@ -107,13 +108,13 @@ ${ExpressionResolver.expandMetaAndFuncalls(tee.left[i])}
 
 --- RECEIVED ---
 ${ExpressionResolver.expandMetaAndFuncalls(leftargs[i])}
-----------------`);
+----------------`, scope);
 			}
 		}
 
 		if (expected) {
 			if (!ExpressionResolver.equals(tee.right, expected)) {
-				throw this.error(`RHS failed to match:
+				throw Node.error(`RHS failed to match:
 
 --- EXPECTED ---
 ${ExpressionResolver.expandMetaAndFuncalls(tee.right)}
@@ -121,7 +122,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(tee.right)}
 
 --- RECEIVED ---
 ${ExpressionResolver.expandMetaAndFuncalls(expected)}
-----------------`);
+----------------`, scope);
 			}
 
 			this.reduced = expected;
@@ -138,27 +139,25 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 				&& this.leftargs.every(l => l.isProved(hyps));
 	}
 
-	public query(guess, left, leftargs, right, expected) {
-		if (guess.length == 0) throw this.error('wut');
+	public static query(guess, left, leftargs, right, expected, scope: Scope) {
+		if (guess.length == 0) throw Node.error('wut', scope);
 
 		var lef, ret;
 
 		if (guess[0] == 'r') {
 			if (!expected) {
-				throw this.error(`Cannot dereference @${guess}`);
+				throw Node.error(`Cannot dereference @${guess}`, scope);
 			}
 
 			lef = right;
 			ret = expected;
 		} else {
 			if (!(1 <= guess[0] * 1 && guess[0] * 1 <= leftargs.length))
-				throw this.error(`Cannot dereference @${guess}: antecedent index out of range`);
+				throw Node.error(`Cannot dereference @${guess}: antecedent index out of range`, scope);
 
 			lef = left[guess[0] * 1 - 1];
 			ret = leftargs[guess[0] * 1 - 1];
 		}
-
-		var that = this;
 
 		return (function recurse(guess, lef, node, ptr) {
 			node = ExpressionResolver.expandMetaAndFuncalls(node);
@@ -170,11 +169,11 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 
 				if (lef instanceof Tee && node instanceof Tee) {
 					if (lef.left.length != node.left.length) {
-						throw that.error(`Cannot dereference @${guess}: antecedent length mismatch`);
+						throw Node.error(`Cannot dereference @${guess}: antecedent length mismatch`, scope);
 					}
 
 					if (!(1 <= n && n <= node.left.length)) {
-						throw that.error(`Cannot dereference @${guess}: antecedent index out of range`);
+						throw Node.error(`Cannot dereference @${guess}: antecedent index out of range`, scope);
 					}
 
 					return recurse(guess, lef.left[n - 1], node.left[n - 1], ptr + 1);
@@ -182,7 +181,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 
 				while (true) {
 					if (!lef.fun || !node.fun) {
-						throw that.error(`Cannot dereference @${guess}`);
+						throw Node.error(`Cannot dereference @${guess}`, scope);
 					}
 
 					if (ExpressionResolver.equals(lef.fun, node.fun)) {
@@ -190,14 +189,14 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 					}
 
 					if (!node.fun.expr) {
-						throw that.error(`Cannot dereference @${guess}`);
+						throw Node.error(`Cannot dereference @${guess}`, scope);
 					}
 
 					node = ExpressionResolver.expandCallOnce(node);
 				}
 
 				if (!node.args || !(1 <= n && n <= node.args.length))
-					throw that.error(`Cannot dereference @${guess}`);
+					throw Node.error(`Cannot dereference @${guess}`, scope);
 
 				return recurse(guess, lef.args[n - 1], node.args[n - 1], ptr + 1);
 			} else if (guess[ptr] == 'r') {
@@ -205,10 +204,10 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 					return recurse(guess, lef.right, node.right, ptr + 1);
 				}
 
-				throw that.error(`Cannot dereference @${guess}`);
+				throw Node.error(`Cannot dereference @${guess}`, scope);
 			}
 
-			throw that.error(`Cannot dereference @${guess}`);
+			throw Node.error(`Cannot dereference @${guess}`, scope);
 		})(guess, lef, ret, 1);
 	}
 

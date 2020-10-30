@@ -1,7 +1,9 @@
-import ExpressionResolver, { Metaexpr } from "./ExpressionResolver";
+import ExpressionResolver from "./ExpressionResolver";
 import $Variable from "./nodes/$Variable";
 import Fun from "./nodes/Fun";
 import Funcall from "./nodes/Funcall";
+import Metaexpr from "./nodes/Metaexpr";
+import { isNameable } from "./nodes/Nameable";
 import Reduction from "./nodes/Reduction";
 import Tee from "./nodes/Tee";
 import Variable from "./nodes/Variable";
@@ -25,7 +27,7 @@ export default class ProofExplorer {
 					...expr.leftargs.map(recurse),
 					((expr.subject instanceof Fun && expr.subject.name)
 						|| (expr.subject instanceof Funcall
-								&& 'name' in expr.subject.fun
+								&& isNameable(expr.subject.fun)
 								&& expr.subject.fun.name)
 							? 0 : recurse(expr.subject)),
 					1
@@ -111,7 +113,7 @@ export default class ProofExplorer {
 						? (args = expr.subject.args, $Map.get(expr.subject.fun))
 						: false)
 					|| ((s => s instanceof Fun && s.name
-							|| s instanceof Funcall && 'name' in s.fun && s.fun.name)(expr.subject)
+							|| s instanceof Funcall && isNameable(s.fun) && s.fun.name)(expr.subject)
 						? expr.subject
 						: (subjectlines = getTree(expr.subject, hypnumMap, $Map))[subjectlines.length-1].ctr);
 
