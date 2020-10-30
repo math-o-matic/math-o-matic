@@ -8,12 +8,13 @@ import $Variable from './$Variable';
 import Expr0 from './Expr0';
 import Metaexpr from './Metaexpr';
 import Nameable from './Nameable';
+import Type from './Type';
 
 interface FunArgumentType {
 	isSchema: boolean;
 	annotations: string[];
 	axiomatic?: boolean;
-	type?: ObjectType | MetaType;
+	type?: Type;
 	name?: string;
 	params?: Variable[];
 	def$s?: $Variable[];

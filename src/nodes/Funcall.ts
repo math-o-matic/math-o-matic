@@ -26,6 +26,7 @@ export default class Funcall extends Expr0 {
 			throw Node.error('Assertion failed', scope);
 			 
 		var resolvedType = fun.type.resolve(),
+			// @ts-ignore
 			paramTypes = resolvedType.from,
 			argTypes = args.map(e => e.type);
 
@@ -38,6 +39,7 @@ export default class Funcall extends Expr0 {
 			}
 		}
 
+		// @ts-ignore
 		super(scope, null, null, resolvedType.to);
 		
 		this.fun = fun;

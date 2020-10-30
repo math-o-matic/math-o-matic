@@ -29,7 +29,6 @@ export default class ExpressionResolver {
 		if (expr instanceof Funcall) {
 			return new Funcall({
 				fun: ExpressionResolver.substitute(expr.fun, map),
-				// @ts-ignore
 				args: expr.args.map(arg => ExpressionResolver.substitute(arg, map))
 			});
 		} else if (expr instanceof Fun) {
@@ -311,11 +310,13 @@ export default class ExpressionResolver {
 
 			if (a.type.isFunctional) {
 				var placeholders = [];
+				// @ts-ignore
 				var len = a.type.resolve().from.length;
 
 				for (var i = 0; i < len; i++) {
 					placeholders.push(new Variable({
 						isParam: true,
+						// @ts-ignore
 						type: a.type.resolve().from[i],
 						name: '$' + i
 					}));

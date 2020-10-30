@@ -1,21 +1,21 @@
 import Nameable from './Nameable';
 import Node from './Node';
+import Type from './Type';
 
-export default class ObjectType extends Node implements Nameable {
+export default class ObjectType extends Type implements Nameable {
+
 	public readonly isBaseType: boolean;
-	public readonly isFunctional: boolean;
-	public readonly isSimple: boolean;
 	public readonly name: string;
 	public readonly origin: ObjectType;
 	public readonly from: ObjectType[];
 	public readonly to: ObjectType;
 
 	constructor (o) {
-		super(null, o.doc, null);
-
-		this.isBaseType = !!o.base;
-
 		if (o.origin) {
+			super(null, o.doc, null, o.origin.isFunctional);
+
+			this.isBaseType = !!o.base;
+
 			if (typeof o.name != 'string')
 				throw Node.error('typeof o.name != \'string\'', null);
 			this.name = o.name;
@@ -23,14 +23,14 @@ export default class ObjectType extends Node implements Nameable {
 			if (!(o.origin instanceof ObjectType))
 				throw Node.error('!(o.origin instanceof ObjectType)', null);
 
-			this.isFunctional = o.origin.isFunctional;
-			this.isSimple = o.origin.isSimple;
 			this.origin = o.origin;
 		} else {
+			super(null, o.doc, null, o.functional);
+
+			this.isBaseType = !!o.base;
+
 			if (typeof o.functional != 'boolean')
 				throw Node.error('typeof o.functional != \'boolean\'', null);
-			this.isFunctional = o.functional;
-			this.isSimple = !o.functional;
 
 			if (!o.functional) {
 				if (typeof o.name != 'string')
@@ -78,7 +78,7 @@ export default class ObjectType extends Node implements Nameable {
 		return this.origin ? this.origin.resolve() : this;
 	}
 
-	public equals(t: object): boolean {
+	public equals(t: Type): boolean {
 		if (!(t instanceof ObjectType)) return false;
 
 		if (this.origin) return this.origin.equals(t);

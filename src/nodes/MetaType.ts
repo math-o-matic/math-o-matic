@@ -1,24 +1,19 @@
-import Nameable from './Nameable';
 import Node, { Precedence } from './Node';
 import ObjectType from './ObjectType';
+import Type from './Type';
 
-export default class MetaType extends Node implements Nameable {
-	public readonly isFunctional: boolean;
-	public readonly isSimple: boolean;
-	public readonly name: string;
-	public readonly left: (ObjectType | MetaType)[];
-	public readonly right: ObjectType | MetaType;
+export default class MetaType extends Type {
+	
+	public readonly left: Type[];
+	public readonly right: Type;
 	public readonly from: ObjectType[];
 	public readonly to: MetaType;
 
 	constructor (o) {
-		super(null, null, null);
+		super(null, null, null, o.functional);
 
 		if (typeof o.functional != 'boolean')
 			throw Node.error('typeof o.functional != \'boolean\'', null);
-		
-		this.isFunctional = o.functional;
-		this.isSimple = !o.functional;
 
 		if (!o.functional) {
 			if (!(o.left instanceof Array))
@@ -40,7 +35,7 @@ export default class MetaType extends Node implements Nameable {
 		}
 	}
 
-	public resolve() {
+	public resolve(): MetaType {
 		return this;
 	}
 
@@ -54,7 +49,7 @@ export default class MetaType extends Node implements Nameable {
 		throw new Error('Method not implemented.');
 	}
 
-	public equals(t: object): boolean {
+	public equals(t: Type): boolean {
 		if (!(t instanceof MetaType)) return false;
 
 		if (this.isSimple != t.isSimple) return false;

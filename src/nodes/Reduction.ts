@@ -25,6 +25,7 @@ export default class Reduction extends Metaexpr {
 	constructor ({subject, guesses, leftargs, expected}: ReductionArgumentType, scope?: Scope) {
 		if (guesses) {
 			let resolvedType = subject.type.resolve(),
+				// @ts-ignore
 				paramTypes = resolvedType.from,
 				argTypes = guesses.map(e => e && e.type);
 
