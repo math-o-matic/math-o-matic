@@ -3,12 +3,12 @@ import Node, {Precedence} from './Node';
 import Type from './Type';
 
 interface TypevarArgumentType {
-	type: Type,
-	isParam: boolean,
-	guess?: string,
-	name: string,
-	doc?: string,
-	tex?: string
+	doc?: string;
+	tex?: string;
+	type: Type;
+	name: string;
+	isParam: boolean;
+	guess?: string;
 }
 
 export default class Typevar extends Node {
@@ -17,7 +17,7 @@ export default class Typevar extends Node {
 	public readonly type: Type;
 	public readonly name: string;
 
-	constructor ({type, isParam, guess, name, doc, tex}: TypevarArgumentType, scope?: Scope) {
+	constructor ({doc, tex, type, name, isParam, guess}: TypevarArgumentType, scope?: Scope) {
 		super(scope);
 
 		this.doc = doc;
@@ -25,8 +25,6 @@ export default class Typevar extends Node {
 
 		this.isParam = !!isParam;
 		this.guess = guess || null;
-
-		type = type as Type;
 
 		if (typeof name != 'string')
 			throw this.error('Assertion failed');

@@ -1,6 +1,5 @@
 import Node, { Precedence } from './Node';
 import Funcall from './Funcall';
-
 import ExpressionResolver, { Expr0, Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
 import Tee from './Tee';

@@ -1,12 +1,11 @@
 import Node, { Precedence } from './Node';
 import MetaType from './MetaType';
-
 import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
 import $var from './$var';
 import Type from './Type';
 
-interface TeeInput {
+interface TeeArgumentType {
 	left: Metaexpr[];
 	def$s?: $var[];
 	right: Metaexpr;
@@ -20,7 +19,7 @@ export default class Tee extends Node {
 	public readonly right;
 	public readonly type: MetaType;
 
-	constructor ({left, def$s, right}: TeeInput, scope?: Scope) {
+	constructor ({left, def$s, right}: TeeArgumentType, scope?: Scope) {
 		super(scope);
 		
 		if (!(left instanceof Array
