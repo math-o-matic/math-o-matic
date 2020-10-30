@@ -9,7 +9,6 @@ import Tee from './nodes/Tee';
 import Fun from './nodes/Fun';
 import Funcall from './nodes/Funcall';
 import Reduction from './nodes/Reduction';
-
 import { Expr0, Metaexpr } from './ExpressionResolver';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';

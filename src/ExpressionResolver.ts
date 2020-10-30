@@ -1,3 +1,11 @@
+import $var from "./nodes/$var";
+import Reduction from "./nodes/Reduction";
+import Fun from "./nodes/Fun";
+import Funcall from "./nodes/Funcall";
+import Tee from "./nodes/Tee";
+import Typevar from "./nodes/Typevar";
+import Type from "./nodes/Type";
+
 export type Expr0 = Funcall | Fun | Typevar;
 export type Metaexpr = Tee | Reduction | Funcall | Fun | $var | Expr0;
 
@@ -340,12 +348,3 @@ export default class ER {
 		return ret;
 	}
 }
-
-// 순환 참조를 피하기 위하여 export 후 import 한다.
-import $var from "./nodes/$var";
-import Reduction from "./nodes/Reduction";
-import Fun from "./nodes/Fun";
-import Funcall from "./nodes/Funcall";
-import Tee from "./nodes/Tee";
-import Typevar from "./nodes/Typevar";
-import Type from "./nodes/Type";

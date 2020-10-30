@@ -1,7 +1,6 @@
 import Node, { Precedence } from './Node';
 import Type from './Type';
 import MetaType from './MetaType';
-
 import ExpressionResolver, { Metaexpr } from '../ExpressionResolver';
 import Scope from '../Scope';
 import Typevar from './Typevar';

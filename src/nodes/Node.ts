@@ -1,14 +1,12 @@
+import Scope from '../Scope';
+import MetaType from './MetaType';
+import Type from './Type';
+
 var ctr = 0;
 
 export type Precedence = boolean | number | [number, number];
 
-interface Nodeable {
-	toIndentedString: (indent: number, root?: boolean) => string;
-	toTeXString: (prec?: Precedence, root?: boolean) => string;
-	isProved: (hyps) => boolean;
-}
-
-export default abstract class Node implements Nodeable {
+export default abstract class Node {
 	public readonly _id: number;
 	public readonly scope: Scope;
 
@@ -116,9 +114,3 @@ export default abstract class Node implements Nodeable {
 		});
 	}
 }
-
-// 순환 참조를 피하기 위하여 export 후 import 한다.
-import ExpressionResolver from '../ExpressionResolver';
-import Scope from '../Scope';
-import MetaType from './MetaType';
-import Type from './Type';

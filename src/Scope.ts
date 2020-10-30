@@ -1,7 +1,6 @@
 import Type from './nodes/Type';
 import Typevar from './nodes/Typevar';
 import Fun from './nodes/Fun';
-
 import StackTrace from './StackTrace';
 import { Metaexpr } from './ExpressionResolver';
 import $var from './nodes/$var';
