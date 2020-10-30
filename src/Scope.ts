@@ -1,4 +1,4 @@
-import Type from './nodes/Type';
+import ObjectType from './nodes/ObjectType';
 import Variable from './nodes/Variable';
 import Fun from './nodes/Fun';
 import StackTrace from './StackTrace';
@@ -10,7 +10,7 @@ export type NestedTypeInput = string | NestedTypeInput[];
 export default class Scope {
 	public readonly importMap: Map<string, Scope> = new Map();
 
-	public readonly typedefMap: Map<string, Type> = new Map();
+	public readonly typedefMap: Map<string, ObjectType> = new Map();
 	public readonly defMap: Map<string, Variable | Fun> = new Map();
 	public readonly schemaMap: Map<string, Fun> = new Map();
 	public readonly $Map: Map<string, $Variable> = new Map();
@@ -20,7 +20,7 @@ export default class Scope {
 	public readonly root: Scope;
 
 	public readonly trace: StackTrace;
-	public baseType: Type;
+	public baseType: ObjectType;
 
 	constructor (parent: Scope, trace?: StackTrace) {
 		this.parent = parent;
@@ -93,8 +93,8 @@ export default class Scope {
 		}).every(e => e);
 	}
 
-	public addType(type: Type): Type {
-		if (!(type instanceof Type))
+	public addType(type: ObjectType): ObjectType {
+		if (!(type instanceof ObjectType))
 			throw this.error('Illegal argument type');
 
 		if (!type.name)
@@ -125,7 +125,7 @@ export default class Scope {
 	 * ['cls', 'cls', 'st']		-> [(cls, cls) -> st]
 	 * [['cls', 'st'], 'st']	-> [[cls -> st] -> st]
 	 */
-	public getType(name: NestedTypeInput): Type {
+	public getType(name: NestedTypeInput): ObjectType {
 		if (typeof name == 'string') {
 			if (!this.hasType(name))
 				throw this.error(`Type ${name} is not defined`);
@@ -150,7 +150,7 @@ export default class Scope {
 
 		var to = this.getType(name[name.length - 1]);
 
-		return new Type({
+		return new ObjectType({
 			functional: true,
 			from,
 			to

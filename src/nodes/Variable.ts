@@ -2,12 +2,12 @@ import Scope from '../Scope';
 import Expr0 from './Expr0';
 import Nameable from './Nameable';
 import Node, {Precedence} from './Node';
-import Type from './Type';
+import ObjectType from './ObjectType';
 
 interface VariableArgumentType {
 	doc?: string;
 	tex?: string;
-	type: Type;
+	type: ObjectType;
 	name: string;
 	isParam: boolean;
 	guess?: string;
@@ -16,7 +16,7 @@ interface VariableArgumentType {
 export default class Variable extends Expr0 implements Nameable {
 	public readonly isParam: boolean;
 	public readonly guess: string;
-	public readonly type: Type;
+	public readonly type: ObjectType;
 	public readonly name: string;
 
 	constructor ({doc, tex, type, name, isParam, guess}: VariableArgumentType, scope?: Scope) {

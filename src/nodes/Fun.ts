@@ -1,5 +1,5 @@
 import Node, { Precedence } from './Node';
-import Type from './Type';
+import ObjectType from './ObjectType';
 import MetaType from './MetaType';
 import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
@@ -13,7 +13,7 @@ interface FunArgumentType {
 	isSchema: boolean;
 	annotations: string[];
 	axiomatic?: boolean;
-	type?: Type | MetaType;
+	type?: ObjectType | MetaType;
 	name?: string;
 	params?: Variable[];
 	def$s?: $Variable[];
@@ -69,7 +69,7 @@ export default class Fun extends Expr0 implements Nameable {
 		
 		super(
 			scope, doc, tex,
-			type || new (expr.type instanceof Type ? Type : MetaType)({
+			type || new (expr.type instanceof ObjectType ? ObjectType : MetaType)({
 				functional: true,
 				from: params.map(variable => variable.type),
 				to: expr.type

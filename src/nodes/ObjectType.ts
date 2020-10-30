@@ -1,14 +1,14 @@
 import Nameable from './Nameable';
 import Node from './Node';
 
-export default class Type extends Node implements Nameable {
+export default class ObjectType extends Node implements Nameable {
 	public readonly isBaseType: boolean;
 	public readonly isFunctional: boolean;
 	public readonly isSimple: boolean;
 	public readonly name: string;
-	public readonly origin: Type;
-	public readonly from: Type[];
-	public readonly to: Type;
+	public readonly origin: ObjectType;
+	public readonly from: ObjectType[];
+	public readonly to: ObjectType;
 
 	constructor (o) {
 		super(null, o.doc, null);
@@ -20,8 +20,8 @@ export default class Type extends Node implements Nameable {
 				throw Node.error('typeof o.name != \'string\'', null);
 			this.name = o.name;
 
-			if (!(o.origin instanceof Type))
-				throw Node.error('!(o.origin instanceof Type)', null);
+			if (!(o.origin instanceof ObjectType))
+				throw Node.error('!(o.origin instanceof ObjectType)', null);
 
 			this.isFunctional = o.origin.isFunctional;
 			this.isSimple = o.origin.isSimple;
@@ -37,10 +37,10 @@ export default class Type extends Node implements Nameable {
 					throw Node.error('typeof o.name != \'string\'', null);
 				this.name = o.name;
 			} else {
-				if (o.from.map(f => f instanceof Type).some(e => !e))
-					throw Node.error('o.from.map(f => f instanceof Type).some(e => !e)', null);
-				if (!(o.to instanceof Type))
-					throw Node.error('!(o.to instanceof Type)', null);
+				if (o.from.map(f => f instanceof ObjectType).some(e => !e))
+					throw Node.error('o.from.map(f => f instanceof ObjectType).some(e => !e)', null);
+				if (!(o.to instanceof ObjectType))
+					throw Node.error('!(o.to instanceof ObjectType)', null);
 
 				this.from = o.from;
 				this.to = o.to;
@@ -74,12 +74,12 @@ export default class Type extends Node implements Nameable {
 			+ ` \\to ${this.resolve().to.toTeXString()} \\right]`;
 	}
 
-	public resolve(): Type {
+	public resolve(): ObjectType {
 		return this.origin ? this.origin.resolve() : this;
 	}
 
 	public equals(t: object): boolean {
-		if (!(t instanceof Type)) return false;
+		if (!(t instanceof ObjectType)) return false;
 
 		if (this.origin) return this.origin.equals(t);
 		if (t.origin) return this.equals(t.origin);

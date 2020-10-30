@@ -3,7 +3,7 @@ import MetaType from './MetaType';
 import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
 import $Variable from './$Variable';
-import Type from './Type';
+import ObjectType from './ObjectType';
 import Metaexpr from './Metaexpr';
 
 interface TeeArgumentType {
@@ -21,7 +21,7 @@ export default class Tee extends Metaexpr {
 	constructor ({left, def$s, right}: TeeArgumentType, scope?: Scope) {
 		if (!(left instanceof Array
 				&& left.every(l => {
-					return l.type instanceof Type
+					return l.type instanceof ObjectType
 						|| l.type instanceof MetaType;
 				}))) {
 			console.log(left);
@@ -31,7 +31,7 @@ export default class Tee extends Metaexpr {
 		if (def$s && !(def$s instanceof Array && def$s.every($ => $ instanceof $Variable)))
 			throw Node.error('Assertion failed', scope);
 
-		if (!(right.type instanceof Type || right.type instanceof MetaType)) {
+		if (!(right.type instanceof ObjectType || right.type instanceof MetaType)) {
 			console.log(right);
 			throw Node.error('Assertion failed', scope);
 		}

@@ -1,12 +1,12 @@
 import Scope from "../Scope";
 import MetaType from "./MetaType";
 import Node from "./Node";
-import Type from "./Type";
+import ObjectType from "./ObjectType";
 
 export default abstract class Metaexpr extends Node {
-    public readonly type: Type | MetaType;
+    public readonly type: ObjectType | MetaType;
 
-    constructor(scope: Scope, doc: string, tex: string, type: Type | MetaType) {
+    constructor(scope: Scope, doc: string, tex: string, type: ObjectType | MetaType) {
         super(scope, doc, tex);
 
         if (!type) throw Node.error('Assertion failed', scope);

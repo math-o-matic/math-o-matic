@@ -4,7 +4,7 @@ import Fun from "./nodes/Fun";
 import Funcall from "./nodes/Funcall";
 import Tee from "./nodes/Tee";
 import Variable from "./nodes/Variable";
-import Type from "./nodes/Type";
+import ObjectType from "./nodes/ObjectType";
 import Metaexpr from "./nodes/Metaexpr";
 import Expr0 from "./nodes/Expr0";
 
@@ -139,7 +139,7 @@ export default class ExpressionResolver {
 			return ExpressionResolver.expandMeta(expr.reduced);
 		} else if (expr instanceof Fun) {
 			if (!expr.expr) return expr;
-			if (expr.type instanceof Type && expr.name) return expr;
+			if (expr.type instanceof ObjectType && expr.name) return expr;
 
 			return new Fun({
 				isSchema: expr.isSchema,
@@ -168,7 +168,7 @@ export default class ExpressionResolver {
 			return new Tee({left, right});
 		} else if (expr instanceof Fun) {
 			if (!expr.expr) return expr;
-			if (expr.type instanceof Type && expr.name) return expr;
+			if (expr.type instanceof ObjectType && expr.name) return expr;
 
 			return new Fun({
 				isSchema: expr.isSchema,

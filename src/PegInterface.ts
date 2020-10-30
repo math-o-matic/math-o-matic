@@ -3,7 +3,7 @@
  * PEG.js의 출력은 여기에서만 처리해야 한다.
  */
 
-import Type from './nodes/Type';
+import ObjectType from './nodes/ObjectType';
 import Variable from './nodes/Variable';
 import Tee from './nodes/Tee';
 import Fun from './nodes/Fun';
@@ -66,13 +66,13 @@ function varObjToString(obj: VarObject): string {
 }
 
 export default class PI {
-	public static type(obj: TypedefObject, parentScope: Scope): Type {
+	public static type(obj: TypedefObject, parentScope: Scope): ObjectType {
 		if (obj._type != 'typedef')
 			throw Error('Assertion failed');
 
 		var scope: Scope = parentScope.extend('type', obj.name, obj.location);
 
-		var origin: Type = obj.origin ? scope.getType(typeObjToNestedArr(obj.origin)) : null;
+		var origin: ObjectType = obj.origin ? scope.getType(typeObjToNestedArr(obj.origin)) : null;
 
 		var name: string = obj.name;
 		var doc: string = obj.doc;
@@ -83,7 +83,7 @@ export default class PI {
 		}
 
 		if (origin) {
-			return new Type({
+			return new ObjectType({
 				name,
 				doc,
 				base,
@@ -91,7 +91,7 @@ export default class PI {
 			});
 		}
 
-		return new Type({
+		return new ObjectType({
 			functional: false,
 			name,
 			doc,
@@ -174,7 +174,7 @@ export default class PI {
 					if (!rettype.equals(expr.type))
 						throw scope.error(`Expression type ${expr.type} failed to match the return type ${rettype} of fun ${name}`);
 				} else {
-					type = new Type({
+					type = new ObjectType({
 						functional: true,
 						from: params.map(variable => variable.type),
 						to: rettype

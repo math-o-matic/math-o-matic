@@ -3,7 +3,7 @@ import Metaexpr from "./Metaexpr";
 import MetaType from "./MetaType";
 import Nameable from "./Nameable";
 import Node, { Precedence } from "./Node";
-import Type from "./Type";
+import ObjectType from "./ObjectType";
 
 interface $VariableArgumentType {
     name: string;

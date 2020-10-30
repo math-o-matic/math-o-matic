@@ -1,14 +1,14 @@
 import Nameable from './Nameable';
 import Node, { Precedence } from './Node';
-import Type from './Type';
+import ObjectType from './ObjectType';
 
 export default class MetaType extends Node implements Nameable {
 	public readonly isFunctional: boolean;
 	public readonly isSimple: boolean;
 	public readonly name: string;
-	public readonly left: (Type | MetaType)[];
-	public readonly right: Type | MetaType;
-	public readonly from: Type[];
+	public readonly left: (ObjectType | MetaType)[];
+	public readonly right: ObjectType | MetaType;
+	public readonly from: ObjectType[];
 	public readonly to: MetaType;
 
 	constructor (o) {
@@ -27,8 +27,8 @@ export default class MetaType extends Node implements Nameable {
 			this.left = o.left;
 			this.right = o.right;
 		} else {
-			if (o.from.some(f => !(f instanceof Type)))
-				throw Node.error('o.from.some(f => !(f instanceof Type))', null);
+			if (o.from.some(f => !(f instanceof ObjectType)))
+				throw Node.error('o.from.some(f => !(f instanceof ObjectType))', null);
 			if (!(o.to instanceof MetaType))
 				throw Node.error('!(o.to instanceof MetaType)', null);
 
