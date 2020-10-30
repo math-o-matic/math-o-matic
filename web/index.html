@@ -386,7 +386,7 @@
 				var match = $a.getAttribute('href').match(/^#id-[0-9]+$/);
 
 				if (match) {
-					var $el = $(match[0]);
+					let $el = $(match[0]);
 
 					if ($el) {
 						if ($el.classList.contains('flicker')) {
@@ -394,9 +394,13 @@
 						}
 
 						$el.classList.add('flicker');
-						$el.addEventListener('animationend', evt => {
+
+						let listener = evt => {
+							$el.removeEventListener('animationend', listener);
 							$el.classList.remove('flicker');
-						});
+						};
+						
+						$el.addEventListener('animationend', listener);
 					}
 				}
 			});
