@@ -14,7 +14,7 @@ export default class $Variable extends Node {
     public readonly name: string;
     public readonly expr: Metaexpr;
 
-    constructor({name, expr}: $VariableArgumentType, scope?: Scope) {
+    constructor ({name, expr}: $VariableArgumentType, scope?: Scope) {
         super(scope);
 
         if (!name || !expr) {
