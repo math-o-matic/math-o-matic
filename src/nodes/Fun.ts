@@ -73,6 +73,7 @@ export default class Fun extends Expr0 implements Nameable {
 			type || new (expr.type instanceof ObjectType ? ObjectType : MetaType)({
 				functional: true,
 				from: params.map(variable => variable.type),
+				// @ts-ignore
 				to: expr.type
 			})
 		);

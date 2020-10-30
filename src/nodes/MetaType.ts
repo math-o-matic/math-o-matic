@@ -2,6 +2,20 @@ import Node, { Precedence } from './Node';
 import ObjectType from './ObjectType';
 import Type from './Type';
 
+interface SimpleMetaTypeArgumentType {
+	functional: false;
+	left: Type[];
+	right: Type;
+}
+
+interface FunctionalMetaTypeArgumentType {
+	functional: true;
+	from: ObjectType[];
+	to: MetaType;
+}
+
+type MetaTypeArgumentType = SimpleMetaTypeArgumentType | FunctionalMetaTypeArgumentType;
+
 export default class MetaType extends Type {
 	
 	public readonly left: Type[];
@@ -9,13 +23,13 @@ export default class MetaType extends Type {
 	public readonly from: ObjectType[];
 	public readonly to: MetaType;
 
-	constructor (o) {
+	constructor (o: MetaTypeArgumentType) {
 		super(null, null, null, o.functional);
 
 		if (typeof o.functional != 'boolean')
 			throw Node.error('typeof o.functional != \'boolean\'', null);
 
-		if (!o.functional) {
+		if (o.functional == false) {
 			if (!(o.left instanceof Array))
 				throw Node.error('left should be an array', null);
 
