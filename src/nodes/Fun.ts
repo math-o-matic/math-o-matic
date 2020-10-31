@@ -64,8 +64,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 			type || new (expr.type instanceof ObjectType ? ObjectType : MetaType)({
 				functional: true,
 				from: params.map(variable => variable.type),
-				// @ts-ignore
-				to: expr.type
+				to: expr.type as any
 			})
 		);
 
@@ -81,5 +80,23 @@ export default abstract class Fun extends Expr0 implements Nameable {
 		
 		return super.isProved(hyps)
 			|| this.expr && this.expr.isProved(hyps);
+	}
+
+	public call(args: Expr0[]): Metaexpr {
+		if (!this.expr) {
+			throw Error('Cannot call a callable without a body');
+		}
+
+		if (this.params.length != args.length) {
+			throw Error('Illegal arguments length');
+		}
+
+		var map: Map<Variable, Expr0> = new Map();
+
+		for (var i = 0; i < this.params.length; i++) {
+			map.set(this.params[i], args[i]);
+		}
+
+		return this.expr.substitute(map);
 	}
 }

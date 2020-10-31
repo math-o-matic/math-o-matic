@@ -7,6 +7,8 @@ import Metaexpr from './Metaexpr';
 import { isNameable } from './Nameable';
 import Schema from './Schema';
 import ObjectFun from './ObjectFun';
+import MetaType from './MetaType';
+import ObjectType from './ObjectType';
 
 interface FuncallArgumentType {
 	fun: Metaexpr;
@@ -27,8 +29,7 @@ export default class Funcall extends Expr0 {
 		if (!(args instanceof Array) || args.map(e => e instanceof Node).some(e => !e))
 			throw Node.error('Assertion failed', scope);
 			 
-		var resolvedType = fun.type.resolve(),
-			// @ts-ignore
+		var resolvedType = fun.type.resolve() as ObjectType | MetaType,
 			paramTypes = resolvedType.from,
 			argTypes = args.map(e => e.type);
 
@@ -41,7 +42,6 @@ export default class Funcall extends Expr0 {
 			}
 		}
 
-		// @ts-ignore
 		super(scope, null, null, resolvedType.to);
 		
 		this.fun = fun;

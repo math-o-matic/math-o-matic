@@ -8,6 +8,7 @@ import MetaType from './MetaType';
 import Metaexpr from './Metaexpr';
 import Expr0 from './Expr0';
 import Variable from './Variable';
+import ObjectType from './ObjectType';
 
 interface ReductionArgumentType {
 	subject: Metaexpr;
@@ -26,8 +27,7 @@ export default class Reduction extends Metaexpr {
 
 	constructor ({subject, guesses, leftargs, expected}: ReductionArgumentType, scope?: Scope) {
 		if (guesses) {
-			let resolvedType = subject.type.resolve(),
-				// @ts-ignore
+			let resolvedType = subject.type.resolve() as ObjectType | MetaType,
 				paramTypes = resolvedType.from,
 				argTypes = guesses.map(e => e && e.type);
 
@@ -51,8 +51,7 @@ export default class Reduction extends Metaexpr {
 			var derefs = subject.params.map((p, i) => {
 				if (guesses && guesses[i]) return guesses[i];
 
-				// @ts-ignore
-				var tee = ExpressionResolver.expandMeta(subject.expr) as Tee;
+				var tee = ExpressionResolver.expandMeta((subject as Fun).expr) as Tee;
 	
 				return Reduction.query(
 					p.guess,

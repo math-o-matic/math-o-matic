@@ -82,7 +82,7 @@ export default class Tee extends Metaexpr {
 	}
 	
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		var expanded = ExpressionResolver.expandMetaAndFuncalls(this);
+		var expanded = ExpressionResolver.expandMetaAndFuncalls(this) as Tee;
 
 		return [
 			(this.shouldConsolidate(prec) ? '\\left(' : ''),

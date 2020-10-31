@@ -9,73 +9,38 @@ import Variable from "./nodes/Variable";
 import ObjectType from "./nodes/ObjectType";
 import Metaexpr from "./nodes/Metaexpr";
 import Expr0 from "./nodes/Expr0";
-
-function iscall(a: Metaexpr): a is Funcall {
-	return a instanceof Funcall;
-}
-
-function makecall(a: Metaexpr, args: Expr0[]): Funcall {
-	if (a instanceof Variable || a instanceof Fun) {
-		return new Funcall({
-			fun: a,
-			args
-		});
-	}
-
-	console.log(a);
-	throw Error();
-}
+import MetaType from "./nodes/MetaType";
 
 export default class ExpressionResolver {
 
-	public static call(callee: Metaexpr, args: Expr0[]): Metaexpr {
-		if (!(callee instanceof Fun)) {
-			console.log(callee);
+	public static expandCallOnce(expr: Funcall): Metaexpr {
+		if (!(expr instanceof Funcall)) {
 			throw Error('Illegal type');
 		}
 
-		if (!callee.expr) {
-			throw Error('Cannot call a callable without a body');
-		}
-
-		if (callee.params.length != args.length) {
-			throw Error('Illegal arguments length');
-		}
-
-		var map = new Map();
-
-		for (var i = 0; i < callee.params.length; i++) {
-			map.set(callee.params[i], args[i]);
-		}
-
-		return callee.expr.substitute(map);
-	}
-
-	public static expandCallOnce(expr: Metaexpr): Metaexpr {
-		if (!iscall(expr)) {
-			throw Error('Illegal type');
-		}
-
-		if (iscall(expr.fun)) {
+		if (expr.fun instanceof Funcall) {
 			var fun = ExpressionResolver.expandCallOnce(expr.fun);
-			return makecall(fun, expr.args);
+			return new Funcall({
+				fun,
+				args: expr.args
+			});
 		}
 
-		var callee_: Metaexpr = expr.fun;
+		var callee: Metaexpr = expr.fun;
 
-		while (callee_ instanceof $Variable) {
-			callee_ = callee_.expr;
+		while (callee instanceof $Variable) {
+			callee = callee.expr;
 		}
 
-		if (!(callee_ instanceof Fun)) {
+		if (!(callee instanceof Fun)) {
 			throw Error('Something\'s wrong');
 		}
 
-		if (!callee_.expr) {
+		if (!callee.expr) {
 			throw Error('Could not expand');
 		}
 
-		return ExpressionResolver.call(callee_, expr.args);
+		return callee.call(expr.args);
 	}
 
 	// expand0은 하지 않는다.
@@ -92,7 +57,7 @@ export default class ExpressionResolver {
 			if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema))
 				return new Funcall({fun, args});
 
-			return ExpressionResolver.expandMeta(ExpressionResolver.call(fun, args));
+			return ExpressionResolver.expandMeta(fun.call(args));
 		} else if (expr instanceof Reduction) {
 			return ExpressionResolver.expandMeta(expr.reduced);
 		} else if (expr instanceof ObjectFun) {
@@ -128,7 +93,7 @@ export default class ExpressionResolver {
 	}
 
 	// expr0의 이름 없는 funcall까지 풀음.
-	public static expandMetaAndFuncalls(expr: Metaexpr) {
+	public static expandMetaAndFuncalls(expr: Metaexpr): Metaexpr {
 		if (expr instanceof Tee) {
 			var left = expr.left.map(ExpressionResolver.expandMetaAndFuncalls);
 			var right = ExpressionResolver.expandMetaAndFuncalls(expr.right);
@@ -160,10 +125,10 @@ export default class ExpressionResolver {
 			var fun = ExpressionResolver.expandMetaAndFuncalls(expr.fun);
 			var args = expr.args.map(ExpressionResolver.expandMetaAndFuncalls);
 
-			if (!fun.expr || fun.name && !(fun instanceof Schema))
+			if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema))
 				return new Funcall({fun, args});
 
-			return ExpressionResolver.expandMetaAndFuncalls(ExpressionResolver.call(fun, args));
+			return ExpressionResolver.expandMetaAndFuncalls(fun.call(args));
 		} else if (expr instanceof Reduction) {
 			return ExpressionResolver.expandMetaAndFuncalls(expr.reduced);
 		} else if (expr instanceof Variable) {
@@ -206,14 +171,14 @@ export default class ExpressionResolver {
 				return recurseWrap(a, b.expr, depth + 1);
 			}
 
-			if (iscall(a) && iscall(b)) {
-				if (iscall(a.fun)) {
+			if (a instanceof Funcall && b instanceof Funcall) {
+				if (a.fun instanceof Funcall) {
 					return recurseWrap(
 						ExpressionResolver.expandCallOnce(a), b, depth + 1
 					);
 				}
 
-				if (iscall(b.fun)) {
+				if (b.fun instanceof Funcall) {
 					return recurseWrap(
 						a, ExpressionResolver.expandCallOnce(b), depth + 1
 					);
@@ -247,8 +212,8 @@ export default class ExpressionResolver {
 				return recurseWrap(a, ExpressionResolver.expandCallOnce(b), depth + 1);
 			}
 
-			if (iscall(a)) {
-				if (iscall(a.fun)) {
+			if (a instanceof Funcall) {
+				if (a.fun instanceof Funcall) {
 					return recurseWrap(
 						ExpressionResolver.expandCallOnce(a), b, depth + 1
 					);
@@ -261,8 +226,8 @@ export default class ExpressionResolver {
 				);
 			}
 
-			if (iscall(b)) {
-				if (iscall(b.fun)) {
+			if (b instanceof Funcall) {
+				if (b.fun instanceof Funcall) {
 					return recurseWrap(
 						a, ExpressionResolver.expandCallOnce(b), depth + 1
 					);
@@ -289,20 +254,26 @@ export default class ExpressionResolver {
 
 			if (a.type.isFunctional) {
 				var placeholders = [];
-				// @ts-ignore
-				var len = a.type.resolve().from.length;
+				var len = (a.type.resolve() as ObjectType | MetaType).from.length;
 
 				for (var i = 0; i < len; i++) {
 					placeholders.push(new Variable({
 						isParam: true,
-						// @ts-ignore
-						type: a.type.resolve().from[i],
+						type: (a.type.resolve() as ObjectType | MetaType).from[i],
 						name: '$' + i
 					}));
 				}
 
 				return recurseWrap(
-					makecall(a, placeholders), makecall(b, placeholders), depth + 1
+					new Funcall({
+						fun: a,
+						args: placeholders
+					}),
+					new Funcall({
+						fun: b,
+						args: placeholders
+					}),
+					depth + 1
 				);
 			}
 

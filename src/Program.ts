@@ -78,8 +78,7 @@ export default class Program {
 					scope.addSchema(schema);
 					break;
 				default:
-					// @ts-ignore
-					throw Error(`Unknown line type ${line._type}`);
+					throw Error(`Unknown line type ${(line as any)._type}`);
 			}
 		};
 	}
@@ -104,8 +103,7 @@ export default class Program {
 			case 'var':
 				return PegInterface.metavar(line, this.scope);
 			default:
-				// @ts-ignore
-				throw Error(`Unknown line type ${line._type}`);
+				throw Error(`Unknown line type ${(line as any)._type}`);
 		}
 	}
 
