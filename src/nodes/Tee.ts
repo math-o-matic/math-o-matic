@@ -1,10 +1,10 @@
-import Node, { Precedence } from './Node';
-import MetaType from './MetaType';
 import Scope from '../Scope';
 import $Variable from './$Variable';
-import ObjectType from './ObjectType';
-import Metaexpr, { EqualsPriority } from './Metaexpr';
 import Expr0 from './Expr0';
+import Metaexpr, { EqualsPriority } from './Metaexpr';
+import MetaType from './MetaType';
+import Node, { Precedence } from './Node';
+import ObjectType from './ObjectType';
 import Variable from './Variable';
 
 interface TeeArgumentType {

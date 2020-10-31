@@ -2,7 +2,7 @@ import Scope from '../Scope';
 import Expr0 from './Expr0';
 import Metaexpr, { EqualsPriority } from './Metaexpr';
 import Nameable from './Nameable';
-import Node, {Precedence} from './Node';
+import Node, { Precedence } from './Node';
 import ObjectType from './ObjectType';
 
 interface VariableArgumentType {

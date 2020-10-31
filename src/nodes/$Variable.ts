@@ -1,10 +1,8 @@
 import Scope from "../Scope";
 import Expr0 from "./Expr0";
 import Metaexpr, { EqualsPriority } from "./Metaexpr";
-import MetaType from "./MetaType";
 import Nameable from "./Nameable";
 import Node, { Precedence } from "./Node";
-import ObjectType from "./ObjectType";
 import Variable from "./Variable";
 
 interface $VariableArgumentType {

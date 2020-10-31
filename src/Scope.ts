@@ -1,9 +1,9 @@
+import $Variable from './nodes/$Variable';
+import Fun from './nodes/Fun';
+import Metaexpr from './nodes/Metaexpr';
 import ObjectType from './nodes/ObjectType';
 import Variable from './nodes/Variable';
-import Fun from './nodes/Fun';
 import StackTrace from './StackTrace';
-import $Variable from './nodes/$Variable';
-import Metaexpr from './nodes/Metaexpr';
 
 export type NestedTypeInput = string | NestedTypeInput[];
 

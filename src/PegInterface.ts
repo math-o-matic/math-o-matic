@@ -3,19 +3,19 @@
  * PEG.js의 출력은 여기에서만 처리해야 한다.
  */
 
-import ObjectType from './nodes/ObjectType';
-import Variable from './nodes/Variable';
-import Tee from './nodes/Tee';
+import $Variable from './nodes/$Variable';
+import Expr0 from './nodes/Expr0';
 import Fun from './nodes/Fun';
 import Funcall from './nodes/Funcall';
+import Metaexpr from './nodes/Metaexpr';
+import ObjectFun from './nodes/ObjectFun';
+import ObjectType from './nodes/ObjectType';
 import Reduction from './nodes/Reduction';
+import Schema from './nodes/Schema';
+import Tee from './nodes/Tee';
+import Variable from './nodes/Variable';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
-import $Variable from './nodes/$Variable';
-import Metaexpr from './nodes/Metaexpr';
-import Expr0 from './nodes/Expr0';
-import Schema from './nodes/Schema';
-import ObjectFun from './nodes/ObjectFun';
 
 function typeObjToString(obj: TypeObject): string {
 	if (obj._type != 'type')

@@ -1,8 +1,7 @@
 import Scope from "../Scope";
-import $Variable from "./$Variable";
 import Expr0 from "./Expr0";
 import Fun from "./Fun";
-import Metaexpr, { EqualsPriority } from "./Metaexpr";
+import Metaexpr from "./Metaexpr";
 import Node, { Precedence } from "./Node";
 import ObjectType from "./ObjectType";
 import Type from "./Type";

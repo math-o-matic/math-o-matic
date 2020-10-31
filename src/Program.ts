@@ -1,7 +1,7 @@
-import Scope from './Scope';
 import PegInterface from './PegInterface';
 import { EvaluableObject, LineObject } from './PegInterfaceDefinitions';
 import ProofExplorer from './ProofExplorer';
+import Scope from './Scope';
 
 export default class Program {
 	public scope = new Scope(null);

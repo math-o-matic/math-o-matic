@@ -1,15 +1,15 @@
-import Node, { Precedence } from './Node';
-import Variable from './Variable';
 import Scope from '../Scope';
-import Fun from './Fun';
-import Expr0 from './Expr0';
-import Metaexpr, { EqualsPriority } from './Metaexpr';
-import { isNameable } from './Nameable';
-import Schema from './Schema';
-import ObjectFun from './ObjectFun';
-import MetaType from './MetaType';
-import ObjectType from './ObjectType';
 import $Variable from './$Variable';
+import Expr0 from './Expr0';
+import Fun from './Fun';
+import Metaexpr, { EqualsPriority } from './Metaexpr';
+import MetaType from './MetaType';
+import { isNameable } from './Nameable';
+import Node, { Precedence } from './Node';
+import ObjectFun from './ObjectFun';
+import ObjectType from './ObjectType';
+import Schema from './Schema';
+import Variable from './Variable';
 
 interface FuncallArgumentType {
 	fun: Metaexpr;

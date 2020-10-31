@@ -1,12 +1,13 @@
+import Scope from '../Scope';
 import Expr0 from './Expr0';
+import Funcall from './Funcall';
+import Metaexpr, { EqualsPriority } from './Metaexpr';
+import MetaType from './MetaType';
+import Nameable from './Nameable';
 import Node from './Node';
 import ObjectType from './ObjectType';
-import MetaType from './MetaType';
-import Scope from '../Scope';
-import Variable from './Variable';
-import Metaexpr, { EqualsPriority } from './Metaexpr';
-import Nameable from './Nameable';
 import Type from './Type';
+import Variable from './Variable';
 
 interface FunArgumentType {
 	doc?: string;
@@ -127,4 +128,3 @@ export default abstract class Fun extends Expr0 implements Nameable {
 	}
 }
 
-import Funcall from './Funcall';

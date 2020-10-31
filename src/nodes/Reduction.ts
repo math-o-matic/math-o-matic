@@ -1,13 +1,13 @@
-import Node, { Precedence } from './Node';
-import Funcall from './Funcall';
 import Scope from '../Scope';
-import Tee from './Tee';
-import Fun from './Fun';
-import MetaType from './MetaType';
-import Metaexpr, { EqualsPriority } from './Metaexpr';
 import Expr0 from './Expr0';
-import Variable from './Variable';
+import Fun from './Fun';
+import Funcall from './Funcall';
+import Metaexpr, { EqualsPriority } from './Metaexpr';
+import MetaType from './MetaType';
+import Node, { Precedence } from './Node';
 import ObjectType from './ObjectType';
+import Tee from './Tee';
+import Variable from './Variable';
 
 interface ReductionArgumentType {
 	subject: Metaexpr;
