@@ -108,6 +108,7 @@ $('#console-input').addEventListener('keydown', evt => {
 					noescape: true
 				});
 			} catch (e) {
+				console.error(e);
 				htmlify(e, {error: true});
 			} finally {
 				if (!evt.ctrlKey) codemirror.setValue('');
