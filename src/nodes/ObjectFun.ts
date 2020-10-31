@@ -1,10 +1,10 @@
-import ExpressionResolver from "../ExpressionResolver";
 import Scope from "../Scope";
 import $Variable from "./$Variable";
 import Expr0 from "./Expr0";
 import Fun from "./Fun";
-import Metaexpr from "./Metaexpr";
+import Metaexpr, { EqualsPriority } from "./Metaexpr";
 import Node, { Precedence } from "./Node";
+import ObjectType from "./ObjectType";
 import Type from "./Type";
 import Variable from "./Variable";
 
@@ -42,6 +42,18 @@ export default class ObjectFun extends Fun {
 		});
 	}
 
+	public expandMeta(andFuncalls: boolean): Metaexpr {
+		if (!this.expr) return this;
+		if (this.type instanceof ObjectType && this.name) return this;
+
+		return new ObjectFun({
+			annotations: this.annotations,
+			name: null,
+			params: this.params,
+			expr: this.expr.expandMeta(andFuncalls)
+		});
+	}
+
 	public toIndentedString(indent: number, root?: boolean): string {
 		return [
 			`ƒ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
@@ -62,7 +74,7 @@ export default class ObjectFun extends Fun {
 					: `\\left(${this.params.map(e => e.toTeXString(Node.PREC_COMMA)).join(', ')}\\right)`
 				),
 				'\\mapsto ',
-				ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(false),
+				this.expr.expandMeta(true).toTeXString(false),
 
 				(this.shouldConsolidate(prec) ? '\\right)' : '')
 			].join('');

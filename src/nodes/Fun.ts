@@ -4,7 +4,7 @@ import ObjectType from './ObjectType';
 import MetaType from './MetaType';
 import Scope from '../Scope';
 import Variable from './Variable';
-import Metaexpr from './Metaexpr';
+import Metaexpr, { EqualsPriority } from './Metaexpr';
 import Nameable from './Nameable';
 import Type from './Type';
 
@@ -82,6 +82,32 @@ export default abstract class Fun extends Expr0 implements Nameable {
 			|| this.expr && this.expr.isProved(hyps);
 	}
 
+	protected getEqualsPriority(): EqualsPriority {
+		return EqualsPriority.ONE;
+	}
+	
+	protected equalsInternal(obj: Metaexpr): boolean {
+		var placeholders = [];
+		var types = (this.type.resolve() as ObjectType | MetaType).from;
+		var len = types.length;
+
+		for (var i = 0; i < len; i++) {
+			placeholders.push(new Variable({
+				isParam: true,
+				type: types[i],
+				name: '$' + i
+			}));
+		}
+
+		return new Funcall({
+			fun: this,
+			args: placeholders
+		}).equals(new Funcall({
+			fun: obj,
+			args: placeholders
+		}));
+	}
+
 	public call(args: Expr0[]): Metaexpr {
 		if (!this.expr) {
 			throw Error('Cannot call a callable without a body');
@@ -100,3 +126,5 @@ export default abstract class Fun extends Expr0 implements Nameable {
 		return this.expr.substitute(map);
 	}
 }
+
+import Funcall from './Funcall';

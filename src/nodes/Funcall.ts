@@ -3,7 +3,7 @@ import Variable from './Variable';
 import Scope from '../Scope';
 import Fun from './Fun';
 import Expr0 from './Expr0';
-import Metaexpr from './Metaexpr';
+import Metaexpr, { EqualsPriority } from './Metaexpr';
 import { isNameable } from './Nameable';
 import Schema from './Schema';
 import ObjectFun from './ObjectFun';
@@ -61,6 +61,16 @@ export default class Funcall extends Expr0 {
 			args: this.args.map(arg => arg.substitute(map))
 		});
 	}
+
+	public expandMeta(andFuncalls: boolean): Metaexpr {
+		var fun = this.fun.expandMeta(andFuncalls),
+			args = this.args.map(arg => arg.expandMeta(andFuncalls));
+		
+		if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema))
+			return new Funcall({fun, args});
+
+		return fun.call(args).expandMeta(andFuncalls);
+	}
 	
 	public expandOnce(): Metaexpr {
 		if (this.fun instanceof Funcall) {
@@ -85,6 +95,53 @@ export default class Funcall extends Expr0 {
 		}
 
 		return callee.call(this.args);
+	}
+
+	protected getEqualsPriority(): EqualsPriority {
+		return EqualsPriority.THREE;
+	}
+
+	protected equalsInternal(obj: Metaexpr): boolean {
+		if (this.fun instanceof Funcall) {
+			return this.expandOnce().equals(obj);
+		}
+
+		if (!(obj instanceof Funcall)) {
+			if (!(this.fun instanceof Fun && this.fun.expr)) return false;
+
+			return this.expandOnce().equals(obj);
+		}
+
+		if (obj.fun instanceof Funcall) {
+			return this.equals(obj.expandOnce());
+		}
+
+		var thisHasFunExpr = this.fun instanceof Fun && this.fun.expr,
+			objHasFunExpr = obj.fun instanceof Fun && obj.fun.expr;
+		
+		if (this.fun == obj.fun || !thisHasFunExpr && !objHasFunExpr) {
+			if (this.fun != obj.fun) return false;
+
+			if (!thisHasFunExpr && !objHasFunExpr) {
+				for (var i = 0; i < this.args.length; i++) {
+					if (!this.args[i].equals(obj.args[i])) return false;
+				}
+
+				return true;
+			}
+
+			if (this.args.every((_, i) => {
+				return this.args[i].equals(obj.args[i]);
+			})) {
+				return true;
+			}
+		}
+
+		if (thisHasFunExpr) {
+			return this.expandOnce().equals(obj);
+		}
+
+		return this.equals(obj.expandOnce());
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

@@ -1,6 +1,6 @@
 import Scope from "../Scope";
 import Expr0 from "./Expr0";
-import Metaexpr from "./Metaexpr";
+import Metaexpr, { EqualsPriority } from "./Metaexpr";
 import MetaType from "./MetaType";
 import Nameable from "./Nameable";
 import Node, { Precedence } from "./Node";
@@ -37,6 +37,18 @@ export default class $Variable extends Metaexpr implements Nameable {
 
 	public substitute(map: Map<Variable, Expr0>): Metaexpr {
 		return this.expr.substitute(map);
+	}
+
+	public expandMeta(andFuncalls: boolean): Metaexpr {
+		return this.expr.expandMeta(andFuncalls);
+	}
+
+	protected getEqualsPriority(): EqualsPriority {
+		return EqualsPriority.FOUR;
+	}
+
+	protected equalsInternal(obj: Metaexpr): boolean {
+		return this.expr.equals(obj);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

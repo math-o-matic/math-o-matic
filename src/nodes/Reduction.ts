@@ -1,11 +1,10 @@
 import Node, { Precedence } from './Node';
 import Funcall from './Funcall';
-import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
 import Tee from './Tee';
 import Fun from './Fun';
 import MetaType from './MetaType';
-import Metaexpr from './Metaexpr';
+import Metaexpr, { EqualsPriority } from './Metaexpr';
 import Expr0 from './Expr0';
 import Variable from './Variable';
 import ObjectType from './ObjectType';
@@ -21,9 +20,8 @@ export default class Reduction extends Metaexpr {
 	
 	public readonly subject: Metaexpr;
 	public readonly guesses;
-	public readonly leftargs;
-	public readonly reduced;
-	public readonly type;
+	public readonly leftargs: Metaexpr[];
+	public readonly reduced: Metaexpr;
 
 	constructor ({subject, guesses, leftargs, expected}: ReductionArgumentType, scope?: Scope) {
 		if (guesses) {
@@ -51,7 +49,7 @@ export default class Reduction extends Metaexpr {
 			var derefs = subject.params.map((p, i) => {
 				if (guesses && guesses[i]) return guesses[i];
 
-				var tee = ExpressionResolver.expandMeta((subject as Fun).expr) as Tee;
+				var tee = (subject as Fun).expr.expandMeta(false) as Tee;
 	
 				return Reduction.query(
 					p.guess,
@@ -94,36 +92,36 @@ export default class Reduction extends Metaexpr {
 		this.subject = subject;
 		this.leftargs = leftargs;
 
-		var tee = ExpressionResolver.expandMetaAndFuncalls(subject);
+		var tee = subject.expandMeta(true);
 
 		if (!(tee instanceof Tee)) {
 			throw Node.error('Assertion failed', scope);
 		}
 
 		for (let i = 0; i < tee.left.length; i++) {
-			if (!ExpressionResolver.equals(tee.left[i], leftargs[i])) {
+			if (!tee.left[i].equals(leftargs[i])) {
 				throw Node.error(`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
-${ExpressionResolver.expandMetaAndFuncalls(tee.left[i])}
+${tee.left[i].expandMeta(true)}
 ----------------
 
 --- RECEIVED ---
-${ExpressionResolver.expandMetaAndFuncalls(leftargs[i])}
+${leftargs[i].expandMeta(true)}
 ----------------`, scope);
 			}
 		}
 
 		if (expected) {
-			if (!ExpressionResolver.equals(tee.right, expected)) {
+			if (!tee.right.equals(expected)) {
 				throw Node.error(`RHS failed to match:
 
 --- EXPECTED ---
-${ExpressionResolver.expandMetaAndFuncalls(tee.right)}
+${tee.right.expandMeta(true)}
 ----------------
 
 --- RECEIVED ---
-${ExpressionResolver.expandMetaAndFuncalls(expected)}
+${expected.expandMeta(true)}
 ----------------`, scope);
 			}
 
@@ -143,6 +141,18 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 
 	public substitute(map: Map<Variable, Expr0>): Metaexpr {
 		return this.reduced.substitute(map);
+	}
+
+	public expandMeta(andFuncalls: boolean): Metaexpr {
+		return this.reduced.expandMeta(andFuncalls);
+	}
+
+	protected getEqualsPriority(): EqualsPriority {
+		return EqualsPriority.FOUR;
+	}
+
+	protected equalsInternal(obj: Metaexpr): boolean {
+		return this.reduced.equals(obj);
 	}
 
 	public static query(guess, left, leftargs, right, expected, scope: Scope) {
@@ -166,7 +176,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 		}
 
 		return (function recurse(guess, lef: Metaexpr, node: Metaexpr, ptr) {
-			node = ExpressionResolver.expandMetaAndFuncalls(node);
+			node = node.expandMeta(true);
 			
 			if (guess.length <= ptr) return node;
 
@@ -190,7 +200,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 						throw Node.error(`Cannot dereference @${guess}`, scope);
 					}
 
-					if (ExpressionResolver.equals(lef.fun, node.fun)) {
+					if (lef.fun.equals(node.fun)) {
 						break;
 					}
 
@@ -218,7 +228,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {
-		var leftargs = this.leftargs.map(arg => {
+		var leftargs: any = this.leftargs.map(arg => {
 			return arg.toIndentedString(indent + 1);
 		});
 	

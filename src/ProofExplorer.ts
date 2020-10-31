@@ -1,4 +1,3 @@
-import ExpressionResolver from "./ExpressionResolver";
 import $Variable from "./nodes/$Variable";
 import Fun from "./nodes/Fun";
 import Funcall from "./nodes/Funcall";
@@ -12,7 +11,7 @@ import Variable from "./nodes/Variable";
 import Scope from "./Scope";
 
 export default class ProofExplorer {
-	public static get(scope: Scope, name: string, ktx) {	
+	public static get(scope: Scope, name: string, ktx) {
 		var DIAMOND = '&#x25C7;',
 			DOWN = '&#x25BC;',
 			UP = '&#x25B2;';
@@ -68,7 +67,7 @@ export default class ProofExplorer {
 		function exprToHtml(expr, expand?) {
 			if (typeof expr == 'number') return `<b>${expr}</b>`;
 			if (expr instanceof Array) return `<b>${expr[0]}&ndash;${expr[1]}</b>`;
-			if (expand) return ktx(ExpressionResolver.expandMetaAndFuncalls(expr).toTeXString(true));
+			if (expand) return ktx(expr.expandMeta(true).toTeXString(true));
 			
 			return ktx(expr.toTeXString(true));
 		}

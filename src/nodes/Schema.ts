@@ -1,10 +1,10 @@
-import ExpressionResolver from "../ExpressionResolver";
 import Scope from "../Scope";
 import $Variable from "./$Variable";
 import Expr0 from "./Expr0";
 import Fun from "./Fun";
 import Metaexpr from "./Metaexpr";
 import Node, { Precedence } from "./Node";
+import ObjectType from "./ObjectType";
 import Type from "./Type";
 import Variable from "./Variable";
 
@@ -68,6 +68,20 @@ export default class Schema extends Fun {
 		});
 	}
 
+	public expandMeta(andFuncalls: boolean): Metaexpr {
+		if (!this.expr) return this;
+		if (this.type instanceof ObjectType && this.name) return this;
+
+		return new Schema({
+			annotations: this.annotations,
+			axiomatic: this.axiomatic,
+			name: null,
+			params: this.params,
+			def$s: this.def$s,
+			expr: this.expr.expandMeta(andFuncalls)
+		});
+	}
+
 	public toIndentedString(indent: number, root?: boolean): string {
 		return [
 			`∫ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
@@ -88,7 +102,7 @@ export default class Schema extends Fun {
 					: `\\left(${this.params.map(e => e.toTeXString(Node.PREC_COMMA)).join(', ')}\\right)`
 				),
 				'\\mapsto ',
-				ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(false),
+				this.expr.expandMeta(true).toTeXString(false),
 
 				(this.shouldConsolidate(prec) ? '\\right)' : '')
 			].join('');
@@ -100,6 +114,6 @@ export default class Schema extends Fun {
 			return `\\href{#${id}}\\mathsf{${Node.escapeTeX(this.name)}}`;
 	
 		return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}\\mathord{\\left(${this.params.map(e => e.toTeXStringWithId(Node.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}\\right)}:\\\\\\quad`
-				+ ExpressionResolver.expandMetaAndFuncalls(this.expr).toTeXString(true);
+				+ this.expr.expandMeta(true).toTeXString(true);
 	}
 }

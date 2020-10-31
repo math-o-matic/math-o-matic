@@ -1,6 +1,6 @@
 import Scope from '../Scope';
 import Expr0 from './Expr0';
-import Metaexpr from './Metaexpr';
+import Metaexpr, { EqualsPriority } from './Metaexpr';
 import Nameable from './Nameable';
 import Node, {Precedence} from './Node';
 import ObjectType from './ObjectType';
@@ -41,6 +41,18 @@ export default class Variable extends Expr0 implements Nameable {
 
 	public substitute(map: Map<Variable, Expr0>): Metaexpr {
 		return map.get(this) || this;
+	}
+
+	public expandMeta(andFuncalls: boolean): Metaexpr {
+		return this;
+	}
+
+	protected getEqualsPriority(): EqualsPriority {
+		return EqualsPriority.ZERO;
+	}
+
+	protected equalsInternal(obj: Metaexpr): boolean {
+		return false;
 	}
 
 	// pr f

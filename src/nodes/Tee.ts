@@ -1,10 +1,9 @@
 import Node, { Precedence } from './Node';
 import MetaType from './MetaType';
-import ExpressionResolver from '../ExpressionResolver';
 import Scope from '../Scope';
 import $Variable from './$Variable';
 import ObjectType from './ObjectType';
-import Metaexpr from './Metaexpr';
+import Metaexpr, { EqualsPriority } from './Metaexpr';
 import Expr0 from './Expr0';
 import Variable from './Variable';
 
@@ -69,6 +68,33 @@ export default class Tee extends Metaexpr {
 		});
 	}
 
+	public expandMeta(andFuncalls: boolean): Metaexpr {
+		var left = this.left.map(lef => lef.expandMeta(andFuncalls));
+		var right = this.right.expandMeta(andFuncalls);
+
+		return new Tee({left, right});
+	}
+
+	protected getEqualsPriority(): EqualsPriority {
+		return EqualsPriority.TWO;
+	}
+
+	protected equalsInternal(obj: Metaexpr): boolean {
+		if (!(obj instanceof Tee)) {
+			throw Error('Assertion failed');
+		}
+
+		if (this.left.length != obj.left.length) {
+			throw Error('Assertion failed');
+		}
+
+		for (var i = 0; i < this.left.length; i++) {
+			if (!this.left[i].equals(obj.left[i])) return false;
+		}
+
+		return this.right.equals(obj.right);
+	}
+
 	public toIndentedString(indent: number, root?: boolean): string {
 		if (!this.left.length) {
 			return '|- ' + this.right.toIndentedString(indent);
@@ -82,7 +108,7 @@ export default class Tee extends Metaexpr {
 	}
 	
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		var expanded = ExpressionResolver.expandMetaAndFuncalls(this) as Tee;
+		var expanded = this.expandMeta(true) as Tee;
 
 		return [
 			(this.shouldConsolidate(prec) ? '\\left(' : ''),
