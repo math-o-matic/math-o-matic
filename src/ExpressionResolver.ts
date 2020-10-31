@@ -1,5 +1,7 @@
 import $Variable from "./nodes/$Variable";
 import Reduction from "./nodes/Reduction";
+import ObjectFun from "./nodes/ObjectFun";
+import Schema from "./nodes/Schema";
 import Fun from "./nodes/Fun";
 import Funcall from "./nodes/Funcall";
 import Tee from "./nodes/Tee";
@@ -31,7 +33,7 @@ export default class ExpressionResolver {
 				fun: ExpressionResolver.substitute(expr.fun, map),
 				args: expr.args.map(arg => ExpressionResolver.substitute(arg, map))
 			});
-		} else if (expr instanceof Fun) {
+		} else if (expr instanceof ObjectFun) {
 			if (!expr.expr) return expr;
 
 			// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
@@ -41,12 +43,28 @@ export default class ExpressionResolver {
 			if (expr.params.some(e => map.has(e)))
 				throw Error('Parameter collision');
 
-			return new Fun({
-				isSchema: expr.isSchema,
+			return new ObjectFun({
+				annotations: expr.annotations,
+				name: null,
+				params: expr.params,
+				expr: ExpressionResolver.substitute(expr.expr, map)
+			});
+		} else if (expr instanceof Schema) {
+			if (!expr.expr) return expr;
+
+			// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
+			if (expr.name) return expr;
+
+			// 위의 expr.name 조건을 지우면 특수한 경우에 이게 발생할지도 모른다.
+			if (expr.params.some(e => map.has(e)))
+				throw Error('Parameter collision');
+
+			return new Schema({
 				annotations: expr.annotations,
 				axiomatic: expr.axiomatic,
 				name: null,
 				params: expr.params,
+				def$s: expr.def$s,
 				expr: ExpressionResolver.substitute(expr.expr, map)
 			});
 		} else if (expr instanceof Variable) {
@@ -129,23 +147,32 @@ export default class ExpressionResolver {
 			var fun = ExpressionResolver.expandMeta(expr.fun),
 				args = expr.args;
 			
-			// @ts-ignore
-			if (!fun.expr || fun.name && !fun.isSchema)
+			if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema))
 				return new Funcall({fun, args});
 
 			return ExpressionResolver.expandMeta(ExpressionResolver.call(fun, args));
 		} else if (expr instanceof Reduction) {
 			return ExpressionResolver.expandMeta(expr.reduced);
-		} else if (expr instanceof Fun) {
+		} else if (expr instanceof ObjectFun) {
 			if (!expr.expr) return expr;
 			if (expr.type instanceof ObjectType && expr.name) return expr;
 
-			return new Fun({
-				isSchema: expr.isSchema,
+			return new ObjectFun({
+				annotations: expr.annotations,
+				name: null,
+				params: expr.params,
+				expr: ExpressionResolver.expandMeta(expr.expr)
+			});
+		} else if (expr instanceof Schema) {
+			if (!expr.expr) return expr;
+			if (expr.type instanceof ObjectType && expr.name) return expr;
+
+			return new Schema({
 				annotations: expr.annotations,
 				axiomatic: expr.axiomatic,
 				name: null,
 				params: expr.params,
+				def$s: expr.def$s,
 				expr: ExpressionResolver.expandMeta(expr.expr)
 			});
 		} else if (expr instanceof Variable) {
@@ -165,23 +192,33 @@ export default class ExpressionResolver {
 			var right = ExpressionResolver.expandMetaAndFuncalls(expr.right);
 
 			return new Tee({left, right});
-		} else if (expr instanceof Fun) {
+		} else if (expr instanceof ObjectFun) {
 			if (!expr.expr) return expr;
 			if (expr.type instanceof ObjectType && expr.name) return expr;
 
-			return new Fun({
-				isSchema: expr.isSchema,
+			return new ObjectFun({
+				annotations: expr.annotations,
+				name: null,
+				params: expr.params,
+				expr: ExpressionResolver.expandMetaAndFuncalls(expr.expr)
+			});
+		} else if (expr instanceof Schema) {
+			if (!expr.expr) return expr;
+			if (expr.type instanceof ObjectType && expr.name) return expr;
+
+			return new Schema({
 				annotations: expr.annotations,
 				axiomatic: expr.axiomatic,
 				name: null,
 				params: expr.params,
+				def$s: expr.def$s,
 				expr: ExpressionResolver.expandMetaAndFuncalls(expr.expr)
 			});
 		} else if (expr instanceof Funcall) {
 			var fun = ExpressionResolver.expandMetaAndFuncalls(expr.fun);
 			var args = expr.args.map(ExpressionResolver.expandMetaAndFuncalls);
 
-			if (!fun.expr || fun.name && !fun.isSchema)
+			if (!fun.expr || fun.name && !(fun instanceof Schema))
 				return new Funcall({fun, args});
 
 			return ExpressionResolver.expandMetaAndFuncalls(ExpressionResolver.call(fun, args));

@@ -205,12 +205,12 @@
 
 					notProvedList = notProvedList.concat(
 						[...scope.schemaMap]
-							.filter(([k, v]) => !v.proved).map(([k, v]) => k)
+							.filter(([k, v]) => !v.isProved()).map(([k, v]) => k)
 					);
 
 					provedList = provedList.concat(
 						[...scope.schemaMap]
-							.filter(([k, v]) => !v.axiomatic && v.proved).map(([k, v]) => k)
+							.filter(([k, v]) => !v.axiomatic && v.isProved()).map(([k, v]) => k)
 					);
 
 					for (var [k, v] of scope.typedefMap) {
@@ -249,7 +249,7 @@
 
 					for (var [k, v] of scope.schemaMap) {
 						arr[v._id] = `<div class="block">`
-							+ `<p class="label"><a id="schema-${v.proved ? 'p' : 'np'}-${k}" href="#schema-${v.proved ? 'p' : 'np'}-${k}">${
+							+ `<p class="label"><a id="schema-${v.isProved() ? 'p' : 'np'}-${k}" href="#schema-${v.isProved() ? 'p' : 'np'}-${k}">${
 								v.annotations.map(a => `<b class="red">${a}</b> `).join('')
 							}<b>${
 								v.axiomatic ? 'axiomatic ' : ''

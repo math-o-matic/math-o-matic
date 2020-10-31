@@ -5,6 +5,8 @@ import Fun from './Fun';
 import Expr0 from './Expr0';
 import Metaexpr from './Metaexpr';
 import { isNameable } from './Nameable';
+import Schema from './Schema';
+import ObjectFun from './ObjectFun';
 
 interface FuncallArgumentType {
 	fun: Metaexpr;
@@ -66,7 +68,7 @@ export default class Funcall extends Expr0 {
 	
 			args = args.join(', ');
 			
-			if (this.fun instanceof Fun && this.fun.isSchema) {
+			if (this.fun instanceof Schema) {
 				return `${this.fun.name || `(${this.fun})`}(${args})`;
 			} else {
 				return [
@@ -79,7 +81,7 @@ export default class Funcall extends Expr0 {
 		} else {
 			args = args.join(',\n' + '\t'.repeat(indent + 1));
 			
-			if (this.fun instanceof Fun && this.fun.isSchema) {
+			if (this.fun instanceof Schema) {
 				return [
 					this.fun.name || `(${this.fun.toIndentedString(indent)})`,
 					'(',
@@ -101,17 +103,17 @@ export default class Funcall extends Expr0 {
 	}
 
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		if (this.fun instanceof Fun && this.fun.isSchema) {
+		if (this.fun instanceof Schema) {
 			return (
 				this.fun.name
-					? `\\href{#schema-${this.fun.proved ? 'p' : 'np'}-${this.fun.name}}{\\textsf{${Node.escapeTeX(this.fun.name)}}}`
+					? `\\href{#schema-${this.fun.isProved() ? 'p' : 'np'}-${this.fun.name}}{\\textsf{${Node.escapeTeX(this.fun.name)}}}`
 					: this.fun.toTeXString(false)
 			) + `\\mathord{\\left(${this.args.map(arg => {
 				return arg.toTeXString(Node.PREC_COMMA);
 			}).join(', ')}\\right)}`;
 		}
 
-		if (this.fun instanceof Fun)
+		if (this.fun instanceof ObjectFun)
 			return this.fun.funcallToTeXString(this.args, prec);
 		
 		var args = this.args.map(arg => {

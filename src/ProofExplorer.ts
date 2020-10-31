@@ -4,7 +4,9 @@ import Fun from "./nodes/Fun";
 import Funcall from "./nodes/Funcall";
 import Metaexpr from "./nodes/Metaexpr";
 import { isNameable } from "./nodes/Nameable";
+import ObjectFun from "./nodes/ObjectFun";
 import Reduction from "./nodes/Reduction";
+import Schema from "./nodes/Schema";
 import Tee from "./nodes/Tee";
 import Variable from "./nodes/Variable";
 import Scope from "./Scope";
@@ -32,11 +34,13 @@ export default class ProofExplorer {
 							? 0 : recurse(expr.subject)),
 					1
 				);
-			} else if (expr instanceof Fun) {
+			} else if (expr instanceof Schema) {
 				return Math.max(
 					...expr.def$s.map($ => recurse($.expr)),
 					recurse(expr.expr)
 				) + 1;
+			} else if (expr instanceof ObjectFun) {
+				return recurse(expr.expr) + 1;
 			} else if (expr instanceof Tee) {
 				return Math.max(
 					...expr.left.map(recurse),
@@ -150,8 +154,7 @@ export default class ProofExplorer {
 					}];
 				}
 
-				// @ts-ignore
-				if (expr.fun.isSchema && expr.fun.name) {
+				if (expr.fun instanceof Schema && expr.fun.name) {
 					return [{
 						_type: 'RCX',
 						ctr: ++ctr,
@@ -159,8 +162,7 @@ export default class ProofExplorer {
 					}];
 				}
 
-				// @ts-ignore
-				if (!expr.fun.isSchema) {
+				if (!(expr.fun instanceof Schema)) {
 					return [{
 						_type: 'NP',
 						ctr: ++ctr,
@@ -187,7 +189,7 @@ export default class ProofExplorer {
 					expr
 				}];
 			} else if (expr instanceof Fun) {
-				if (expr.isSchema && expr.name && expr != theexpr) {
+				if (expr instanceof Schema && expr.name && expr != theexpr) {
 					return [{
 						_type: 'RS',
 						ctr: ++ctr,
@@ -209,13 +211,15 @@ export default class ProofExplorer {
 
 				var $lines = [];
 				
-				expr.def$s.forEach($ => {
-					var lines = getTree($.expr, hypnumMap, $Map);
-					$lines = $lines.concat(lines);
+				if (expr instanceof Schema) {
+					expr.def$s.forEach($ => {
+						var lines = getTree($.expr, hypnumMap, $Map);
+						$lines = $lines.concat(lines);
 
-					var $num = lines[lines.length - 1].ctr;
-					$Map.set($, $num);
-				});
+						var $num = lines[lines.length - 1].ctr;
+						$Map.set($, $num);
+					});
+				}
 
 				return [{
 					_type: 'V',

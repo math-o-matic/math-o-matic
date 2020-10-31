@@ -14,6 +14,8 @@ import Scope, { NestedTypeInput } from './Scope';
 import $Variable from './nodes/$Variable';
 import Metaexpr from './nodes/Metaexpr';
 import Expr0 from './nodes/Expr0';
+import Schema from './nodes/Schema';
+import ObjectFun from './nodes/ObjectFun';
 
 function typeObjToString(obj: TypeObject): string {
 	if (obj._type != 'type')
@@ -189,7 +191,7 @@ export default class PI {
 				throw Error('wut');
 		}
 
-		return new Fun({isSchema: false, annotations: [], name, type, params, expr, doc, tex}, scope);
+		return new ObjectFun({annotations: [], name, type, params, expr, doc, tex}, scope);
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope): Funcall {
@@ -363,7 +365,7 @@ export default class PI {
 
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new Fun({isSchema: true, doc, annotations, axiomatic, name, params, def$s, expr}, scope);
+		return new Schema({doc, annotations, axiomatic, name, params, def$s, expr}, scope);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope): Funcall {
