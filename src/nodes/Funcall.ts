@@ -9,6 +9,7 @@ import Schema from './Schema';
 import ObjectFun from './ObjectFun';
 import MetaType from './MetaType';
 import ObjectType from './ObjectType';
+import $Variable from './$Variable';
 
 interface FuncallArgumentType {
 	fun: Metaexpr;
@@ -59,6 +60,31 @@ export default class Funcall extends Expr0 {
 			fun: this.fun.substitute(map),
 			args: this.args.map(arg => arg.substitute(map))
 		});
+	}
+	
+	public expandOnce(): Metaexpr {
+		if (this.fun instanceof Funcall) {
+			return new Funcall({
+				fun: this.fun.expandOnce(),
+				args: this.args
+			});
+		}
+
+		var callee: Metaexpr = this.fun;
+
+		while (callee instanceof $Variable) {
+			callee = callee.expr;
+		}
+
+		if (!(callee instanceof Fun)) {
+			throw Error('Something\'s wrong');
+		}
+
+		if (!callee.expr) {
+			throw Error('Could not expand');
+		}
+
+		return callee.call(this.args);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

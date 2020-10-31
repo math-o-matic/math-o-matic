@@ -8,12 +8,11 @@ import Tee from "./nodes/Tee";
 import Variable from "./nodes/Variable";
 import ObjectType from "./nodes/ObjectType";
 import Metaexpr from "./nodes/Metaexpr";
-import Expr0 from "./nodes/Expr0";
 import MetaType from "./nodes/MetaType";
 
 export default class ExpressionResolver {
 
-	public static expandCallOnce(expr: Funcall): Metaexpr {
+	/* public static expandCallOnce(expr: Funcall): Metaexpr {
 		if (!(expr instanceof Funcall)) {
 			throw Error('Illegal type');
 		}
@@ -41,7 +40,7 @@ export default class ExpressionResolver {
 		}
 
 		return callee.call(expr.args);
-	}
+	} */
 
 	// expand0은 하지 않는다.
 	public static expandMeta(expr: Metaexpr): Metaexpr {
@@ -174,13 +173,13 @@ export default class ExpressionResolver {
 			if (a instanceof Funcall && b instanceof Funcall) {
 				if (a.fun instanceof Funcall) {
 					return recurseWrap(
-						ExpressionResolver.expandCallOnce(a), b, depth + 1
+						a.expandOnce(), b, depth + 1
 					);
 				}
 
 				if (b.fun instanceof Funcall) {
 					return recurseWrap(
-						a, ExpressionResolver.expandCallOnce(b), depth + 1
+						a, b.expandOnce(), depth + 1
 					);
 				}
 
@@ -206,37 +205,37 @@ export default class ExpressionResolver {
 				}
 
 				if (aHasFunExpr) {
-					return recurseWrap(ExpressionResolver.expandCallOnce(a), b, depth + 1);
+					return recurseWrap(a.expandOnce(), b, depth + 1);
 				}
 
-				return recurseWrap(a, ExpressionResolver.expandCallOnce(b), depth + 1);
+				return recurseWrap(a, b.expandOnce(), depth + 1);
 			}
 
 			if (a instanceof Funcall) {
 				if (a.fun instanceof Funcall) {
 					return recurseWrap(
-						ExpressionResolver.expandCallOnce(a), b, depth + 1
+						a.expandOnce(), b, depth + 1
 					);
 				}
 
 				if (!(a.fun instanceof Fun && a.fun.expr)) return false;
 
 				return recurseWrap(
-					ExpressionResolver.expandCallOnce(a), b, depth + 1
+					a.expandOnce(), b, depth + 1
 				);
 			}
 
 			if (b instanceof Funcall) {
 				if (b.fun instanceof Funcall) {
 					return recurseWrap(
-						a, ExpressionResolver.expandCallOnce(b), depth + 1
+						a, b.expandOnce(), depth + 1
 					);
 				}
 
 				if (!(b.fun instanceof Fun && b.fun.expr)) return false;
 
 				return recurseWrap(
-					a, ExpressionResolver.expandCallOnce(b), depth + 1
+					a, b.expandOnce(), depth + 1
 				);
 			}
 

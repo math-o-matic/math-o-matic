@@ -165,7 +165,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 			ret = leftargs[guess[0] * 1 - 1];
 		}
 
-		return (function recurse(guess, lef, node, ptr) {
+		return (function recurse(guess, lef: Metaexpr, node: Metaexpr, ptr) {
 			node = ExpressionResolver.expandMetaAndFuncalls(node);
 			
 			if (guess.length <= ptr) return node;
@@ -186,7 +186,7 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 				}
 
 				while (true) {
-					if (!lef.fun || !node.fun) {
+					if (!(lef instanceof Funcall) || !(node instanceof Funcall)) {
 						throw Node.error(`Cannot dereference @${guess}`, scope);
 					}
 
@@ -194,11 +194,11 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 						break;
 					}
 
-					if (!node.fun.expr) {
+					if (!(node.fun instanceof Fun && node.fun.expr)) {
 						throw Node.error(`Cannot dereference @${guess}`, scope);
 					}
 
-					node = ExpressionResolver.expandCallOnce(node);
+					node = node.expandOnce();
 				}
 
 				if (!node.args || !(1 <= n && n <= node.args.length))
