@@ -1,5 +1,4 @@
 var fs = require('fs');
-var path = require('path');
 var math = require('..');
 var pegjs = require('pegjs');
 var esp = require('error-stack-parser');

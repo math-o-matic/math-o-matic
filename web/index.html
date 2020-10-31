@@ -99,6 +99,8 @@
 			</div>
 		</div>
 		<script>
+			var program = null;
+			
 			var katexOpts = {
 				trust: context => {
 					if (context.command == '\\href'
@@ -148,7 +150,7 @@
 
 			function generateHtml() {
 				console.log('--- HTML GENERATION START ---');
-				start = new Date();
+				var start = new Date(), end;
 
 				var precedenceMap = new Map();
 
