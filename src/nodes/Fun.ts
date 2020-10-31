@@ -9,13 +9,13 @@ import Nameable from './Nameable';
 import Type from './Type';
 
 interface FunArgumentType {
+	doc?: string;
+	tex?: string;
 	annotations: string[];
 	type?: Type;
 	name?: string;
-	params?: Variable[];
+	params: Variable[];
 	expr?: Metaexpr;
-	doc?: string;
-	tex?: string;
 }
 
 export default abstract class Fun extends Expr0 implements Nameable {

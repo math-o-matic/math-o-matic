@@ -54,6 +54,13 @@ export default class Funcall extends Expr0 {
 		return super.isProved(hyps) || this.fun.isProved(hyps);
 	}
 
+	public substitute(map: Map<Variable, Expr0>): Metaexpr {
+		return new Funcall({
+			fun: this.fun.substitute(map),
+			args: this.args.map(arg => arg.substitute(map))
+		});
+	}
+
 	public toIndentedString(indent: number, root?: boolean): string {
 		var args: any = this.args.map(arg => {
 			if (arg instanceof Variable) return `${arg.name}<${arg._id}>`;

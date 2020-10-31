@@ -5,6 +5,8 @@ import Scope from '../Scope';
 import $Variable from './$Variable';
 import ObjectType from './ObjectType';
 import Metaexpr from './Metaexpr';
+import Expr0 from './Expr0';
+import Variable from './Variable';
 
 interface TeeArgumentType {
 	left: Metaexpr[];
@@ -56,6 +58,15 @@ export default class Tee extends Metaexpr {
 		hyps = hyps || [];
 	
 		return super.isProved(hyps) || this.right.isProved(hyps.concat(this.left));
+	}
+
+	public substitute(map: Map<Variable, Expr0>): Metaexpr {
+		var left = this.left.map(e => e.substitute(map));
+		var right = this.right.substitute(map);
+
+		return new Tee({
+			left, right
+		});
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

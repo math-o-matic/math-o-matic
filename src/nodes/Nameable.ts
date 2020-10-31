@@ -1,7 +1,7 @@
 export default interface Nameable {
-    name: string;
+	name: string;
 }
 
 export function isNameable(obj: object): obj is Nameable {
-    return 'name' in obj;
+	return 'name' in obj;
 }

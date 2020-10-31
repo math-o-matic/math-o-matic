@@ -1,5 +1,6 @@
 import Scope from '../Scope';
 import Expr0 from './Expr0';
+import Metaexpr from './Metaexpr';
 import Nameable from './Nameable';
 import Node, {Precedence} from './Node';
 import ObjectType from './ObjectType';
@@ -14,6 +15,7 @@ interface VariableArgumentType {
 }
 
 export default class Variable extends Expr0 implements Nameable {
+	
 	public readonly isParam: boolean;
 	public readonly guess: string;
 	public readonly type: ObjectType;
@@ -35,6 +37,10 @@ export default class Variable extends Expr0 implements Nameable {
 		hyps = hyps || [];
 	
 		return super.isProved(hyps);
+	}
+
+	public substitute(map: Map<Variable, Expr0>): Metaexpr {
+		return map.get(this) || this;
 	}
 
 	// pr f

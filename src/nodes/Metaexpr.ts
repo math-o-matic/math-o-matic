@@ -1,21 +1,23 @@
 import Scope from "../Scope";
-import MetaType from "./MetaType";
+import Expr0 from "./Expr0";
 import Node from "./Node";
-import ObjectType from "./ObjectType";
 import Type from "./Type";
+import Variable from "./Variable";
 
 export default abstract class Metaexpr extends Node {
-    public readonly type: Type;
+	public readonly type: Type;
 
-    constructor(scope: Scope, doc: string, tex: string, type: Type) {
-        super(scope, doc, tex);
+	constructor(scope: Scope, doc: string, tex: string, type: Type) {
+		super(scope, doc, tex);
 
-        if (!type) throw Node.error('Assertion failed', scope);
+		if (!type) throw Node.error('Assertion failed', scope);
 
-        this.type = type;
-    }
+		this.type = type;
+	}
 
-    public equals(obj: Metaexpr): boolean {
-        return this === obj;
-    }
+	public abstract substitute(map: Map<Variable, Expr0>): Metaexpr;
+
+	public equals(obj: Metaexpr): boolean {
+		return this === obj;
+	}
 }

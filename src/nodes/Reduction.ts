@@ -7,6 +7,7 @@ import Fun from './Fun';
 import MetaType from './MetaType';
 import Metaexpr from './Metaexpr';
 import Expr0 from './Expr0';
+import Variable from './Variable';
 
 interface ReductionArgumentType {
 	subject: Metaexpr;
@@ -16,6 +17,7 @@ interface ReductionArgumentType {
 }
 
 export default class Reduction extends Metaexpr {
+	
 	public readonly subject: Metaexpr;
 	public readonly guesses;
 	public readonly leftargs;
@@ -138,6 +140,10 @@ ${ExpressionResolver.expandMetaAndFuncalls(expected)}
 		return super.isProved(hyps)
 			|| this.subject.isProved(hyps)
 				&& this.leftargs.every(l => l.isProved(hyps));
+	}
+
+	public substitute(map: Map<Variable, Expr0>): Metaexpr {
+		return this.reduced.substitute(map);
 	}
 
 	public static query(guess, left, leftargs, right, expected, scope: Scope) {

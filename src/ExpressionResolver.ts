@@ -27,64 +27,6 @@ function makecall(a: Metaexpr, args: Expr0[]): Funcall {
 }
 
 export default class ExpressionResolver {
-	public static substitute(expr: Metaexpr, map: Map<Variable | Fun, Expr0>): Metaexpr {
-		if (expr instanceof Funcall) {
-			return new Funcall({
-				fun: ExpressionResolver.substitute(expr.fun, map),
-				args: expr.args.map(arg => ExpressionResolver.substitute(arg, map))
-			});
-		} else if (expr instanceof ObjectFun) {
-			if (!expr.expr) return expr;
-
-			// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
-			if (expr.name) return expr;
-
-			// 위의 expr.name 조건을 지우면 특수한 경우에 이게 발생할지도 모른다.
-			if (expr.params.some(e => map.has(e)))
-				throw Error('Parameter collision');
-
-			return new ObjectFun({
-				annotations: expr.annotations,
-				name: null,
-				params: expr.params,
-				expr: ExpressionResolver.substitute(expr.expr, map)
-			});
-		} else if (expr instanceof Schema) {
-			if (!expr.expr) return expr;
-
-			// 이름이 있는 것은 최상단에만 선언되므로 치환되어야 할 것을 포함하지 않으므로 확인하지 않는다는 생각이 들어 있다.
-			if (expr.name) return expr;
-
-			// 위의 expr.name 조건을 지우면 특수한 경우에 이게 발생할지도 모른다.
-			if (expr.params.some(e => map.has(e)))
-				throw Error('Parameter collision');
-
-			return new Schema({
-				annotations: expr.annotations,
-				axiomatic: expr.axiomatic,
-				name: null,
-				params: expr.params,
-				def$s: expr.def$s,
-				expr: ExpressionResolver.substitute(expr.expr, map)
-			});
-		} else if (expr instanceof Variable) {
-			return map.get(expr) || expr;
-		} else if (expr instanceof Tee) {
-			var left = expr.left.map(e => ExpressionResolver.substitute(e, map));
-			var right = ExpressionResolver.substitute(expr.right, map);
-
-			return new Tee({
-				left, right
-			});
-		} else if (expr instanceof Reduction) {
-			return ExpressionResolver.substitute(expr.reduced, map);
-		} else if (expr instanceof $Variable) {
-			return ExpressionResolver.substitute(expr.expr, map);
-		} else {
-			console.log(expr);
-			throw Error('Unknown metaexpr');
-		}
-	}
 
 	public static call(callee: Metaexpr, args: Expr0[]): Metaexpr {
 		if (!(callee instanceof Fun)) {
@@ -106,7 +48,7 @@ export default class ExpressionResolver {
 			map.set(callee.params[i], args[i]);
 		}
 
-		return ExpressionResolver.substitute(callee.expr, map);
+		return callee.expr.substitute(map);
 	}
 
 	public static expandCallOnce(expr: Metaexpr): Metaexpr {
