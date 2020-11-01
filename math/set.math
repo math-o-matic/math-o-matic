@@ -1055,14 +1055,14 @@ schema universe_is_not_set() {
 
 이 정의가 도입되는 과정은 [~(href=https://github.com/logico-philosophical/math-o-matic/issues/8)이슈 #8]에 기록되어 있다."
 $\left\{#1\right\}{}^{<<\scriptscriptstyle\dag>>}$
-cls singleton(cls x) {
+sealed cls singleton(cls x) {
 	setbuilder((cls z) => {
 		O(N(set(x)), eq(z, x))
 	})
 }
 
 schema singleton_e(cls x: @11, cls z: @21) {
-	set(x), in(z, singleton(x)) |-
+	set(x), in(z, singleton+(x)) |-
 		Oe1[setbuilder_e[@h2]; NNi[@h1]]
 }
 
@@ -1075,13 +1075,13 @@ schema self_in_singleton(cls x: @11) {
 		setbuilder_i[
 			@h1;
 			Oi2(N(set(x)), ?)[eq_reflexive(x)]
-		][as in(x, singleton(x))]
+		][as in(x, singleton+(x))]
 }
 
 schema singleton_Q(cls x) {
 	set(x) |-
 		Ui2[(cls y, cls z) => {
-			cp[A(in(y, singleton(x)), in(z, singleton(x))) |-
+			cp[A(in(y, singleton+(x)), in(z, singleton+(x))) |-
 				eq_transitive[Oe1[setbuilder_e[Ae1[@h2]]; NNi[@h1]]; eq_symmetric[Oe1[setbuilder_e[Ae2[@h2]]; NNi[@h1]]]]
 		] }][as Q(is_in(singleton(x)))]
 }
@@ -1111,11 +1111,11 @@ schema singleton_eq_i(cls x: @11, cls y: @12) {
 			(cls z) => {O(N(set(x)), eq(z, x))},
 			(cls z) => {O(N(set(y)), eq(z, y))}
 		)[Ui[(cls z) => { Ei[$foo(x, y, z)[@h1]; $foo(y, x, z)[eq_symmetric[@h1]]] }]]
-		[as eq(singleton(x), singleton(y))]
+		[as eq(singleton+(x), singleton+(y))]
 }
 
 schema singleton_eq_e(cls x: @11, cls y: @21) {
-	set(x), set(y), eq(singleton(x), singleton(y)) |-
+	set(x), set(y), eq(singleton+(x), singleton+(y)) |-
 		Oe1[setbuilder_e[in_eq_right_1[self_in_singleton[@h1]; @h3]]; NNi[@h2]]
 }
 
@@ -1129,8 +1129,8 @@ schema doubleton_e(cls x: @11, cls y: @21, cls z: @31) {
 	set(x), set(y), in(z, doubleton(x, y)) |-
 		OI[
 			setbuilder_e[@h3];
-			cp[in(z, singleton(x)) |- Oe1[setbuilder_e[@h4]; NNi[@h1]]];
-			cp[in(z, singleton(y)) |- Oe1[setbuilder_e[@h4]; NNi[@h2]]]
+			cp[in(z, singleton+(x)) |- Oe1[setbuilder_e[@h4]; NNi[@h1]]];
+			cp[in(z, singleton+(y)) |- Oe1[setbuilder_e[@h4]; NNi[@h2]]]
 		]
 }
 
@@ -1164,7 +1164,7 @@ schema doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 					set_i[@h2];
 					Oi1(?, in(z, singleton(y)))[setbuilder_i[
 						set_i[@h2]; Oi1(?, eq(z, x))[@h1]
-					][as in(z, singleton(x))]]
+					][as in(z, singleton+(x))]]
 				][as in(z, doubleton(x, y))]
 			]}]
 			[as subseteq(universe(), doubleton(x, y))]
@@ -1181,7 +1181,7 @@ schema doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 					set_i[@h2];
 					Oi2(in(z, singleton(x)), ?)[setbuilder_i[
 						set_i[@h2]; Oi1(?, eq(z, y))[@h1]
-					][as in(z, singleton(y))]]
+					][as in(z, singleton+(y))]]
 				][as in(z, doubleton(x, y))]
 			]}][as subseteq(universe(), doubleton(x, y))]
 		]
@@ -1333,7 +1333,7 @@ schema bigcup_singleton_to_self(cls x: @11, cls z: @21) {
 	set(x), in(z, bigcup(singleton(x))) |-
 		mpX_Xe_p(?, in(z, x))[
 			setbuilder_e[@h2];
-			Ui[(cls w) => { cp[A(in(w, singleton(x)), in(z, w)) |-
+			Ui[(cls w) => { cp[A(in(w, singleton+(x)), in(z, w)) |-
 				in_eq_right_1[Ae2[@h3]; Oe1[setbuilder_e[Ae1[@h3]]; NNi[@h1]]]] }]
 		]
 }
@@ -1479,7 +1479,7 @@ schema self_in_power(cls x, cls z) {
 
 schema singleton_subseteq_power_1(cls x, cls y) {
 	set(x) |-
-		cp[in(y, singleton(x)) |-
+		cp[in(y, singleton+(x)) |-
 			mp[
 				Oe1[setbuilder_e((cls z) => {O(N(set(x)), eq(z, x))}, y)[@h2]; NNi[@h1]];
 				self_in_power(x, y)[@h1]
@@ -1548,7 +1548,7 @@ schema power_is_set(cls x: @11) {
 			cp[in(z, universe()) |- setbuilder_i[
 				set_i[@h2];
 				Oi1(?, eq(z, x))[@h1]
-			][as in(z, singleton(x))]]
+			][as in(z, singleton+(x))]]
 		] }]]
 }
 

@@ -105,9 +105,11 @@ export default abstract class Fun extends Expr0 implements Nameable {
 
 		return new Funcall({
 			fun: this,
+			unseal: false,
 			args: placeholders
 		}).equals(new Funcall({
 			fun: obj,
+			unseal: false,
 			args: placeholders
 		}));
 	}

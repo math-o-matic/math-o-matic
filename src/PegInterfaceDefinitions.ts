@@ -75,6 +75,7 @@ export interface ReductionObject {
 export interface SchemacallObject {
 	_type: 'schemacall';
 	schema: MetaexprObject;
+	unseal: boolean;
 	args: Expr0Object[];
 	location: LocationObject;
 }
@@ -82,6 +83,7 @@ export interface SchemacallObject {
 export interface FuncallObject {
 	_type: 'funcall';
 	schema: Expr0Object;
+	unseal: boolean;
 	args: Expr0Object[];
 	location: LocationObject;
 }

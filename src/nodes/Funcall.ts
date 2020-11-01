@@ -13,15 +13,17 @@ import Variable from './Variable';
 
 interface FuncallArgumentType {
 	fun: Metaexpr;
+	unseal: boolean;
 	args: Expr0[];
 }
 
 export default class Funcall extends Expr0 {
 	
 	public readonly fun: Metaexpr;
+	public readonly unseal: boolean;
 	public readonly args: Expr0[];
 
-	constructor ({fun, args}: FuncallArgumentType, scope?: Scope) {
+	constructor ({fun, unseal, args}: FuncallArgumentType, scope?: Scope) {
 		if (fun.type.isSimple) {
 			var name = isNameable(fun) ? fun.name : '<anonymous>';
 			throw Node.error(`${name} is not callable`, scope);
@@ -46,6 +48,7 @@ export default class Funcall extends Expr0 {
 		super(scope, null, null, resolvedType.to);
 		
 		this.fun = fun;
+		this.unseal = unseal;
 		this.args = args;
 	}
 
@@ -58,26 +61,41 @@ export default class Funcall extends Expr0 {
 	public substitute(map: Map<Variable, Expr0>): Metaexpr {
 		return new Funcall({
 			fun: this.fun.substitute(map),
+			unseal: this.unseal,
 			args: this.args.map(arg => arg.substitute(map))
 		});
 	}
 
 	public expandMeta(andFuncalls: boolean): Metaexpr {
 		var fun = this.fun.expandMeta(andFuncalls),
+			unseal = this.unseal,
 			args = this.args.map(arg => arg.expandMeta(andFuncalls));
 		
 		if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema))
-			return new Funcall({fun, args});
+			return new Funcall({fun, unseal, args});
 
 		return fun.call(args).expandMeta(andFuncalls);
 	}
+
+	public isExpandable(): boolean {
+		var callee: Metaexpr = this.fun;
+
+		while (callee instanceof $Variable) {
+			callee = callee.expr;
+		}
+
+		if (callee instanceof Funcall) {
+			return callee.isExpandable();
+		}
+
+		if (!(callee instanceof Fun)) return false;
+
+		return callee.expr && !(callee.sealed && !this.unseal);
+	}
 	
 	public expandOnce(): Metaexpr {
-		if (this.fun instanceof Funcall) {
-			return new Funcall({
-				fun: this.fun.expandOnce(),
-				args: this.args
-			});
+		if (!this.isExpandable()) {
+			throw Error('Cannot expand');
 		}
 
 		var callee: Metaexpr = this.fun;
@@ -86,12 +104,16 @@ export default class Funcall extends Expr0 {
 			callee = callee.expr;
 		}
 
-		if (!(callee instanceof Fun)) {
-			throw Error('Something\'s wrong');
+		if (callee instanceof Funcall) {
+			return new Funcall({
+				fun: callee.expandOnce(),
+				unseal: this.unseal,
+				args: this.args
+			});
 		}
 
-		if (!callee.expr || callee.sealed) {
-			throw Error('Could not expand');
+		if (!(callee instanceof Fun)) {
+			throw Error('Something\'s wrong');
 		}
 
 		return callee.call(this.args);
@@ -102,27 +124,27 @@ export default class Funcall extends Expr0 {
 	}
 
 	protected equalsInternal(obj: Metaexpr): boolean {
-		if (this.fun instanceof Funcall) {
-			return this.expandOnce().equals(obj);
-		}
-
 		if (!(obj instanceof Funcall)) {
-			if (!(this.fun instanceof Fun && this.fun.expr && !this.fun.sealed)) return false;
+			if (!this.isExpandable()) return false;
 
 			return this.expandOnce().equals(obj);
 		}
 
-		if (obj.fun instanceof Funcall) {
+		if (this.fun instanceof Funcall && this.fun.isExpandable()) {
+			return this.expandOnce().equals(obj);
+		}
+
+		if (obj.fun instanceof Funcall && obj.fun.isExpandable()) {
 			return this.equals(obj.expandOnce());
 		}
 
-		var thisHasFunExpr = this.fun instanceof Fun && this.fun.expr && !this.fun.sealed,
-			objHasFunExpr = obj.fun instanceof Fun && obj.fun.expr && !obj.fun.sealed;
+		var thisIsExpandable = this.isExpandable(),
+			objIsExpandable = obj.isExpandable();
 		
-		if (this.fun == obj.fun || !thisHasFunExpr && !objHasFunExpr) {
+		if (this.fun == obj.fun || !thisIsExpandable && !objIsExpandable) {
 			if (this.fun != obj.fun) return false;
 
-			if (!thisHasFunExpr && !objHasFunExpr) {
+			if (!thisIsExpandable && !objIsExpandable) {
 				for (var i = 0; i < this.args.length; i++) {
 					if (!this.args[i].equals(obj.args[i])) return false;
 				}
@@ -137,7 +159,7 @@ export default class Funcall extends Expr0 {
 			}
 		}
 
-		if (thisHasFunExpr) {
+		if (thisIsExpandable) {
 			return this.expandOnce().equals(obj);
 		}
 

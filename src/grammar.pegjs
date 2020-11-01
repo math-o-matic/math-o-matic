@@ -227,12 +227,12 @@ reduction =
 // var(...)
 // (metaexpr)(...)
 schemacall =
-	schema:(
-		var
-		/ "(" _
-		e:metaexpr _
-		")"
-		{return e}
+	schemaAndUnseal:(
+		schema:var
+		unseal:(_ '+')?
+		{return {schema, unseal: !!unseal}}
+		/ "(" _ schema:metaexpr _ ")"
+		{return {schema, unseal: false}}
 	) _
 	args:(
 		"(" _
@@ -247,7 +247,8 @@ schemacall =
 	{
 		return {
 			_type: 'schemacall',
-			schema,
+			schema: schemaAndUnseal.schema,
+			unseal: schemaAndUnseal.unseal,
 			args,
 			location: location()
 		}
@@ -256,12 +257,12 @@ schemacall =
 // forall(f, g)
 // (expr0)(f, g)
 funcall =
-	schema:(
-		var
-		/ "(" _
-		e:expr0 _
-		")"
-		{return e}
+	schemaAndUnseal:(
+		schema:var
+		unseal:(_ '+')?
+		{return {schema, unseal: !!unseal}}
+		/ "(" _ schema:expr0 _ ")"
+		{return {schema, unseal: false}}
 	) _
 	args:(
 		"(" _
@@ -276,7 +277,8 @@ funcall =
 	{
 		return {
 			_type: 'funcall',
-			schema,
+			schema: schemaAndUnseal.schema,
+			unseal: schemaAndUnseal.unseal,
 			args,
 			location: location()
 		}

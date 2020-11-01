@@ -63,6 +63,7 @@ export default class Reduction extends Metaexpr {
 	
 			subject = new Funcall({
 				fun: subject,
+				unseal: false,
 				args: derefs,
 			}, scope);
 		} else if (guesses) {
@@ -204,7 +205,7 @@ ${expected.expandMeta(true)}
 						break;
 					}
 
-					if (!(node.fun instanceof Fun && node.fun.expr && !node.fun.sealed)) {
+					if (!node.isExpandable()) {
 						throw Node.error(`Cannot dereference @${guess}`, scope);
 					}
 

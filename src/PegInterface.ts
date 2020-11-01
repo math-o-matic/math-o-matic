@@ -193,6 +193,10 @@ export default class PI {
 				throw Error('wut');
 		}
 
+		if (!expr && sealed) {
+			throw scope.error('Cannot seal a primitive fun');
+		}
+
 		return new ObjectFun({annotations: [], sealed, type, name, params, expr, doc, tex}, scope);
 	}
 
@@ -208,7 +212,7 @@ export default class PI {
 			return PI.expr0(arg, scope);
 		});
 
-		return new Funcall({fun, args}, scope);
+		return new Funcall({fun, unseal: obj.unseal, args}, scope);
 	}
 
 	public static metaexpr(obj: MetaexprObject, parentScope: Scope): Metaexpr {
@@ -384,6 +388,7 @@ export default class PI {
 
 		return new Funcall({
 			fun,
+			unseal: obj.unseal,
 			args
 		}, scope);
 	}
