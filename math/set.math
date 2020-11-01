@@ -1078,12 +1078,15 @@ schema self_in_singleton(cls x: @11) {
 		][as in(x, singleton+(x))]
 }
 
-schema singleton_Q(cls x) {
+schema singleton_Q(cls x: @11) {
 	set(x) |-
-		Ui2[(cls y, cls z) => {
-			cp[A(in(y, singleton+(x)), in(z, singleton+(x))) |-
-				eq_transitive[Oe1[setbuilder_e[Ae1[@h2]]; NNi[@h1]]; eq_symmetric[Oe1[setbuilder_e[Ae2[@h2]]; NNi[@h1]]]]
-		] }][as Q(is_in(singleton(x)))]
+		Ui2[($z_1$ cls z1, $z_2$ cls z2) => {
+			cp2[in(z1, singleton(x)), in(z2, singleton(x)) |-
+				eq_transitive[
+					singleton_e[@h1; @h2];
+					eq_symmetric[singleton_e[@h1; @h3]]
+				]]
+		}][as Q(is_in(singleton(x)))]
 }
 
 schema singleton_is_singleton(cls x) {

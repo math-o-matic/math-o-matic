@@ -81,7 +81,7 @@ schema pair_eq_e(cls x: @11, cls y: @21, cls u: @31, cls v: @41) {
 				]
 			];
 			cp[
-				A(eq(singleton(x), doubleton(u, v)), eq(doubleton(x, y), singleton(u))) |-
+				A(eq(singleton+(x), doubleton(u, v)), eq(doubleton(x, y), singleton+(u))) |-
 					Ai[
 						eq_symmetric[Oe1[setbuilder_e[in_eq_right_2[
 							doubleton_in_1(u, v)[@h3; @h4];
@@ -540,7 +540,7 @@ schema cartesian_is_set_21($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y:
 		
 		$1 = setbuilder_i[
 			singleton_set_i(x)[$set_x];
-			Ui[(cls z) => { cp[in(z, singleton(x)) |-
+			Ui[(cls z) => { cp[in(z, singleton+(x)) |-
 				in_eq_left_2[$x_in_cup_ab; Oe1[setbuilder_e[@h2]; NNi[$set_x]]]] }]
 			[as subseteq(singleton(x), cup(a, b))]
 		][as in(singleton(x), power(cup(a, b)))];
