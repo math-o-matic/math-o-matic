@@ -41,16 +41,6 @@ export default abstract class Fun extends Expr0 implements Nameable {
 
 		if (!type && !expr)
 			throw Node.error('Cannot guess the type of a primitive fun', scope);
-
-		if (name !== null && typeof name != 'string')
-			throw Node.error('Assertion failed', scope);
-		
-		if (!(params instanceof Array)
-				|| params.map(e => e instanceof Variable).some(e => !e))
-			throw Node.error('Assertion failed', scope);
-		
-		if (expr !== null && !(expr instanceof Node))
-			throw Node.error('Assertion failed', scope);
 		
 		var precedence = false;
 

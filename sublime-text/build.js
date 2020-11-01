@@ -19,7 +19,7 @@ function formatError(e) {
 (async () => {
 	try {
 		var parser = pegjs.generate(math.grammar, {cache: true});
-		program = new math.Program(parser);
+		var program = new math.Program(parser);
 		await program.loadModule(process.argv[2], filename => {
 			return fs.readFileSync(filename + '.math', 'utf-8');
 		});
