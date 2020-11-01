@@ -5,19 +5,17 @@ import Fun from "./Fun";
 import Metaexpr from "./Metaexpr";
 import Node, { Precedence } from "./Node";
 import ObjectType from "./ObjectType";
-import Type from "./Type";
 import Variable from "./Variable";
 
 interface SchemaArgumentType {
-	annotations: string[];
-	axiomatic: boolean;
-	type?: Type;
-	name?: string;
-	params?: Variable[];
-	def$s: $Variable[];
-	expr?: Metaexpr;
 	doc?: string;
 	tex?: string;
+	annotations: string[];
+	axiomatic: boolean;
+	name?: string;
+	params: Variable[];
+	def$s: $Variable[];
+	expr: Metaexpr;
 }
 
 export default class Schema extends Fun {
@@ -26,8 +24,8 @@ export default class Schema extends Fun {
 	public readonly def$s: $Variable[];
 	private _isProvedCache: boolean;
 
-	constructor ({doc, tex, annotations, axiomatic, type, /* nullable */ name, params, def$s, expr}: SchemaArgumentType, scope?: Scope) {
-		super({doc, tex, annotations, type, name, params, expr}, scope);
+	constructor ({doc, tex, annotations, axiomatic, name, params, def$s, expr}: SchemaArgumentType, scope?: Scope) {
+		super({doc, tex, annotations, sealed: false, type: null, name, params, expr}, scope);
 		
 		this.axiomatic = axiomatic;
 		this.def$s = def$s || [];

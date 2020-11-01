@@ -13,6 +13,7 @@ interface FunArgumentType {
 	doc?: string;
 	tex?: string;
 	annotations: string[];
+	sealed: boolean;
 	type?: Type;
 	name?: string;
 	params: Variable[];
@@ -22,6 +23,7 @@ interface FunArgumentType {
 export default abstract class Fun extends Expr0 implements Nameable {
 
 	public readonly annotations: string[];
+	public readonly sealed: boolean;
 	public readonly name: string;
 	public readonly params: Variable[];
 	public readonly expr: Metaexpr;
@@ -30,7 +32,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 	 * name, expr 중 하나 이상 있어야 하고 type, expr 중
 	 * 한 개만 있어야 한다.
 	 */
-	constructor ({doc, tex, annotations, type, /* nullable */ name, params, expr}: FunArgumentType, scope?: Scope) {
+	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: FunArgumentType, scope?: Scope) {
 		if (!name && !expr)
 			throw Node.error('Anonymous fun cannot be primitive', scope);
 
@@ -70,6 +72,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 		);
 
 		this.annotations = annotations;
+		this.sealed = sealed;
 		this.precedence = precedence;
 		this.name = name;
 		this.params = params;

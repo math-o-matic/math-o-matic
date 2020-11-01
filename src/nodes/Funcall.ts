@@ -90,7 +90,7 @@ export default class Funcall extends Expr0 {
 			throw Error('Something\'s wrong');
 		}
 
-		if (!callee.expr) {
+		if (!callee.expr || callee.sealed) {
 			throw Error('Could not expand');
 		}
 
@@ -107,7 +107,7 @@ export default class Funcall extends Expr0 {
 		}
 
 		if (!(obj instanceof Funcall)) {
-			if (!(this.fun instanceof Fun && this.fun.expr)) return false;
+			if (!(this.fun instanceof Fun && this.fun.expr && !this.fun.sealed)) return false;
 
 			return this.expandOnce().equals(obj);
 		}
@@ -116,8 +116,8 @@ export default class Funcall extends Expr0 {
 			return this.equals(obj.expandOnce());
 		}
 
-		var thisHasFunExpr = this.fun instanceof Fun && this.fun.expr,
-			objHasFunExpr = obj.fun instanceof Fun && obj.fun.expr;
+		var thisHasFunExpr = this.fun instanceof Fun && this.fun.expr && !this.fun.sealed,
+			objHasFunExpr = obj.fun instanceof Fun && obj.fun.expr && !obj.fun.sealed;
 		
 		if (this.fun == obj.fun || !thisHasFunExpr && !objHasFunExpr) {
 			if (this.fun != obj.fun) return false;

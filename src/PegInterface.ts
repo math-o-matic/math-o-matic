@@ -139,13 +139,15 @@ export default class PI {
 
 		var name = null,
 			doc = null,
-			tex = null;
+			tex = null,
+			sealed = false;
 
 		if (obj._type == 'defun') {
 			obj = obj as DefunObject;
 			name = obj.name;
 			doc = obj.doc;
 			tex = obj.tex;
+			sealed = obj.sealed;
 		}
 
 		var scope = parentScope.extend('fun', name, obj.location);
@@ -191,7 +193,7 @@ export default class PI {
 				throw Error('wut');
 		}
 
-		return new ObjectFun({annotations: [], name, type, params, expr, doc, tex}, scope);
+		return new ObjectFun({annotations: [], sealed, type, name, params, expr, doc, tex}, scope);
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope): Funcall {

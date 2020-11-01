@@ -18,7 +18,7 @@ export interface ImportObject {
 
 export interface TypedefObject {
 	_type: 'typedef';
-	doc?: string;
+	doc: string;
 	base: boolean;
 	origin?: FtypeObject;
 	name: string;
@@ -29,8 +29,8 @@ export interface DefvObject {
 	_type: 'defv';
 	isParam?: boolean;
 	guess?: string;
-	doc?: string;
-	tex?: string;
+	doc: string;
+	tex: string;
 	type: TypeObject;
 	name: string;
 	location: LocationObject;
@@ -38,8 +38,9 @@ export interface DefvObject {
 
 export interface DefunObject {
 	_type: 'defun';
-	doc?: string;
-	tex?: string;
+	doc: string;
+	tex: string;
+	sealed: boolean;
 	rettype: TypeObject;
 	name: string;
 	params: DefvObject[];
@@ -52,7 +53,7 @@ export type MetaexprObject = TeeObject | ReductionObject | SchemacallObject | Va
 
 export interface DefschemaObject {
 	_type: 'defschema';
-	doc?: string;
+	doc: string;
 	annotations: string[];
 	axiomatic: boolean;
 	name: string;

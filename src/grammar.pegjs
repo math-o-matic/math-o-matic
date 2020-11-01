@@ -37,11 +37,9 @@ typedef =
 	origin:(o:ftype __ {return o})?
 	name:ident _ sem
 	{
-		doc = doc && doc[0];
-		
 		return {
 			_type: 'typedef',
-			doc,
+			doc: doc ? doc[0] : null,
 			base: !!base,
 			origin,
 			name,
@@ -54,8 +52,8 @@ defv =
 	{
 		return {
 			_type: 'defv',
-			doc: doc && doc[0],
-			tex: tex && tex[0],
+			doc: doc ? doc[0] : null,
+			tex: tex ? tex[0] : null,
 			type,
 			name,
 			location: location()
@@ -69,7 +67,7 @@ defparam =
 			_type: 'defv',
 			isParam: true,
 			type,
-			tex: tex && tex[0],
+			tex: tex ? tex[0] : null,
 			name,
 			location: location()
 		}
@@ -84,7 +82,7 @@ defschemaparam =
 			isParam: true,
 			guess,
 			type,
-			tex: tex && tex[0],
+			tex: tex ? tex[0] : null,
 			name,
 			location: location()
 		}
@@ -93,6 +91,7 @@ defschemaparam =
 defun =
 	doc:(documentation __)?
 	tex:(tex __)?
+	sealed:('sealed' __)?
 	rettype:type __
 	name:ident _
 	params:(
@@ -115,8 +114,9 @@ defun =
 	{
 		return {
 			_type: 'defun',
-			doc: doc && doc[0],
-			tex: tex && tex[0],
+			doc: doc ? doc[0] : null,
+			tex: tex ? tex[0] : null,
+			sealed: !!sealed,
 			rettype,
 			name,
 			params,
@@ -148,7 +148,7 @@ defschema =
 	{
 		return {
 			_type: 'defschema',
-			doc: doc && doc[0],
+			doc: doc ? doc[0] : null,
 			annotations,
 			axiomatic: !!axiomatic,
 			name,
@@ -485,7 +485,8 @@ keyword =
 	/ "base"
 	/ "import"
 	/ "schema"
-	/ "type";
+	/ "sealed"
+	/ "type"
 
 annotation =
 	'@discouraged'

@@ -8,19 +8,20 @@ import Type from "./Type";
 import Variable from "./Variable";
 
 interface ObjectFunArgumentType {
-	annotations: string[];
-	type?: Type;
-	name?: string;
-	params?: Variable[];
-	expr?: Expr0;
 	doc?: string;
 	tex?: string;
+	annotations: string[];
+	sealed: boolean;
+	type?: Type;
+	name?: string;
+	params: Variable[];
+	expr?: Expr0;
 }
 
 export default class ObjectFun extends Fun {
 	
-	constructor ({doc, tex, annotations, type, /* nullable */ name, params, expr}: ObjectFunArgumentType, scope?: Scope) {
-		super({doc, tex, annotations, type, name, params, expr}, scope);
+	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: ObjectFunArgumentType, scope?: Scope) {
+		super({doc, tex, annotations, sealed, type, name, params, expr}, scope);
 	}
 
 	public substitute(map: Map<Variable, Expr0>): Metaexpr {
@@ -35,6 +36,7 @@ export default class ObjectFun extends Fun {
 
 		return new ObjectFun({
 			annotations: this.annotations,
+			sealed: this.sealed,
 			name: null,
 			params: this.params,
 			expr: this.expr.substitute(map)
@@ -47,6 +49,7 @@ export default class ObjectFun extends Fun {
 
 		return new ObjectFun({
 			annotations: this.annotations,
+			sealed: this.sealed,
 			name: null,
 			params: this.params,
 			expr: this.expr.expandMeta(andFuncalls)

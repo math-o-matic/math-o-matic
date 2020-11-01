@@ -204,7 +204,7 @@ ${expected.expandMeta(true)}
 						break;
 					}
 
-					if (!(node.fun instanceof Fun && node.fun.expr)) {
+					if (!(node.fun instanceof Fun && node.fun.expr && !node.fun.sealed)) {
 						throw Node.error(`Cannot dereference @${guess}`, scope);
 					}
 

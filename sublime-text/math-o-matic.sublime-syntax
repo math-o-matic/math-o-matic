@@ -28,7 +28,7 @@ contexts:
           scope: punctuation.definition.comment.end.math-o-matic
           pop: true
 
-    - match: '\b(as|axiomatic|base|import|schema|type)\b'
+    - match: '\b(as|axiomatic|base|import|schema|sealed|type)\b'
       scope: keyword.control.math-o-matic
 
     # - match: '\$'
