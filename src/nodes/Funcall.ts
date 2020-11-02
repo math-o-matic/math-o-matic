@@ -130,6 +130,14 @@ export default class Funcall extends Expr0 {
 			return this.expandOnce().equals(obj);
 		}
 
+		if (this.fun.equals(obj.fun)) {
+			for (var i = 0; i < this.args.length; i++) {
+				if (!this.args[i].equals(obj.args[i])) return false;
+			}
+
+			return true;
+		}
+
 		if (this.fun instanceof Funcall && this.fun.isExpandable()) {
 			return this.expandOnce().equals(obj);
 		}
