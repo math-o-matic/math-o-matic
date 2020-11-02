@@ -81,11 +81,15 @@ export default abstract class Fun extends Expr0 implements Nameable {
 	}
 	
 	protected equalsInternal(obj: Metaexpr): boolean {
+		if (!(this.expr && !this.sealed)
+				&& !(obj instanceof Fun && obj.expr && !obj.sealed)) {
+			return false;
+		}
+
 		var placeholders = [];
 		var types = (this.type.resolve() as ObjectType | MetaType).from;
-		var len = types.length;
 
-		for (var i = 0; i < len; i++) {
+		for (var i = 0; i < types.length; i++) {
 			placeholders.push(new Variable({
 				isParam: true,
 				type: types[i],
@@ -93,20 +97,28 @@ export default abstract class Fun extends Expr0 implements Nameable {
 			}));
 		}
 
-		return new Funcall({
-			fun: this,
-			unseal: false,
-			args: placeholders
-		}).equals(new Funcall({
-			fun: obj,
-			unseal: false,
-			args: placeholders
-		}));
+		var thisCall = this.expr && !this.sealed
+			? this.call(placeholders)
+			: new Funcall({
+				fun: this,
+				unseal: false,
+				args: placeholders
+			});
+
+		var objCall = obj instanceof Fun && obj.expr && !obj.sealed
+			? obj.call(placeholders)
+			: new Funcall({
+				fun: obj,
+				unseal: false,
+				args: placeholders
+			});
+		
+		return thisCall.equals(objCall);
 	}
 
 	public call(args: Expr0[]): Metaexpr {
 		if (!this.expr) {
-			throw Error('Cannot call a callable without a body');
+			throw Error('Cannot call a primitive fun');
 		}
 
 		if (this.params.length != args.length) {
