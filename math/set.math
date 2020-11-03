@@ -655,7 +655,7 @@ schema ax_specify_m(pr f, cls x: @11) {
 
 즉 Principia Mathematica의 inverted iota 연산자 같은 것이다. Metamath의 [~(href=http://us.metamath.org/mpeuni/df-iota.html)df-iota]를 참조하였으나 꽤 다르게 정의되었다."
 $\left(<<\operatorname{the}>>#1\right)$
-cls instantiate(pr f) {
+sealed cls instantiate(pr f) {
 	setbuilder((cls z) => {
 		I(
 			Xq(f),
@@ -675,9 +675,9 @@ schema instantiate_eq_i(pr f: @11, cls x) {
 					weaken(?, Xq(f))[Xi((cls x) => {
 						A(f(x), in(z, x))
 					}, x)[Ai[@h2; @h3]]]
-				][as in(z, instantiate(f))]];
+				][as in(z, instantiate+(f))]];
 
-			$c2 = cp[in(z, instantiate(f)) |-
+			$c2 = cp[in(z, instantiate+(f)) |-
 				mpX_Xe_p(?, in(z, x))[
 					mp[Ai[Xi(f, x)[@h2]; @h1]; setbuilder_e[@h3]];
 					Ui[(cls y) => { cp2[f(y), in(z, y) |-
