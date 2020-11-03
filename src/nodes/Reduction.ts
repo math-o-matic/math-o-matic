@@ -99,8 +99,12 @@ export default class Reduction extends Metaexpr {
 			throw Node.error('Assertion failed', scope);
 		}
 
+		var leftargsExpanded = leftargs.map(arg => {
+			return arg.expandMeta(true);
+		});
+
 		for (let i = 0; i < tee.left.length; i++) {
-			if (!tee.left[i].equals(leftargs[i])) {
+			if (!tee.left[i].equals(leftargsExpanded[i])) {
 				throw Node.error(`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
