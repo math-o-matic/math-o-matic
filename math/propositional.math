@@ -13,6 +13,10 @@ st T;
 $\bot$
 st F;
 
+"implies (TFTT)."
+$!<prec=598>#1<<\to>>#2$
+st I(st p, st q);
+
 "not (FT)."
 $!<prec=250><<\neg>>#1$
 st N(st p);
@@ -23,11 +27,9 @@ st A(st p, st q);
 
 "or (TTTF)."
 $!<prec=596>#1<<\lor>>#2$
-st O(st p, st q);
-
-"implies (TFTT)."
-$!<prec=598>#1<<\to>>#2$
-st I(st p, st q);
+sealed st O(st p, st q) {
+	I(N(p), q)
+}
 
 "iff (TFFT)."
 $!<prec=599>#1<<\leftrightarrow>>#2$
@@ -63,29 +65,6 @@ axiomatic schema Ae2(st p: @11, st q: @12) {
 	A(p, q) |- q
 }
 
-"선언 도입(disjunction introduction) 1."
-axiomatic schema Oi1(st p: @1, st q) {
-	p |- O(p, q)
-}
-
-"선언 도입(disjunction introduction) 2."
-axiomatic schema Oi2(st p, st q: @1) {
-	q |- O(p, q)
-}
-
-"선언 소거(disjunction elimination). proof by cases라고도 한다."
-axiomatic schema Oe(st p: @11, st q: @12, st r: @22) {
-	O(p, q), I(p, r), I(q, r) |- r
-}
-
-schema Oeu(st p: @11, st q: @12, st r: @2r) {
-	O(p, q), (p |- r), (q |- r) |- Oe[
-		@h1;
-		cp[@h2];
-		cp[@h3]
-	]
-}
-
 "부정 도입(negation introduction). 귀류법(reductio ad absurdum)이라고도 한다."
 axiomatic schema Ni(st p: @11) {
 	I(p, F) |- N(p)
@@ -114,6 +93,57 @@ schema NNi(st p: @1) {
 "이중부정 소거(double negation elimination)."
 axiomatic schema NNe(st p: @111) {
 	N(N(p)) |- p
+}
+
+"[$\bot]을 도입한다. falsum introduction이라 불러도 좋을 것이다."
+schema Fi(st p: @1) {
+	Ne(p, F)
+}
+
+schema Fi_c(st p: @11) {
+	N(p) |- cp[p |- Fi[@h2; @h1]]
+}
+
+"[$\bot]을 소거한다. falsum elimination이라 불러도 좋을 것이다. Ne와 마찬가지로 폭발률을 나타낸다 할 수 있다."
+schema Fe(st p) {
+	F |- NNe[Niu[N(p) |- @h1]]
+}
+
+"후건 부정(modus tollens)."
+schema mt(st p: @11, st q: @21) {
+	I(p, q), N(q) |-
+		Niu[p |-
+			Fi[mp[@h3; @h1]; @h2]]
+}
+
+"선언 도입(disjunction introduction) 1."
+schema Oi1(st p: @1, st q) {
+	p |-
+		cp[N(p) |- Ne(?, q)[@h1; @h2]]
+		[as O+(p, q)]
+}
+
+"선언 도입(disjunction introduction) 2."
+schema Oi2(st p, st q: @1) {
+	q |-
+		cp[N(p) |- @h1]
+		[as O+(p, q)]
+}
+
+"선언 소거(disjunction elimination). proof by cases라고도 한다."
+schema Oe(st p: @11, st q: @12, st r: @22) {
+	O+(p, q), I(p, r), I(q, r) |-
+		NNe[Niu[N(r) |-
+			Fi[mp[mp[Niu[p |- Fi[mp[@h5; @h2]; @h4]]; @h1]; @h3]; @h4]
+		]]
+}
+
+schema Oeu(st p: @11, st q: @12, st r: @2r) {
+	O(p, q), (p |- r), (q |- r) |- Oe[
+		@h1;
+		cp[@h2];
+		cp[@h3]
+	]
 }
 
 "쌍조건문 도입(biconditional introduction)."
@@ -204,30 +234,9 @@ schema id(st p) {
 	p |- p
 }
 
-"[$\bot]을 도입한다. falsum introduction이라 불러도 좋을 것이다."
-schema Fi(st p: @1) {
-	Ne(p, F)
-}
-
-schema Fi_c(st p: @11) {
-	N(p) |- cp[p |- Fi[@h2; @h1]]
-}
-
-"[$\bot]을 소거한다. falsum elimination이라 불러도 좋을 것이다. Ne와 마찬가지로 폭발률을 나타낸다 할 수 있다."
-schema Fe(st p) {
-	F |- NNe[Niu[N(p) |- @h1]]
-}
-
 "[$\top] 도입."
 axiomatic schema Ti() {
 	T
-}
-
-"후건 부정(modus tollens)."
-schema mt(st p: @11, st q: @21) {
-	I(p, q), N(q) |-
-		Niu[p |-
-			Fi[mp[@h3; @h1]; @h2]]
 }
 
 "대우명제(contrapositive)를 유도한다."
