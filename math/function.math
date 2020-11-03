@@ -103,8 +103,8 @@ schema funcall_def_0(cls f, $A$ cls a, $B$ cls b, cls x, cls y) {
 	is_fun(f, a, b), in(x, a), in(y, rel_im_set(f, singleton(x))) |-
 		mpX_Xe_p(?, in(pair(x, y), f))[
 			setbuilder_e[@h3];
-			Ui[(cls z) => { cp[A(in(z, singleton+(x)), in(pair(z, y), f)) |-
-				in_eq_left_1[Ae2[@h4]; pair_eq_i[Oe1[setbuilder_e[Ae1[@h4]]; NNi[set_i[@h2]]]; eq_reflexive(y)]]]
+			Ui[(cls z) => { cp[A(in(z, singleton(x)), in(pair(z, y), f)) |-
+				in_eq_left_1[Ae2[@h4]; pair_eq_i[singleton_e[set_i[@h2]; Ae1[@h4]]; eq_reflexive(y)]]]
 			}]
 		]
 }

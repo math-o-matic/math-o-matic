@@ -1053,21 +1053,14 @@ schema universe_is_not_set() {
 
 그러므로 조용히 공집합이 되는 것보다 마치 에러를 던지듯 [$V]가 되는 것이 낫다고 판단하였다. 이는 [~http://www.qedeq.org/current/doc/math/qedeq_set_theory_v1_en.pdf]의 Definition 11과 같은 방식의 정의이다. 집합에 대해서만 잘 정의되는 개념을 고유 클래스에 적용하면 고유 클래스가 만들어지는 패턴을 일반적으로 적용하면 될 듯하다.
 
-이 정의가 도입되는 과정은 [~(href=https://github.com/logico-philosophical/math-o-matic/issues/8)이슈 #8]에 기록되어 있다."
+이 정의가 도입되는 과정은 [~(href=https://github.com/logico-philosophical/math-o-matic/issues/8)이슈 #8]에 기록되어 있다.
+
+@sealed [$x]가 집합이 아닐 때 이상하게 되어 봉인되었다."
 $\left\{#1\right\}{}^{<<\scriptscriptstyle\dag>>}$
 sealed cls singleton(cls x) {
 	setbuilder((cls z) => {
 		O(N(set(x)), eq(z, x))
 	})
-}
-
-schema singleton_e(cls x: @11, cls z: @21) {
-	set(x), in(z, singleton+(x)) |-
-		Oe1[setbuilder_e[@h2]; NNi[@h1]]
-}
-
-st is_singleton(cls x) {
-	Xq(is_in(x))
 }
 
 schema self_in_singleton(cls x: @11) {
@@ -1076,6 +1069,33 @@ schema self_in_singleton(cls x: @11) {
 			@h1;
 			Oi2(N(set(x)), ?)[eq_reflexive(x)]
 		][as in(x, singleton+(x))]
+}
+
+schema singleton_e(cls x: @11, cls z: @21) {
+	set(x), in(z, singleton+(x)) |-
+		Oe1[setbuilder_e[@h2]; NNi[@h1]]
+}
+
+schema singleton_set_e(cls x: @111) {
+	set(singleton(x)) |-
+		NNe[Niu[N(set(x)) |-
+			Fi[
+				@h1;
+				supset_is_not_set[
+					universe_is_not_set();
+					Ui[(cls z) => cp[in(z, universe()) |-
+						setbuilder_i[
+							set_i[@h3];
+							Oi1(?, eq(z, x))[@h2]
+						][as in(z, singleton+(x))]
+					]][as subseteq(universe(), singleton(x))]
+				]
+			]
+		]]
+}
+
+st is_singleton(cls x) {
+	Xq(is_in(x))
 }
 
 schema singleton_Q(cls x: @11) {
@@ -1096,30 +1116,12 @@ schema singleton_is_singleton(cls x) {
 }
 
 schema singleton_eq_i(cls x: @11, cls y: @12) {
-	$foo = (cls x, cls y, cls z) => {
-		eq(x, y) |-
-			cp[O(N(set(x)), eq(z, x)) |-
-				$c1 = N(set(x)) |-
-					Oi1(?, eq(z, y))[Niu[set(y) |-
-						Fi[set_is_set_2[@h4; @h1]; @h3]]];
-
-				$c2 = eq(z, x) |-
-					Oi2(N(set(y)), ?)[eq_transitive[@h3; @h1]];
-
-				Oeu[@h2; $c1; $c2]]
-	};
-	
-	eq(x, y) |-
-		setbuilder_eq_i(
-			(cls z) => {O(N(set(x)), eq(z, x))},
-			(cls z) => {O(N(set(y)), eq(z, y))}
-		)[Ui[(cls z) => { Ei[$foo(x, y, z)[@h1]; $foo(y, x, z)[eq_symmetric[@h1]]] }]]
-		[as eq(singleton+(x), singleton+(y))]
+	eq(x, y) |- call_eq_i((cls z) => singleton(z), ?, ?)[@h1]
 }
 
 schema singleton_eq_e(cls x: @11, cls y: @21) {
-	set(x), set(y), eq(singleton+(x), singleton+(y)) |-
-		Oe1[setbuilder_e[in_eq_right_1[self_in_singleton[@h1]; @h3]]; NNi[@h2]]
+	set(x), set(y), eq(singleton(x), singleton(y)) |-
+		singleton_e[@h2; in_eq_right_1[self_in_singleton[@h1]; @h3]]
 }
 
 "더블턴 클래스. singleton의 정의에 의존한다."
@@ -1132,8 +1134,8 @@ schema doubleton_e(cls x: @11, cls y: @21, cls z: @31) {
 	set(x), set(y), in(z, doubleton(x, y)) |-
 		OI[
 			setbuilder_e[@h3];
-			cp[in(z, singleton+(x)) |- Oe1[setbuilder_e[@h4]; NNi[@h1]]];
-			cp[in(z, singleton+(y)) |- Oe1[setbuilder_e[@h4]; NNi[@h2]]]
+			cp[in(z, singleton(x)) |- singleton_e[@h1; @h4]];
+			cp[in(z, singleton(y)) |- singleton_e[@h2; @h4]]
 		]
 }
 
@@ -1157,61 +1159,18 @@ schema doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
 		[as eq(doubleton(x, y), doubleton(u, v))]
 }
 
-"x, y가 집합이 아닐 때의 doubleton의 정의에 의존하는 정리이므로 참조하는 것을 삼가라."
-@discouraged schema doubleton_is_universe_1(cls x: @111, cls y) {
-	N(set(x)) |-
-		subseteq_to_eq[
-			universe_subseteq_i(doubleton(x, y));
-			Ui[(cls z) => {cp[in(z, universe()) |-
-				setbuilder_i[
-					set_i[@h2];
-					Oi1(?, in(z, singleton(y)))[setbuilder_i[
-						set_i[@h2]; Oi1(?, eq(z, x))[@h1]
-					][as in(z, singleton+(x))]]
-				][as in(z, doubleton(x, y))]
-			]}]
-			[as subseteq(universe(), doubleton(x, y))]
-		]
-}
-
-"x, y가 집합이 아닐 때의 doubleton의 정의에 의존하는 정리이므로 참조하는 것을 삼가라."
-@discouraged schema doubleton_is_universe_2(cls x, cls y: @111) {
-	N(set(y)) |-
-		subseteq_to_eq[
-			universe_subseteq_i(doubleton(x, y));
-			Ui[(cls z) => {cp[in(z, universe()) |-
-				setbuilder_i[
-					set_i[@h2];
-					Oi2(in(z, singleton(x)), ?)[setbuilder_i[
-						set_i[@h2]; Oi1(?, eq(z, y))[@h1]
-					][as in(z, singleton+(y))]]
-				][as in(z, doubleton(x, y))]
-			]}][as subseteq(universe(), doubleton(x, y))]
-		]
-}
-
-"x, y가 집합이 아닐 때의 doubleton의 정의에 의존하는 정리이므로 참조하는 것을 삼가라."
-@discouraged schema doubleton_is_universe(cls x: @1111, cls y: @1211) {
-	O(N(set(x)), N(set(y))) |-
-		Oeu[
-			@h1;
-			doubleton_is_universe_1(x, y);
-			doubleton_is_universe_2(x, y)
-		]
-}
-
 schema doubleton_set_e1(cls x: @111, cls y: @112) {
 	set(doubleton(x, y)) |-
-		NNe[Niu[N(set(x)) |-
-			Fi[set_is_set_1[@h1; doubleton_is_universe_1(x, y)[@h2]]; universe_is_not_set()]
-		]]
+		singleton_set_e[
+			subset_is_set[@h1; cup_is_bigger_1(singleton(x), singleton(y))]
+		]
 }
 
 schema doubleton_set_e2(cls x: @111, cls y: @112) {
 	set(doubleton(x, y)) |-
-		NNe[Niu[N(set(y)) |-
-			Fi[set_is_set_1[@h1; doubleton_is_universe_2(x, y)[@h2]]; universe_is_not_set()]
-		]]
+		singleton_set_e[
+			subset_is_set[@h1; cup_is_bigger_2(singleton(x), singleton(y))]
+		]
 }
 
 schema doubleton_set_e(cls x: @111, cls y: @112) {
@@ -1336,8 +1295,8 @@ schema bigcup_singleton_to_self(cls x: @11, cls z: @21) {
 	set(x), in(z, bigcup(singleton(x))) |-
 		mpX_Xe_p(?, in(z, x))[
 			setbuilder_e[@h2];
-			Ui[(cls w) => { cp[A(in(w, singleton+(x)), in(z, w)) |-
-				in_eq_right_1[Ae2[@h3]; Oe1[setbuilder_e[Ae1[@h3]]; NNi[@h1]]]] }]
+			Ui[(cls w) => { cp[A(in(w, singleton(x)), in(z, w)) |-
+				in_eq_right_1[Ae2[@h3]; singleton_e[@h1; Ae1[@h3]]]] }]
 		]
 }
 
@@ -1480,19 +1439,14 @@ schema self_in_power(cls x, cls z) {
 			mp[eq_to_subseteq_1[@h2]; Ee2[power_def_Ue(x, z)[@h1]]]]
 }
 
-schema singleton_subseteq_power_1(cls x, cls y) {
-	set(x) |-
-		cp[in(y, singleton+(x)) |-
-			mp[
-				Oe1[setbuilder_e((cls z) => {O(N(set(x)), eq(z, x))}, y)[@h2]; NNi[@h1]];
-				self_in_power(x, y)[@h1]
-			]]
-}
-
 schema singleton_subseteq_power(cls x: @11) {
 	set(x) |-
 		Ui[(cls y) => {
-			singleton_subseteq_power_1(x, y)[@h1]
+			cp[in(y, singleton(x)) |-
+				mp[
+					singleton_e[@h1; @h2];
+					self_in_power(x, y)[@h1]
+				]]
 		}][as subseteq(singleton(x), power(x))]
 }
 
@@ -1543,30 +1497,8 @@ schema power_is_set(cls x: @11) {
 		]]
 }
 
-"x가 집합이 아닐 때의 singleton의 정의에 의존하는 정리이므로 참조하는 것을 삼가라."
-@discouraged schema singleton_is_universe(cls x: @111) {
-	N(set(x)) |-
-		ax_extensional_m(singleton(x), universe())[Ui[(cls z) => { Ei[
-			cp[in(z, singleton(x)) |- universe_in_i[set_i[@h2]]];
-			cp[in(z, universe()) |- setbuilder_i[
-				set_i[@h2];
-				Oi1(?, eq(z, x))[@h1]
-			][as in(z, singleton+(x))]]
-		] }]]
-}
-
 "싱글턴은 집합이다."
 schema singleton_set_i(cls x: @11) {
 	set(x) |-
 		subset_is_set[power_is_set[@h1]; singleton_subseteq_power(x)[@h1]]
-}
-
-schema singleton_set_e(cls x: @111) {
-	set(singleton(x)) |-
-		NNe[Niu[N(set(x)) |-
-			Fi[
-				set_is_set_1[@h1; singleton_is_universe[@h2]];
-				universe_is_not_set()
-			]
-		]]
 }
