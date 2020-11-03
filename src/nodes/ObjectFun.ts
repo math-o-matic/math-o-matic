@@ -57,6 +57,8 @@ export default class ObjectFun extends Fun {
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {
+		if (this.name) return this.name;
+		
 		return [
 			`ƒ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
 			'\t' + this.expr.toIndentedString(indent + 1),

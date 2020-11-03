@@ -83,7 +83,7 @@ export default class Schema extends Fun {
 	public toIndentedString(indent: number, root?: boolean): string {
 		return [
 			`∫ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
-			'\t' + this.expr.toIndentedString(indent + 1),
+			'\t' + this.expr.expandMeta(true).toIndentedString(indent + 1),
 			'}'
 		].join('\n' + '\t'.repeat(indent));
 	}
