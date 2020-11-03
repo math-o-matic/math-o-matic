@@ -5,13 +5,13 @@ node_js:
 
 install:
   - npm ci
-  - cd docs && npm ci
+  - cd docs && npm ci && cd ..
 
 script:
   - sed -i 's/^dist\/$//g' .gitignore
   - sed -i 's/^docs\/build\/$//g' .gitignore
   - npm run build
-  - cd docs && npx m42kup-builder
+  - cd docs && npx m42kup-builder && cd ..
 
 deploy:
   provider: pages
