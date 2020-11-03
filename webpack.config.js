@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-	watch: true,
 	mode: 'production',
 	entry: './src/entry.js',
 	output: {
