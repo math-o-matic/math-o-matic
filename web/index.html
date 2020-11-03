@@ -233,7 +233,9 @@
 
 					for (var [k, v] of scope.defMap) {
 						arr[v._id] = `<div class="block">`
-							+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>definition</b> ${k}</a>${v.type.isSimple
+							+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${
+								v.sealed ? 'sealed ' : ''
+							}definition</b> ${k}</a>${v.type.isSimple
 									? ': ' + v.type
 									: `(${v.params.map(p => p.toSimpleString()).join(', ')})`
 										+ `: ${v.type.resolve().to}`
