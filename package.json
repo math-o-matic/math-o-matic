@@ -19,7 +19,7 @@
   },
   "main": "dist/math.min.js",
   "scripts": {
-    "test": "echo hi",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack"
   },
   "license": "MIT",
