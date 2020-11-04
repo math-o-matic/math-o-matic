@@ -22,3 +22,10 @@ deploy:
   github_token: $GITHUB_TOKEN
   on:
     branch: master
+
+notifications:
+  email:
+    recipients:
+      - ossia@korea.ac.kr
+    on_success: change
+    on_failure: always
