@@ -17,6 +17,6 @@
     "m42kup-builder": "github:logico-philosophical/m42kup-builder"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.6"
   }
 }
