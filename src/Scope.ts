@@ -3,6 +3,7 @@ import Fun from './nodes/Fun';
 import Metaexpr from './nodes/Metaexpr';
 import ObjectType from './nodes/ObjectType';
 import Variable from './nodes/Variable';
+import { LocationObject } from './PegInterfaceDefinitions';
 import StackTrace from './StackTrace';
 
 export type NestedTypeInput = string | NestedTypeInput[];
@@ -35,8 +36,8 @@ export default class Scope {
 		this.baseType = parent ? parent.baseType : null;
 	}
 
-	public extend(type, name, location): Scope {
-		var child = new Scope(this, this.trace.extend(type, name, location));
+	public extend(type: string, name: string, location: LocationObject): Scope {
+		var child = new Scope(this, this.trace.extend({type, name, location}));
 		this.hypotheses.forEach(h => child.hypotheses.push(h));
 		return child;
 	}

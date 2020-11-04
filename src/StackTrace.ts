@@ -1,12 +1,20 @@
-export default class StackTrace {
-	public readonly stack: any[];
+import { LocationObject } from "./PegInterfaceDefinitions";
 
-	constructor (stack?: any[]) {
+interface StackTraceElement {
+	type: string;
+	name: string;
+	location: LocationObject;
+}
+
+export default class StackTrace {
+	public readonly stack: StackTraceElement[];
+
+	constructor (stack?: StackTraceElement[]) {
 		this.stack = stack || [];
 	}
 
-	public extend(type, name, location): StackTrace {
-		return new StackTrace([[type, name, location]].concat(this.stack));
+	public extend(element: StackTraceElement): StackTrace {
+		return new StackTrace([element].concat(this.stack));
 	}
 
 	public error(message: string) {
@@ -17,7 +25,7 @@ export default class StackTrace {
 			+ '\n\tat '
 			+ (
 				this.stack.length
-					? this.stack.map(([type, name, location]) => {
+					? this.stack.map(({type, name, location}) => {
 						return `${type} ${name || '<anonymous>'} (${filename || '<unknown>'}:${location.start.line}:${location.start.column})`;
 					}).join('\n\tat ')
 					: `<root> (${filename || '<unknown>'}:1:1)`
