@@ -24,8 +24,8 @@ deploy:
     branch: master
 
 notifications:
-  slack:
-    rooms:
-      - $SLACK_TOKEN
+  email:
+    recipients:
+      - ossia@korea.ac.kr
     on_success: always
     on_failure: always
