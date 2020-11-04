@@ -15,6 +15,20 @@ var loader = (filename: string) => {
 
 var program = new Program(parser);
 
+describe('Program', function () {
+	[
+		'propositional', 'predicate', 'set',
+		'relation', 'function', 'natural',
+		'abstract_algebra'
+	].forEach(name => {
+		it(`can load ${name}.math`, async function () {
+			await program.loadModule(name, (filename: string) => {
+				return fs.readFileSync(path.join(__dirname, '../math/' + filename + '.math'), 'utf-8');
+			});
+		});
+	});
+});
+
 describe('ObjectFun', function () {
 	it('should throw if !type && !expr', function () {
 		expect(() => new ObjectFun({annotations: [], sealed: false, params: [], type: null, expr: null})).to.throw();
