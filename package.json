@@ -19,17 +19,26 @@
   },
   "main": "dist/math.min.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "nyc mocha",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "webpack"
   },
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
+    "@types/chai": "^4.2.14",
+    "@types/mocha": "^8.0.3",
+    "chai": "^4.2.0",
+    "coveralls": "^3.1.0",
     "error-stack-parser": "^2.0.6",
+    "mocha": "^8.2.1",
+    "nyc": "^15.1.0",
     "pegjs": "^0.10.0",
     "raw-loader": "^4.0.2",
+    "source-map-support": "^0.5.19",
     "terser-webpack-plugin": "^4.2.3",
     "ts-loader": "^8.0.8",
+    "ts-node": "^9.0.0",
     "typescript": "^4.0.5",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"

@@ -13,6 +13,8 @@ script:
   - npm run build
   - cd docs && npx m42kup-builder && cd ..
 
+after_success: npm run coverage
+
 deploy:
   provider: pages
   skip_cleanup: true
