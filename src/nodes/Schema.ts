@@ -1,22 +1,4 @@
-import Scope from "../Scope";
-import $Variable from "./$Variable";
-import Expr0 from "./Expr0";
 import Fun from "./Fun";
-import Metaexpr from "./Metaexpr";
-import Node, { Precedence } from "./Node";
-import ObjectType from "./ObjectType";
-import Variable from "./Variable";
-
-interface SchemaArgumentType {
-	doc?: string;
-	tex?: string;
-	annotations: string[];
-	axiomatic: boolean;
-	name?: string;
-	params: Variable[];
-	def$s: $Variable[];
-	expr: Metaexpr;
-}
 
 export default class Schema extends Fun {
 
@@ -114,4 +96,23 @@ export default class Schema extends Fun {
 		return `\\href{#${id}}{\\mathsf{${Node.escapeTeX(this.name)}}}\\mathord{\\left(${this.params.map(e => e.toTeXStringWithId(Node.PREC_COMMA) + (e.guess ? `: \\texttt{@${e.guess}}` : '')).join(', ')}\\right)}:\\\\\\quad`
 				+ this.expr.expandMeta(true).toTeXString(true);
 	}
+}
+
+import Scope from "../Scope";
+import $Variable from "./$Variable";
+import Expr0 from "./Expr0";
+import Metaexpr from "./Metaexpr";
+import Node, { Precedence } from "./Node";
+import ObjectType from "./ObjectType";
+import Variable from "./Variable";
+
+interface SchemaArgumentType {
+	doc?: string;
+	tex?: string;
+	annotations: string[];
+	axiomatic: boolean;
+	name?: string;
+	params: Variable[];
+	def$s: $Variable[];
+	expr: Metaexpr;
 }
