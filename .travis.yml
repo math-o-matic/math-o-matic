@@ -22,3 +22,10 @@ deploy:
   github_token: $GITHUB_TOKEN
   on:
     branch: master
+
+notifications:
+  slack:
+    rooms:
+      - $SLACK_TOKEN
+    on_success: always
+    on_failure: always
