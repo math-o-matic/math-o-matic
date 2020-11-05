@@ -92,3 +92,5 @@ typings/
 dist/
 
 docs/build/
+
+*.vsix
