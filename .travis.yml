@@ -12,21 +12,21 @@ install:
   - cd docs && npm ci && cd ..
 
 script:
+  - sed -i 's/^dist\/$//g' .gitignore
+  - sed -i 's/^docs\/build\/$//g' .gitignore
   - npm test
   - npm run build
   - cd docs && npx m42kup-builder && cd ..
-  - sed -i 's/^dist\/$//g' .gitignore
-  - sed -i 's/^docs\/build\/$//g' .gitignore
-  - git add dist
-  - git add docs/build
 
 after_success: npm run coverage
 
 deploy:
   provider: pages
+  edge: true
   strategy: git
   cleanup: false
   token: $GITHUB_TOKEN
+  target_branch: gh-pages
   on:
     branch: master
 
