@@ -21,7 +21,7 @@ export default class Variable extends Expr0 implements Nameable {
 	public readonly type: ObjectType;
 	public readonly name: string;
 
-	constructor ({doc, tex, type, name, isParam, guess}: VariableArgumentType, scope?: Scope) {
+	constructor ({doc, tex, type, name, isParam, guess}: VariableArgumentType, scope: Scope) {
 		super(scope, doc, tex, type);
 
 		this.isParam = !!isParam;

@@ -19,7 +19,7 @@ export default class Tee extends Metaexpr {
 	public readonly def$s: $Variable[];
 	public readonly right;
 
-	constructor ({left, def$s, right}: TeeArgumentType, scope?: Scope) {
+	constructor ({left, def$s, right}: TeeArgumentType, scope: Scope) {
 		if (!(left instanceof Array
 				&& left.every(l => {
 					return l.type instanceof ObjectType
@@ -65,14 +65,14 @@ export default class Tee extends Metaexpr {
 
 		return new Tee({
 			left, right
-		});
+		}, this.scope);
 	}
 
 	public expandMeta(andFuncalls: boolean): Metaexpr {
 		var left = this.left.map(lef => lef.expandMeta(andFuncalls));
 		var right = this.right.expandMeta(andFuncalls);
 
-		return new Tee({left, right});
+		return new Tee({left, right}, this.scope);
 	}
 
 	protected getEqualsPriority(): EqualsPriority {

@@ -15,7 +15,7 @@ export default class $Variable extends Metaexpr implements Nameable {
 	public readonly name: string;
 	public readonly expr: Metaexpr;
 
-	constructor ({name, expr}: $VariableArgumentType, scope?: Scope) {
+	constructor ({name, expr}: $VariableArgumentType, scope: Scope) {
 		super(scope, null, null, expr.type);
 
 		if (!name || !expr) {

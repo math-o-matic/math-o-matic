@@ -7,6 +7,7 @@ export type Precedence = boolean | number | [number, number];
 export default abstract class Node {
 	public readonly _id: number;
 
+	public readonly scope: Scope;
 	public readonly doc: string;
 	public readonly tex: string;
 	public precedence: Precedence;
@@ -17,6 +18,7 @@ export default abstract class Node {
 
 	constructor (scope: Scope, doc: string, tex: string) {
 		this._id = ++ctr;
+		this.scope = scope;
 		this.doc = doc;
 		this.tex = tex;
 	}
@@ -27,6 +29,10 @@ export default abstract class Node {
 
 	public abstract toIndentedString(indent: number, root?: boolean): string;
 	public abstract toTeXString(prec?: Precedence, root?: boolean): string;
+
+	public error(message: string) {
+		return Node.error(message, this.scope);
+	}
 
 	public static error(message: string, scope: Scope) {
 		if (scope) {

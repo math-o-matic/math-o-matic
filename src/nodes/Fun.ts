@@ -13,7 +13,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 	 * name, expr 중 하나 이상 있어야 하고 type, expr 중
 	 * 한 개만 있어야 한다.
 	 */
-	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: FunArgumentType, scope?: Scope) {
+	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: FunArgumentType, scope: Scope) {
 		if (!name && !expr)
 			throw Node.error('Anonymous fun cannot be primitive', scope);
 
@@ -75,7 +75,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 				isParam: true,
 				type: types[i],
 				name: '$' + i
-			}));
+			}, this.scope));
 		}
 
 		var thisCall = this.expr && !this.sealed
@@ -84,7 +84,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 				fun: this,
 				unseal: false,
 				args: placeholders
-			});
+			}, this.scope);
 
 		var objCall = obj instanceof Fun && obj.expr && !obj.sealed
 			? obj.call(placeholders)
@@ -92,7 +92,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 				fun: obj,
 				unseal: false,
 				args: placeholders
-			});
+			}, this.scope);
 		
 		return thisCall.equals(objCall);
 	}

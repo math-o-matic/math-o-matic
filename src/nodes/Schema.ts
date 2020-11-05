@@ -7,7 +7,7 @@ export default class Schema extends Fun {
 	public readonly def$s: $Variable[];
 	private _isProvedCache: boolean;
 
-	constructor ({doc, tex, annotations, axiomatic, name, params, using, def$s, expr}: SchemaArgumentType, scope?: Scope) {
+	constructor ({doc, tex, annotations, axiomatic, name, params, using, def$s, expr}: SchemaArgumentType, scope: Scope) {
 		super({doc, tex, annotations, sealed: false, type: null, name, params, expr}, scope);
 		
 		this.axiomatic = axiomatic;
@@ -48,7 +48,7 @@ export default class Schema extends Fun {
 			using: this.using,
 			def$s: this.def$s,
 			expr: this.expr.substitute(map)
-		});
+		}, this.scope);
 	}
 
 	public expandMeta(andFuncalls: boolean): Metaexpr {
@@ -63,7 +63,7 @@ export default class Schema extends Fun {
 			using: this.using,
 			def$s: this.def$s,
 			expr: this.expr.expandMeta(andFuncalls)
-		});
+		}, this.scope);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

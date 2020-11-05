@@ -19,11 +19,11 @@ interface ReductionArgumentType {
 export default class Reduction extends Metaexpr {
 	
 	public readonly subject: Metaexpr;
-	public readonly guesses;
+	public readonly guesses: Expr0[];
 	public readonly leftargs: Metaexpr[];
 	public readonly reduced: Metaexpr;
 
-	constructor ({subject, guesses, leftargs, expected}: ReductionArgumentType, scope?: Scope) {
+	constructor ({subject, guesses, leftargs, expected}: ReductionArgumentType, scope: Scope) {
 		if (guesses) {
 			let resolvedType = subject.type.resolve() as ObjectType | MetaType,
 				paramTypes = resolvedType.from,
@@ -160,7 +160,7 @@ ${expected.expandMeta(true)}
 		return this.reduced.equals(obj);
 	}
 
-	public static query(guess, left, leftargs, right, expected, scope: Scope) {
+	public static query(guess: string, left, leftargs, right, expected, scope: Scope) {
 		if (guess.length == 0) throw Node.error('wut', scope);
 
 		var lef, ret;
@@ -173,20 +173,21 @@ ${expected.expandMeta(true)}
 			lef = right;
 			ret = expected;
 		} else {
-			if (!(1 <= guess[0] * 1 && guess[0] * 1 <= leftargs.length))
+			var n = Number(guess[0]);
+			if (!(1 <= n && n <= leftargs.length))
 				throw Node.error(`Cannot dereference @${guess}: antecedent index out of range`, scope);
 
-			lef = left[guess[0] * 1 - 1];
-			ret = leftargs[guess[0] * 1 - 1];
+			lef = left[n - 1];
+			ret = leftargs[n - 1];
 		}
 
-		return (function recurse(guess, lef: Metaexpr, node: Metaexpr, ptr) {
+		return (function recurse(guess: string, lef: Metaexpr, node: Metaexpr, ptr: number) {
 			node = node.expandMeta(true);
 			
 			if (guess.length <= ptr) return node;
 
 			if (/[0-9]/.test(guess[ptr])) {
-				var n = guess[ptr] * 1;
+				var n = Number(guess[ptr]);
 
 				if (lef instanceof Tee && node instanceof Tee) {
 					if (lef.left.length != node.left.length) {

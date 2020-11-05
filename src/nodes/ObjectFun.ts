@@ -20,7 +20,7 @@ interface ObjectFunArgumentType {
 
 export default class ObjectFun extends Fun {
 	
-	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: ObjectFunArgumentType, scope?: Scope) {
+	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: ObjectFunArgumentType, scope: Scope) {
 		super({doc, tex, annotations, sealed, type, name, params, expr}, scope);
 	}
 
@@ -40,7 +40,7 @@ export default class ObjectFun extends Fun {
 			name: null,
 			params: this.params,
 			expr: this.expr.substitute(map)
-		});
+		}, this.scope);
 	}
 
 	public expandMeta(andFuncalls: boolean): Metaexpr {
@@ -53,7 +53,7 @@ export default class ObjectFun extends Fun {
 			name: null,
 			params: this.params,
 			expr: this.expr.expandMeta(andFuncalls)
-		});
+		}, this.scope);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

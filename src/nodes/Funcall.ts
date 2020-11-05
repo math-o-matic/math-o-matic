@@ -23,7 +23,7 @@ export default class Funcall extends Expr0 {
 	public readonly unseal: boolean;
 	public readonly args: Expr0[];
 
-	constructor ({fun, unseal, args}: FuncallArgumentType, scope?: Scope) {
+	constructor ({fun, unseal, args}: FuncallArgumentType, scope: Scope) {
 		if (fun.type.isSimple) {
 			var name = isNameable(fun) ? fun.name : '<anonymous>';
 			throw Node.error(`${name} is not callable`, scope);
@@ -63,7 +63,7 @@ export default class Funcall extends Expr0 {
 			fun: this.fun.substitute(map),
 			unseal: this.unseal,
 			args: this.args.map(arg => arg.substitute(map))
-		});
+		}, this.scope);
 	}
 
 	public expandMeta(andFuncalls: boolean): Metaexpr {
@@ -72,7 +72,7 @@ export default class Funcall extends Expr0 {
 			args = this.args.map(arg => arg.expandMeta(andFuncalls));
 		
 		if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema))
-			return new Funcall({fun, unseal, args});
+			return new Funcall({fun, unseal, args}, this.scope);
 
 		return fun.call(args).expandMeta(andFuncalls);
 	}
@@ -109,7 +109,7 @@ export default class Funcall extends Expr0 {
 				fun: callee.expandOnce(),
 				unseal: this.unseal,
 				args: this.args
-			});
+			}, this.scope);
 		}
 
 		if (!(callee instanceof Fun)) {
