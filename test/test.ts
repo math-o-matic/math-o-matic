@@ -1,6 +1,8 @@
-import { expect } from "chai";
+import chai, { expect } from "chai";
+chai.use(require('chai-as-promised'));
 import Metaexpr from "../src/nodes/Metaexpr";
 import ObjectFun from "../src/nodes/ObjectFun";
+import Schema from "../src/nodes/Schema";
 import Program from "../src/Program";
 var pegjs = require('pegjs');
 var fs = require('fs');
@@ -69,5 +71,32 @@ sealed st N2(st p) {
 			baz = program.evaluate(evalParser.parse(`N2(p)`)) as Metaexpr;
 		
 		expect(foo.equals(baz)).to.be.false;
+	});
+});
+
+describe('using', function () {
+	it('is a valid syntax', async function () {
+		var program = new Program(parser);
+		
+		await program.loadModule('duh', (_filename: string) => `
+type st;
+
+st p;
+
+st N(st p);
+
+sealed st N2(st p) {
+	N(p)
+}
+
+schema foo(st p) using N2 {
+	N2(p)
+}
+`);
+
+		var foo = program.evaluate(evalParser.parse(`foo`)) as Schema,
+			bar = program.evaluate(evalParser.parse(`N2`)) as Metaexpr;
+		
+		expect(foo.using[0]).to.equal(bar);
 	});
 });

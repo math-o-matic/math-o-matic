@@ -3,13 +3,15 @@ import Fun from "./Fun";
 export default class Schema extends Fun {
 
 	public readonly axiomatic: boolean;
+	public readonly using: ObjectFun[];
 	public readonly def$s: $Variable[];
 	private _isProvedCache: boolean;
 
-	constructor ({doc, tex, annotations, axiomatic, name, params, def$s, expr}: SchemaArgumentType, scope?: Scope) {
+	constructor ({doc, tex, annotations, axiomatic, name, params, using, def$s, expr}: SchemaArgumentType, scope?: Scope) {
 		super({doc, tex, annotations, sealed: false, type: null, name, params, expr}, scope);
 		
 		this.axiomatic = axiomatic;
+		this.using = using;
 		this.def$s = def$s || [];
 	}
 	
@@ -43,6 +45,7 @@ export default class Schema extends Fun {
 			axiomatic: this.axiomatic,
 			name: null,
 			params: this.params,
+			using: this.using,
 			def$s: this.def$s,
 			expr: this.expr.substitute(map)
 		});
@@ -57,6 +60,7 @@ export default class Schema extends Fun {
 			axiomatic: this.axiomatic,
 			name: null,
 			params: this.params,
+			using: this.using,
 			def$s: this.def$s,
 			expr: this.expr.expandMeta(andFuncalls)
 		});
@@ -105,6 +109,7 @@ import Metaexpr from "./Metaexpr";
 import Node, { Precedence } from "./Node";
 import ObjectType from "./ObjectType";
 import Variable from "./Variable";
+import ObjectFun from "./ObjectFun";
 
 interface SchemaArgumentType {
 	doc?: string;
@@ -113,6 +118,7 @@ interface SchemaArgumentType {
 	axiomatic: boolean;
 	name?: string;
 	params: Variable[];
+	using: ObjectFun[];
 	def$s: $Variable[];
 	expr: Metaexpr;
 }

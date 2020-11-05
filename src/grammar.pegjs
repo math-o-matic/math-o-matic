@@ -52,6 +52,7 @@ defv =
 	{
 		return {
 			_type: 'defv',
+			isParam: false,
 			doc: doc ? doc[0] : null,
 			tex: tex ? tex[0] : null,
 			type,
@@ -66,8 +67,9 @@ defparam =
 		return {
 			_type: 'defv',
 			isParam: true,
-			type,
+			doc: null,
 			tex: tex ? tex[0] : null,
+			type,
 			name,
 			location: location()
 		}
@@ -80,10 +82,11 @@ defschemaparam =
 		return {
 			_type: 'defv',
 			isParam: true,
-			guess,
-			type,
+			doc: null,
 			tex: tex ? tex[0] : null,
+			type,
 			name,
+			guess,
 			location: location()
 		}
 	}
@@ -141,6 +144,15 @@ defschema =
 		")" _
 		{return p || []}
 	)
+	using:(
+		'using' __
+		x:(
+			head:ident _
+			tail:(',' _ n:ident _ {return n})*
+			{return [head].concat(tail)}
+		)
+		{return x}
+	)?
 	"{" _
 	defdollars: (d:defdollar _ {return d})* _
 	expr:metaexpr _
@@ -153,6 +165,7 @@ defschema =
 			axiomatic: !!axiomatic,
 			name,
 			params,
+			using: using || [],
 			def$s: defdollars,
 			expr,
 			location: location()
@@ -482,13 +495,14 @@ plain_var =
 	}
 
 keyword =
-	"as"
-	/ "axiomatic"
-	/ "base"
-	/ "import"
-	/ "schema"
-	/ "sealed"
-	/ "type"
+	'as'
+	/ 'axiomatic'
+	/ 'base'
+	/ 'import'
+	/ 'schema'
+	/ 'sealed'
+	/ 'type'
+	/ 'using'
 
 annotation =
 	'@discouraged'

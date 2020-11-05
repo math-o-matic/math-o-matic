@@ -133,7 +133,7 @@ export default class PI {
 		}, scope);
 	}
 
-	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): Fun {
+	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): ObjectFun {
 		if (obj._type != 'defun' && obj._type != 'funexpr')
 			throw Error('Assertion failed');
 
@@ -331,21 +331,37 @@ export default class PI {
 		return new $Variable({name: obj.name, expr}, scope);
 	}
 
-	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope): Fun {
+	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope): Schema {
 		if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 			throw Error('Assertion failed');
-
-		var name: string = null,
-			axiomatic: boolean = false,
-			doc: string = null,
-			annotations: string[] = [];
-
-		if (obj._type == 'defschema') {
-			name = obj.name; axiomatic = obj.axiomatic;
-			doc = obj.doc; annotations = obj.annotations;
-		}
+		
+		var name = obj._type == 'defschema' ? obj.name : null;
 
 		var scope = parentScope.extend('schema', name, obj.location);
+
+		var axiomatic: boolean = false,
+			doc: string = null,
+			annotations: string[] = [],
+			using: ObjectFun[];
+
+		if (obj._type == 'defschema') {
+			axiomatic = obj.axiomatic;
+			doc = obj.doc;
+			annotations = obj.annotations;
+			using = obj.using.map(name => {
+				if (!scope.hasVariable(name)) {
+					throw scope.error(`Variable ${name} is not defined`);
+				}
+
+				var fun = scope.getVariable(name);
+
+				if (!(fun instanceof ObjectFun)) {
+					throw scope.error(`${name} is not a macro`);
+				}
+
+				return fun;
+			});
+		}
 
 		var params = obj.params.map(tvo => {
 			if (!scope.hasType(typeObjToNestedArr(tvo.type)))
@@ -371,7 +387,7 @@ export default class PI {
 
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new Schema({doc, annotations, axiomatic, name, params, def$s, expr}, scope);
+		return new Schema({doc, annotations, axiomatic, name, params, using, def$s, expr}, scope);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope): Funcall {

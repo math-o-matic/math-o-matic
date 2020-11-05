@@ -27,7 +27,7 @@ export interface TypedefObject {
 
 export interface DefvObject {
 	_type: 'defv';
-	isParam?: boolean;
+	isParam: boolean;
 	guess?: string;
 	doc: string;
 	tex: string;
@@ -57,16 +57,17 @@ export interface DefschemaObject {
 	annotations: string[];
 	axiomatic: boolean;
 	name: string;
-	params?: DefvObject[];
-	def$s?: Def$Object[];
-	expr?: MetaexprObject;
+	params: DefvObject[];
+	using: string[];
+	def$s: Def$Object[];
+	expr: MetaexprObject;
 	location: LocationObject;
 }
 
 export interface ReductionObject {
 	_type: 'reduction';
 	subject: MetaexprObject;
-	guesses?: Array<Expr0Object | null>;
+	guesses: Array<Expr0Object | null>;
 	leftargs: MetaexprObject[];
 	expected: MetaexprObject;
 	location: LocationObject;
@@ -98,7 +99,7 @@ export interface FunexprObject {
 export interface SchemaexprObject {
 	_type: 'schemaexpr';
 	params: DefvObject[];
-	def$s?: Def$Object[];
+	def$s: Def$Object[];
 	expr: MetaexprObject;
 	location: LocationObject;
 }
