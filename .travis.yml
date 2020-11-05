@@ -14,8 +14,8 @@ install:
 script:
   - sed -i 's/^dist\/$//g' .gitignore
   - sed -i 's/^docs\/build\/$//g' .gitignore
-  - git add dist/*
-  - git add docs/build/*
+  - git add dist
+  - git add docs/build
   - npm test
   - npm run build
   - cd docs && npx m42kup-builder && cd ..
