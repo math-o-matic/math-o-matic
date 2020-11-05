@@ -1,4 +1,4 @@
-import Scope from '../Scope';
+import StackTrace from '../StackTrace';
 
 var ctr = 0;
 
@@ -7,7 +7,7 @@ export type Precedence = boolean | number | [number, number];
 export default abstract class Node {
 	public readonly _id: number;
 
-	public readonly scope: Scope;
+	public readonly trace: StackTrace;
 	public readonly doc: string;
 	public readonly tex: string;
 	public precedence: Precedence;
@@ -16,9 +16,9 @@ export default abstract class Node {
 	public static readonly PREC_COMMA = 1000;
 	public static readonly PREC_COLONEQQ = 100000;
 
-	constructor (scope: Scope, doc: string, tex: string) {
+	constructor (trace: StackTrace, doc: string, tex: string) {
 		this._id = ++ctr;
-		this.scope = scope;
+		this.trace = trace;
 		this.doc = doc;
 		this.tex = tex;
 	}
@@ -31,12 +31,12 @@ export default abstract class Node {
 	public abstract toTeXString(prec?: Precedence, root?: boolean): string;
 
 	public error(message: string) {
-		return Node.error(message, this.scope);
+		return Node.error(message, this.trace);
 	}
 
-	public static error(message: string, scope: Scope) {
-		if (scope) {
-			return scope.error(message);
+	public static error(message: string, trace: StackTrace) {
+		if (trace) {
+			return trace.error(message);
 		} else {
 			return new Error(message);
 		}

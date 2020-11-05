@@ -1,4 +1,4 @@
-import Scope from '../Scope';
+import StackTrace from '../StackTrace';
 import $Variable from './$Variable';
 import Expr0 from './Expr0';
 import Fun from './Fun';
@@ -23,29 +23,29 @@ export default class Funcall extends Expr0 {
 	public readonly unseal: boolean;
 	public readonly args: Expr0[];
 
-	constructor ({fun, unseal, args}: FuncallArgumentType, scope: Scope) {
+	constructor ({fun, unseal, args}: FuncallArgumentType, trace: StackTrace) {
 		if (fun.type.isSimple) {
 			var name = isNameable(fun) ? fun.name : '<anonymous>';
-			throw Node.error(`${name} is not callable`, scope);
+			throw Node.error(`${name} is not callable`, trace);
 		}
 
 		if (!(args instanceof Array) || args.map(e => e instanceof Node).some(e => !e))
-			throw Node.error('Assertion failed', scope);
+			throw Node.error('Assertion failed', trace);
 			 
 		var resolvedType = fun.type.resolve() as ObjectType | MetaType,
 			paramTypes = resolvedType.from,
 			argTypes = args.map(e => e.type);
 
 		if (paramTypes.length != argTypes.length)
-			throw Node.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`, scope);
+			throw Node.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`, trace);
 
 		for (var i = 0; i < paramTypes.length; i++) {
 			if (!paramTypes[i].equals(argTypes[i])) {
-				throw Node.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, scope);
+				throw Node.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, trace);
 			}
 		}
 
-		super(scope, null, null, resolvedType.to);
+		super(trace, null, null, resolvedType.to);
 		
 		this.fun = fun;
 		this.unseal = unseal;
@@ -63,7 +63,7 @@ export default class Funcall extends Expr0 {
 			fun: this.fun.substitute(map),
 			unseal: this.unseal,
 			args: this.args.map(arg => arg.substitute(map))
-		}, this.scope);
+		}, this.trace);
 	}
 
 	public expandMeta(andFuncalls: boolean): Metaexpr {
@@ -72,7 +72,7 @@ export default class Funcall extends Expr0 {
 			args = this.args.map(arg => arg.expandMeta(andFuncalls));
 		
 		if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema))
-			return new Funcall({fun, unseal, args}, this.scope);
+			return new Funcall({fun, unseal, args}, this.trace);
 
 		return fun.call(args).expandMeta(andFuncalls);
 	}
@@ -109,7 +109,7 @@ export default class Funcall extends Expr0 {
 				fun: callee.expandOnce(),
 				unseal: this.unseal,
 				args: this.args
-			}, this.scope);
+			}, this.trace);
 		}
 
 		if (!(callee instanceof Fun)) {

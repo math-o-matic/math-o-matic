@@ -1,4 +1,4 @@
-import Scope from "../Scope";
+import StackTrace from "../StackTrace";
 import Expr0 from "./Expr0";
 import Fun from "./Fun";
 import Metaexpr from "./Metaexpr";
@@ -20,8 +20,8 @@ interface ObjectFunArgumentType {
 
 export default class ObjectFun extends Fun {
 	
-	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: ObjectFunArgumentType, scope: Scope) {
-		super({doc, tex, annotations, sealed, type, name, params, expr}, scope);
+	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: ObjectFunArgumentType, trace: StackTrace) {
+		super({doc, tex, annotations, sealed, type, name, params, expr}, trace);
 	}
 
 	public substitute(map: Map<Variable, Expr0>): Metaexpr {
@@ -40,7 +40,7 @@ export default class ObjectFun extends Fun {
 			name: null,
 			params: this.params,
 			expr: this.expr.substitute(map)
-		}, this.scope);
+		}, this.trace);
 	}
 
 	public expandMeta(andFuncalls: boolean): Metaexpr {
@@ -53,7 +53,7 @@ export default class ObjectFun extends Fun {
 			name: null,
 			params: this.params,
 			expr: this.expr.expandMeta(andFuncalls)
-		}, this.scope);
+		}, this.trace);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {

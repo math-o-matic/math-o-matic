@@ -4,7 +4,6 @@ import Metaexpr from "../src/nodes/Metaexpr";
 import ObjectFun from "../src/nodes/ObjectFun";
 import Schema from "../src/nodes/Schema";
 import Program from "../src/Program";
-import Scope from "../src/Scope";
 var pegjs = require('pegjs');
 var fs = require('fs');
 var path = require('path');
@@ -31,7 +30,7 @@ describe('Program', function () {
 
 describe('ObjectFun', function () {
 	it('should throw if !type && !expr', function () {
-		expect(() => new ObjectFun({annotations: [], sealed: false, params: [], type: null, expr: null}, new Scope(null))).to.throw();
+		expect(() => new ObjectFun({annotations: [], sealed: false, params: [], type: null, expr: null}, null)).to.throw();
 	});
 });
 

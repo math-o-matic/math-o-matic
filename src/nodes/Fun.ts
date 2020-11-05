@@ -13,15 +13,15 @@ export default abstract class Fun extends Expr0 implements Nameable {
 	 * name, expr 중 하나 이상 있어야 하고 type, expr 중
 	 * 한 개만 있어야 한다.
 	 */
-	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: FunArgumentType, scope: Scope) {
+	constructor ({doc, tex, annotations, sealed, type, name, params, expr}: FunArgumentType, trace: StackTrace) {
 		if (!name && !expr)
-			throw Node.error('Anonymous fun cannot be primitive', scope);
+			throw Node.error('Anonymous fun cannot be primitive', trace);
 
 		if (type && expr)
-			throw Node.error('no', scope);
+			throw Node.error('no', trace);
 
 		if (!type && !expr)
-			throw Node.error('Cannot guess the type of a primitive fun', scope);
+			throw Node.error('Cannot guess the type of a primitive fun', trace);
 		
 		var precedence = false;
 
@@ -34,7 +34,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 		}
 		
 		super(
-			scope, doc, tex,
+			trace, doc, tex,
 			type || new (expr.type instanceof ObjectType ? ObjectType : MetaType)({
 				functional: true,
 				from: params.map(variable => variable.type),
@@ -75,7 +75,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 				isParam: true,
 				type: types[i],
 				name: '$' + i
-			}, this.scope));
+			}, this.trace));
 		}
 
 		var thisCall = this.expr && !this.sealed
@@ -84,7 +84,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 				fun: this,
 				unseal: false,
 				args: placeholders
-			}, this.scope);
+			}, this.trace);
 
 		var objCall = obj instanceof Fun && obj.expr && !obj.sealed
 			? obj.call(placeholders)
@@ -92,7 +92,7 @@ export default abstract class Fun extends Expr0 implements Nameable {
 				fun: obj,
 				unseal: false,
 				args: placeholders
-			}, this.scope);
+			}, this.trace);
 		
 		return thisCall.equals(objCall);
 	}
@@ -116,7 +116,6 @@ export default abstract class Fun extends Expr0 implements Nameable {
 	}
 }
 
-import Scope from '../Scope';
 import Funcall from './Funcall';
 import Metaexpr, { EqualsPriority } from './Metaexpr';
 import MetaType from './MetaType';
@@ -124,6 +123,7 @@ import Node from './Node';
 import ObjectType from './ObjectType';
 import Type from './Type';
 import Variable from './Variable';
+import StackTrace from '../StackTrace';
 
 interface FunArgumentType {
 	doc?: string;

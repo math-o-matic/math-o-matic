@@ -1,4 +1,4 @@
-import Scope from '../Scope';
+import StackTrace from '../StackTrace';
 import Expr0 from './Expr0';
 import Metaexpr, { EqualsPriority } from './Metaexpr';
 import Nameable from './Nameable';
@@ -21,14 +21,14 @@ export default class Variable extends Expr0 implements Nameable {
 	public readonly type: ObjectType;
 	public readonly name: string;
 
-	constructor ({doc, tex, type, name, isParam, guess}: VariableArgumentType, scope: Scope) {
-		super(scope, doc, tex, type);
+	constructor ({doc, tex, type, name, isParam, guess}: VariableArgumentType, trace: StackTrace) {
+		super(trace, doc, tex, type);
 
 		this.isParam = !!isParam;
 		this.guess = guess || null;
 
 		if (typeof name != 'string')
-			throw Node.error('Assertion failed', scope);
+			throw Node.error('Assertion failed', trace);
 
 		this.name = name;
 	}

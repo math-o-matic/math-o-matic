@@ -1,4 +1,4 @@
-import Scope from "../Scope";
+import StackTrace from "../StackTrace";
 import Expr0 from "./Expr0";
 import Metaexpr, { EqualsPriority } from "./Metaexpr";
 import Nameable from "./Nameable";
@@ -15,11 +15,11 @@ export default class $Variable extends Metaexpr implements Nameable {
 	public readonly name: string;
 	public readonly expr: Metaexpr;
 
-	constructor ({name, expr}: $VariableArgumentType, scope: Scope) {
-		super(scope, null, null, expr.type);
+	constructor ({name, expr}: $VariableArgumentType, trace: StackTrace) {
+		super(trace, null, null, expr.type);
 
 		if (!name || !expr) {
-			throw Node.error('Assertion failed', scope);
+			throw Node.error('Assertion failed', trace);
 		}
 
 		this.name = name;

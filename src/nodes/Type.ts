@@ -1,4 +1,4 @@
-import Scope from "../Scope";
+import StackTrace from "../StackTrace";
 import Node from "./Node";
 
 export default abstract class Type extends Node {
@@ -7,8 +7,8 @@ export default abstract class Type extends Node {
 	
 	public abstract equals(t: Type): boolean;
 
-	constructor (scope: Scope, doc: string, tex: string, isFunctional: boolean) {
-		super(scope, doc, tex);
+	constructor (trace: StackTrace, doc: string, tex: string, isFunctional: boolean) {
+		super(trace, doc, tex);
 		this.isFunctional = isFunctional;
 		this.isSimple = !isFunctional;
 	}

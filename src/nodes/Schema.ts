@@ -7,8 +7,8 @@ export default class Schema extends Fun {
 	public readonly def$s: $Variable[];
 	private _isProvedCache: boolean;
 
-	constructor ({doc, tex, annotations, axiomatic, name, params, using, def$s, expr}: SchemaArgumentType, scope: Scope) {
-		super({doc, tex, annotations, sealed: false, type: null, name, params, expr}, scope);
+	constructor ({doc, tex, annotations, axiomatic, name, params, using, def$s, expr}: SchemaArgumentType, trace: StackTrace) {
+		super({doc, tex, annotations, sealed: false, type: null, name, params, expr}, trace);
 		
 		this.axiomatic = axiomatic;
 		this.using = using;
@@ -48,7 +48,7 @@ export default class Schema extends Fun {
 			using: this.using,
 			def$s: this.def$s,
 			expr: this.expr.substitute(map)
-		}, this.scope);
+		}, this.trace);
 	}
 
 	public expandMeta(andFuncalls: boolean): Metaexpr {
@@ -63,7 +63,7 @@ export default class Schema extends Fun {
 			using: this.using,
 			def$s: this.def$s,
 			expr: this.expr.expandMeta(andFuncalls)
-		}, this.scope);
+		}, this.trace);
 	}
 
 	public toIndentedString(indent: number, root?: boolean): string {
@@ -102,7 +102,6 @@ export default class Schema extends Fun {
 	}
 }
 
-import Scope from "../Scope";
 import $Variable from "./$Variable";
 import Expr0 from "./Expr0";
 import Metaexpr from "./Metaexpr";
@@ -110,6 +109,7 @@ import Node, { Precedence } from "./Node";
 import ObjectType from "./ObjectType";
 import Variable from "./Variable";
 import ObjectFun from "./ObjectFun";
+import StackTrace from "../StackTrace";
 
 interface SchemaArgumentType {
 	doc?: string;

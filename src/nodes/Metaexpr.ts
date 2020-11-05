@@ -1,4 +1,4 @@
-import Scope from "../Scope";
+import StackTrace from "../StackTrace";
 import Expr0 from "./Expr0";
 import Node from "./Node";
 import Type from "./Type";
@@ -23,10 +23,10 @@ export enum EqualsPriority {
 export default abstract class Metaexpr extends Node {
 	public readonly type: Type;
 
-	constructor(scope: Scope, doc: string, tex: string, type: Type) {
-		super(scope, doc, tex);
+	constructor(trace: StackTrace, doc: string, tex: string, type: Type) {
+		super(trace, doc, tex);
 
-		if (!type) throw Node.error('Assertion failed', scope);
+		if (!type) throw Node.error('Assertion failed', trace);
 
 		this.type = type;
 	}

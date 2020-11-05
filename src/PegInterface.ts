@@ -130,7 +130,7 @@ export default class PI {
 			name: obj.name,
 			doc: obj.doc,
 			tex: obj.tex
-		}, scope);
+		}, scope.trace);
 	}
 
 	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): ObjectFun {
@@ -197,7 +197,7 @@ export default class PI {
 			throw scope.error('Cannot seal a primitive fun');
 		}
 
-		return new ObjectFun({annotations: [], sealed, type, name, params, expr, doc, tex}, scope);
+		return new ObjectFun({annotations: [], sealed, type, name, params, expr, doc, tex}, scope.trace);
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope): Funcall {
@@ -212,7 +212,7 @@ export default class PI {
 			return PI.expr0(arg, scope);
 		});
 
-		return new Funcall({fun, unseal: obj.unseal, args}, scope);
+		return new Funcall({fun, unseal: obj.unseal, args}, scope.trace);
 	}
 
 	public static metaexpr(obj: MetaexprObject, parentScope: Scope): Metaexpr {
@@ -317,7 +317,7 @@ export default class PI {
 
 		var right = PI.metaexpr(obj.right, scopeRight);
 
-		return new Tee({left, def$s, right}, scope);
+		return new Tee({left, def$s, right}, scope.trace);
 	}
 
 	public static def$(obj: Def$Object, parentScope: Scope): $Variable {
@@ -328,7 +328,7 @@ export default class PI {
 		
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new $Variable({name: obj.name, expr}, scope);
+		return new $Variable({name: obj.name, expr}, scope.trace);
 	}
 
 	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope): Schema {
@@ -387,7 +387,7 @@ export default class PI {
 
 		var expr = PI.metaexpr(obj.expr, scope);
 
-		return new Schema({doc, annotations, axiomatic, name, params, using, def$s, expr}, scope);
+		return new Schema({doc, annotations, axiomatic, name, params, using, def$s, expr}, scope.trace);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope): Funcall {
@@ -406,7 +406,7 @@ export default class PI {
 			fun,
 			unseal: obj.unseal,
 			args
-		}, scope);
+		}, scope.trace);
 	}
 
 	public static reduction(obj: ReductionObject, parentScope: Scope): Reduction {
@@ -434,6 +434,6 @@ export default class PI {
 			guesses,
 			leftargs,
 			expected
-		}, scope);
+		}, scope.trace);
 	}
 }

@@ -1,4 +1,4 @@
-import Scope from '../Scope';
+import StackTrace from '../StackTrace';
 import $Variable from './$Variable';
 import Expr0 from './Expr0';
 import Metaexpr, { EqualsPriority } from './Metaexpr';
@@ -19,29 +19,29 @@ export default class Tee extends Metaexpr {
 	public readonly def$s: $Variable[];
 	public readonly right;
 
-	constructor ({left, def$s, right}: TeeArgumentType, scope: Scope) {
+	constructor ({left, def$s, right}: TeeArgumentType, trace: StackTrace) {
 		if (!(left instanceof Array
 				&& left.every(l => {
 					return l.type instanceof ObjectType
 						|| l.type instanceof MetaType;
 				}))) {
 			console.log(left);
-			throw Node.error('Assertion failed', scope);
+			throw Node.error('Assertion failed', trace);
 		}
 
 		if (def$s && !(def$s instanceof Array && def$s.every($ => $ instanceof $Variable)))
-			throw Node.error('Assertion failed', scope);
+			throw Node.error('Assertion failed', trace);
 
 		if (!(right.type instanceof ObjectType || right.type instanceof MetaType)) {
 			console.log(right);
-			throw Node.error('Assertion failed', scope);
+			throw Node.error('Assertion failed', trace);
 		}
 
 		if (right.type.isFunctional) {
-			throw Node.error('RHS of a rule cannot be a schema', scope);
+			throw Node.error('RHS of a rule cannot be a schema', trace);
 		}
 
-		super(scope, null, null, new MetaType({
+		super(trace, null, null, new MetaType({
 			functional: false,
 			left: left.map(e => e.type),
 			right: right.type
@@ -65,14 +65,14 @@ export default class Tee extends Metaexpr {
 
 		return new Tee({
 			left, right
-		}, this.scope);
+		}, this.trace);
 	}
 
 	public expandMeta(andFuncalls: boolean): Metaexpr {
 		var left = this.left.map(lef => lef.expandMeta(andFuncalls));
 		var right = this.right.expandMeta(andFuncalls);
 
-		return new Tee({left, right}, this.scope);
+		return new Tee({left, right}, this.trace);
 	}
 
 	protected getEqualsPriority(): EqualsPriority {

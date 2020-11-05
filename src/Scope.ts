@@ -10,6 +10,10 @@ import StackTrace from './StackTrace';
 
 export type NestedTypeInput = string | NestedTypeInput[];
 
+/**
+ * 변수 영역(scope).
+ * 구문 분석 과정에서 name resolution을 할 때에만 사용해야 한다.
+ */
 export default class Scope {
 	public readonly importMap: Map<string, Scope> = new Map();
 
