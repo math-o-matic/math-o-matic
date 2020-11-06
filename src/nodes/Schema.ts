@@ -6,7 +6,7 @@ export default class Schema extends Fun {
 	public readonly using: ObjectFun[];
 	public readonly def$s: $Variable[];
 	public readonly context: ExecutionContext;
-	private _isProvedCache: boolean;
+	private isProvedCache: boolean;
 
 	constructor ({doc, tex, annotations, axiomatic, name, params, context, def$s, expr}: SchemaArgumentType, trace: StackTrace) {
 		if (!expr) {
@@ -21,17 +21,17 @@ export default class Schema extends Fun {
 	}
 	
 	public isProved(hyps?) {
-		if (this._isProvedCache) return true;
+		if (this.isProvedCache) return true;
 
-		if (!hyps && typeof this._isProvedCache == 'boolean') {
-			return this._isProvedCache;
+		if (!hyps && typeof this.isProvedCache == 'boolean') {
+			return this.isProvedCache;
 		}
 
 		var cache = !hyps;
 		hyps = hyps || [];
 		
 		var ret = this.axiomatic || super.isProved(hyps);
-		if (cache) this._isProvedCache = ret;
+		if (cache) this.isProvedCache = ret;
 		return ret;
 	}
 
