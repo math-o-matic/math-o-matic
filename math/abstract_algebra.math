@@ -225,7 +225,7 @@ st is_semiring($R$ cls r, $\ast$ cls f) {
 $\left(<<\operatorname{semiring}>>\left(#1,#2,#3\right)\right)$
 st is_semiring($R$ cls r, $+$ cls g, $\ast$ cls f) {
 	A(
-		is_commutative monoid(r, f),
+		is_commutative_monoid(r, f),
 		is_monoid(r, g)
 	)
 }
