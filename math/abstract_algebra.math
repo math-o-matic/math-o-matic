@@ -229,3 +229,15 @@ st is_semiring($R$ cls r, $+$ cls g, $\ast$ cls f) {
 		is_monoid(r, g)
 	)
 }
+
+"대수학에서의 환(ring)."
+$\left(<<\operatorname{ring}>>\left(#1,#2,#3\right)\right)$
+st is_ring($R$ cls r, $+$ cls g, $\ast$ cls f) {
+	A(
+		is_abel_group(r, f),
+		A(
+			is_monoid(r, g),
+			is_distributive(g, f, r)
+		)
+	)
+}
