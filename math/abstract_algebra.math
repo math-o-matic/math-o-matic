@@ -241,3 +241,12 @@ st is_ring($R$ cls r, $+$ cls g, $\ast$ cls f) {
 		)
 	)
 }
+
+"대수학에서의 가환 환(commutative ring)."
+$\left(<<\operatorname{commutative ring}>>\left(#1,#2,#3\right)\right)$
+st is_commutative_ring($R$ cls r, $+$ cls g, $\ast$ cls f) {
+	A(
+		is_ring(g, f, r),
+		is_commutative(f, r)
+	)
+}
