@@ -176,7 +176,7 @@ st is_group($G$ cls g, $\ast$ cls f) {
 	)
 }
 
-$\left(#1\ <<\text{is left distributive on}>>\ \left(#3, #2\right)\right)$
+$\left(#1\ <<\text{is left distributive on}>>\ \left(#3,#2\right)\right)$
 st bin_op_left_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
 	Uin(a, (cls x) => {
 		Uin(a, (cls y) => {
@@ -190,7 +190,7 @@ st bin_op_left_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
 	})
 }
 
-$\left(#1\ <<\text{is right distributive on}>>\ \left(#3, #2\right)\right)$
+$\left(#1\ <<\text{is right distributive on}>>\ \left(#3,#2\right)\right)$
 st bin_op_right_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
 	Uin(a, (cls x) => {
 		Uin(a, (cls y) => {
@@ -204,7 +204,7 @@ st bin_op_right_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
 	})
 }
 
-$\left(#1\ <<\text{is distributive on}>>\ \left(#3, #2\right)\right)$
+$\left(#1\ <<\text{is distributive on}>>\ \left(#3,#2\right)\right)$
 st bin_op_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
 	A(
 		bin_op_left_distributive(f, g, a),
@@ -212,11 +212,20 @@ st bin_op_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
 	)
 }
 
+"대수학에서의 가환 모노이드(commutative monoid)."
+$\left(<<\operatorname{commutative monoid}>>\left(#1,#2\right)\right)$
+st is_semiring($R$ cls r, $\ast$ cls f) {
+	A(
+		is_monoid(r, g),
+		is_commutative(g, r)
+	)
+}
+
 "대수학에서의 반환(semiring)."
-$\left(<<\operatorname{semiring}>>\left(#1,#2, #3\right)\right)$
+$\left(<<\operatorname{semiring}>>\left(#1,#2,#3\right)\right)$
 st is_semiring($R$ cls r, $+$ cls g, $\ast$ cls f) {
 	A(
-		is_abel_group(r, f),
+		is_commutative monoid(r, f),
 		is_monoid(r, g)
 	)
 }
