@@ -172,7 +172,7 @@ $\left(<<\operatorname{abelian_group}>>\left(#1,#2\right)\right)$
 st is_abelian_group($G$ cls g, $\ast$ cls f) {
 	A(
 		is_group(g, f),
-		is_commutative(f, g)
+		bin_op_commutative(f, g)
 	)
 }
 
@@ -237,7 +237,7 @@ st is_ring($R$ cls r, $+$ cls g, $\ast$ cls f) {
 		is_abelian_group(r, f),
 		A(
 			is_monoid(r, g),
-			is_distributive(g, f, r)
+			bin_op_distributive(g, f, r)
 		)
 	)
 }
@@ -247,6 +247,6 @@ $\left(<<\operatorname{commutative ring}>>\left(#1,#2,#3\right)\right)$
 st is_commutative_ring($R$ cls r, $+$ cls g, $\ast$ cls f) {
 	A(
 		is_ring(r, g, f),
-		is_commutative(f, r)
+		bin_op_commutative(f, r)
 	)
 }
