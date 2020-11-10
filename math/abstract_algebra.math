@@ -166,3 +166,12 @@ st bin_op_commutative($\ast$ cls f, $A$ cls a) {
 		})
 	})
 }
+
+"대수학에서의 아벨군(abelian group)."
+$\left(<<\operatorname{abelian_group}>>\left(#1,#2\right)\right)$
+st is_group($G$ cls g, $\ast$ cls f) {
+	A(
+		is_group(g, f),
+		is_commutative(f, g)
+	)
+}
