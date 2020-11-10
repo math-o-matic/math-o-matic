@@ -175,3 +175,39 @@ st is_group($G$ cls g, $\ast$ cls f) {
 		is_commutative(f, g)
 	)
 }
+
+$\left(#1\ <<\text{is left distributive on}>>\ \left(#3, #2\right)\right)$
+st bin_op_left_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
+	Uin(a, (cls x) => {
+		Uin(a, (cls y) => {
+			Uin(a, (cls z) =>{
+				eq(
+					bin_op_call(f, x, bin_op_call(g, y, z)),
+					bin_op_call(f, bin_op_call(g, x, y), bin_op_call(g, x, z))
+				)
+			})
+		})
+	})
+}
+
+$\left(#1\ <<\text{is right distributive on}>>\ \left(#3, #2\right)\right)$
+st bin_op_right_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
+	Uin(a, (cls x) => {
+		Uin(a, (cls y) => {
+			Uin(a, (cls z) =>{
+				eq(
+					bin_op_call(f, bin_op_call(g, x, y), z),
+					bin_op_call(f, bin_op_call(g, x, z), bin_op_call(g, y, z))
+				)
+			})
+		})
+	})
+}
+
+$\left(#1\ <<\text{is distributive on}>>\ \left(#3, #2\right)\right)$
+st bin_op_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
+	A(
+		bin_op_left_distributive(f, g, a),
+		bin_op_right_distributive(f, g, a)
+	)
+}
