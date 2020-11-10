@@ -211,3 +211,12 @@ st bin_op_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
 		bin_op_right_distributive(f, g, a)
 	)
 }
+
+"대수학에서의 반환(semiring)."
+$\left(<<\operatorname{semiring}>>\left(#1,#2, #3\right)\right)$
+st is_semiring($R$ cls r, $+$ cls g, $\ast$ cls f) {
+	A(
+		is_abel_group(r, f),
+		is_monoid(r, g)
+	)
+}
