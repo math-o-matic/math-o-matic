@@ -157,7 +157,7 @@ st is_group($G$ cls g, $\ast$ cls f) {
 }
 
 $\left(#1\ <<\text{is commutative on}>>\ #2\right)$
-st bin_op_associative($\ast$ cls f, $A$ cls a) {
+st bin_op_commutative($\ast$ cls f, $A$ cls a) {
 	Uin(a, (cls x) => {
 		Uin(a, (cls y) => {
 			eq(
