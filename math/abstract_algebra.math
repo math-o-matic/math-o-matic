@@ -168,7 +168,7 @@ st bin_op_commutative($\ast$ cls f, $A$ cls a) {
 }
 
 "대수학에서의 아벨군(abelian group)."
-$\left(<<\operatorname{abelian_group}>>\left(#1,#2\right) \right)$
+$\left(<<\operatorname{abelian group}>>\left(#1,#2\right) \right)$
 st is_abelian_group($G$ cls g, $\ast$ cls f) {
 	A(
 		is_group(g, f),
@@ -214,19 +214,37 @@ st bin_op_distributive($\ast$ cls f, $+$ cls g, $A$ cls a) {
 
 "대수학에서의 가환 모노이드(commutative monoid)."
 $\left(<<\operatorname{commutative monoid}>>\left(#1,#2\right) \right)$
-st is_commutative_monoid($R$ cls r, $\ast$ cls f) {
+st is_commutative_monoid($M$ cls m, $\ast$ cls f) {
 	A(
-		is_monoid(r, f),
-		bin_op_commutative(f, r)
+		is_monoid(m, f),
+		bin_op_commutative(f, m)
 	)
+}
+
+"0과 연산하면 0이 나온다"
+$\left(<<\text{zero annihilates}>>\left(#1,#2\right) \right)$
+st zero_annihilates($R$ cls r, $\ast$ cls f) {
+	X((cls z) => {
+		Uin(r, (cls a) => {
+			eq(
+				bin_op_call(f, a, z), z
+			)
+		})
+	})
 }
 
 "대수학에서의 반환(semiring)."
 $\left(<<\operatorname{semiring}>>\left(#1,#2,#3\right) \right)$
 st is_semiring($R$ cls r, $+$ cls g, $\ast$ cls f) {
 	A(
-		is_commutative_monoid(r, f),
-		is_monoid(r, g)
+		A(
+			is_commutative_monoid(r, f),
+			is_monoid(r, g)
+		),
+		A(
+			bin_op_distributive(f, g, r),
+			zero_annihilates(f, f)
+		)
 	)
 }
 
@@ -234,10 +252,10 @@ st is_semiring($R$ cls r, $+$ cls g, $\ast$ cls f) {
 $\left(<<\operatorname{ring}>>\left(#1,#2,#3\right) \right)$
 st is_ring($R$ cls r, $+$ cls g, $\ast$ cls f) {
 	A(
-		is_abelian_group(r, f),
+		is_abelian_group(r, g),
 		A(
-			is_monoid(r, g),
-			bin_op_distributive(g, f, r)
+			is_monoid(r, f),
+			bin_op_distributive(f, g, r)
 		)
 	)
 }
