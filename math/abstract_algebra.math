@@ -238,7 +238,7 @@ st is_rng($R$ cls r, $+$ cls g, $\cdot$ cls f) {
 $\left(<<\operatorname{ring}>>\left(#1,#2,#3\right)\right)$
 st is_ring($R$ cls r, $+$ cls g, $\cdot$ cls f) {
 	A(
-	is_abelian_group(r, g),
+		is_abelian_group(r, g),
 		A(
 			is_monoid(r, f),
 			bin_op_distributive(f, g, r)
