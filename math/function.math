@@ -89,11 +89,12 @@ schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
 }
 
 "제한함수"
-$\left(#1\ <<\text{is\ restriction\ of}>>\ #2\ \text{on}\ #3\ \right)$
+$\left(#1\ \text{is}\ #2\upharpoonright_{#3}\ \right)$
 st is_restriction(cls h, cls f, cls g) {
-	Uin(g, (cls x) => {
-		X((cls y) => in(pair(x, y), f))
-	})
+	A(
+		subseteq(h, f),
+		eq(rel_dom(h), g)
+	)
 }
 
 "함수 호출. [$f]가 함수이고 [$x]가 [$f]의 정의역에 있을 경우 함숫값이 된다. 그러하지 아니할 때의 동작은 중요하지 않다."
