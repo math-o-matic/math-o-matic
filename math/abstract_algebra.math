@@ -220,7 +220,10 @@ st is_subgroup(cls g, $\circ$ cls h, cls G, $\ast$ cls f) {
 			is_group(g, h),
 			is_group(G, f)
 		),
-		is_restriction(h, f, g)
+		eq(
+			h,
+			rel_restrict(f, g)
+		)
 	)
 }
 
