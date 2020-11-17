@@ -248,7 +248,7 @@ schema syllE4(st p: @11, st q: @21, st r: @31, st s: @32) {
 }
 
 "sequent calculus의 I 규칙 같은 것. 표현형식을 바꾸는 데 쓰이고 있다."
-schema id(st p) {
+schema id(st p: @1) {
 	p |- p
 }
 
