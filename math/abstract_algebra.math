@@ -212,18 +212,12 @@ st is_group($G$ cls g, $\ast$ cls f) {
 	)
 }
 
-"부분군(subgroup)"
-$\left(#1 <<\leq>> #3\right)$
-st is_subgroup(cls g, $\circ$ cls h, cls G, $\ast$ cls f) {
+"부분군(subgroup)."
+$\left(#1<<\leq>>#2\right)$
+st subgroup(cls H, cls G, $\ast$ cls f) {
 	A(
-		A(
-			is_group(g, h),
-			is_group(G, f)
-		),
-		eq(
-			h,
-			rel_restrict(f, g)
-		)
+		subseteq(H, G),
+		is_group(H, rel_restrict(f, cartesian(H, H)))
 	)
 }
 
