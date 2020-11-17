@@ -88,17 +88,6 @@ schema fun_dom(cls f, $A$ cls a, $B$ cls b) {
 	is_fun(f, a, b) |- eq(rel_dom(f), a)
 }
 
-"제한"
-$\left(#1\upharpoonright_{#2}\right)$
-cls rel_restrict($R$ cls r, $A$ cls a) {
-	setbuilder_pair((cls x, cls y) => {
-		A(
-			in(pair(x, y), r),
-			in(x, a)
-		)
-	})
-}
-
 "함수 호출. [$f]가 함수이고 [$x]가 [$f]의 정의역에 있을 경우 함숫값이 된다. 그러하지 아니할 때의 동작은 중요하지 않다."
 $#1\mathord{\left(#2\right)}{}^{<<\scriptscriptstyle\dag>>}$
 sealed cls funcall(cls f, cls x) {
