@@ -501,6 +501,17 @@ st rel_antitransitive($R$ cls r, $A$ cls a) {
 	})
 }
 
+"이항관계의 제한(restriction)."
+$\left(#1<<\upharpoonright>>_{#2}\right)$
+cls rel_restrict($R$ cls r, $A$ cls a) {
+	setbuilder_pair((cls x, cls y) => {
+		A(
+			in(pair(x, y), r),
+			in(x, a)
+		)
+	})
+}
+
 "원순서(preorder). 즉 반사적이고 추이적인 이항관계이다."
 $\left(<<\operatorname{preorder}>> #1\text{ over }#2\right)$
 st is_preorder($R$ cls r, $A$ cls a) {
