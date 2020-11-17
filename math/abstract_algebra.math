@@ -263,3 +263,31 @@ st is_commutative_ring($R$ cls r, $+$ cls g, $\cdot$ cls f) {
 		bin_op_commutative(f, r)
 	)
 }
+
+schema subset_is_subgroup($H$ cls h, $G$ cls g, $\ast$ cls f) {
+	is_group(g, f),
+	subseteq(h, g),
+	is_bin_op(rel_restrict(f, cartesian(h, h)), h),
+	X((cls e) => {
+		is_identity_element(e, h, rel_restrict(f, cartesian(h, h)))
+	}),
+	Uin(h, (cls a) => {
+		X((cls b) => {
+			is_inverse_element(b, a, h, rel_restrict(f, cartesian(h, h)))
+		})
+	}) |-
+	bin_op_associative(rel_restrict(f, cartesian(h, h)), h) |-
+	Ai[
+		@h2; 
+		Ai[
+			Ai[
+				Ai[
+					id[@h3][as is_magma(h, rel_restrict(f, cartesian(h, h)))];
+					@h6
+				][as is_semigroup(h, rel_restrict(f, cartesian(h, h)))];
+				@h4
+			][as is_monoid(h, rel_restrict(f, cartesian(h, h)))];
+			@h5
+		][as is_group(h, rel_restrict(f, cartesian(h, h)))]
+	][as subgroup(h, g, f)]
+}
