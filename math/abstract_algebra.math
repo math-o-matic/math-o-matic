@@ -264,6 +264,10 @@ st is_commutative_ring($R$ cls r, $+$ cls g, $\cdot$ cls f) {
 	)
 }
 
+schema associative_heredity($\ast$ cls f, $G$ cls g, $H$ cls h) {
+	bin_op_associative(f, g), subseteq(h, g) |- bin_op_associative(rel_restrict(f, cartesian(h, h)), h)
+}
+
 schema subset_is_subgroup($H$ cls h, $G$ cls g, $\ast$ cls f) {
 	is_group(g, f),
 	subseteq(h, g),
@@ -276,14 +280,13 @@ schema subset_is_subgroup($H$ cls h, $G$ cls g, $\ast$ cls f) {
 			is_inverse_element(b, a, h, rel_restrict(f, cartesian(h, h)))
 		})
 	}) |-
-	bin_op_associative(rel_restrict(f, cartesian(h, h)), h) |-
 	Ai[
 		@h2; 
 		Ai[
 			Ai[
 				Ai[
 					id[@h3][as is_magma(h, rel_restrict(f, cartesian(h, h)))];
-					@h6
+					mp[Ai[Ae2[Ae1[Ae1[@h1]]]; @h2]; cp2[Ae2[Ae1[Ae1[@h1]]], @h2 |- bin_op_associative(rel_restrict(f, cartesian(h, h)), h)]]					
 				][as is_semigroup(h, rel_restrict(f, cartesian(h, h)))];
 				@h4
 			][as is_monoid(h, rel_restrict(f, cartesian(h, h)))];
