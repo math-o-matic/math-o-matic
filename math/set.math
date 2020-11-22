@@ -1026,21 +1026,17 @@ theorem universe_cup_is_universe($X$ cls x) {
 }
 
 "러셀 집합. 사실 집합이 아니라 proper class이다."
-cls russell_set() {
-	setbuilder((cls z) => {
-		Nin(z, z)
-	})
-}
+cls russell_set = setbuilder((cls z) => Nin(z, z));
 
 "러셀 집합은 집합이 아니다."
 theorem russell_set_is_not_set() {
-	Ni_alt[set(russell_set()) |-
-		$russell_in_russell = NNe[Ni_alt[Nin(russell_set(), russell_set()) |-
+	Ni_alt[set(russell_set) |-
+		$russell_in_russell = NNe[Ni_alt[Nin(russell_set, russell_set) |-
 			Fi[
 				setbuilder_i[
 					@h1;
 					@h2
-				][as in(russell_set(), russell_set())];
+				][as in(russell_set, russell_set)];
 				@h2
 			]]];
 
@@ -1050,7 +1046,7 @@ theorem russell_set_is_not_set() {
 
 "전체집합은 집합이 아니다."
 theorem universe_is_not_set() {
-	supset_is_not_set[russell_set_is_not_set(); universe_subseteq_i(russell_set())]
+	supset_is_not_set[russell_set_is_not_set(); universe_subseteq_i(russell_set)]
 }
 
 "descriptor operator. [$f]를 만족하는 클래스가 존재하고 유일하다면 그 클래스이며 아니면 [$V]이다.
