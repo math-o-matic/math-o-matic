@@ -143,6 +143,17 @@ axiom Ue(pr f: @11, cls x) {
 	U(f) |- f(x)
 }
 
+"pr 타입을 위한 NNe"
+schema NNeU(pr f) {
+	U(Nf(Nf(f))) |- Ui[(cls x) => NNe[Ue(?, x)[@h1]]][as U(f)]
+}
+
+"pr 타입을 위한 NNi"
+schema NNiU(pr f) {
+	U(f) |- Ui[(cls x) => NNi[Ue(?, x)[@h1]]][as U(Nf(Nf(f)))]
+}
+
+
 theorem Ue2(pr2 f: @11, cls x, cls y) {
 	U2(f) |- Ue(?, y)[Ue(?, x)[@h1]]
 }
