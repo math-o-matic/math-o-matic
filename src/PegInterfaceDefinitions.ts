@@ -1,3 +1,5 @@
+import { SchemaType } from "./nodes/Schema";
+
 export type LineObject = ImportObject
 		| TypedefObject
 		| DefvObject
@@ -31,8 +33,10 @@ export interface DefvObject {
 	selector?: string;
 	doc: string;
 	tex: string;
+	sealed?: boolean;
 	type: TypeObject;
 	name: string;
+	expr?: Expr0Object;
 	location: LocationObject;
 }
 
@@ -49,13 +53,13 @@ export interface DefunObject {
 }
 
 export type Expr0Object = FuncallObject | FunexprObject | VarObject;
-export type MetaexprObject = TeeObject | ReductionObject | SchemacallObject | VarObject | SchemaexprObject;
+export type MetaexprObject = TeeObject | ReductionObject | SchemacallObject | WithObject | VarObject | SchemaexprObject;
 
 export interface DefschemaObject {
 	_type: 'defschema';
 	doc: string;
 	annotations: string[];
-	axiomatic: boolean;
+	schemaType: SchemaType,
 	name: string;
 	params: DefvObject[];
 	using: string[];
@@ -97,6 +101,14 @@ export interface FunexprObject {
 export interface SchemaexprObject {
 	_type: 'schemaexpr';
 	params: DefvObject[];
+	def$s: Def$Object[];
+	expr: MetaexprObject;
+	location: LocationObject;
+}
+
+export interface WithObject {
+	_type: 'with';
+	with: DefvObject;
 	def$s: Def$Object[];
 	expr: MetaexprObject;
 	location: LocationObject;

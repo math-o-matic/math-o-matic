@@ -48,15 +48,28 @@ typedef =
 	}
 
 defv =
-	doc:(documentation __)? tex:(tex __)? type:type __ name:ident _ sem
+	doc:(documentation __)?
+	tex:(tex __)?
+	sealed:('sealed' __)?
+	type:type __
+	name:ident _
+	expr:(
+		"=" _
+		expr:expr0 _
+		sem
+		{return expr}
+		/ sem {return null}
+	)
 	{
 		return {
 			_type: 'defv',
 			isParam: false,
 			doc: doc ? doc[0] : null,
 			tex: tex ? tex[0] : null,
+			sealed: !!sealed,
 			type,
 			name,
+			expr,
 			location: location()
 		}
 	}
@@ -131,8 +144,7 @@ defun =
 defschema =
 	doc:(documentation __)?
 	annotations: (a:annotation __ {return a})*
-	axiomatic:("axiomatic" __)?
-	"schema" __
+	schemaType:('axiom' / 'theorem' / 'schema') __
 	name:ident _
 	params:(
 		"(" _
@@ -162,7 +174,7 @@ defschema =
 			_type: 'defschema',
 			doc: doc ? doc[0] : null,
 			annotations,
-			axiomatic: !!axiomatic,
+			schemaType,
 			name,
 			params,
 			using: using || [],
@@ -353,6 +365,37 @@ schemaexpr =
 		}
 	}
 
+with =
+	'with' _ '(' _
+	tex:(tex __)?
+	type:type __
+	varname:ident _
+	"=" _
+	varexpr:expr0 _
+	')' _ '{' _
+	defdollars: (d:defdollar _ {return d})* _
+	expr:metaexpr _
+	'}'
+	{
+		return {
+			_type: 'with',
+			with: {
+				_type: 'defv',
+				isParam: false,
+				doc: null,
+				tex: tex ? tex[0] : null,
+				sealed: false,
+				type,
+				name: varname,
+				expr: varexpr,
+				location: location()
+			},
+			def$s: defdollars,
+			expr,
+			location: location()
+		}
+	}
+
 metaexpr =
 	left:(
 		l:(
@@ -387,6 +430,7 @@ metaexpr_internal_1 =
 	/ schemacall
 	/ var
 	/ schemaexpr
+	/ with
 	/ "(" _ e:metaexpr _ ")" {return e}
 
 expr0 =
@@ -492,13 +536,14 @@ plain_var =
 
 keyword =
 	'as'
-	/ 'axiomatic'
+	/ 'axiom'
 	/ 'base'
 	/ 'import'
 	/ 'schema'
 	/ 'sealed'
 	/ 'type'
 	/ 'using'
+	/ 'with'
 
 annotation =
 	'@discouraged'

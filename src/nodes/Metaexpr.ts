@@ -11,7 +11,7 @@ import Variable from "./Variable";
  * 숫자가 큰 것이 우선순위가 높다.
  */
 export enum EqualsPriority {
-	/** Variable */
+	/** Variable (primitive) */
 	ZERO,
 	/** Fun */
 	ONE,
@@ -19,8 +19,10 @@ export enum EqualsPriority {
 	TWO,
 	/** Funcall */
 	THREE,
+	/** Variable (macro) */
+	FOUR,
 	/** $Variable, Reduction */
-	FOUR
+	FIVE
 }
 
 export default abstract class Metaexpr extends Node {
@@ -50,18 +52,37 @@ export default abstract class Metaexpr extends Node {
 	protected abstract expandMetaInternal(andFuncalls: boolean): Metaexpr;
 
 	public equals(obj: Metaexpr, context: ExecutionContext): boolean {
+		// console.log(`${this}\n\n${obj}`);
+		// var ret = (() => {
+		
 		if (this === obj) return true;
 		if (!this.type.equals(obj.type)) return false;
 
-		if (obj.getEqualsPriority() > this.getEqualsPriority())
+		if (obj.getEqualsPriority(context) > this.getEqualsPriority(context))
 			return obj.equalsInternal(this, context);
 		
 		return this.equalsInternal(obj, context);
+
+		// })();
+		// console.log(`${this}\n\n${obj}\n\n${ret}`);
+		// return ret;
 	}
 
-	protected abstract getEqualsPriority(): EqualsPriority;
+	protected abstract getEqualsPriority(context: ExecutionContext): EqualsPriority;
 
 	protected abstract equalsInternal(obj: Metaexpr, context: ExecutionContext): boolean;
+
+	public isProved(hypotheses?: Metaexpr[]): boolean {
+		hypotheses = hypotheses || [];
+
+		for (var i = 0; i < hypotheses.length; i++) {
+			if (hypotheses[i] == this) return true;
+		}
+
+		return this.isProvedInternal(hypotheses);
+	}
+
+	protected abstract isProvedInternal(hypotheses: Metaexpr[]): boolean;
 
 	public getProof(
 			hypnumMap: Map<Metaexpr, number>,

@@ -137,12 +137,9 @@ ${as.expandMeta(true)}
 		}
 	}
 
-	public isProved(hyps?): boolean {
-		hyps = hyps || [];
-		
-		return super.isProved(hyps)
-			|| this.subject.isProved(hyps)
-				&& this.leftargs.every(l => l.isProved(hyps));
+	protected isProvedInternal(hypotheses: Metaexpr[]): boolean {
+		return this.subject.isProved(hypotheses)
+			&& this.leftargs.every(l => l.isProved(hypotheses));
 	}
 
 	public substitute(map: Map<Variable, Expr0>): Metaexpr {
@@ -154,7 +151,7 @@ ${as.expandMeta(true)}
 	}
 
 	protected getEqualsPriority(): EqualsPriority {
-		return EqualsPriority.FOUR;
+		return EqualsPriority.FIVE;
 	}
 
 	protected equalsInternal(obj: Metaexpr, context: ExecutionContext): boolean {
@@ -191,11 +188,12 @@ ${as.expandMeta(true)}
 		return (function recurse(
 				ptr: number,
 				parameter: Metaexpr, argument: Metaexpr): Metaexpr {
+			
 			argument = argument.expandMeta(true);
 			
 			if (selector.length <= ptr) return argument;
 
-			if (/[0-9]/.test(selector[ptr])) {
+			if (/^[0-9]$/.test(selector[ptr])) {
 				var n = Number(selector[ptr]);
 
 				if (parameter instanceof Tee && argument instanceof Tee) {
@@ -211,7 +209,11 @@ ${as.expandMeta(true)}
 				}
 
 				while (true) {
-					if (!(parameter instanceof Funcall) || !(argument instanceof Funcall)) {
+					while (argument instanceof Variable && argument.expr) {
+						argument = argument.expr;
+					}
+
+					if (!(parameter instanceof Funcall && argument instanceof Funcall)) {
 						throw Node.error(`Cannot dereference @${selector}`, trace);
 					}
 
@@ -226,7 +228,7 @@ ${as.expandMeta(true)}
 					argument = argument.expandOnce(context);
 				}
 
-				if (!argument.args || !(1 <= n && n <= argument.args.length))
+				if (!(1 <= n && n <= argument.args.length))
 					throw Node.error(`Cannot dereference @${selector}`, trace);
 
 				return recurse(ptr + 1, parameter.args[n - 1], argument.args[n - 1]);

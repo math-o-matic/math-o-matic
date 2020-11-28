@@ -11,50 +11,67 @@ import ObjectType from './ObjectType';
 interface VariableArgumentType {
 	doc?: string;
 	tex?: string;
+	sealed: boolean;
 	type: ObjectType;
 	name: string;
-	isParam: boolean;
-	selector?: string;
+	expr: Expr0;
 }
 
 export default class Variable extends Expr0 implements Nameable {
-	
-	public readonly isParam: boolean;
-	public readonly selector: string;
+
+	public readonly sealed: boolean;
 	public readonly type: ObjectType;
 	public readonly name: string;
+	public readonly expr: Expr0;
 
-	constructor ({doc, tex, type, name, isParam, selector}: VariableArgumentType, trace: StackTrace) {
+	constructor ({doc, tex, sealed, type, name, expr}: VariableArgumentType, trace: StackTrace) {
 		super(trace, doc, tex, type);
-
-		this.isParam = !!isParam;
-		this.selector = selector || null;
-
+		
 		if (typeof name != 'string')
 			throw Node.error('Assertion failed', trace);
+		
+		if (sealed && !expr) {
+			throw Node.error('Cannot seal a primitive fun', trace);
+		}
 
+		if (expr && !type.equals(expr.type)) {
+			throw Node.error(`Expression type ${expr.type} failed to match the type ${type} of variable ${name}`, trace);
+		}
+
+		this.sealed = sealed;
 		this.name = name;
+		this.expr = expr;
 	}
 
-	public isProved(hyps) {
-		hyps = hyps || [];
-	
-		return super.isProved(hyps);
+	protected isProvedInternal(hypotheses: Metaexpr[]): boolean {
+		return false;
 	}
 
 	public substitute(map: Map<Variable, Expr0>): Metaexpr {
-		return map.get(this) || this;
+		if (map.has(this)) return map.get(this);
+
+		// 매크로 변수는 스코프 밖에서 보이지 않으므로 치환될 것을 갖지 않는다는
+		// 생각이 들어 있다.
+		return this;
 	}
 
 	protected expandMetaInternal(andFuncalls: boolean): Metaexpr {
 		return this;
 	}
 
-	protected getEqualsPriority(): EqualsPriority {
-		return EqualsPriority.ZERO;
+	protected getEqualsPriority(context: ExecutionContext): EqualsPriority {
+		return this.expr && (!this.sealed || context.canUse(this))
+			? EqualsPriority.FOUR
+			: EqualsPriority.ZERO;
 	}
 
 	protected equalsInternal(obj: Metaexpr, context: ExecutionContext): boolean {
+		if (!this.expr) return false;
+
+		if (!this.sealed || context.canUse(this)) {
+			return this.expr.equals(obj, context);
+		}
+
 		return false;
 	}
 
@@ -80,7 +97,7 @@ export default class Variable extends Expr0 implements Nameable {
 	}
 
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		var id = this.isParam ? `id-${this._id}` : `def-${this.name}`;
+		var id = this instanceof Parameter ? `id-${this._id}` : `def-${this.name}`;
 
 		var tex = this.tex
 			|| (
@@ -89,18 +106,12 @@ export default class Variable extends Expr0 implements Nameable {
 					: `\\mathrm{${Node.escapeTeX(this.name)}}`
 			);
 		
-		return `\\href{#${id}}{${tex}}`;
-	}
-
-	public toTeXStringWithId(prec?: Precedence, root?: boolean): string {
-		if (!this.isParam) throw Error('wut');
-
-		var id =`id-${this._id}`;
-
-		return [
-			`\\htmlId{${id}}{`,
-			this.toTeXString(prec, root),
-			`}`
-		].join('');
+		var expr = root && this.expr
+			? `\\coloneqq ${this.expr.toTeXString(Node.PREC_COLONEQQ)}`
+			: '';
+		
+		return `\\href{#${id}}{${tex}}${expr}`;
 	}
 }
+
+import Parameter from './Parameter';

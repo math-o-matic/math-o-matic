@@ -11,11 +11,13 @@ import Funcall from './nodes/Funcall';
 import Metaexpr from './nodes/Metaexpr';
 import ObjectFun from './nodes/ObjectFun';
 import ObjectType from './nodes/ObjectType';
+import Parameter from './nodes/Parameter';
 import Reduction from './nodes/Reduction';
-import Schema from './nodes/Schema';
+import Schema, { SchemaType } from './nodes/Schema';
 import Tee from './nodes/Tee';
 import Variable from './nodes/Variable';
-import { Def$Object, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject } from './PegInterfaceDefinitions';
+import With from './nodes/With';
+import { Def$Object, DefschemaObject, DefunObject, DefvObject, Expr0Object, FuncallObject, FunexprObject, MetaexprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
 
 function typeObjToString(obj: TypeObject): string {
@@ -124,81 +126,73 @@ export default class PI {
 
 		var type = scope.getType(typeObjToNestedArr(obj.type));
 
+		var expr = obj.expr ? PI.expr0(obj.expr, scope) : null;
+
+		if (obj.isParam) {
+			return new Parameter({
+				doc: obj.doc,
+				tex: obj.tex,
+				type,
+				name: obj.name,
+				selector: obj.selector || null
+			}, scope.trace);
+		}
+
 		return new Variable({
-			type,
-			isParam: !!obj.isParam,
-			selector: obj.selector || null,
-			name: obj.name,
 			doc: obj.doc,
-			tex: obj.tex
+			tex: obj.tex,
+			sealed: !!obj.sealed,
+			type,
+			name: obj.name,
+			expr: expr || null
 		}, scope.trace);
 	}
 
 	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): ObjectFun {
 		if (obj._type != 'defun' && obj._type != 'funexpr')
 			throw Error('Assertion failed');
+		
+		var scope = parentScope.extend('fun', obj._type == 'defun' ? obj.name : '<anonymous>', obj.location);
 
-		var name = null,
-			doc = null,
+		var doc = null,
 			tex = null,
-			sealed = false;
+			sealed = false,
+			rettype: ObjectType = null,
+			name = null,
+			expr = null;
 
 		if (obj._type == 'defun') {
-			obj = obj as DefunObject;
-			name = obj.name;
 			doc = obj.doc;
 			tex = obj.tex;
 			sealed = obj.sealed;
+			
+			if (!scope.hasType(typeObjToNestedArr(obj.rettype))) {
+				throw scope.error(`Type ${typeObjToString(obj.rettype)} is not defined`);
+			}
+
+			rettype = scope.getType(typeObjToNestedArr(obj.rettype));
+			name = obj.name;
 		}
 
-		var scope = parentScope.extend('fun', name, obj.location);
-
-		var type = null;
 		var params = obj.params.map(tvo => {
-			if (!scope.hasType(typeObjToNestedArr(tvo.type)))
-				throw scope.error(`Type ${typeObjToString(tvo.type)} is not defined`);
-
 			var tv = PI.variable(tvo, scope);
 
 			if (scope.hasOwnVariable(tv.name))
 				throw scope.error(`Parameter ${tv.name} has already been declared`);
+			
+			if (!(tv instanceof Parameter)) {
+				throw Error('Something\'s wrong');
+			}
 
-			return scope.addVariable(tv) as Variable;
+			scope.addVariable(tv);
+			return tv;
 		});
-		var expr = null;
 
-		switch (obj._type) {
-			case 'defun':
-				if (!scope.hasType(typeObjToNestedArr(obj.rettype)))
-					throw scope.error(`Type ${typeObjToString(obj.rettype)} is not defined`);
-
-				var rettype = scope.getType(typeObjToNestedArr(obj.rettype));
-
-				if (obj.expr) {
-					expr = PI.expr0(obj.expr, scope);
-					if (!rettype.equals(expr.type))
-						throw scope.error(`Expression type ${expr.type} failed to match the return type ${rettype} of fun ${name}`);
-				} else {
-					type = new ObjectType({
-						functional: true,
-						from: params.map(variable => variable.type),
-						to: rettype
-					});
-				}
-				break;
-			case 'funexpr':
-				expr = PI.expr0(obj.expr, scope);
-				type = null;
-				break;
-			default:
-				throw Error('wut');
+		if (obj.expr) {
+			expr = PI.expr0(obj.expr, scope);
 		}
 
-		if (!expr && sealed) {
-			throw scope.error('Cannot seal a primitive fun');
-		}
-
-		return new ObjectFun({annotations: [], sealed, type, name, params, expr, doc, tex}, scope.trace);
+		return new ObjectFun({annotations: [], sealed, rettype, name, params, expr, doc, tex}, scope.trace);
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope): Funcall {
@@ -217,8 +211,9 @@ export default class PI {
 	}
 
 	public static metaexpr(obj: MetaexprObject, parentScope: Scope, context: ExecutionContext): Metaexpr {
-		if (!['tee', 'reduction', 'schemacall', 'schemaexpr', 'var'].includes(obj._type))
+		if (!['tee', 'reduction', 'schemacall', 'schemaexpr', 'var', 'with'].includes(obj._type)) {
 			throw Error('Assertion failed');
+		}
 
 		// don't extend scope
 		var scope = parentScope;
@@ -234,6 +229,8 @@ export default class PI {
 				return PI.schema(obj, scope, context);
 			case 'var':
 				return PI.metavar(obj, scope);
+			case 'with':
+				return PI.with(obj, scope, context);
 			default:
 				throw Error('wut');
 		}
@@ -295,6 +292,43 @@ export default class PI {
 		}
 	}
 
+	public static with(obj: WithObject, parentScope: Scope, context: ExecutionContext): With {
+		if (obj._type != 'with') {
+			throw Error('Assertion failed');
+		}
+
+		var scope = parentScope.extend('with', null, obj.location);
+
+		var tv = PI.variable(obj.with, scope);
+
+		if (scope.hasOwnVariable(tv.name))
+			throw scope.error(`Parameter ${tv.name} has already been declared`);
+		
+		if (!(tv instanceof Variable)) {
+			throw Error('Something\'s wrong');
+		}
+
+		scope.addVariable(tv);
+
+		var def$s = obj.def$s.map($ => {
+			var $v = PI.def$($, scope, context);
+
+			if (scope.hasOwn$($v.name)) {
+				throw scope.error(`${$.name} has already been declared`);
+			}
+
+			return scope.add$($v);
+		});
+
+		var expr = PI.metaexpr(obj.expr, scope, context);
+
+		return new With({
+			variable: tv,
+			def$s,
+			expr
+		}, scope.trace);
+	}
+
 	public static tee(obj: TeeObject, parentScope: Scope, context: ExecutionContext): Tee {
 		if (obj._type != 'tee')
 			throw Error('Assertion failed');
@@ -340,13 +374,13 @@ export default class PI {
 
 		var scope = parentScope.extend('schema', name, obj.location);
 
-		var axiomatic: boolean = false,
+		var schemaType: SchemaType = 'schema',
 			doc: string = null,
 			annotations: string[] = [],
 			context = oldContext;
 
 		if (obj._type == 'defschema') {
-			axiomatic = obj.axiomatic;
+			schemaType = obj.schemaType;
 			doc = obj.doc;
 			annotations = obj.annotations;
 
@@ -355,14 +389,14 @@ export default class PI {
 				throw Error('duh');
 			}
 
-			var using: ObjectFun[] = obj.using.map(name => {
+			var using: (Variable | ObjectFun)[] = obj.using.map(name => {
 				if (!scope.hasVariable(name)) {
 					throw scope.error(`Variable ${name} is not defined`);
 				}
 
 				var fun = scope.getVariable(name);
 
-				if (!(fun instanceof ObjectFun)) {
+				if (!fun.expr) {
 					throw scope.error(`${name} is not a macro`);
 				}
 
@@ -373,15 +407,17 @@ export default class PI {
 		}
 
 		var params = obj.params.map(tvo => {
-			if (!scope.hasType(typeObjToNestedArr(tvo.type)))
-				throw scope.error(`Type ${typeObjToString(tvo.type)} is not defined`);
-
 			var tv = PI.variable(tvo, scope);
 
 			if (scope.hasOwnVariable(tv.name))
 				throw scope.error(`Parameter ${tv.name} has already been declared`);
 			
-			return scope.addVariable(tv) as Variable;
+			if (!(tv instanceof Parameter)) {
+				throw Error('Something\'s wrong');
+			}
+
+			scope.addVariable(tv);
+			return tv;
 		});
 
 		var def$s = obj.def$s.map($ => {
@@ -396,7 +432,7 @@ export default class PI {
 
 		var expr = PI.metaexpr(obj.expr, scope, context);
 
-		return new Schema({doc, annotations, axiomatic, name, params, context, def$s, expr}, scope.trace);
+		return new Schema({doc, tex: null, annotations, schemaType, name, params, context, def$s, expr}, scope.trace);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope, context: ExecutionContext): Funcall {
