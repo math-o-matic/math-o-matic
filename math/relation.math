@@ -678,66 +678,57 @@ theorem rel_subset_is_rel(cls x: @11, cls y: @12) {
 		subseteq_subseteq[@h1; @h2][as is_rel(x)]
 }
 
-theorem cartesian_is_set_1($A$ cls a, $B$ cls b) {
-	set(a), set(b) |-
-		power_is_set[power_is_set[cup_is_set[@h1; @h2]]]
-}
-
-theorem cartesian_is_set_21($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
-	in(pair(x, y), cartesian(a, b)) |-
-		$set_pair_xy = set_i[@h1];
-		$set_x = pair_set_e1[$set_pair_xy];
-		$set_y = pair_set_e2[$set_pair_xy];
-		
-		$x_in_cup_ab = cup_i1(?, b, ?)[cartesian_in_e1[@h1]];
-		$y_in_cup_ab = cup_i2(a, ?, ?)[cartesian_in_e2[@h1]];
-		
-		$1 = setbuilder_i[
-			singleton_set_i(x)[$set_x];
-			Ui[(cls z) => { cp[in(z, singleton(x)) |-
-				in_eq_left_2[$x_in_cup_ab; singleton_e[$set_x; @h2]]] }]
-			[as subseteq(singleton(x), cup(a, b))]
-		][as in(singleton(x), power(cup(a, b)))];
-		
-		$2 = setbuilder_i[
-			doubleton_set_i[$set_x; $set_y];
-			Ui[(cls z) => { cp[in(z, doubleton(x, y)) |-
-				Oeu[
-					doubleton_e[$set_x; $set_y; @h2];
-					eq(z, x) |- in_eq_left_2[$x_in_cup_ab; @h3];
-					eq(z, y) |- in_eq_left_2[$y_in_cup_ab; @h3]
-				]
-			] }][as subseteq(doubleton(x, y), cup(a, b))]
-		][as in(doubleton(x, y), power(cup(a, b)))];
-		
-		setbuilder_i[
-			pair_set_i[$set_x; $set_y];
-			Ui[(cls z) => { cp[in(z, doubleton(singleton(x), doubleton(x, y))) |-
-				Oeu[
-					doubleton_e[singleton_set_i[$set_x]; doubleton_set_i[$set_x; $set_y]; @h2];
-					eq(z, singleton(x)) |- in_eq_left_2[$1; @h3];
-					eq(z, doubleton(x, y)) |- in_eq_left_2[$2; @h3]
-				]
-			] }][as subseteq(pair(x, y), power(cup(a, b)))]
-		][as in(pair(x, y), power(power(cup(a, b))))]
-}
-
-theorem cartesian_is_set_2($A$ cls a, $B$ cls b) {
-	rel_U(is_in(power(power(cup(a, b)))), cartesian(a, b))[
-		cartesian_is_rel(a, b);
-		Ui2[(cls x, cls y) => {
-			cp[cartesian_is_set_21(a, b, x, y)]
-		}]
-	]
-	[as subseteq(cartesian(a, b), power(power(cup(a, b))))]
-}
-
 "`[Pinter]` 정리 1.51. 곱집합은 집합이다."
 theorem cartesian_is_set($A$ cls a: @11, $B$ cls b: @21) {
 	set(a), set(b) |-
+		$power_power_cup_is_set = power_is_set[power_is_set[cup_is_set[@h1; @h2]]];
+		$cartesian_subseteq_power_power_cup = rel_U(is_in(power(power(cup(a, b)))), cartesian(a, b))[
+			cartesian_is_rel(a, b);
+			Ui2[(cls x, cls y) => {
+				cp[in(pair(x, y), cartesian(a, b)) |-
+					$set_pair_xy = set_i[@h3];
+					$set_x = pair_set_e1[$set_pair_xy];
+					$set_y = pair_set_e2[$set_pair_xy];
+					
+					$x_in_cup_ab = cup_i1(?, b, ?)[cartesian_in_e1[@h3]];
+					$y_in_cup_ab = cup_i2(a, ?, ?)[cartesian_in_e2[@h3]];
+					
+					$1 = setbuilder_i[
+						singleton_set_i(x)[$set_x];
+						Ui[(cls z) => { cp[in(z, singleton(x)) |-
+							in_eq_left_2[$x_in_cup_ab; singleton_e[$set_x; @h4]]] }]
+						[as subseteq(singleton(x), cup(a, b))]
+					][as in(singleton(x), power(cup(a, b)))];
+					
+					$2 = setbuilder_i[
+						doubleton_set_i[$set_x; $set_y];
+						Ui[(cls z) => { cp[in(z, doubleton(x, y)) |-
+							Oeu[
+								doubleton_e[$set_x; $set_y; @h4];
+								eq(z, x) |- in_eq_left_2[$x_in_cup_ab; @h5];
+								eq(z, y) |- in_eq_left_2[$y_in_cup_ab; @h5]
+							]
+						] }][as subseteq(doubleton(x, y), cup(a, b))]
+					][as in(doubleton(x, y), power(cup(a, b)))];
+					
+					setbuilder_i[
+						pair_set_i[$set_x; $set_y];
+						Ui[(cls z) => cp[in(z, doubleton(singleton(x), doubleton(x, y))) |-
+							Oeu[
+								doubleton_e[singleton_set_i[$set_x]; doubleton_set_i[$set_x; $set_y]; @h4];
+								eq(z, singleton(x)) |- in_eq_left_2[$1; @h5];
+								eq(z, doubleton(x, y)) |- in_eq_left_2[$2; @h5]
+							]
+						]][as subseteq(pair(x, y), power(cup(a, b)))]
+					][as in(pair(x, y), power(power(cup(a, b))))]
+				]
+			}]
+		]
+		[as subseteq(cartesian(a, b), power(power(cup(a, b))))];
+
 		subset_is_set[
-			cartesian_is_set_1(a, b)[@h1; @h2];
-			cartesian_is_set_2(a, b)
+			$power_power_cup_is_set;
+			$cartesian_subseteq_power_power_cup
 		]
 }
 
