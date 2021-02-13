@@ -1,6 +1,5 @@
 import StackTrace from '../StackTrace';
-
-var ctr = 0;
+import UniversalCounter from '../UniversalCounter';
 
 export type Precedence = boolean | number | [number, number];
 
@@ -17,7 +16,7 @@ export default abstract class Node {
 	public static readonly PREC_COLONEQQ = 100000;
 
 	constructor (doc: string, tex: string, trace: StackTrace) {
-		this._id = ++ctr;
+		this._id = UniversalCounter.next();
 		this.trace = trace;
 		this.doc = doc;
 		this.tex = tex;
