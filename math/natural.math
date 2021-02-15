@@ -219,7 +219,7 @@ theorem successor_is_not_zero(cls n: @11) {
 				] > in_eq;
 				emptyset_def(n) > id(Nin(n, omega_zero))
 			] > Fi
-		} > Nim as Neq(successor(n), omega_zero)
+		} > Nim as neq(successor(n), omega_zero)
 	}
 }
 
@@ -305,7 +305,7 @@ theorem successor_eq_e(cls n: @11, cls m: @21) {
 			] > singleton_e
 		};
 
-		Neq(n, m) |- {
+		neq(n, m) |- {
 			$c2 = [
 				@h2;
 				[
@@ -326,7 +326,7 @@ theorem successor_eq_e(cls n: @11, cls m: @21) {
 					in(m, singleton(n)) |- {
 						[
 							@h5 > $c1_dual;
-							@h4 > Neq_symmetric
+							@h4 > neq_symmetric
 						] > Fi
 					} > Nim
 				] > Oe2
@@ -523,7 +523,7 @@ theorem recursion_theorem_5_base($A$ cls a: @12, cls c: @11, cls f: @21) using d
 		with ($\gamma$ cls g = define_recursively(a, c, f)) {
 			(cls d) => {
 				in(pair(omega_zero, d), g) |- {
-					Neq(d, c) |- {
+					neq(d, c) |- {
 						$c1 = [
 							setminus_is_smaller(g, singleton(pair(omega_zero, d)));
 							[@h1; @h2] > recursion_theorem_1 as subseteq(g, cartesian(omega, a))
@@ -618,7 +618,7 @@ theorem recursion_theorem_5_step($A$ cls a: @12, cls c: @11, cls f: @21) using d
 									in(pair(n, x), g) |- {
 										(cls u) => {
 											in(pair(successor(n), u), g) |- {
-												Neq(u, funcall(f, x)) |- {
+												neq(u, funcall(f, x)) |- {
 													$c1 = [
 														setminus_is_smaller(g, singleton(pair(successor(n), u)));
 														[@h1; @h2] > recursion_theorem_1 as subseteq(g, cartesian(omega, a))
@@ -660,7 +660,7 @@ theorem recursion_theorem_5_step($A$ cls a: @12, cls c: @11, cls f: @21) using d
 																			] > mp
 																		] > mp;
 
-																		$c3_c1 = Neq(successor(m), successor(n)) |- {
+																		$c3_c1 = neq(successor(m), successor(n)) |- {
 																			[
 																				$foo;
 																				in(pair(successor(m), funcall(f, v)), singleton(pair(successor(n), u))) |- {
@@ -1716,7 +1716,7 @@ theorem schroeder_bernstein_1($A$ cls a: @12, $B$ cls b: @13, cls f: @11, cls g:
 											$eq = [$gf_is_fun; setminus_is_smaller(a, rel_im(g))] > fun_iterated_im_base;
 
 											[$x_in_im_g; [$in; $eq] > in_eq > setminus_in_e2] > Fi
-										} > Nim as Neq(n, omega_zero);
+										} > Nim as neq(n, omega_zero);
 
 										with (pr predicate = (cls m) => O(
 											eq(m, omega_zero),

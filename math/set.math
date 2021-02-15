@@ -32,7 +32,7 @@ st eq(cls x, cls y);
 
 "[$\neq]."
 $!<prec=350>#1<<\neq>>#2$
-st Neq(cls x, cls y) {
+st neq(cls x, cls y) {
 	N(eq(x, y))
 }
 
@@ -153,14 +153,14 @@ theorem eq_symmetric(cls x: @11, cls y: @12) {
 	}
 }
 
-theorem Neq_symmetric(cls x: @11, cls y: @12) {
-	Neq(x, y) |- {
+theorem neq_symmetric(cls x: @11, cls y: @12) {
+	neq(x, y) |- {
 		eq(y, x) |- {
 			[
 				@h2 > eq_symmetric;
 				@h1
 			] > Fi
-		} > Nim as Neq(y, x)
+		} > Nim as neq(y, x)
 	}
 }
 
