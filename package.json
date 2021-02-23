@@ -21,7 +21,7 @@
   "scripts": {
     "test": "nyc mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "build": "pegjs --cache -o dist/parser.js src/grammar.pegjs && pegjs --allowed-start-rules evaluable --cache -o dist/evalParser.js src/grammar.pegjs && webpack",
+    "build": "pegjs --cache -o ./dist/parser.js ./src/grammar.pegjs && pegjs --allowed-start-rules evaluable --cache -o ./dist/evalParser.js ./src/grammar.pegjs && webpack",
     "prepublishOnly": "npm test && npm run build",
     "reformat": "ts-node ./bin/reformat.ts"
   },
