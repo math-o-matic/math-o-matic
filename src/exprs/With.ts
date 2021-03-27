@@ -30,8 +30,6 @@ export default class With extends Expr {
 	public substitute(map: Map<Variable, Expr>): Expr {
 		if (map.has(this.variable))
 			throw Error('Parameter collision');
-		
-		map = new Map(map);
 
 		return this.expandMeta(false).substitute(map);
 	}
