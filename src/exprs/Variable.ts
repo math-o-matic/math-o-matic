@@ -53,11 +53,11 @@ export default class Variable extends Expr implements Nameable {
 		if (this.expr) {
 			return this;
 		}
-		
+
 		return this;
 	}
 
-	protected expandMetaInternal(): Expr {
+	protected expandInternal(): Expr {
 		return this;
 	}
 
