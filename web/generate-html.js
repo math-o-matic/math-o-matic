@@ -164,7 +164,10 @@ function generateHtml(program) {
 		return ret;
 	}
 	
-	ret += printImportedScopes(program.scope);
+	if (Globals.getFileLoadPreference() == 'selected-file-and-dependencies') {
+		ret += printImportedScopes(program.scope);
+	}
+	
 	ret += printThisScope(program.scope);
 
 	end = new Date();
