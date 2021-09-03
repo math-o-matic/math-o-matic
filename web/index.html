@@ -86,11 +86,12 @@
 				<li> 로컬 서버를 통해 접속하기. 이는 npm의 <a href="https://www.npmjs.com/package/http-server">http-server</a> 패키지를 사용하여 할 수 있습니다. 프로젝트 최상단에서 <pre><code>npx http-server -c-1</code></pre>를 실행한 후 터미널에 출력되는 주소로 접속하세요.
 				<li> Chrome의 경우 <code>--allow-file-access-from-files</code> 플래그를 통해 로컬 파일 로드를 가능하게 할 수 있습니다. <a href="https://stackoverflow.com/a/18137280">StackOverflow 링크</a>
 			</ul>
+			<script>
+				if (location.protocol == 'file:') {
+					$('#bq-note-file-scheme').style.display = 'block';
+				}
+			</script>
 		</blockquote>
-		<script>
-			if (location.protocol == 'file:')
-				$('#bq-note-file-scheme').style.display = 'block';
-		</script>
 		<h2>개요</h2>
 		이 페이지는 math-o-matic으로 만들고 있는 공리계를 보여 줍니다. 페이지 하단에 있는 버튼 중 하나를 눌러서 공리계를 로드하세요. 장치의 계산 성능에 따라 많은 시간이 걸릴 수 있습니다.
 		<h2>연산자 우선순위</h2>

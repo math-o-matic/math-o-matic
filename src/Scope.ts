@@ -8,6 +8,12 @@ import Variable from './exprs/Variable';
 import { LocationObject } from './PegInterfaceDefinitions';
 import StackTrace from './StackTrace';
 
+/*
+ * 'st'                     -> st
+ * ['cls', 'st']            -> [cls -> st]
+ * ['cls', 'cls', 'st']     -> [(cls, cls) -> st]
+ * [['cls', 'st'], 'st']    -> [[cls -> st] -> st]
+ */
 export type NestedTypeInput = string | NestedTypeInput[];
 
 /**
@@ -54,13 +60,6 @@ export default class Scope {
 		return this.trace.error(message);
 	}
 
-	/*
-	 * Possible input values:
-	 * 'st'						-> st
-	 * ['cls', 'st']			-> [cls -> st]
-	 * ['cls', 'cls', 'st']		-> [(cls, cls) -> st]
-	 * [['cls', 'st'], 'st']	-> [[cls -> st] -> st]
-	 */
 	public hasOwnType(name: NestedTypeInput): boolean {
 		if (typeof name == 'string') {
 			return this.typedefMap.has(name)
@@ -77,14 +76,6 @@ export default class Scope {
 			return this.hasOwnType(e);
 		}).every(e => e);
 	}
-
-	/*
-	 * Possible input values:
-	 * 'st'						-> st
-	 * ['cls', 'st']			-> [cls -> st]
-	 * ['cls', 'cls', 'st']		-> [(cls, cls) -> st]
-	 * [['cls', 'st'], 'st']	-> [[cls -> st] -> st]
-	 */
 	public hasType(name: NestedTypeInput): boolean {
 		if (typeof name == 'string') {
 			return this.hasOwnType(name)
