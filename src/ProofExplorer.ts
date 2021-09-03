@@ -165,11 +165,16 @@ export default class ProofExplorer {
 							'definition'
 						);
 					case 'bydef':
+						var of_ = [];
+						line.of.forEach(e => {
+							if (!of_.includes(e)) of_.push(e);
+						});
+
 						return getHtmlLine(
 							line.ctr,
 							left,
 							exprToHtml(line.expr),
-							`by definition of ${line.of.map(v => {
+							`by definition of ${of_.map(v => {
 								return exprToHtml(v);
 							}).join(', ')} [${exprToHtml(line.ref)}]`
 						);
