@@ -9,7 +9,7 @@ export default class Schema extends Fun {
 	public readonly context: ExecutionContext;
 	private isProvedCache: boolean;
 
-	constructor ({doc, tex, annotations, schemaType, name, params, context, def$s, expr}: SchemaArgumentType, trace: StackTrace) {
+	constructor ({doc, tex, schemaType, name, params, context, def$s, expr}: SchemaArgumentType, trace: StackTrace) {
 		if (!expr) {
 			throw Expr.error('wut', trace);
 		}
@@ -20,7 +20,7 @@ export default class Schema extends Fun {
 
 		var precedence = name ? false : Expr.PREC_FUNEXPR;
 
-		super({doc, precedence, tex, annotations, rettype: null, name, params, expr}, trace);
+		super({doc, precedence, tex, rettype: null, name, params, expr}, trace);
 		
 		this.schemaType = schemaType;
 		this.def$s = def$s || [];
@@ -66,7 +66,6 @@ export default class Schema extends Fun {
 		return new Schema({
 			doc: null,
 			tex: null,
-			annotations: this.annotations,
 			schemaType: 'schema',
 			name: null,
 			params: this.params,
@@ -83,7 +82,6 @@ export default class Schema extends Fun {
 		return new Schema({
 			doc: null,
 			tex: null,
-			annotations: this.annotations,
 			schemaType: 'schema',
 			name: null,
 			params: this.params,
@@ -143,7 +141,6 @@ import Parameter from "./Parameter";
 interface SchemaArgumentType {
 	doc: string;
 	tex: string;
-	annotations: string[];
 	schemaType: SchemaType;
 	name: string;
 	params: Parameter[];

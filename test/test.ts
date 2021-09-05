@@ -55,7 +55,6 @@ describe('ObjectFun', function () {
 			doc: null,
 			precedence: false,
 			tex: null,
-			annotations: [],
 			sealed: false,
 			rettype: null,
 			name: null,

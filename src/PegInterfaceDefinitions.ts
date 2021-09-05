@@ -61,7 +61,6 @@ export type ExprObject = TeeObject | ReductionObject | SchemacallObject | WithOb
 export interface DefschemaObject {
 	_type: 'defschema';
 	doc: string;
-	annotations: string[];
 	schemaType: SchemaType,
 	name: string;
 	params: DefvObject[];

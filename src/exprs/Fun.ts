@@ -3,12 +3,11 @@ import Expr, { EqualsPriority, Precedence } from './Expr';
 
 export default abstract class Fun extends Expr implements Nameable {
 
-	public readonly annotations: string[];
 	public readonly name: string;
 	public readonly params: Parameter[];
 	public readonly expr: Expr;
 
-	constructor ({doc, precedence, tex, annotations, rettype, name, params, expr}: FunArgumentType, trace: StackTrace) {
+	constructor ({doc, precedence, tex, rettype, name, params, expr}: FunArgumentType, trace: StackTrace) {
 		if (!name && !expr)
 			throw Expr.error('Anonymous fun cannot be primitive', trace);
 
@@ -31,7 +30,6 @@ export default abstract class Fun extends Expr implements Nameable {
 			trace
 		);
 
-		this.annotations = annotations;
 		this.name = name;
 		this.params = params;
 		this.expr = expr;
@@ -177,7 +175,6 @@ interface FunArgumentType {
 	doc: string;
 	precedence: Precedence;
 	tex: string;
-	annotations: string[];
 	rettype: Type;
 	name: string;
 	params: Parameter[];

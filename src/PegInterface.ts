@@ -184,7 +184,7 @@ export default class PI {
 			expr = PI.objectexpr(obj.expr, scope);
 		}
 
-		return new ObjectFun({annotations: [], sealed, rettype, name, params, expr, doc, precedence, tex}, scope.trace);
+		return new ObjectFun({sealed, rettype, name, params, expr, doc, precedence, tex}, scope.trace);
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope): Funcall {
@@ -384,13 +384,11 @@ export default class PI {
 
 		var schemaType: SchemaType = 'schema',
 			doc: string = null,
-			annotations: string[] = [],
 			context = oldContext;
 
 		if (obj._type == 'defschema') {
 			schemaType = obj.schemaType;
 			doc = obj.doc;
-			annotations = obj.annotations;
 
 			if (oldContext) {
 				console.log(oldContext);
@@ -440,7 +438,7 @@ export default class PI {
 
 		var expr = PI.expr(obj.expr, scope, context);
 
-		return new Schema({doc, tex: null, annotations, schemaType, name, params, context, def$s, expr}, scope.trace);
+		return new Schema({doc, tex: null, schemaType, name, params, context, def$s, expr}, scope.trace);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope, context: ExecutionContext): Funcall {

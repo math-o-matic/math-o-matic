@@ -4,8 +4,8 @@ export default class ObjectFun extends Fun {
 
 	public readonly sealed: boolean;
 	
-	constructor ({doc, precedence, tex, annotations, sealed, rettype, name, params, expr}: ObjectFunArgumentType, trace: StackTrace) {
-		super({doc, precedence, tex, annotations, rettype, name, params, expr}, trace);
+	constructor ({doc, precedence, tex, sealed, rettype, name, params, expr}: ObjectFunArgumentType, trace: StackTrace) {
+		super({doc, precedence, tex, rettype, name, params, expr}, trace);
 
 		if (sealed && !expr) {
 			throw Expr.error('Cannot seal a primitive fun', trace);
@@ -38,7 +38,6 @@ export default class ObjectFun extends Fun {
 			doc: null,
 			precedence: false,
 			tex: null,
-			annotations: this.annotations,
 			sealed: this.sealed,
 			rettype: null,
 			name: null,
@@ -58,7 +57,6 @@ export default class ObjectFun extends Fun {
 			doc: null,
 			precedence: false,
 			tex: null,
-			annotations: this.annotations,
 			sealed: this.sealed,
 			rettype: null,
 			name: null,
@@ -137,7 +135,6 @@ interface ObjectFunArgumentType {
 	doc: string;
 	precedence: number | false;
 	tex: string;
-	annotations: string[];
 	sealed: boolean;
 	rettype: Type;
 	name: string;

@@ -148,7 +148,6 @@ defun =
 
 defschema =
 	doc:(documentation __)?
-	annotations: (a:annotation __ {return a})*
 	schemaType:('axiom' / 'theorem' / 'schema') __
 	name:ident _
 	params:(
@@ -178,7 +177,6 @@ defschema =
 		return {
 			_type: 'defschema',
 			doc: doc ? doc[0] : null,
-			annotations,
 			schemaType,
 			name,
 			params,
@@ -560,10 +558,6 @@ keyword =
 	/ 'type'
 	/ 'using'
 	/ 'with'
-
-annotation =
-	'@discouraged'
-	/ '@deprecated'
 
 ident =
 	$(!(keyword ![a-zA-Z0-9_]) [a-zA-Z0-9_]+)

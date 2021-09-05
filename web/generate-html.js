@@ -36,9 +36,7 @@ function generateDefHtml(program, k, v) {
 
 function generateSchemaHtml(program, k, v, omitProofExplorer) {
 	return `<div class="block">`
-		+ `<p class="label"><a id="def-${k}" href="#def-${k}">${
-			v.annotations.map(a => `<b class="red">${a}</b> `).join('')
-		}<b>${v.schemaType}</b> ${k}</a>(${v.params.map(p => p.toSimpleString()).join(', ')})${
+		+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${v.schemaType}</b> ${k}</a>(${v.params.map(p => p.toSimpleString()).join(', ')})${
 			v.context.usingList.length
 				? ` <b>using</b> ${v.context.usingList.map(u => u.name).join(', ')}`
 				: ''

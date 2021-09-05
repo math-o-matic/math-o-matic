@@ -68,7 +68,6 @@ function recurseInternal(
 			/* export interface DefschemaObject {
 				_type: 'defschema';
 				doc: string;
-				annotations: string[];
 				schemaType: SchemaType,
 				name: string;
 				params: DefvObject[];
@@ -79,8 +78,6 @@ function recurseInternal(
 			} */
 			return `${
 	line.doc ? `"${line.doc}"\n` : ''
-}${
-	line.annotations.map(a => a + ' ').join('')
 }${line.schemaType} ${line.name}(${
 	line.params.map(param => recurse(param, Context.NORMAL, 0)).join(', ')
 })${line.using.length ? ' using ' + line.using.join(', ') : ''} {

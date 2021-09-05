@@ -387,7 +387,6 @@ ${as.expand()}
 				return new Schema({
 					doc: null,
 					tex: null,
-					annotations: [],
 					schemaType: 'schema',
 					name: null,
 					params,
