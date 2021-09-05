@@ -22,12 +22,6 @@ export default class Parameter extends Variable {
 	}
 
 	public toTeXStringWithId(prec?: Precedence, root?: boolean): string {
-		var id =`id-${this._id}`;
-
-		return [
-			`\\htmlId{${id}}{`,
-			this.toTeXString(prec, root),
-			`}`
-		].join('');
+		return `\\htmlId{id-${this._id}}{${this.toTeXString(prec, root)}}`;
 	}
 }
