@@ -155,21 +155,25 @@ nav {
 
 .katex a[href^="#def-"] > :not(.mspace) {
 	background-color: #E3F2FD;
+	border-radius: .15em;
 	color: #303F9F;
 }
 
 .katex [data-proved="np"] > :not(.mspace) {
 	background-color: #FFEBEE;
+	border-radius: .15em;
 	color: #B71C1C;
 }
 
 .katex [data-proved="p"] > :not(.mspace) {
 	background-color: #E8F5E9;
+	border-radius: .15em;
 	color: #006064;
 }
 
 .katex a[href^="#type-"] > :not(.mspace) {
 	background-color: #E8EAF6;
+	border-radius: .15em;
 	color: #1A237E;
 }
 
