@@ -371,7 +371,7 @@ schemaexpr =
 		}
 	}
 
-tee =
+conditional =
 	left:(
 		l:(
 			head:expr_internal_1 _
@@ -391,7 +391,7 @@ tee =
 	)
 	{
 		return {
-			_type: 'tee',
+			_type: 'conditional',
 			def$s: foo.defdollars,
 			left,
 			right: foo.expr,
@@ -439,7 +439,7 @@ expr_internal_3 =
 	/ expr_internal_2
 
 expr_internal_2 =
-	tee
+	conditional
 	/ expr_internal_1
 
 /*

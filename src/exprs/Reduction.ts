@@ -8,8 +8,8 @@ import Expr, { EqualsPriority, Precedence } from "./Expr";
 import { isNameable } from "./Nameable";
 import Parameter from "./Parameter";
 import Schema from "./Schema";
-import Tee from "./Tee";
-import { FunctionalType, TeeType } from "./types";
+import Conditional from "./Conditional";
+import { FunctionalType, ConditionalType } from "./types";
 import Variable from "./Variable";
 
 interface ReductionArgumentType {
@@ -56,14 +56,14 @@ export default class Reduction extends Expr {
 			var derefs = subject.params.map((p, i) => {
 				if (args && args[i]) return args[i];
 
-				var tee = (subject as Fun).expr.expand();
+				var conditional = (subject as Fun).expr.expand();
 
-				if (!(tee instanceof Tee)) throw Error('wut');
+				if (!(conditional instanceof Conditional)) throw Error('wut');
 	
 				return Reduction.guess(
 					p.selector,
-					tee.left, antecedents,
-					tee.right, as,
+					conditional.left, antecedents,
+					conditional.right, as,
 					context, trace
 				);
 			});
@@ -76,7 +76,7 @@ export default class Reduction extends Expr {
 			throw Expr.error('Something\'s wrong', trace);
 		}
 	
-		if (!(subject.type instanceof TeeType))
+		if (!(subject.type instanceof ConditionalType))
 			throw Expr.error('Subject is not reducible', trace);
 	
 		if (!(antecedents instanceof Array)
@@ -99,26 +99,26 @@ export default class Reduction extends Expr {
 		this.subject = subject;
 		this.antecedents = antecedents;
 
-		var tee = subject.expand();
+		var conditional = subject.expand();
 
-		if (!(tee instanceof Tee)) {
+		if (!(conditional instanceof Conditional)) {
 			throw Expr.error('Assertion failed', trace);
 		}
 
-		this.requiredAntecedents = tee.left;
-		this.antecedentEqualsResults = Array(tee.left.length).fill(0).map(() => []);
+		this.requiredAntecedents = conditional.left;
+		this.antecedentEqualsResults = Array(conditional.left.length).fill(0).map(() => []);
 
 		var antecedentsExpanded = antecedents.map(arg => {
 			return arg.expand();
 		});
 
-		for (let i = 0; i < tee.left.length; i++) {
-			var tmp = tee.left[i].equals(antecedentsExpanded[i], context);
+		for (let i = 0; i < conditional.left.length; i++) {
+			var tmp = conditional.left[i].equals(antecedentsExpanded[i], context);
 			if (!tmp) {
 				throw Expr.error(`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
-${tee.left[i].expand()}
+${conditional.left[i].expand()}
 ----------------
 
 --- RECEIVED ---
@@ -129,15 +129,15 @@ ${antecedents[i].expand()}
 			this.antecedentEqualsResults[i] = tmp;
 		}
 
-		this.preFormatConsequent = tee.right;
+		this.preFormatConsequent = conditional.right;
 
 		if (as) {
-			var tmp = tee.right.equals(as, context);
+			var tmp = conditional.right.equals(as, context);
 			if (!tmp) {
 				throw Expr.error(`RHS failed to match:
 
 --- EXPECTED ---
-${tee.right.expand()}
+${conditional.right.expand()}
 ----------------
 
 --- RECEIVED (from [as ...]) ---
@@ -148,7 +148,7 @@ ${as.expand()}
 			this.rightEqualsResult = tmp;
 			this.consequent = as;
 		} else {
-			this.consequent = tee.right;
+			this.consequent = conditional.right;
 		}
 	}
 
@@ -302,7 +302,7 @@ ${as.expand()}
 			if (/^[0-9]$/.test(selector[ptr])) {
 				var n = Number(selector[ptr]);
 
-				if (pattern instanceof Tee && instance instanceof Tee) {
+				if (pattern instanceof Conditional && instance instanceof Conditional) {
 					if (pattern.left.length != instance.left.length) {
 						throw Expr.error(`Cannot dereference @${selector} (at ${ptr}): antecedent length mismatch`, trace);
 					}
@@ -339,7 +339,7 @@ ${as.expand()}
 
 				return recurse(ptr + 1, pattern.args[n - 1], instance.args[n - 1], params);
 			} else if (selector[ptr] == 'r') {
-				if (!(pattern instanceof Tee && instance instanceof Tee)) {
+				if (!(pattern instanceof Conditional && instance instanceof Conditional)) {
 					throw Expr.error(`Cannot dereference @${selector} (at ${ptr})`, trace);
 				}
 

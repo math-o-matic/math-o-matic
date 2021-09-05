@@ -5,23 +5,23 @@ import StackTrace from '../StackTrace';
 import $Variable from './$Variable';
 import Fun from './Fun';
 import Expr, { EqualsPriority, Precedence } from './Expr';
-import { TeeType } from './types';
+import { ConditionalType } from './types';
 import Variable from './Variable';
 
-interface TeeArgumentType {
+interface ConditionalArgumentType {
 	left: Expr[];
 	def$s: $Variable[];
 	right: Expr;
 }
 
-export default class Tee extends Expr {
+export default class Conditional extends Expr {
 
 	public readonly left: Expr[];
 	public readonly def$s: $Variable[];
 	public readonly right: Expr;
 
-	constructor ({left, def$s, right}: TeeArgumentType, trace: StackTrace) {
-		super(null, false, null, new TeeType({
+	constructor ({left, def$s, right}: ConditionalArgumentType, trace: StackTrace) {
+		super(null, false, null, new ConditionalType({
 			left: left.map(e => e.type),
 			right: right.type
 		}, trace), trace);
@@ -42,7 +42,7 @@ export default class Tee extends Expr {
 
 		if (left.every((l, i) => l == this.left[i]) && right == this.right) return this;
 
-		return new Tee({left, def$s: null, right}, this.trace);
+		return new Conditional({left, def$s: null, right}, this.trace);
 	}
 
 	protected expandInternal(): Expr {
@@ -51,7 +51,7 @@ export default class Tee extends Expr {
 
 		if (left.every((l, i) => l == this.left[i]) && right == this.right) return this;
 
-		return new Tee({left, def$s: null, right}, this.trace);
+		return new Conditional({left, def$s: null, right}, this.trace);
 	}
 
 	protected getEqualsPriority(): EqualsPriority {
@@ -59,7 +59,7 @@ export default class Tee extends Expr {
 	}
 
 	protected equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
-		if (!(obj instanceof Tee)) {
+		if (!(obj instanceof Conditional)) {
 			throw Error('Assertion failed');
 		}
 
@@ -123,7 +123,7 @@ export default class Tee extends Expr {
 	}
 	
 	public toTeXString(prec?: Precedence, root?: boolean): string {
-		var expanded = this.expand() as Tee;
+		var expanded = this.expand() as Conditional;
 
 		return [
 			(this.shouldConsolidate(prec) ? '\\left(' : ''),

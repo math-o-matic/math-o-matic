@@ -15,7 +15,7 @@ export enum EqualsPriority {
 	ZERO,
 	/** Fun */
 	ONE,
-	/** Tee */
+	/** Conditional */
 	TWO,
 	/** Funcall */
 	THREE,

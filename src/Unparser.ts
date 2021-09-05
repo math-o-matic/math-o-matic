@@ -18,7 +18,7 @@ export default function unparse(tree: ImportOrLineObject[]) {
 }
 
 enum Context {
-	CALLEE, TEELEFT, REDUCTIONRIGHT, REDUCTIONLEFT, NORMAL
+	CALLEE, CONDITIONALLEFT, REDUCTIONRIGHT, REDUCTIONLEFT, NORMAL
 }
 
 function isOneLiner(s: string) {
@@ -143,20 +143,20 @@ function recurseInternal(
 				location: LocationObject;
 			} */
 			return `${line.name} = ${recurse(line.expr, Context.NORMAL, 0)};`;
-		case 'tee':
-			/* export interface TeeObject {
-				_type: 'tee';
+		case 'conditional':
+			/* export interface ConditionalObject {
+				_type: 'conditional';
 				left: ExprObject[];
 				def$s: Def$Object[];
 				right: ExprObject;
 				location: LocationObject;
 			} */
-			if (context <= Context.TEELEFT)
+			if (context <= Context.CONDITIONALLEFT)
 				return '(' + recurse(line, Context.NORMAL, 0) + ')';
 			
 			var left = !line.left.length
 				? ''
-				: line.left.map(left => recurse(left, Context.TEELEFT, 0))
+				: line.left.map(left => recurse(left, Context.CONDITIONALLEFT, 0))
 					.reduce((l, r) => {
 						if (!isOneLiner(r)) return l + ',\n' + r;
 
@@ -173,7 +173,7 @@ function recurseInternal(
 
 			var oneline = !def$s.length && isOneLiner(right);
 			var needBraces = !oneline || !(
-				['tee', 'schemacall', 'var', 'schemaexpr'].includes(line.right._type)
+				['conditional', 'schemacall', 'var', 'schemaexpr'].includes(line.right._type)
 			);
 			if (needBraces) oneline = false;
 

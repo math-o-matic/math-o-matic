@@ -31,11 +31,11 @@ export abstract class Type {
 
 		if (!(t instanceof Type)) return false;
 
-		if ((this instanceof TeeType) != (t instanceof TeeType)) {
+		if ((this instanceof ConditionalType) != (t instanceof ConditionalType)) {
 			return false;
 		}
 
-		if (this instanceof TeeType && t instanceof TeeType) {
+		if (this instanceof ConditionalType && t instanceof ConditionalType) {
 			if (this.left.length != t.left.length) return false;
 
 			for (var i = 0; i < this.left.length; i++) {
@@ -71,17 +71,17 @@ export abstract class Type {
 	}
 }
 
-interface TeeTypeArgumentType {
+interface ConditionalTypeArgumentType {
 	left: Type[];
 	right: Type;
 }
 
-export class TeeType extends Type {
+export class ConditionalType extends Type {
 
 	public readonly left: Type[];
 	public readonly right: Type;
 
-	constructor ({left, right}: TeeTypeArgumentType, trace: StackTrace) {
+	constructor ({left, right}: ConditionalTypeArgumentType, trace: StackTrace) {
 		super(null, trace);
 
 		if (!left || !right) {

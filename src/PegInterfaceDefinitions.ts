@@ -56,7 +56,7 @@ export interface DefunObject {
 }
 
 export type ObjectExprObject = FuncallObject | FunexprObject | VarObject;
-export type ExprObject = TeeObject | ReductionObject | SchemacallObject | WithObject | VarObject | SchemaexprObject;
+export type ExprObject = ConditionalObject | ReductionObject | SchemacallObject | WithObject | VarObject | SchemaexprObject;
 
 export interface DefschemaObject {
 	_type: 'defschema';
@@ -116,8 +116,8 @@ export interface WithObject {
 	location: LocationObject;
 }
 
-export interface TeeObject {
-	_type: 'tee';
+export interface ConditionalObject {
+	_type: 'conditional';
 	left: ExprObject[];
 	def$s: Def$Object[];
 	right: ExprObject;

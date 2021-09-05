@@ -12,11 +12,11 @@ import ObjectFun from './exprs/ObjectFun';
 import Parameter from './exprs/Parameter';
 import Reduction from './exprs/Reduction';
 import Schema, { SchemaType } from './exprs/Schema';
-import Tee from './exprs/Tee';
+import Conditional from './exprs/Conditional';
 import { Type, SimpleType } from './exprs/types';
 import Variable from './exprs/Variable';
 import With from './exprs/With';
-import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
+import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
 
 function typeObjToString(obj: TypeObject): string {
@@ -203,7 +203,7 @@ export default class PI {
 	}
 
 	public static expr(obj: ExprObject, parentScope: Scope, context: ExecutionContext): Expr {
-		if (!['tee', 'reduction', 'schemacall', 'schemaexpr', 'var', 'with'].includes(obj._type)) {
+		if (!['conditional', 'reduction', 'schemacall', 'schemaexpr', 'var', 'with'].includes(obj._type)) {
 			throw Error('Assertion failed');
 		}
 
@@ -211,8 +211,8 @@ export default class PI {
 		var scope = parentScope;
 
 		switch (obj._type) {
-			case 'tee':
-				return PI.tee(obj, scope, context);
+			case 'conditional':
+				return PI.conditional(obj, scope, context);
 			case 'reduction':
 				return PI.reduction(obj, scope, context);
 			case 'schemacall':
@@ -337,15 +337,15 @@ export default class PI {
 		}, scope.trace);
 	}
 
-	public static tee(obj: TeeObject, parentScope: Scope, context: ExecutionContext): Tee {
-		if (obj._type != 'tee')
+	public static conditional(obj: ConditionalObject, parentScope: Scope, context: ExecutionContext): Conditional {
+		if (obj._type != 'conditional')
 			throw Error('Assertion failed');
 
-		var scope = parentScope.extend('tee', null, obj.location);
+		var scope = parentScope.extend('conditional', null, obj.location);
 
 		var left = obj.left.map(o => PI.expr(o, scope, context));
 
-		var scopeRight = scope.extend('tee.right', null, obj.right.location);
+		var scopeRight = scope.extend('conditional.right', null, obj.right.location);
 		left.forEach(l => scopeRight.hypotheses.push(l));
 
 		var def$s = obj.def$s.map($ => {
@@ -360,7 +360,7 @@ export default class PI {
 
 		var right = PI.expr(obj.right, scopeRight, context);
 
-		return new Tee({left, def$s, right}, scope.trace);
+		return new Conditional({left, def$s, right}, scope.trace);
 	}
 
 	public static def$(obj: Def$Object, parentScope: Scope, context: ExecutionContext): $Variable {

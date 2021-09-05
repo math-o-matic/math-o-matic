@@ -164,8 +164,8 @@ export default class Program {
 			case 'defschema':
 			case 'schemaexpr':
 				return PegInterface.schema(line, scope, null);
-			case 'tee':
-				return PegInterface.tee(line, scope, null);
+			case 'conditional':
+				return PegInterface.conditional(line, scope, null);
 			case 'reduction':
 				return PegInterface.reduction(line, scope, null);
 			case 'schemacall':
