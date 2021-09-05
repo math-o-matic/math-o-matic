@@ -1,13 +1,7 @@
 language: node_js
 
-group: edge
-arch: arm64-graviton2
-os: linux
-dist: focal
-virt: lxd
-
 node_js:
-  - 14
+  - lts/*
 
 install:
   - npm ci
