@@ -9,7 +9,7 @@ var path = require('path');
 
 import unparse from '../src/Unparser';
 
-function removeLocationify(obj) {
+function removeLocationAndStringify(obj) {
 	return JSON.stringify(obj, (k, v) => {
 		if (k == 'location') return undefined;
 		return v;
@@ -27,7 +27,7 @@ describe('Unparser', function () {
 			var parsed = Program.parser.parse(o);
 			var parsed_unparsed_parsed = Program.parser.parse(unparse(parsed));
 			
-			expect(removeLocationify(parsed) == removeLocationify(parsed_unparsed_parsed)).to.be.true;
+			expect(removeLocationAndStringify(parsed) == removeLocationAndStringify(parsed_unparsed_parsed)).to.be.true;
 		});
 	});
 });
