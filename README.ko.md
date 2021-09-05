@@ -3,7 +3,7 @@
 
 [![npm](https://img.shields.io/npm/v/math-o-matic)](https://www.npmjs.com/package/math-o-matic)
 [![GitHub](https://img.shields.io/github/license/logico-philosophical/math-o-matic)](https://github.com/logico-philosophical/math-o-matic/blob/master/LICENSE)
-[![Build Status](https://img.shields.io/travis/com/logico-philosophical/math-o-matic)](https://travis-ci.com/logico-philosophical/math-o-matic)
+[![Build Status](https://img.shields.io/travis/com/logico-philosophical/math-o-matic)](https://app.travis-ci.com/logico-philosophical/math-o-matic)
 [![Coverage Status](https://img.shields.io/coveralls/github/logico-philosophical/math-o-matic)](https://coveralls.io/github/logico-philosophical/math-o-matic?branch=master)
 [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/logico-philosophical/math-o-matic)](https://lgtm.com/projects/g/logico-philosophical/math-o-matic/alerts/)
 [![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/logico-philosophical/math-o-matic)](https://lgtm.com/projects/g/logico-philosophical/math-o-matic/context:javascript)
