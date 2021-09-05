@@ -5,7 +5,7 @@ import StackTrace from '../StackTrace';
 import $Variable from './$Variable';
 import Fun from './Fun';
 import Expr, { EqualsPriority, Precedence } from './Expr';
-import { ObjectType, Type, TeeType } from './types';
+import { TeeType } from './types';
 import Variable from './Variable';
 
 interface TeeArgumentType {
@@ -21,23 +21,6 @@ export default class Tee extends Expr {
 	public readonly right: Expr;
 
 	constructor ({left, def$s, right}: TeeArgumentType, trace: StackTrace) {
-		if (!(left instanceof Array
-				&& left.every(l => {
-					return l.type instanceof ObjectType
-						|| l.type instanceof Type;
-				}))) {
-			console.log(left);
-			throw Expr.error('Assertion failed', trace);
-		}
-
-		if (def$s && !(def$s instanceof Array && def$s.every($ => $ instanceof $Variable)))
-			throw Expr.error('Assertion failed', trace);
-
-		if (!(right.type instanceof ObjectType || right.type instanceof Type)) {
-			console.log(right);
-			throw Expr.error('Assertion failed', trace);
-		}
-
 		super(null, false, null, new TeeType({
 			left: left.map(e => e.type),
 			right: right.type

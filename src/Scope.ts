@@ -3,7 +3,7 @@ import Fun from './exprs/Fun';
 import Expr from './exprs/Expr';
 import ObjectFun from './exprs/ObjectFun';
 import Schema from './exprs/Schema';
-import { FunctionalObjectType, ObjectType, SimpleObjectType } from './exprs/types';
+import { FunctionalType, Type, SimpleType } from './exprs/types';
 import Variable from './exprs/Variable';
 import { LocationObject } from './PegInterfaceDefinitions';
 import StackTrace from './StackTrace';
@@ -23,7 +23,7 @@ export type NestedTypeInput = string | NestedTypeInput[];
 export default class Scope {
 	public readonly importMap: Map<string, Scope> = new Map();
 
-	public readonly typedefMap: Map<string, ObjectType> = new Map();
+	public readonly typedefMap: Map<string, SimpleType> = new Map();
 	public readonly defMap: Map<string, Variable | ObjectFun> = new Map();
 	public readonly schemaMap: Map<string, Schema> = new Map();
 	public readonly $Map: Map<string, $Variable> = new Map();
@@ -93,8 +93,8 @@ export default class Scope {
 		}).every(e => e);
 	}
 
-	public addType(type: SimpleObjectType): SimpleObjectType {
-		if (!(type instanceof SimpleObjectType))
+	public addType(type: SimpleType): SimpleType {
+		if (!(type instanceof SimpleType))
 			throw this.error('Illegal argument type');
 
 		if (!type.name)
@@ -114,7 +114,7 @@ export default class Scope {
 	 * ['cls', 'cls', 'st']		-> [(cls, cls) -> st]
 	 * [['cls', 'st'], 'st']	-> [[cls -> st] -> st]
 	 */
-	public getType(name: NestedTypeInput): ObjectType {
+	public getType(name: NestedTypeInput): Type {
 		if (typeof name == 'string') {
 			if (!this.hasType(name))
 				throw this.error(`Type ${name} is not defined`);
@@ -139,7 +139,7 @@ export default class Scope {
 
 		var to = this.getType(name[name.length - 1]);
 
-		return new FunctionalObjectType({
+		return new FunctionalType({
 			from,
 			to
 		}, this.trace);

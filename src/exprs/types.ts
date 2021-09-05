@@ -22,6 +22,8 @@ export abstract class Type {
 
 	public abstract toIndentedString(indent: number): string;
 
+	public abstract toTeXString(root?: boolean): string;
+
 	public abstract isFunctional(): boolean;
 
 	public equals(t: Type): boolean {
@@ -43,20 +45,19 @@ export abstract class Type {
 			return this.right.equals(t.right);
 		}
 
-		if (this instanceof SimpleObjectType && this.expr) {
+		if (this instanceof SimpleType && this.expr) {
 			return this.expr.equals(t);
 		}
 
-		if (t instanceof SimpleObjectType && t.expr) {
+		if (t instanceof SimpleType && t.expr) {
 			return this.equals(t.expr);
 		}
 
-		if (this instanceof SimpleObjectType || t instanceof SimpleObjectType) {
+		if (this instanceof SimpleType || t instanceof SimpleType) {
 			return false;
 		}
 
-		if ((this instanceof FunctionalObjectType || this instanceof FunctionalMetaType)
-				&& (t instanceof FunctionalObjectType || t instanceof FunctionalMetaType)) {
+		if (this instanceof FunctionalType && t instanceof FunctionalType) {
 			if (this.from.length != t.from.length) return false;
 
 			for (var i = 0; i < this.from.length; i++) {
@@ -95,6 +96,10 @@ export class TeeType extends Type {
 		return `[${this.left.join(', ')} |- ${this.right}]`;
 	}
 
+	public toTeXString(root?: boolean): string {
+		throw new Error("Method not implemented.");
+	}
+
 	public resolve(): Type {
 		return this;
 	}
@@ -104,63 +109,18 @@ export class TeeType extends Type {
 	}
 }
 
-interface FunctionalMetaTypeArgumentType {
-	from: ObjectType[];
-	to: Type;
-}
-
-export class FunctionalMetaType extends Type {
-	
-	public readonly from: ObjectType[];
-	public readonly to: Type;
-
-	constructor ({from, to}: FunctionalMetaTypeArgumentType, trace: StackTrace) {
-		super(null, trace);
-
-		if (!from || !to) {
-			throw Error('duh');
-		}
-
-		this.from = from;
-		this.to = to;
-	}
-
-	public toIndentedString(indent: number): string {
-		return `[${this.from.join(', ')} -> ${this.to}]`;
-	}
-
-	public resolve(): FunctionalMetaType {
-		return this;
-	}
-
-	public isFunctional(): boolean {
-		return true;
-	}
-}
-
-export abstract class ObjectType extends Type {
-
-	constructor (doc: string, trace: StackTrace) {
-		super(doc, trace);
-	}
-
-	public abstract resolve(): ObjectType;
-
-	public abstract toTeXString(root?: boolean): string;
-}
-
-interface SimpleObjectTypeArgumentType {
+interface SimpleTypeArgumentType {
 	doc: string;
 	name: string;
-	expr: ObjectType;
+	expr: Type;
 }
 
-export class SimpleObjectType extends ObjectType implements Nameable {
+export class SimpleType extends Type implements Nameable {
 
 	public readonly name: string;
-	public readonly expr: ObjectType;
+	public readonly expr: Type;
 
-	constructor ({doc, name, expr}: SimpleObjectTypeArgumentType, trace: StackTrace) {
+	constructor ({doc, name, expr}: SimpleTypeArgumentType, trace: StackTrace) {
 		super(doc, trace);
 
 		if (!name) throw Error('duh');
@@ -169,7 +129,7 @@ export class SimpleObjectType extends ObjectType implements Nameable {
 		this.expr = expr;
 	}
 
-	public resolve(): ObjectType {
+	public resolve(): Type {
 		return this.expr ? this.expr.resolve() : this;
 	}
 
@@ -194,25 +154,25 @@ export class SimpleObjectType extends ObjectType implements Nameable {
 	}
 }
 
-interface FunctionalObjectTypeArgumentType {
-	from: ObjectType[];
-	to: ObjectType;
+interface FunctionalTypeArgumentType {
+	from: Type[];
+	to: Type;
 }
 
-export class FunctionalObjectType extends ObjectType {
+export class FunctionalType extends Type {
 
-	public readonly from: ObjectType[];
-	public readonly to: ObjectType;
+	public readonly from: Type[];
+	public readonly to: Type;
 
-	constructor ({from, to}: FunctionalObjectTypeArgumentType, trace: StackTrace) {
+	constructor ({from, to}: FunctionalTypeArgumentType, trace: StackTrace) {
 		super(null, trace);
 
 		this.from = from;
 		this.to = to;
 	}
 
-	public resolve(): FunctionalObjectType {
-		return new FunctionalObjectType({
+	public resolve(): FunctionalType {
+		return new FunctionalType({
 			from: this.from.map(f => f.resolve()),
 			to: this.to.resolve()
 		}, this.trace);

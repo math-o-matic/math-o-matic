@@ -13,7 +13,7 @@ import Parameter from './exprs/Parameter';
 import Reduction from './exprs/Reduction';
 import Schema, { SchemaType } from './exprs/Schema';
 import Tee from './exprs/Tee';
-import { ObjectType, SimpleObjectType } from './exprs/types';
+import { Type, SimpleType } from './exprs/types';
 import Variable from './exprs/Variable';
 import With from './exprs/With';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, TeeObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
@@ -68,26 +68,26 @@ function varObjToString(obj: VarObject): string {
 }
 
 export default class PI {
-	public static type(obj: TypedefObject, parentScope: Scope): ObjectType {
+	public static type(obj: TypedefObject, parentScope: Scope): Type {
 		if (obj._type != 'typedef')
 			throw Error('Assertion failed');
 
 		var scope: Scope = parentScope.extend('type', obj.name, obj.location);
 
-		var expr: ObjectType = obj.expr ? scope.getType(typeObjToNestedArr(obj.expr)) : null;
+		var expr: Type = obj.expr ? scope.getType(typeObjToNestedArr(obj.expr)) : null;
 
 		var name: string = obj.name;
 		var doc: string = obj.doc;
 
 		if (expr) {
-			return new SimpleObjectType({
+			return new SimpleType({
 				doc,
 				name,
 				expr
 			}, scope.trace);
 		}
 
-		return new SimpleObjectType({
+		return new SimpleType({
 			doc,
 			name,
 			expr: null
@@ -148,7 +148,7 @@ export default class PI {
 			precedence : false | number = false,
 			tex = null,
 			sealed = false,
-			rettype: ObjectType = null,
+			rettype: Type = null,
 			name = null,
 			expr = null;
 

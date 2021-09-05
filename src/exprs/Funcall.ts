@@ -19,7 +19,7 @@ export default class Funcall extends Expr {
 		if (!(args instanceof Array) || args.map(e => e instanceof Expr).some(e => !e))
 			throw Expr.error('Assertion failed', trace);
 			 
-		var resolvedType = fun.type.resolve() as FunctionalObjectType | FunctionalMetaType,
+		var resolvedType = fun.type.resolve() as FunctionalType,
 			paramTypes = resolvedType.from,
 			argTypes = args.map(e => e.type);
 
@@ -320,4 +320,4 @@ import { isNameable } from './Nameable';
 import ObjectFun from './ObjectFun';
 import Schema from './Schema';
 import Variable from './Variable';
-import { FunctionalMetaType, FunctionalObjectType } from './types';
+import { FunctionalType } from './types';

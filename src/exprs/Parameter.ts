@@ -1,12 +1,12 @@
 import StackTrace from "../StackTrace";
 import { Precedence } from "./Expr";
-import { ObjectType } from "./types";
+import { Type } from "./types";
 import Variable from "./Variable";
 
 interface ParameterArgumentType {
 	doc?: string;
 	tex?: string;
-	type: ObjectType;
+	type: Type;
 	name: string;
 	selector: string;
 }

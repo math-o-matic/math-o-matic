@@ -1,4 +1,4 @@
-import { SimpleObjectType } from './exprs/types';
+import { SimpleType } from './exprs/types';
 import PegInterface from './PegInterface';
 import { EvaluableObject, ImportOrLineObject } from './PegInterfaceDefinitions';
 import ProofExplorer from './ProofExplorer';
@@ -108,7 +108,7 @@ export default class Program {
 					scope.importMap.set(line.filename, scope2);
 					break;
 				case 'typedef':
-					var type = PegInterface.type(line, scope) as SimpleObjectType;
+					var type = PegInterface.type(line, scope) as SimpleType;
 
 					if (scope.hasType(type.name)) {
 						throw scope.error(`Type ${type.name} has already been declared`);

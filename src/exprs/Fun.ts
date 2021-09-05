@@ -24,7 +24,7 @@ export default abstract class Fun extends Expr implements Nameable {
 		
 		super(
 			doc, precedence, tex,
-			new ((rettype || expr.type) instanceof ObjectType ? FunctionalObjectType : FunctionalMetaType)({
+			new FunctionalType({
 				from: params.map(variable => variable.type),
 				to: rettype || expr.type as any
 			}, trace),
@@ -59,7 +59,7 @@ export default abstract class Fun extends Expr implements Nameable {
 		}
 
 		var placeholders = [];
-		var types = (this.type.resolve() as FunctionalObjectType | FunctionalMetaType).from;
+		var types = (this.type.resolve() as FunctionalType).from;
 
 		for (var i = 0; i < types.length; i++) {
 			placeholders.push(new Parameter({
@@ -171,7 +171,7 @@ import Counter from '../Counter';
 import { ProofType } from '../ProofType';
 import Schema from './Schema';
 import Parameter from './Parameter';
-import { ObjectType, FunctionalObjectType, FunctionalMetaType, Type } from './types';
+import { FunctionalType, Type } from './types';
 
 interface FunArgumentType {
 	doc: string;

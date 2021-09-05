@@ -49,7 +49,7 @@ export default class ObjectFun extends Fun {
 
 	protected expandInternal(): Expr {
 		if (!this.expr) return this;
-		if (this.type instanceof ObjectType && this.name) return this;
+		if (this.name) return this;
 
 		var expr = this.expr.expand();
 		if (expr == this.expr) return this;
@@ -131,7 +131,7 @@ import StackTrace from "../StackTrace";
 import Expr, { Precedence } from "./Expr";
 import Variable from "./Variable";
 import Parameter from "./Parameter";
-import { Type, ObjectType } from "./types";
+import { Type } from "./types";
 
 interface ObjectFunArgumentType {
 	doc: string;

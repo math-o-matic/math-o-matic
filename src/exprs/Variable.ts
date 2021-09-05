@@ -10,7 +10,7 @@ interface VariableArgumentType {
 	doc?: string;
 	tex?: string;
 	sealed: boolean;
-	type: ObjectType;
+	type: Type;
 	name: string;
 	expr: Expr;
 }
@@ -18,7 +18,7 @@ interface VariableArgumentType {
 export default class Variable extends Expr implements Nameable {
 
 	public readonly sealed: boolean;
-	public readonly type: ObjectType;
+	public readonly type: Type;
 	public readonly name: string;
 	public readonly expr: Expr | null;
 
@@ -114,4 +114,4 @@ export default class Variable extends Expr implements Nameable {
 }
 
 import Parameter from './Parameter';
-import { ObjectType } from './types';
+import { Type } from './types';

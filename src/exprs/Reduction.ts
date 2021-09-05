@@ -9,7 +9,7 @@ import { isNameable } from "./Nameable";
 import Parameter from "./Parameter";
 import Schema from "./Schema";
 import Tee from "./Tee";
-import { FunctionalObjectType, FunctionalMetaType, TeeType } from "./types";
+import { FunctionalType, TeeType } from "./types";
 import Variable from "./Variable";
 
 interface ReductionArgumentType {
@@ -32,7 +32,7 @@ export default class Reduction extends Expr {
 
 	constructor ({antecedents, subject, args, as}: ReductionArgumentType, context: ExecutionContext, trace: StackTrace) {
 		if (args) {
-			let resolvedType = subject.type.resolve() as FunctionalObjectType | FunctionalMetaType,
+			let resolvedType = subject.type.resolve() as FunctionalType,
 				paramTypes = resolvedType.from,
 				argTypes = args.map(e => e && e.type);
 
