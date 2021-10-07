@@ -69,19 +69,35 @@ export default abstract class Fun extends Expr implements Nameable {
 
 		var usedMacrosList = [];
 
-		var thisCall = this.isCallable(context)
-			? (this.name && usedMacrosList.push(this), this.call(placeholders))
-			: new Funcall({
+		var thisCall = (() => {
+			if (this.isCallable(context)) {
+				if (this.name) {
+					usedMacrosList.push(this);
+				}
+
+				return this.call(placeholders);
+			}
+
+			return new Funcall({
 				fun: this,
 				args: placeholders
 			}, this.trace);
+		})();
+		
+		var objCall = (() => {
+			if (obj instanceof Fun && obj.isCallable(context)) {
+				if (obj.name) {
+					usedMacrosList.push(obj);
+				}
 
-		var objCall = obj instanceof Fun && obj.isCallable(context)
-			? (obj.name && usedMacrosList.push(obj), obj.call(placeholders))
-			: new Funcall({
+				return obj.call(placeholders);
+			}
+
+			return new Funcall({
 				fun: obj,
 				args: placeholders
 			}, this.trace);
+		})();
 		
 		var ret = thisCall.equals(objCall, context);
 		return ret && ret.concat(usedMacrosList);
