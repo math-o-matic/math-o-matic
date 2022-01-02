@@ -27,6 +27,9 @@ export enum EqualsPriority {
 
 export type Precedence = boolean | number | [number, number];
 
+/**
+ * 우리의 형식 언어에 포함되는 람다 표현식.
+ */
 export default abstract class Expr {
 	
 	public readonly _id: number;
@@ -56,6 +59,23 @@ export default abstract class Expr {
 		this.trace = trace;
 	}
 
+	/**
+	 * 표현식에 대해 capture-avoiding substitution
+	 * (https://en.wikipedia.org/wiki/Lambda_calculus#Capture-avoiding_substitutions)
+	 * 을 수행한다. 변수 `x1, ... xn` (서로 다름) 및 표현식 `r1, ..., rn`에 대해
+	 * `x = <x1, ..., xn>, r = <r1, ..., rn>`이라 하였을 때 `E[x := r]`는
+	 * 표현식 `E`에서 `xi`를 `ri`로 치환한 것이고 이는 다음과 같이 정의된다.
+	 * 
+	 *  * `a[x := r] = (ri if xi = a, a otherwise)`,
+	 *  * `f(a, ..., b) = (f[x := r])(a[x := r], ..., b[x := r])`,
+	 *  * `((a, ..., b) => E) = (a, ..., b) => E[y := s]`,
+	 * 
+	 *    단 `y`는 `x`에서 `a, ..., b`를 뺀 것이고 `si`는 `yi = xj`일 때 `rj`이다.
+	 *  * `(A, ..., B |- C)[x := r] = A[x := r], ..., B[x := r] |- C[x := r]`.
+	 * 
+	 * 치환되는 것은 변항이며 매크로이거나 정항이어도 된다.
+	 * @param map `xi`를 `ri`에 대응시키는 매핑.
+	 */
 	public abstract substitute(map: Map<Variable, Expr>): Expr;
 
 	public expand(): Expr {
