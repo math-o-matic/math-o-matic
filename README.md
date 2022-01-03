@@ -33,9 +33,3 @@ This code produces&hellip;
 * Refer to the [documentation](https://logico-philosophical.github.io/math-o-matic/docs/build/index.html) to learn how to write proofs.
 * Click on the colored parts of the previous proof in the [main page](https://logico-philosophical.github.io/math-o-matic/web/index.html) to jump to definitions.
 * math-o-matic language support for Visual Studio Code and Sublime Text 3 can be found in [/tools](/tools).
-
-## Contributing
-
-A lot of theorems need proofs. Please open a pull request after you prove new theorems.
-
-Refer to [CONTRIBUTING.md](/CONTRIBUTING.md) for more information.
