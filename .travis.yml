@@ -15,7 +15,7 @@ script:
   - sed -i 's/^docs\/build\/$//g' .gitignore
   - npm test
   - npm run build
-  - cd docs && npx m42kup-builder && cd ..
+  - cd docs && npm run build && cd ..
 
 after_success: npm run coverage
 
