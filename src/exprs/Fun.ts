@@ -3,6 +3,9 @@ import Expr, { EqualsPriority, Precedence } from './Expr';
 
 export default abstract class Fun extends Expr implements Nameable {
 
+	public readonly doc: string;
+	public readonly precedence: Precedence;
+	public readonly tex: string;
 	public readonly name: string;
 	public readonly params: Parameter[];
 	public readonly expr: Expr;
@@ -22,7 +25,6 @@ export default abstract class Fun extends Expr implements Nameable {
 		}
 		
 		super(
-			doc, precedence, tex,
 			new FunctionalType({
 				from: params.map(variable => variable.type),
 				to: rettype || expr.type as any
@@ -30,6 +32,9 @@ export default abstract class Fun extends Expr implements Nameable {
 			trace
 		);
 
+		this.doc = doc;
+		this.precedence = precedence;
+		this.tex = tex;
 		this.name = name;
 		this.params = params;
 		this.expr = expr;

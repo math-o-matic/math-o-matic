@@ -17,13 +17,15 @@ interface VariableArgumentType {
 
 export default class Variable extends Expr implements Nameable {
 
+	public readonly doc: string;
+	public readonly tex: string;
 	public readonly sealed: boolean;
 	public readonly type: Type;
 	public readonly name: string;
 	public readonly expr: Expr | null;
 
 	constructor ({doc, tex, sealed, type, name, expr}: VariableArgumentType, trace: StackTrace) {
-		super(doc, false, tex, type, trace);
+		super(type, trace);
 		
 		if (typeof name != 'string')
 			throw Expr.error('Assertion failed', trace);
@@ -36,6 +38,8 @@ export default class Variable extends Expr implements Nameable {
 			throw Expr.error(`Expression type ${expr.type} failed to match the type ${type} of variable ${name}`, trace);
 		}
 
+		this.doc = doc;
+		this.tex = tex;
 		this.sealed = sealed;
 		this.name = name;
 		this.expr = expr;

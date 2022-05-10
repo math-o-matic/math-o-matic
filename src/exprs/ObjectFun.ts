@@ -81,9 +81,9 @@ export default class ObjectFun extends Fun {
 
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		if (!this.name) {
-			this.precedence = Expr.PREC_FUNEXPR;
+			var shouldConsolidate = Expr.shouldConsolidate(Expr.PREC_FUNEXPR, prec);
 			return [
-				(this.shouldConsolidate(prec) ? '\\left(' : ''),
+				(shouldConsolidate ? '\\left(' : ''),
 
 				(
 					this.params.length == 1
@@ -93,7 +93,7 @@ export default class ObjectFun extends Fun {
 				'\\mapsto ',
 				this.expr.expand().toTeXString(false),
 
-				(this.shouldConsolidate(prec) ? '\\right)' : '')
+				(shouldConsolidate ? '\\right)' : '')
 			].join('');
 		}
 
@@ -113,7 +113,7 @@ export default class ObjectFun extends Fun {
 		});
 	
 		if (this.tex) {
-			return this.makeTeX('def-' + this.name, argStrings, prec);
+			return Expr.makeTeX('def-' + this.name, argStrings, this.tex, this.precedence, prec);
 		}
 	
 		return (

@@ -21,7 +21,7 @@ export default class Conditional extends Expr {
 	public readonly right: Expr;
 
 	constructor ({left, def$s, right}: ConditionalArgumentType, trace: StackTrace) {
-		super(null, false, null, new ConditionalType({
+		super(new ConditionalType({
 			left: left.map(e => e.type),
 			right: right.type
 		}, trace), trace);
@@ -29,7 +29,6 @@ export default class Conditional extends Expr {
 		this.left = left;
 		this.def$s = def$s || [];
 		this.right = right;
-		this.precedence = Expr.PREC_COMMA;
 	}
 
 	protected override isProvedInternal(hypotheses: Expr[]): boolean {
@@ -125,10 +124,12 @@ export default class Conditional extends Expr {
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		var expanded = this.expand() as Conditional;
 
+		var shouldConsolidate = Expr.shouldConsolidate(Expr.PREC_COMMA, prec);
+
 		return [
-			(this.shouldConsolidate(prec) ? '\\left(' : ''),
+			(shouldConsolidate ? '\\left(' : ''),
 			`{${expanded.left.map(e => e.toTeXString(Expr.PREC_COMMA)).join(', ')} \\vdash ${expanded.right.toTeXString(Expr.PREC_COMMA)}}`,
-			(this.shouldConsolidate(prec) ? '\\right)' : '')
+			(shouldConsolidate ? '\\right)' : '')
 		].join('');
 	}
 }

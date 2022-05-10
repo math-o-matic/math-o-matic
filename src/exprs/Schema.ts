@@ -105,8 +105,10 @@ export default class Schema extends Fun {
 	
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		if (!this.name) {
+			var shouldConsolidate = Expr.shouldConsolidate(this.precedence, prec);
+
 			return [
-				(this.shouldConsolidate(prec) ? '\\left(' : ''),
+				(shouldConsolidate ? '\\left(' : ''),
 
 				(
 					this.params.length == 1
@@ -116,7 +118,7 @@ export default class Schema extends Fun {
 				'\\mapsto ',
 				this.expr.expand().toTeXString(false),
 
-				(this.shouldConsolidate(prec) ? '\\right)' : '')
+				(shouldConsolidate ? '\\right)' : '')
 			].join('');
 		}
 		

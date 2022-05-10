@@ -34,10 +34,7 @@ export default abstract class Expr {
 	
 	public readonly _id: number;
 
-	public readonly doc: string;
-	public readonly tex: string;
 	public readonly trace: StackTrace;
-	public precedence: Precedence;
 
 	public readonly type: Type;
 	private expandMetaCache: Expr;
@@ -46,11 +43,8 @@ export default abstract class Expr {
 	public static readonly PREC_COMMA = 1000;
 	public static readonly PREC_COLONEQQ = 100000;
 
-	constructor (doc: string, precedence: Precedence, tex: string, type: Type, trace: StackTrace) {
+	constructor (type: Type, trace: StackTrace) {
 		this._id = UniversalCounter.next();
-		this.doc = doc;
-		this.precedence = precedence;
-		this.tex = tex;
 
 		if (!type) throw Expr.error('Assertion failed', trace);
 
@@ -182,7 +176,7 @@ export default abstract class Expr {
 	* false corresponds to 0.
 	* true corresponds to w * 2.
 	*/
-	public static normalizePrecedence(prec: Precedence) {
+	public static normalizePrecedence(prec: Precedence): [number, number] {
 		if (prec === false) return [0, 0];
 		if (prec === true) return [2, 0];
 		if (typeof prec == 'number') return [0, prec];
@@ -192,12 +186,12 @@ export default abstract class Expr {
 			throw Error('wut');
 		}
 
-		return prec || false;
+		return prec;
 	}
 
-	public shouldConsolidate(prec: Precedence): boolean {
-		var my = Expr.normalizePrecedence(this.precedence || false),
-			your = Expr.normalizePrecedence(prec || false);
+	public static shouldConsolidate(my: Precedence, your: Precedence): boolean {
+		my = Expr.normalizePrecedence(my || false);
+		your = Expr.normalizePrecedence(your || false);
 
 		if (my[0] == 0 && my[1] == 0) return false;
 
@@ -258,13 +252,13 @@ export default abstract class Expr {
 		return `\\mathrm{${Expr.escapeTeX(name)}}`;
 	}
 
-	public makeTeX(id: string, args: string[], prec: Precedence) {
+	public static makeTeX(id: string, args: string[], tex: string, my: Precedence, your: Precedence) {
 		args = args || [];
-		prec = prec || false;
+		your = your || false;
 		
-		var ret = this.tex;
+		var ret = tex;
 
-		if (this.shouldConsolidate(prec)) {
+		if (Expr.shouldConsolidate(my, your)) {
 			ret = '\\left(' + ret + '\\right)';
 		}
 
