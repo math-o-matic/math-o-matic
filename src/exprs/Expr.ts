@@ -68,7 +68,7 @@ export default abstract class Expr {
 	 * 
 	 *  * `a[x := r] = (ri if xi = a, a otherwise)`,
 	 *  * `f(a, ..., b) = (f[x := r])(a[x := r], ..., b[x := r])`,
-	 *  * `((a, ..., b) => E) = (a, ..., b) => E[y := s]`,
+	 *  * `((a, ..., b) => E)[x := r] = (a, ..., b) => E[y := s]`,
 	 * 
 	 *    단 `y`는 `x`에서 `a, ..., b`를 뺀 것이고 `si`는 `yi = xj`일 때 `rj`이다.
 	 *  * `(A, ..., B |- C)[x := r] = A[x := r], ..., B[x := r] |- C[x := r]`.
