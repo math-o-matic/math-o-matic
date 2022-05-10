@@ -42,15 +42,15 @@ export default abstract class Fun extends Expr implements Nameable {
 		return this.params.length;
 	}
 
-	protected isProvedInternal(hypotheses: Expr[]): boolean {
+	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.expr && this.expr.isProved(hypotheses);
 	}
 
-	protected getEqualsPriority(): EqualsPriority {
+	protected override getEqualsPriority(): EqualsPriority {
 		return EqualsPriority.ONE;
 	}
 	
-	protected equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		if (!this.isCallable(context)
 				&& !(obj instanceof Fun && obj.isCallable(context))) {
 			return false;
@@ -129,7 +129,7 @@ export default abstract class Fun extends Expr implements Nameable {
 		return this.expr.substitute(map);
 	}
 
-	protected getProofInternal(
+	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
 			ctr: Counter,
