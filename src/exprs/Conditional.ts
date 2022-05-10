@@ -32,11 +32,11 @@ export default class Conditional extends Expr {
 		this.precedence = Expr.PREC_COMMA;
 	}
 
-	protected isProvedInternal(hypotheses: Expr[]): boolean {
+	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.right.isProved(hypotheses.concat(this.left));
 	}
 
-	public substitute(map: Map<Variable, Expr>): Expr {
+	public override substitute(map: Map<Variable, Expr>): Expr {
 		var left = this.left.map(e => e.substitute(map));
 		var right = this.right.substitute(map);
 
@@ -45,7 +45,7 @@ export default class Conditional extends Expr {
 		return new Conditional({left, def$s: null, right}, this.trace);
 	}
 
-	protected expandInternal(): Expr {
+	protected override expandInternal(): Expr {
 		var left = this.left.map(lef => lef.expand());
 		var right = this.right.expand();
 
@@ -54,11 +54,11 @@ export default class Conditional extends Expr {
 		return new Conditional({left, def$s: null, right}, this.trace);
 	}
 
-	protected getEqualsPriority(): EqualsPriority {
+	protected override getEqualsPriority(): EqualsPriority {
 		return EqualsPriority.TWO;
 	}
 
-	protected equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		if (!(obj instanceof Conditional)) {
 			throw Error('Assertion failed');
 		}
@@ -74,7 +74,7 @@ export default class Conditional extends Expr {
 		return this.right.equals(obj.right, context);
 	}
 
-	protected getProofInternal(
+	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
 			ctr: Counter): ProofType[] {
@@ -110,7 +110,7 @@ export default class Conditional extends Expr {
 		}];
 	}
 
-	public toIndentedString(indent: number, root?: boolean): string {
+	public override toIndentedString(indent: number, root?: boolean): string {
 		if (!this.left.length) {
 			return '|- ' + this.right.toIndentedString(indent);
 		}
@@ -122,7 +122,7 @@ export default class Conditional extends Expr {
 		].join('\n' + '\t'.repeat(indent));
 	}
 	
-	public toTeXString(prec?: Precedence, root?: boolean): string {
+	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		var expanded = this.expand() as Conditional;
 
 		return [

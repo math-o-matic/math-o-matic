@@ -41,11 +41,11 @@ export default class Variable extends Expr implements Nameable {
 		this.expr = expr;
 	}
 
-	protected isProvedInternal(hypotheses: Expr[]): boolean {
+	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return false;
 	}
 
-	public substitute(map: Map<Variable, Expr>): Expr {
+	public override substitute(map: Map<Variable, Expr>): Expr {
 		if (map.has(this)) return map.get(this);
 
 		// 매크로 변수는 스코프 밖에서 보이지 않으므로 치환될 것을 갖지 않는다는
@@ -57,17 +57,17 @@ export default class Variable extends Expr implements Nameable {
 		return this;
 	}
 
-	protected expandInternal(): Expr {
+	protected override expandInternal(): Expr {
 		return this;
 	}
 
-	protected getEqualsPriority(context: ExecutionContext): EqualsPriority {
+	protected override getEqualsPriority(context: ExecutionContext): EqualsPriority {
 		return this.expr && (!this.sealed || context.canUse(this))
 			? EqualsPriority.FOUR
 			: EqualsPriority.ZERO;
 	}
 
-	protected equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		if (!this.expr) return false;
 
 		if (!this.sealed || context.canUse(this)) {
@@ -79,7 +79,7 @@ export default class Variable extends Expr implements Nameable {
 		return false;
 	}
 
-	protected getProofInternal(
+	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
 			ctr: Counter): ProofType[] {
@@ -96,11 +96,11 @@ export default class Variable extends Expr implements Nameable {
 		return this.type.toString() + ' ' + this.name;
 	}
 
-	public toIndentedString(indent: number, root?: boolean): string {
+	public override toIndentedString(indent: number, root?: boolean): string {
 		return `${root ? this.type + ' ' : ''}${this.name}<${this._id}>`;
 	}
 
-	public toTeXString(prec?: Precedence, root?: boolean): string {
+	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		var id = this instanceof Parameter ? `id-${this._id}` : `def-${this.name}`;
 
 		var tex = this.tex || Expr.makeTeXName(this.name);

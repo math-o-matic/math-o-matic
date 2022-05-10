@@ -14,7 +14,7 @@ export default class ObjectFun extends Fun {
 		this.sealed = sealed;
 	}
 
-	public substitute(map: Map<Variable, Expr>): Expr {
+	public override substitute(map: Map<Variable, Expr>): Expr {
 		if (!this.expr) return this;
 
 		// 이름이 있는 것은 치환될 것을 갖지 않아야 한다.
@@ -46,7 +46,7 @@ export default class ObjectFun extends Fun {
 		}, this.trace);
 	}
 
-	protected expandInternal(): Expr {
+	protected override expandInternal(): Expr {
 		if (!this.expr) return this;
 		if (this.name) return this;
 
@@ -65,11 +65,11 @@ export default class ObjectFun extends Fun {
 		}, this.trace);
 	}
 
-	public isCallable(context: ExecutionContext): boolean {
+	public override isCallable(context: ExecutionContext): boolean {
 		return this.expr && (!this.sealed || context.canUse(this));
 	}
 
-	public toIndentedString(indent: number, root?: boolean): string {
+	public override toIndentedString(indent: number, root?: boolean): string {
 		if (this.name) return this.name;
 		
 		return [
@@ -79,7 +79,7 @@ export default class ObjectFun extends Fun {
 		].join('\n' + '\t'.repeat(indent));
 	}
 
-	public toTeXString(prec?: Precedence, root?: boolean): string {
+	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		if (!this.name) {
 			this.precedence = Expr.PREC_FUNEXPR;
 			return [

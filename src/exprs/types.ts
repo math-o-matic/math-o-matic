@@ -92,19 +92,19 @@ export class ConditionalType extends Type {
 		this.right = right;
 	}
 
-	public toIndentedString(indent: number): string {
+	public override toIndentedString(indent: number): string {
 		return `[${this.left.join(', ')} |- ${this.right}]`;
 	}
 
-	public toTeXString(root?: boolean): string {
+	public override toTeXString(root?: boolean): string {
 		throw new Error("Method not implemented.");
 	}
 
-	public resolve(): Type {
+	public override resolve(): Type {
 		return this;
 	}
 
-	public isFunctional(): boolean {
+	public override isFunctional(): boolean {
 		return false;
 	}
 }
@@ -129,15 +129,15 @@ export class SimpleType extends Type implements Nameable {
 		this.expr = expr;
 	}
 
-	public resolve(): Type {
+	public override resolve(): Type {
 		return this.expr ? this.expr.resolve() : this;
 	}
 
-	public toIndentedString(indent: number): string {
+	public override toIndentedString(indent: number): string {
 		return this.name;
 	}
 
-	public toTeXString(root?: boolean): string {
+	public override toTeXString(root?: boolean): string {
 		var name = `\\href{#type-${this.name}}{\\mathsf{${this.name}}}`;
 
 		if (root && this.expr) {
@@ -147,7 +147,7 @@ export class SimpleType extends Type implements Nameable {
 		return name;
 	}
 
-	public isFunctional(): boolean {
+	public override isFunctional(): boolean {
 		if (this.expr) return this.expr.isFunctional();
 
 		return false;
@@ -171,23 +171,23 @@ export class FunctionalType extends Type {
 		this.to = to;
 	}
 
-	public resolve(): FunctionalType {
+	public override resolve(): FunctionalType {
 		return new FunctionalType({
 			from: this.from.map(f => f.resolve()),
 			to: this.to.resolve()
 		}, this.trace);
 	}
 
-	public toIndentedString(indent: number): string {
+	public override toIndentedString(indent: number): string {
 		return `[${this.from.join(', ')} -> ${this.to}]`;
 	}
 
-	public toTeXString(root?: boolean): string {
+	public override toTeXString(root?: boolean): string {
 		return `\\left[${this.from.map(e => e.toTeXString()).join('\\times ')}`
 			+ ` \\to ${this.to.toTeXString()}\\right]`;
 	}
 
-	public isFunctional(): boolean {
+	public override isFunctional(): boolean {
 		return true;
 	}
 }

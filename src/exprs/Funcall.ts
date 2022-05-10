@@ -38,11 +38,11 @@ export default class Funcall extends Expr {
 		this.args = args;
 	}
 
-	protected isProvedInternal(hypotheses: Expr[]): boolean {
+	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.fun.isProved(hypotheses);
 	}
 
-	public substitute(map: Map<Variable, Expr>): Expr {
+	public override substitute(map: Map<Variable, Expr>): Expr {
 		var fun = this.fun.substitute(map),
 			args = this.args.map(arg => arg.substitute(map));
 		
@@ -52,7 +52,7 @@ export default class Funcall extends Expr {
 		return new Funcall({fun, args}, this.trace);
 	}
 
-	protected expandInternal(): Expr {
+	protected override expandInternal(): Expr {
 		var fun = this.fun.expand(),
 			args = this.args.map(arg => arg.expand());
 		
@@ -134,11 +134,11 @@ export default class Funcall extends Expr {
 		};
 	}
 
-	protected getEqualsPriority(): EqualsPriority {
+	protected override getEqualsPriority(): EqualsPriority {
 		return EqualsPriority.THREE;
 	}
 
-	protected equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		if (!(obj instanceof Funcall)) {
 			if (!this.isExpandableOnce(context)) return false;
 			
@@ -181,7 +181,7 @@ export default class Funcall extends Expr {
 		return false;
 	}
 
-	protected getProofInternal(
+	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
 			ctr: Counter): ProofType[] {
@@ -236,7 +236,7 @@ export default class Funcall extends Expr {
 		];
 	}
 
-	public toIndentedString(indent: number, root?: boolean): string {
+	public override toIndentedString(indent: number, root?: boolean): string {
 		var args: any = this.args.map(arg => {
 			if (arg instanceof Variable) return `${arg.name}<${arg._id}>`;
 			return arg.toIndentedString(indent + 1);
@@ -284,7 +284,7 @@ export default class Funcall extends Expr {
 		}
 	}
 
-	public toTeXString(prec?: Precedence, root?: boolean): string {
+	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		if (this.fun instanceof Schema) {
 			return (
 				this.fun.name

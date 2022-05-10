@@ -28,31 +28,31 @@ export default class $Variable extends Expr implements Nameable {
 		this.expr = expr;
 	}
 
-	protected isProvedInternal(hypotheses: Expr[]): boolean {
+	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.expr.isProved(hypotheses);
 	}
 
-	public substitute(map: Map<Variable, Expr>): Expr {
+	public override substitute(map: Map<Variable, Expr>): Expr {
 		var expr = this.expr.substitute(map);
 		if (expr == this.expr) return this;
 		return expr;
 	}
 
-	protected expandInternal(): Expr {
+	protected override expandInternal(): Expr {
 		var expr = this.expr.expand();
 		if (expr == this.expr) return this;
 		return expr;
 	}
 
-	protected getEqualsPriority(): EqualsPriority {
+	protected override getEqualsPriority(): EqualsPriority {
 		return EqualsPriority.FIVE;
 	}
 
-	protected equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		return this.expr.equals(obj, context);
 	}
 
-	protected getProofInternal(
+	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
 			ctr: Counter): ProofType[] {
@@ -69,11 +69,11 @@ export default class $Variable extends Expr implements Nameable {
 		}];
 	}
 
-	public toIndentedString(indent: number, root?: boolean): string {
+	public override toIndentedString(indent: number, root?: boolean): string {
 		return this.name;
 	}
 	
-	public toTeXString(prec?: Precedence, root?: boolean): string {
+	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		return `\\mathtt{${Expr.escapeTeX(this.name)}}`;
 	}
 }

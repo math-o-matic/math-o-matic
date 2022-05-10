@@ -27,7 +27,7 @@ export default class With extends Expr {
 		this.expr = expr;
 	}
 
-	public substitute(map: Map<Variable, Expr>): Expr {
+	public override substitute(map: Map<Variable, Expr>): Expr {
 		if (map.has(this.variable)) {
 			map = new Map(map);
 			map.delete(this.variable);
@@ -36,26 +36,26 @@ export default class With extends Expr {
 		return this.expand().substitute(map);
 	}
 
-	protected expandInternal(): Expr {
+	protected override expandInternal(): Expr {
 		var map = new Map<Variable, Expr>();
 		map.set(this.variable, this.variable.expr);
 
 		return this.expr.substitute(map).expand();
 	}
 
-	protected getEqualsPriority(context: ExecutionContext): EqualsPriority {
+	protected override getEqualsPriority(context: ExecutionContext): EqualsPriority {
 		throw new Error("Method not implemented.");
 	}
 
-	protected equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		throw new Error("Method not implemented.");
 	}
 
-	protected isProvedInternal(hypotheses: Expr[]): boolean {
+	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.expr.isProved(hypotheses);
 	}
 
-	protected getProofInternal(hypnumMap: Map<Expr, number>, $Map: Map<Expr, number | [number, number]>, ctr: Counter, root?: boolean): ProofType[] {
+	protected override getProofInternal(hypnumMap: Map<Expr, number>, $Map: Map<Expr, number | [number, number]>, ctr: Counter, root?: boolean): ProofType[] {
 
 		$Map = new Map($Map);
 
@@ -79,11 +79,11 @@ export default class With extends Expr {
 		];
 	}
 
-	public toIndentedString(indent: number, root?: boolean): string {
+	public override toIndentedString(indent: number, root?: boolean): string {
 		throw new Error("Method not implemented.");
 	}
 
-	public toTeXString(prec?: Precedence, root?: boolean): string {
+	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		throw new Error("Method not implemented.");
 	}
 }

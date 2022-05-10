@@ -152,28 +152,28 @@ ${as.expand()}
 		}
 	}
 
-	protected isProvedInternal(hypotheses: Expr[]): boolean {
+	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.subject.isProved(hypotheses)
 			&& this.antecedents.every(l => l.isProved(hypotheses));
 	}
 
-	public substitute(map: Map<Variable, Expr>): Expr {
+	public override substitute(map: Map<Variable, Expr>): Expr {
 		return this.consequent.substitute(map);
 	}
 
-	protected expandInternal(): Expr {
+	protected override expandInternal(): Expr {
 		return this.consequent.expand();
 	}
 
-	protected getEqualsPriority(): EqualsPriority {
+	protected override getEqualsPriority(): EqualsPriority {
 		return EqualsPriority.FIVE;
 	}
 
-	protected equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		return this.consequent.equals(obj, context);
 	}
 
-	protected getProofInternal(
+	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
 			ctr: Counter): ProofType[] {
@@ -400,7 +400,7 @@ ${as.expand()}
 		})(1, pattern, instance, []);
 	}
 
-	public toIndentedString(indent: number, root?: boolean): string {
+	public override toIndentedString(indent: number, root?: boolean): string {
 		var antecedents = this.antecedents.map(arg => {
 			return arg.toIndentedString(indent + 1);
 		});
@@ -425,7 +425,7 @@ ${as.expand()}
 		
 	}
 
-	public toTeXString(prec?: Precedence, root?: boolean): string {
+	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		return `${this.subject.toTeXString(false)}[${this.antecedents.map(e => e.toTeXString(Expr.PREC_COMMA)).join(', ')}]`;
 	}
 }

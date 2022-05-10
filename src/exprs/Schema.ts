@@ -33,7 +33,7 @@ export default class Schema extends Fun {
 		}
 	}
 	
-	protected isProvedInternal(hypotheses: Expr[]): boolean {
+	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		if (this.isProvedCache) return true;
 
 		if (hypotheses.length == 0 && typeof this.isProvedCache == 'boolean') {
@@ -45,7 +45,7 @@ export default class Schema extends Fun {
 		return ret;
 	}
 
-	public substitute(map: Map<Variable, Expr>): Expr {
+	public override substitute(map: Map<Variable, Expr>): Expr {
 		// 이름이 있는 것은 치환될 것을 갖지 않아야 한다.
 		if (this.name) return this;
 
@@ -75,7 +75,7 @@ export default class Schema extends Fun {
 		}, this.trace);
 	}
 
-	protected expandInternal(): Expr {
+	protected override expandInternal(): Expr {
 		var expr = this.expr.expand();
 		if (expr == this.expr) return this;
 		
@@ -91,11 +91,11 @@ export default class Schema extends Fun {
 		}, this.trace);
 	}
 
-	public isCallable(_context: ExecutionContext): boolean {
+	public override isCallable(_context: ExecutionContext): boolean {
 		return true;
 	}
 
-	public toIndentedString(indent: number, root?: boolean): string {
+	public override toIndentedString(indent: number, root?: boolean): string {
 		return [
 			`∫ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
 			'\t' + this.expr.expand().toIndentedString(indent + 1),
@@ -103,7 +103,7 @@ export default class Schema extends Fun {
 		].join('\n' + '\t'.repeat(indent));
 	}
 	
-	public toTeXString(prec?: Precedence, root?: boolean): string {
+	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		if (!this.name) {
 			return [
 				(this.shouldConsolidate(prec) ? '\\left(' : ''),
