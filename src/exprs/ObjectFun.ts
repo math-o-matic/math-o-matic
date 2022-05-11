@@ -19,16 +19,6 @@ export default class ObjectFun extends Fun {
 		return this.expr && (!this.sealed || context.canUse(this));
 	}
 
-	public override toIndentedString(indent: number, root?: boolean): string {
-		if (this.name) return this.name;
-		
-		return [
-			`ƒ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
-			'\t' + this.expr.toIndentedString(indent + 1),
-			'}'
-		].join('\n' + '\t'.repeat(indent));
-	}
-
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;
 		root = typeof root == 'boolean' ? root : false;

@@ -103,7 +103,8 @@ export default class Reduction extends Expr {
 		for (let i = 0; i < conditional.left.length; i++) {
 			var tmp = Calculus.equals(conditional.left[i], antecedentsExpanded[i], context);
 			if (!tmp) {
-				throw Expr.error(`LHS #${i + 1} failed to match:
+				throw Expr.error(
+					InterpolativeString.getInstance`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
 ${Calculus.expand(conditional.left[i])}
@@ -122,7 +123,8 @@ ${Calculus.expand(antecedents[i])}
 		if (as) {
 			var tmp = Calculus.equals(conditional.right, as, context);
 			if (!tmp) {
-				throw Expr.error(`RHS failed to match:
+				throw Expr.error(
+					InterpolativeString.getInstance`RHS failed to match:
 
 --- EXPECTED ---
 ${Calculus.expand(conditional.right)}
@@ -277,31 +279,6 @@ ${Calculus.expand(as)}
 		})(1, pattern, instance, []);
 	}
 
-	public override toIndentedString(indent: number, root?: boolean): string {
-		var antecedents = this.antecedents.map(arg => {
-			return arg.toIndentedString(indent + 1);
-		});
-	
-		if (antecedents.join('').length <= 50) {
-			antecedents = this.antecedents.map(arg => {
-				return arg.toIndentedString(indent);
-			});
-	
-			return [
-				`${this.subject.toIndentedString(indent)}[`,
-				antecedents.join(', '),
-				']'
-			].join('');
-		}
-
-		return [
-			`${this.subject.toIndentedString(indent)}[`,
-			'\t' + antecedents.join(',\n' + '\t'.repeat(indent + 1)),
-			']'
-		].join('\n' + '\t'.repeat(indent));
-		
-	}
-
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;
 		root = typeof root == 'boolean' ? root : false;
@@ -320,4 +297,5 @@ import Conditional from "./Conditional";
 import { FunctionalType, ConditionalType } from "./types";
 import Variable from "./Variable";
 import Precedence from "../Precedence";
-import Calculus from "../Calculus";
+import Calculus from "../Calculus";import InterpolativeString from "../InterpolativeString";
+

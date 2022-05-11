@@ -61,8 +61,26 @@ codemirror.on('inputRead', function (editor, event) {
 function htmlify(v, o) {
 	var {input, noescape, error} = o || {};
 
+	var html = '';
+
+	if (v instanceof MathOMatic.InterpolativeError) {
+		var {strings, values} = v.interpolativeMessage;
+		html += noescape ? strings[0] : escapeHtml(strings[0]);
+
+		for (var i = 1; i < strings.length; i++) {
+			if (values[i - 1].toTeXString)
+				html += ktx(values[i - 1].toTeXString());
+			else
+				html += noescape ? values[i - 1] : escapeHtml(values[i - 1]);
+			
+			html += noescape ? strings[i] : escapeHtml(strings[i]);
+		}
+	} else {
+		html = noescape ? v : escapeHtml(v);
+	}
+
 	var $tr = document.createElement('tr');
-	$tr.innerHTML =  `<td>${input ? '&gt;' : '&lt;'}</td><td>${noescape ? v : escapeHtml(v)}</td>`;
+	$tr.innerHTML =  `<td>${input ? '&gt;' : '&lt;'}</td><td>${html}</td>`;
 	if (error) {
 		$tr.classList.add('error');
 	}

@@ -20,10 +20,6 @@ export default class With extends Expr {
 		this.expr = expr;
 	}
 
-	public override toIndentedString(indent: number, root?: boolean): string {
-		throw new Error("Method not implemented.");
-	}
-
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;
 		root = typeof root == 'boolean' ? root : false;

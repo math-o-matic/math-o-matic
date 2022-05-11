@@ -22,18 +22,6 @@ export default class Conditional extends Expr {
 		this.def$s = def$s || [];
 		this.right = right;
 	}
-
-	public override toIndentedString(indent: number, root?: boolean): string {
-		if (!this.left.length) {
-			return '|- ' + this.right.toIndentedString(indent);
-		}
-	
-		return [
-			'\t' + this.left.map(e => e.toIndentedString(indent + 1)).join(',\n' + '\t'.repeat(indent + 1)),
-			'|-',
-			'\t' + this.right.toIndentedString(indent + 1)
-		].join('\n' + '\t'.repeat(indent));
-	}
 	
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;

@@ -35,14 +35,6 @@ export default class Schema extends Fun {
 	public override isCallable(_context: ExecutionContext): boolean {
 		return true;
 	}
-
-	public override toIndentedString(indent: number, root?: boolean): string {
-		return [
-			`∫ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
-			'\t' + Calculus.expand(this.expr).toIndentedString(indent + 1),
-			'}'
-		].join('\n' + '\t'.repeat(indent));
-	}
 	
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;

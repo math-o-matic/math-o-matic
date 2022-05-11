@@ -107,54 +107,6 @@ export default class Funcall extends Expr {
 		};
 	}
 
-	public override toIndentedString(indent: number, root?: boolean): string {
-		var args: any = this.args.map(arg => {
-			if (arg instanceof Variable) return `${arg.name}<${arg._id}>`;
-			return arg.toIndentedString(indent + 1);
-		});
-	
-		if (args.join('').length <= 50) {
-			args = this.args.map(arg => {
-				if (arg instanceof Variable) return `${arg.name}<${arg._id}>`;
-				return arg.toIndentedString(indent);
-			});
-	
-			args = args.join(', ');
-			
-			if (this.fun instanceof Schema) {
-				return `${this.fun.name || `(${this.fun})`}(${args})`;
-			} else {
-				return [
-					!(this.fun instanceof Fun) || !this.fun.name
-						? '(' + this.fun.toIndentedString(indent) + ')'
-						: this.fun.name,
-					`(${args})`
-				].join('');
-			}
-		} else {
-			args = args.join(',\n' + '\t'.repeat(indent + 1));
-			
-			if (this.fun instanceof Schema) {
-				return [
-					this.fun.name || `(${this.fun.toIndentedString(indent)})`,
-					'(',
-					'\t' + args,
-					')'
-				].join('\n' + '\t'.repeat(indent));
-			} else {
-				return [
-					(
-						!(this.fun instanceof Fun) || !('name' in this.fun && this.fun.name)
-							? '(' + this.fun.toIndentedString(indent) + ')'
-							: this.fun.name
-					) + '(',
-					'\t' + args,
-					')'
-				].join('\n' + '\t'.repeat(indent));
-			}
-		}
-	}
-
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;
 		root = typeof root == 'boolean' ? root : false;

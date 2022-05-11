@@ -21,10 +21,6 @@ export default class $Variable extends Expr implements Nameable {
 		this.name = name;
 		this.expr = expr;
 	}
-
-	public override toIndentedString(indent: number, root?: boolean): string {
-		return this.name;
-	}
 	
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;

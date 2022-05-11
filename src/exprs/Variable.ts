@@ -45,10 +45,6 @@ export default class Variable extends Expr implements Nameable {
 		return this.type.toString() + ' ' + this.name;
 	}
 
-	public override toIndentedString(indent: number, root?: boolean): string {
-		return `${root ? this.type + ' ' : ''}${this.name}<${this._id}>`;
-	}
-
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;
 		root = typeof root == 'boolean' ? root : false;

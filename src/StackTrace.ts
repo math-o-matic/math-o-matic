@@ -1,3 +1,5 @@
+import InterpolativeError from "./InterpolativeError";
+import InterpolativeString from "./InterpolativeString";
 import { LocationObject } from "./PegInterfaceDefinitions";
 
 interface StackTraceElement {
@@ -20,19 +22,22 @@ export default class StackTrace {
 		return new StackTrace(this.fileUri, [element].concat(this.stack));
 	}
 
-	public error(message: string) {
+	public error(message: string | InterpolativeString) {
 		var fileUri = this.fileUri || '<unknown>';
 
-		return new Error(
-			message
-			+ '\n\tat '
+		var tail = '\n\tat '
 			+ (
 				this.stack.length
 					? this.stack.map(({type, name, location}) => {
 						return `${type} ${name || '<anonymous>'} (${fileUri}:${location.start.line}:${location.start.column})`;
 					}).join('\n\tat ')
 					: `<root> (${fileUri}:1:1)`
-			)
-		);
+			);
+		
+		if (message instanceof InterpolativeString) {
+			return new InterpolativeError(message.concatStrings(tail));
+		} else {
+			return new Error(message + tail);
+		}
 	}
 }

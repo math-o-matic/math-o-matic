@@ -15,21 +15,20 @@ export default abstract class Expr {
 		this.trace = trace;
 	}
 	
-	public toString() {
-		return this.toIndentedString(0);
-	}
-
-	public abstract toIndentedString(indent: number, root?: boolean): string;
 	public abstract toTeXString(prec?: Precedence, root?: boolean): string;
 
-	public error(message: string) {
+	public error(message: string | InterpolativeString) {
 		return Expr.error(message, this.trace);
 	}
 
-	public static error(message: string, trace: StackTrace) {
+	public static error(message: string | InterpolativeString, trace: StackTrace) {
 		if (trace) {
 			return trace.error(message);
 		} else {
+			if (message instanceof InterpolativeString) {
+				return new InterpolativeError(message);
+			}
+			
 			return new Error(message);
 		}
 	}
@@ -38,4 +37,6 @@ export default abstract class Expr {
 import StackTrace from "../StackTrace";
 import UniversalCounter from "../UniversalCounter";
 import Precedence from "../Precedence";
-import { Type } from "./types";
+import { Type } from "./types";import InterpolativeString from "../InterpolativeString";
+import InterpolativeError from "../InterpolativeError";
+
