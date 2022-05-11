@@ -7,6 +7,7 @@ import Fun from "./Fun";
 import Expr, { EqualsPriority } from "./Expr";
 import Variable from "./Variable";
 import Precedence from "./Precedence";
+import Calculus from "./Calculus";
 
 interface WithArgumentType {
 	variable: Variable;
@@ -28,20 +29,11 @@ export default class With extends Expr {
 		this.expr = expr;
 	}
 
-	public override substitute(map: Map<Variable, Expr>): Expr {
-		if (map.has(this.variable)) {
-			map = new Map(map);
-			map.delete(this.variable);
-		}
-
-		return this.expand().substitute(map);
-	}
-
 	protected override expandInternal(): Expr {
 		var map = new Map<Variable, Expr>();
 		map.set(this.variable, this.variable.expr);
 
-		return this.expr.substitute(map).expand();
+		return Calculus.substitute(this.expr, map).expand();
 	}
 
 	protected override getEqualsPriority(context: ExecutionContext): EqualsPriority {

@@ -49,18 +49,6 @@ export default class Variable extends Expr implements Nameable {
 		return false;
 	}
 
-	public override substitute(map: Map<Variable, Expr>): Expr {
-		if (map.has(this)) return map.get(this);
-
-		// 매크로 변수는 스코프 밖에서 보이지 않으므로 치환될 것을 갖지 않는다는
-		// 생각이 들어 있다.
-		if (this.expr) {
-			return this;
-		}
-
-		return this;
-	}
-
 	protected override expandInternal(): Expr {
 		return this;
 	}

@@ -14,38 +14,6 @@ export default class ObjectFun extends Fun {
 		this.sealed = sealed;
 	}
 
-	public override substitute(map: Map<Variable, Expr>): Expr {
-		if (!this.expr) return this;
-
-		// 이름이 있는 것은 치환될 것을 갖지 않아야 한다.
-		if (this.name) return this;
-
-		if (this.params.some(p => map.has(p))) {
-			map = new Map(map);
-
-			// (λx.t)[x := r] = λx.t
-			this.params.forEach(p => {
-				if (map.has(p)) {
-					map.delete(p);
-				}
-			});
-		}
-
-		var expr = this.expr.substitute(map);
-		if (expr == this.expr) return this;
-
-		return new ObjectFun({
-			doc: null,
-			precedence: Precedence.ZERO,
-			tex: null,
-			sealed: this.sealed,
-			rettype: null,
-			name: null,
-			params: this.params,
-			expr
-		}, this.trace);
-	}
-
 	protected override expandInternal(): Expr {
 		if (!this.expr) return this;
 		if (this.name) return this;

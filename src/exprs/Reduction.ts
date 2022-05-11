@@ -158,10 +158,6 @@ ${as.expand()}
 			&& this.antecedents.every(l => l.isProved(hypotheses));
 	}
 
-	public override substitute(map: Map<Variable, Expr>): Expr {
-		return this.consequent.substitute(map);
-	}
-
 	protected override expandInternal(): Expr {
 		return this.consequent.expand();
 	}

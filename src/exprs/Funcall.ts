@@ -42,16 +42,6 @@ export default class Funcall extends Expr {
 		return this.fun.isProved(hypotheses);
 	}
 
-	public override substitute(map: Map<Variable, Expr>): Expr {
-		var fun = this.fun.substitute(map),
-			args = this.args.map(arg => arg.substitute(map));
-		
-		if (fun == this.fun && args.every((arg, i) => arg == this.args[i]))
-			return this;
-
-		return new Funcall({fun, args}, this.trace);
-	}
-
 	protected override expandInternal(): Expr {
 		var fun = this.fun.expand(),
 			args = this.args.map(arg => arg.expand());

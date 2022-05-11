@@ -45,36 +45,6 @@ export default class Schema extends Fun {
 		return ret;
 	}
 
-	public override substitute(map: Map<Variable, Expr>): Expr {
-		// 이름이 있는 것은 치환될 것을 갖지 않아야 한다.
-		if (this.name) return this;
-
-		if (this.params.some(p => map.has(p))) {
-			map = new Map(map);
-
-			// (λx.t)[x := r] = λx.t
-			this.params.forEach(p => {
-				if (map.has(p)) {
-					map.delete(p);
-				}
-			});
-		}
-
-		var expr = this.expr.substitute(map);
-		if (expr == this.expr) return this;
-
-		return new Schema({
-			doc: null,
-			tex: null,
-			schemaType: 'schema',
-			name: null,
-			params: this.params,
-			context: this.context,
-			def$s: this.def$s,
-			expr
-		}, this.trace);
-	}
-
 	protected override expandInternal(): Expr {
 		var expr = this.expr.expand();
 		if (expr == this.expr) return this;

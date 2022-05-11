@@ -36,15 +36,6 @@ export default class Conditional extends Expr {
 		return this.right.isProved(hypotheses.concat(this.left));
 	}
 
-	public override substitute(map: Map<Variable, Expr>): Expr {
-		var left = this.left.map(e => e.substitute(map));
-		var right = this.right.substitute(map);
-
-		if (left.every((l, i) => l == this.left[i]) && right == this.right) return this;
-
-		return new Conditional({left, def$s: null, right}, this.trace);
-	}
-
 	protected override expandInternal(): Expr {
 		var left = this.left.map(lef => lef.expand());
 		var right = this.right.expand();

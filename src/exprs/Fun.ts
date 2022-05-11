@@ -131,7 +131,7 @@ export default abstract class Fun extends Expr implements Nameable {
 			map.set(this.params[i], args[i]);
 		}
 
-		return this.expr.substitute(map);
+		return Calculus.substitute(this.expr, map);
 	}
 
 	protected override getProofInternal(
@@ -192,6 +192,7 @@ import Schema from './Schema';
 import Parameter from './Parameter';
 import { FunctionalType, Type } from './types';
 import Precedence from './Precedence';
+import Calculus from './Calculus';
 
 interface FunArgumentType {
 	doc: string;

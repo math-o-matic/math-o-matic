@@ -33,12 +33,6 @@ export default class $Variable extends Expr implements Nameable {
 		return this.expr.isProved(hypotheses);
 	}
 
-	public override substitute(map: Map<Variable, Expr>): Expr {
-		var expr = this.expr.substitute(map);
-		if (expr == this.expr) return this;
-		return expr;
-	}
-
 	protected override expandInternal(): Expr {
 		var expr = this.expr.expand();
 		if (expr == this.expr) return this;
