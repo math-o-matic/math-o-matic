@@ -1,4 +1,5 @@
 import Counter from "./Counter";
+import Calculus from "./exprs/Calculus";
 import Expr from "./exprs/Expr";
 import Precedence from "./exprs/Precedence";
 import Schema from "./exprs/Schema";
@@ -38,7 +39,7 @@ export default class ProofExplorer {
 		function exprToHtml(expr: number | [number, number] | Expr, expand?: boolean): string {
 			if (typeof expr == 'number') return `<b>${expr}</b>`;
 			if (expr instanceof Array) return `<b>${expr[0]}&ndash;${expr[1]}</b>`;
-			if (expand) return ktx(expr.expand().toTeXString(Precedence.INFINITY, true));
+			if (expand) return ktx(Calculus.expand(expr).toTeXString(Precedence.INFINITY, true));
 			
 			return ktx(expr.toTeXString(Precedence.INFINITY, true));
 		}

@@ -44,22 +44,6 @@ export default class Variable extends Expr implements Nameable {
 		return false;
 	}
 
-	protected override expandInternal(): Expr {
-		return this;
-	}
-
-	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
-		if (!this.expr) return false;
-
-		if (!this.sealed || context.canUse(this)) {
-			var tmp = this.expr.equals(obj, context);
-			if (!tmp) return tmp;
-			return tmp.push(this), tmp;
-		}
-
-		return false;
-	}
-
 	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,

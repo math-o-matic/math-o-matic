@@ -1,5 +1,6 @@
 import chai, { expect } from "chai";
 import ExecutionContext from "../src/ExecutionContext";
+import Calculus from "../src/exprs/Calculus";
 chai.use(require('chai-as-promised'));
 import Expr from "../src/exprs/Expr";
 import ObjectFun from "../src/exprs/ObjectFun";
@@ -81,7 +82,7 @@ cls y;
 		var foo = program.evaluate('(f(x))(y)') as Expr,
 			baz = program.evaluate('(f(x))(y)') as Expr;
 		
-		expect(!!foo.equals(baz, null)).to.be.true;
+		expect(!!Calculus.equals(foo, baz, null)).to.be.true;
 	});
 });
 
@@ -105,7 +106,7 @@ sealed st N2(st p) {
 		var foo = program.evaluate('N(p)') as Expr,
 			baz = program.evaluate('N2(p)') as Expr;
 		
-		expect(foo.equals(baz, new ExecutionContext())).to.be.false;
+		expect(Calculus.equals(foo, baz, new ExecutionContext())).to.be.false;
 	});
 
 	for (let i = 0; i < 2; i++) {

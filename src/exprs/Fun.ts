@@ -50,59 +50,6 @@ export default abstract class Fun extends Expr implements Nameable {
 	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.expr && this.expr.isProved(hypotheses);
 	}
-	
-	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
-		if (!this.isCallable(context)
-				&& !(obj instanceof Fun && obj.isCallable(context))) {
-			return false;
-		}
-
-		var placeholders = [];
-		var types = (this.type.resolve() as FunctionalType).from;
-
-		for (var i = 0; i < types.length; i++) {
-			placeholders.push(new Parameter({
-				type: types[i],
-				name: '$' + i,
-				selector: null
-			}, this.trace));
-		}
-
-		var usedMacrosList = [];
-
-		var thisCall = (() => {
-			if (this.isCallable(context)) {
-				if (this.name) {
-					usedMacrosList.push(this);
-				}
-
-				return this.call(placeholders);
-			}
-
-			return new Funcall({
-				fun: this,
-				args: placeholders
-			}, this.trace);
-		})();
-		
-		var objCall = (() => {
-			if (obj instanceof Fun && obj.isCallable(context)) {
-				if (obj.name) {
-					usedMacrosList.push(obj);
-				}
-
-				return obj.call(placeholders);
-			}
-
-			return new Funcall({
-				fun: obj,
-				args: placeholders
-			}, this.trace);
-		})();
-		
-		var ret = thisCall.equals(objCall, context);
-		return ret && ret.concat(usedMacrosList);
-	}
 
 	public abstract isCallable(context: ExecutionContext): boolean;
 

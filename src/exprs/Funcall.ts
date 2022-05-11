@@ -42,19 +42,6 @@ export default class Funcall extends Expr {
 		return this.fun.isProved(hypotheses);
 	}
 
-	protected override expandInternal(): Expr {
-		var fun = this.fun.expand(),
-			args = this.args.map(arg => arg.expand());
-		
-		if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema)) {
-			if (fun == this.fun && args.every((arg, i) => arg == this.args[i])) return this;
-			
-			return new Funcall({fun, args}, this.trace);
-		}
-
-		return fun.call(args).expand();
-	}
-
 	public isExpandableOnce(context: ExecutionContext): boolean {
 		var callee: Expr = this.fun;
 
@@ -122,49 +109,6 @@ export default class Funcall extends Expr {
 			expanded: callee.call(this.args),
 			used
 		};
-	}
-
-	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
-		if (!(obj instanceof Funcall)) {
-			if (!this.isExpandableOnce(context)) return false;
-			
-			var {expanded, used} = this.expandOnce(context);
-			var ret = expanded.equals(obj, context);
-			return ret && ret.concat(used);
-		}
-
-		var argsEquals: (Fun | Variable)[] | false = (() => {
-			if (this.args.length != obj.args.length) return false;
-
-			var tmp: (Fun | Variable)[] = [];
-
-			for (var i = 0; i < this.args.length; i++) {
-				var e = this.args[i].equals(obj.args[i], context);
-				if (!e) return false;
-				tmp = tmp.concat(e);
-			}
-
-			return tmp;
-		})();
-
-		if (argsEquals) {
-			var funEquals = this.fun.equals(obj.fun, context);
-			if (funEquals) return funEquals.concat(argsEquals);
-		}
-
-		if (this.isExpandableOnce(context)) {
-			var {expanded, used} = this.expandOnce(context);
-			var ret = expanded.equals(obj, context);
-			return ret && ret.concat(used);
-		}
-
-		if (obj.isExpandableOnce(context)) {
-			var {expanded, used} = obj.expandOnce(context);
-			var ret = this.equals(expanded, context);
-			return ret && ret.concat(used);
-		}
-
-		return false;
 	}
 
 	protected override getProofInternal(

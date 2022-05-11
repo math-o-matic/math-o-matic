@@ -20,17 +20,6 @@ export default class With extends Expr {
 		this.expr = expr;
 	}
 
-	protected override expandInternal(): Expr {
-		var map = new Map<Variable, Expr>();
-		map.set(this.variable, this.variable.expr);
-
-		return Calculus.substitute(this.expr, map).expand();
-	}
-
-	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
-		throw new Error("Method not implemented.");
-	}
-
 	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.expr.isProved(hypotheses);
 	}

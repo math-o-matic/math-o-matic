@@ -127,7 +127,98 @@ export default class Calculus {
 				map.delete(self.variable);
 			}
 	
-			return Calculus.substitute(self.expand(), map);
+			return Calculus.substitute(Calculus.expand(self), map);
+		}
+
+		throw Error('Unknown expression type');
+	}
+
+	private static expandCache: Map<Expr, Expr> = new Map();
+
+	public static expand(self: Expr): Expr {
+		if (Calculus.expandCache.has(self)) return Calculus.expandCache.get(self);
+		var ret = Calculus.expandInternal(self);
+		Calculus.expandCache.set(self, ret);
+		return ret;
+	}
+
+	protected static expandInternal(self: Expr): Expr {
+		if (self instanceof $Variable) {
+			var expr = Calculus.expand(self.expr);
+			if (expr == self.expr) return self;
+			return expr;
+		}
+
+		if (self instanceof Conditional) {
+			var left = self.left.map(lef => Calculus.expand(lef));
+			var right = Calculus.expand(self.right);
+
+			if (left.every((l, i) => l == self.left[i]) && right == self.right) return self;
+
+			return new Conditional({left, def$s: null, right}, self.trace);
+		}
+
+		if (self instanceof Funcall) {
+			var fun = Calculus.expand(self.fun),
+				args = self.args.map(arg => Calculus.expand(arg));
+			
+			if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema)) {
+				if (fun == self.fun && args.every((arg, i) => arg == self.args[i])) return self;
+				
+				return new Funcall({fun, args}, self.trace);
+			}
+
+			return Calculus.expand(fun.call(args));
+		}
+
+		if (self instanceof ObjectFun) {
+			if (!self.expr) return self;
+			if (self.name) return self;
+
+			var expr = Calculus.expand(self.expr);
+			if (expr == self.expr) return self;
+
+			return new ObjectFun({
+				doc: null,
+				precedence: Precedence.ZERO,
+				tex: null,
+				sealed: self.sealed,
+				rettype: null,
+				name: null,
+				params: self.params,
+				expr
+			}, self.trace);
+		}
+
+		if (self instanceof Reduction) {
+			return Calculus.expand(self.consequent);
+		}
+
+		if (self instanceof Schema) {
+			var expr = Calculus.expand(self.expr);
+			if (expr == self.expr) return self;
+			
+			return new Schema({
+				doc: null,
+				tex: null,
+				schemaType: 'schema',
+				name: null,
+				params: self.params,
+				context: self.context,
+				def$s: self.def$s,
+				expr: Calculus.expand(self.expr)
+			}, self.trace);
+		}
+
+		if (self instanceof Variable) {
+			return self;
+		}
+
+		if (self instanceof With) {
+			var map = new Map<Variable, Expr>();
+			map.set(self.variable, self.variable.expr);
+
+			return Calculus.expand(Calculus.substitute(self.expr, map));
 		}
 
 		throw Error('Unknown expression type');
@@ -162,6 +253,171 @@ export default class Calculus {
 
 		throw Error('Unknown expression type');
 	}
+
+	/**
+	 * 
+	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
+	 */
+	 public static equals(self: Expr, obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+		// console.log(`${self}\n\n${obj}`);
+		// var ret = (() => {
+		
+		if (self === obj) return [];
+		if (!self.type.equals(obj.type)) return false;
+
+		if (Calculus.getEqualsPriority(obj, context) > Calculus.getEqualsPriority(self, context))
+			return Calculus.equalsInternal(obj, self, context);
+		
+		return Calculus.equalsInternal(self, obj, context);
+
+		// })();
+		// console.log(`${self}\n\n${obj}\n\nresult:`, ret);
+		// return ret;
+	}
+
+	/**
+	 * 
+	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
+	 */
+	 protected static equalsInternal(self: Expr, obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+		if (self instanceof $Variable) {
+			return Calculus.equals(self.expr, obj, context);
+		}
+
+		if (self instanceof Conditional) {
+			if (!(obj instanceof Conditional)) {
+				throw Error('Assertion failed');
+			}
+	
+			if (self.left.length != obj.left.length) {
+				throw Error('Assertion failed');
+			}
+	
+			for (var i = 0; i < self.left.length; i++) {
+				if (!Calculus.equals(self.left[i], obj.left[i], context)) return false;
+			}
+	
+			return Calculus.equals(self.right, obj.right, context);
+		}
+
+		if (self instanceof Fun) {
+			if (!self.isCallable(context)
+					&& !(obj instanceof Fun && obj.isCallable(context))) {
+				return false;
+			}
+
+			var placeholders = [];
+			var types = (self.type.resolve() as FunctionalType).from;
+
+			for (var i = 0; i < types.length; i++) {
+				placeholders.push(new Parameter({
+					type: types[i],
+					name: '$' + i,
+					selector: null
+				}, self.trace));
+			}
+
+			var usedMacrosList = [];
+
+			var thisCall = (() => {
+				if (self.isCallable(context)) {
+					if (self.name) {
+						usedMacrosList.push(self);
+					}
+
+					return self.call(placeholders);
+				}
+
+				return new Funcall({
+					fun: self,
+					args: placeholders
+				}, self.trace);
+			})();
+			
+			var objCall = (() => {
+				if (obj instanceof Fun && obj.isCallable(context)) {
+					if (obj.name) {
+						usedMacrosList.push(obj);
+					}
+
+					return obj.call(placeholders);
+				}
+
+				return new Funcall({
+					fun: obj,
+					args: placeholders
+				}, self.trace);
+			})();
+			
+			var ret = Calculus.equals(thisCall, objCall, context);
+			return ret && ret.concat(usedMacrosList);
+		}
+
+		if (self instanceof Funcall) {
+			if (!(obj instanceof Funcall)) {
+				if (!self.isExpandableOnce(context)) return false;
+				
+				var {expanded, used} = self.expandOnce(context);
+				var ret = Calculus.equals(expanded, obj, context);
+				return ret && ret.concat(used);
+			}
+	
+			var argsEquals: (Fun | Variable)[] | false = (() => {
+				if (self.args.length != obj.args.length) return false;
+	
+				var tmp: (Fun | Variable)[] = [];
+	
+				for (var i = 0; i < self.args.length; i++) {
+					var e = Calculus.equals(self.args[i], obj.args[i], context);
+					if (!e) return false;
+					tmp = tmp.concat(e);
+				}
+	
+				return tmp;
+			})();
+	
+			if (argsEquals) {
+				var funEquals = Calculus.equals(self.fun, obj.fun, context);
+				if (funEquals) return funEquals.concat(argsEquals);
+			}
+	
+			if (self.isExpandableOnce(context)) {
+				var {expanded, used} = self.expandOnce(context);
+				var ret = Calculus.equals(expanded, obj, context);
+				return ret && ret.concat(used);
+			}
+	
+			if (obj.isExpandableOnce(context)) {
+				var {expanded, used} = obj.expandOnce(context);
+				var ret = Calculus.equals(self, expanded, context);
+				return ret && ret.concat(used);
+			}
+	
+			return false;
+		}
+
+		if (self instanceof Reduction) {
+			return Calculus.equals(self.consequent, obj, context);
+		}
+
+		if (self instanceof Variable) {
+			if (!self.expr) return false;
+
+			if (!self.sealed || context.canUse(self)) {
+				var tmp = Calculus.equals(self.expr, obj, context);
+				if (!tmp) return tmp;
+				return tmp.push(self), tmp;
+			}
+
+			return false;
+		}
+
+		if (self instanceof With) {
+			throw new Error("Method not implemented.");
+		}
+
+		throw Error('Unknown expression type');
+	 }
 }
 
 import Expr from "./Expr";
@@ -176,3 +432,5 @@ import Reduction from "./Reduction";
 import Schema from "./Schema";
 import Variable from "./Variable";
 import With from "./With";
+import { FunctionalType } from "./types";import Parameter from "./Parameter";
+

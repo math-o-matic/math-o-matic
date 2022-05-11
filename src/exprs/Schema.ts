@@ -45,22 +45,6 @@ export default class Schema extends Fun {
 		return ret;
 	}
 
-	protected override expandInternal(): Expr {
-		var expr = this.expr.expand();
-		if (expr == this.expr) return this;
-		
-		return new Schema({
-			doc: null,
-			tex: null,
-			schemaType: 'schema',
-			name: null,
-			params: this.params,
-			context: this.context,
-			def$s: this.def$s,
-			expr: this.expr.expand()
-		}, this.trace);
-	}
-
 	public override isCallable(_context: ExecutionContext): boolean {
 		return true;
 	}
@@ -68,7 +52,7 @@ export default class Schema extends Fun {
 	public override toIndentedString(indent: number, root?: boolean): string {
 		return [
 			`∫ ${this.name || ''}(${this.params.map(p => p.toIndentedString(indent)).join(', ')}) => {`,
-			'\t' + this.expr.expand().toIndentedString(indent + 1),
+			'\t' + Calculus.expand(this.expr).toIndentedString(indent + 1),
 			'}'
 		].join('\n' + '\t'.repeat(indent));
 	}
@@ -89,7 +73,7 @@ export default class Schema extends Fun {
 					: `\\left(${this.params.map(e => e.toTeXString(Precedence.COMMA)).join(', ')}\\right)`
 				),
 				'\\mapsto ',
-				this.expr.expand().toTeXString(Precedence.ZERO),
+				Calculus.expand(this.expr).toTeXString(Precedence.ZERO),
 
 				(shouldPutParentheses ? '\\right)' : '')
 			].join('');
@@ -102,7 +86,7 @@ export default class Schema extends Fun {
 			return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${Expr.escapeTeX(this.name)}}}}`;
 	
 		return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${Expr.escapeTeX(this.name)}}}}\\mathord{\\left(${this.params.map(e => e.toTeXStringWithId(Precedence.COMMA) + (e.selector ? `: \\texttt{@${e.selector}}` : '')).join(', ')}\\right)}:\\\\\\quad`
-				+ this.expr.expand().toTeXString(Precedence.INFINITY);
+				+ Calculus.expand(this.expr).toTeXString(Precedence.INFINITY);
 	}
 }
 
@@ -112,6 +96,7 @@ import StackTrace from "../StackTrace";
 import ExecutionContext from "../ExecutionContext";
 import Parameter from "./Parameter";
 import Precedence from "./Precedence";
+import Calculus from "./Calculus";
 
 interface SchemaArgumentType {
 	doc: string;

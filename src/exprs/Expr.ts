@@ -8,7 +8,6 @@ export default abstract class Expr {
 	public readonly trace: StackTrace;
 
 	public readonly type: Type;
-	private expandMetaCache: Expr;
 
 	constructor (type: Type, trace: StackTrace) {
 		this._id = UniversalCounter.next();
@@ -19,40 +18,6 @@ export default abstract class Expr {
 
 		this.trace = trace;
 	}
-
-	public expand(): Expr {
-		if (this.expandMetaCache) return this.expandMetaCache;
-		return this.expandMetaCache = this.expandInternal();
-	}
-
-	protected abstract expandInternal(): Expr;
-
-	/**
-	 * 
-	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
-	 */
-	public equals(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
-		// console.log(`${this}\n\n${obj}`);
-		// var ret = (() => {
-		
-		if (this === obj) return [];
-		if (!this.type.equals(obj.type)) return false;
-
-		if (Calculus.getEqualsPriority(obj, context) > Calculus.getEqualsPriority(this, context))
-			return obj.equalsInternal(this, context);
-		
-		return this.equalsInternal(obj, context);
-
-		// })();
-		// console.log(`${this}\n\n${obj}\n\nresult:`, ret);
-		// return ret;
-	}
-
-	/**
-	 * 
-	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
-	 */
-	protected abstract equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false;
 
 	public isProved(hypotheses?: Expr[]): boolean {
 		hypotheses = hypotheses || [];

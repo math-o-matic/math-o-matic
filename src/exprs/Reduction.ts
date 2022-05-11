@@ -44,7 +44,7 @@ export default class Reduction extends Expr {
 			var derefs = subject.params.map((p, i) => {
 				if (args && args[i]) return args[i];
 
-				var conditional = (subject as Fun).expr.expand();
+				var conditional = Calculus.expand((subject as Fun).expr);
 
 				if (!(conditional instanceof Conditional)) throw Error('wut');
 	
@@ -87,7 +87,7 @@ export default class Reduction extends Expr {
 		this.subject = subject;
 		this.antecedents = antecedents;
 
-		var conditional = subject.expand();
+		var conditional = Calculus.expand(subject);
 
 		if (!(conditional instanceof Conditional)) {
 			throw Expr.error('Assertion failed', trace);
@@ -97,20 +97,20 @@ export default class Reduction extends Expr {
 		this.antecedentEqualsResults = Array(conditional.left.length).fill(0).map(() => []);
 
 		var antecedentsExpanded = antecedents.map(arg => {
-			return arg.expand();
+			return Calculus.expand(arg);
 		});
 
 		for (let i = 0; i < conditional.left.length; i++) {
-			var tmp = conditional.left[i].equals(antecedentsExpanded[i], context);
+			var tmp = Calculus.equals(conditional.left[i], antecedentsExpanded[i], context);
 			if (!tmp) {
 				throw Expr.error(`LHS #${i + 1} failed to match:
 
 --- EXPECTED ---
-${conditional.left[i].expand()}
+${Calculus.expand(conditional.left[i])}
 ----------------
 
 --- RECEIVED ---
-${antecedents[i].expand()}
+${Calculus.expand(antecedents[i])}
 ----------------`, trace);
 			}
 
@@ -120,16 +120,16 @@ ${antecedents[i].expand()}
 		this.preFormatConsequent = conditional.right;
 
 		if (as) {
-			var tmp = conditional.right.equals(as, context);
+			var tmp = Calculus.equals(conditional.right, as, context);
 			if (!tmp) {
 				throw Expr.error(`RHS failed to match:
 
 --- EXPECTED ---
-${conditional.right.expand()}
+${Calculus.expand(conditional.right)}
 ----------------
 
 --- RECEIVED (from [as ...]) ---
-${as.expand()}
+${Calculus.expand(as)}
 ----------------`, trace);
 			}
 
@@ -143,14 +143,6 @@ ${as.expand()}
 	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.subject.isProved(hypotheses)
 			&& this.antecedents.every(l => l.isProved(hypotheses));
-	}
-
-	protected override expandInternal(): Expr {
-		return this.consequent.expand();
-	}
-
-	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
-		return this.consequent.equals(obj, context);
 	}
 
 	protected override getProofInternal(
@@ -275,7 +267,7 @@ ${as.expand()}
 				pattern: Expr, instance: Expr,
 				params: Parameter[]): Expr {
 			
-			instance = instance.expand();
+			instance = Calculus.expand(instance);
 			
 			if (selector.length <= ptr) return instance;
 
@@ -303,7 +295,7 @@ ${as.expand()}
 						throw Expr.error(`Cannot dereference @${selector} (at ${ptr})`, trace);
 					}
 
-					if (pattern.fun.equals(instance.fun, context)) {
+					if (Calculus.equals(pattern.fun, instance.fun, context)) {
 						break;
 					}
 
@@ -426,3 +418,4 @@ import Conditional from "./Conditional";
 import { FunctionalType, ConditionalType } from "./types";
 import Variable from "./Variable";
 import Precedence from "./Precedence";
+import Calculus from "./Calculus";

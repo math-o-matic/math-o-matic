@@ -27,31 +27,6 @@ export default class Conditional extends Expr {
 		return this.right.isProved(hypotheses.concat(this.left));
 	}
 
-	protected override expandInternal(): Expr {
-		var left = this.left.map(lef => lef.expand());
-		var right = this.right.expand();
-
-		if (left.every((l, i) => l == this.left[i]) && right == this.right) return this;
-
-		return new Conditional({left, def$s: null, right}, this.trace);
-	}
-
-	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
-		if (!(obj instanceof Conditional)) {
-			throw Error('Assertion failed');
-		}
-
-		if (this.left.length != obj.left.length) {
-			throw Error('Assertion failed');
-		}
-
-		for (var i = 0; i < this.left.length; i++) {
-			if (!this.left[i].equals(obj.left[i], context)) return false;
-		}
-
-		return this.right.equals(obj.right, context);
-	}
-
 	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
@@ -104,7 +79,7 @@ export default class Conditional extends Expr {
 		prec = prec || Precedence.INFINITY;
 		root = typeof root == 'boolean' ? root : false;
 
-		var expanded = this.expand() as Conditional;
+		var expanded = Calculus.expand(this) as Conditional;
 
 		var shouldPutParentheses = Precedence.COMMA.shouldPutParentheses(prec);
 
@@ -125,3 +100,4 @@ import Fun from './Fun';
 import { ConditionalType } from './types';
 import Variable from './Variable';
 import Precedence from './Precedence';
+import Calculus from './Calculus';

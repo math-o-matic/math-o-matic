@@ -15,25 +15,6 @@ export default class ObjectFun extends Fun {
 		this.sealed = sealed;
 	}
 
-	protected override expandInternal(): Expr {
-		if (!this.expr) return this;
-		if (this.name) return this;
-
-		var expr = this.expr.expand();
-		if (expr == this.expr) return this;
-
-		return new ObjectFun({
-			doc: null,
-			precedence: Precedence.ZERO,
-			tex: null,
-			sealed: this.sealed,
-			rettype: null,
-			name: null,
-			params: this.params,
-			expr
-		}, this.trace);
-	}
-
 	public override isCallable(context: ExecutionContext): boolean {
 		return this.expr && (!this.sealed || context.canUse(this));
 	}
@@ -63,7 +44,7 @@ export default class ObjectFun extends Fun {
 					: `\\left(${this.params.map(e => e.toTeXString(Precedence.COMMA)).join(', ')}\\right)`
 				),
 				'\\mapsto ',
-				this.expr.expand().toTeXString(Precedence.ZERO),
+				Calculus.expand(this.expr).toTeXString(Precedence.ZERO),
 
 				(shouldPutParentheses ? '\\right)' : '')
 			].join('');
@@ -118,6 +99,7 @@ import StackTrace from "../StackTrace";
 import Parameter from "./Parameter";
 import { Type } from "./types";
 import Precedence from "./Precedence";
+import Calculus from "./Calculus";
 
 interface ObjectFunArgumentType {
 	doc: string;
