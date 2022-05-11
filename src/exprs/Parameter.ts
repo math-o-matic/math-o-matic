@@ -1,6 +1,3 @@
-import StackTrace from "../StackTrace";
-import Precedence from "./Precedence";
-import { Type } from "./types";
 import Variable from "./Variable";
 
 interface ParameterArgumentType {
@@ -25,3 +22,7 @@ export default class Parameter extends Variable {
 		return `\\htmlId{id-${this._id}}{${this.toTeXString(prec, root)}}`;
 	}
 }
+
+import StackTrace from "../StackTrace";
+import Precedence from "./Precedence";
+import { Type } from "./types";

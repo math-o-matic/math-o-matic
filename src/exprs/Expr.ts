@@ -1,31 +1,3 @@
-import Counter from "../Counter";
-import ExecutionContext from "../ExecutionContext";
-import { ProofType } from "../ProofType";
-import StackTrace from "../StackTrace";
-import UniversalCounter from "../UniversalCounter";
-import Fun from "./Fun";
-import Precedence from "./Precedence";
-import { Type } from "./types";
-import Variable from "./Variable";
-
-/**
- * 숫자가 큰 것이 우선순위가 높다.
- */
-export enum EqualsPriority {
-	/** Variable (primitive) */
-	ZERO,
-	/** Fun */
-	ONE,
-	/** Conditional */
-	TWO,
-	/** Funcall */
-	THREE,
-	/** Variable (macro) */
-	FOUR,
-	/** $Variable, Reduction */
-	FIVE
-}
-
 /**
  * 우리의 형식 언어에 포함되는 람다 표현식.
  */
@@ -66,7 +38,7 @@ export default abstract class Expr {
 		if (this === obj) return [];
 		if (!this.type.equals(obj.type)) return false;
 
-		if (obj.getEqualsPriority(context) > this.getEqualsPriority(context))
+		if (Calculus.getEqualsPriority(obj, context) > Calculus.getEqualsPriority(this, context))
 			return obj.equalsInternal(this, context);
 		
 		return this.equalsInternal(obj, context);
@@ -81,8 +53,6 @@ export default abstract class Expr {
 	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
 	 */
 	protected abstract equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false;
-
-	protected abstract getEqualsPriority(context: ExecutionContext): EqualsPriority;
 
 	public isProved(hypotheses?: Expr[]): boolean {
 		hypotheses = hypotheses || [];
@@ -206,3 +176,14 @@ export default abstract class Expr {
 		return `\\mathrm{${Expr.escapeTeX(name)}}`;
 	}
 }
+
+import Counter from "../Counter";
+import ExecutionContext from "../ExecutionContext";
+import { ProofType } from "../ProofType";
+import StackTrace from "../StackTrace";
+import UniversalCounter from "../UniversalCounter";
+import Calculus from "./Calculus";
+import Fun from "./Fun";
+import Precedence from "./Precedence";
+import { Type } from "./types";
+import Variable from "./Variable";

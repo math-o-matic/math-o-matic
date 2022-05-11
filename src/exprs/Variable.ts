@@ -1,9 +1,4 @@
-import Counter from '../Counter';
-import ExecutionContext from '../ExecutionContext';
-import { ProofType } from '../ProofType';
-import StackTrace from '../StackTrace';
-import Fun from './Fun';
-import Expr, { EqualsPriority } from './Expr';
+import Expr from './Expr';
 import Nameable from './Nameable';
 
 interface VariableArgumentType {
@@ -51,12 +46,6 @@ export default class Variable extends Expr implements Nameable {
 
 	protected override expandInternal(): Expr {
 		return this;
-	}
-
-	protected override getEqualsPriority(context: ExecutionContext): EqualsPriority {
-		return this.expr && (!this.sealed || context.canUse(this))
-			? EqualsPriority.FOUR
-			: EqualsPriority.ZERO;
 	}
 
 	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
@@ -110,4 +99,8 @@ export default class Variable extends Expr implements Nameable {
 
 import Parameter from './Parameter';
 import { Type } from './types';import Precedence from './Precedence';
-
+import Counter from '../Counter';
+import ExecutionContext from '../ExecutionContext';
+import { ProofType } from '../ProofType';
+import StackTrace from '../StackTrace';
+import Fun from './Fun';

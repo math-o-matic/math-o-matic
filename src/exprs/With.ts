@@ -1,13 +1,4 @@
-import Counter from "../Counter";
-import ExecutionContext from "../ExecutionContext";
-import { ProofType } from "../ProofType";
-import StackTrace from "../StackTrace";
-import $Variable from "./$Variable";
-import Fun from "./Fun";
-import Expr, { EqualsPriority } from "./Expr";
-import Variable from "./Variable";
-import Precedence from "./Precedence";
-import Calculus from "./Calculus";
+import Expr from "./Expr";
 
 interface WithArgumentType {
 	variable: Variable;
@@ -34,10 +25,6 @@ export default class With extends Expr {
 		map.set(this.variable, this.variable.expr);
 
 		return Calculus.substitute(this.expr, map).expand();
-	}
-
-	protected override getEqualsPriority(context: ExecutionContext): EqualsPriority {
-		throw new Error("Method not implemented.");
 	}
 
 	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
@@ -82,3 +69,13 @@ export default class With extends Expr {
 		throw new Error("Method not implemented.");
 	}
 }
+
+import Counter from "../Counter";
+import ExecutionContext from "../ExecutionContext";
+import { ProofType } from "../ProofType";
+import StackTrace from "../StackTrace";
+import $Variable from "./$Variable";
+import Fun from "./Fun";
+import Variable from "./Variable";
+import Precedence from "./Precedence";
+import Calculus from "./Calculus";

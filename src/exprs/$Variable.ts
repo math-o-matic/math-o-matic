@@ -1,12 +1,5 @@
-import Counter from "../Counter";
-import ExecutionContext from "../ExecutionContext";
-import { ProofType } from "../ProofType";
-import StackTrace from "../StackTrace";
-import Fun from "./Fun";
-import Expr, { EqualsPriority } from "./Expr";
+import Expr from "./Expr";
 import Nameable from "./Nameable";
-import Variable from "./Variable";
-import Precedence from "./Precedence";
 
 interface $VariableArgumentType {
 	name: string;
@@ -37,10 +30,6 @@ export default class $Variable extends Expr implements Nameable {
 		var expr = this.expr.expand();
 		if (expr == this.expr) return this;
 		return expr;
-	}
-
-	protected override getEqualsPriority(): EqualsPriority {
-		return EqualsPriority.FIVE;
 	}
 
 	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
@@ -75,3 +64,11 @@ export default class $Variable extends Expr implements Nameable {
 		return `\\mathtt{${Expr.escapeTeX(this.name)}}`;
 	}
 }
+
+import Counter from "../Counter";
+import ExecutionContext from "../ExecutionContext";
+import { ProofType } from "../ProofType";
+import StackTrace from "../StackTrace";
+import Fun from "./Fun";
+import Variable from "./Variable";
+import Precedence from "./Precedence";

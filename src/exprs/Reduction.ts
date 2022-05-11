@@ -1,17 +1,4 @@
-import Counter from "../Counter";
-import ExecutionContext from "../ExecutionContext";
-import { ProofType } from "../ProofType";
-import StackTrace from "../StackTrace";
-import Fun from "./Fun";
-import Funcall from "./Funcall";
-import Expr, { EqualsPriority } from "./Expr";
-import { isNameable } from "./Nameable";
-import Parameter from "./Parameter";
-import Schema from "./Schema";
-import Conditional from "./Conditional";
-import { FunctionalType, ConditionalType } from "./types";
-import Variable from "./Variable";
-import Precedence from "./Precedence";
+import Expr from "./Expr";
 
 interface ReductionArgumentType {
 	antecedents: Expr[];
@@ -160,10 +147,6 @@ ${as.expand()}
 
 	protected override expandInternal(): Expr {
 		return this.consequent.expand();
-	}
-
-	protected override getEqualsPriority(): EqualsPriority {
-		return EqualsPriority.FIVE;
 	}
 
 	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
@@ -429,3 +412,17 @@ ${as.expand()}
 		return `${this.subject.toTeXString(Precedence.ZERO)}[${this.antecedents.map(e => e.toTeXString(Precedence.COMMA)).join(', ')}]`;
 	}
 }
+
+import Counter from "../Counter";
+import ExecutionContext from "../ExecutionContext";
+import { ProofType } from "../ProofType";
+import StackTrace from "../StackTrace";
+import Fun from "./Fun";
+import Funcall from "./Funcall";
+import { isNameable } from "./Nameable";
+import Parameter from "./Parameter";
+import Schema from "./Schema";
+import Conditional from "./Conditional";
+import { FunctionalType, ConditionalType } from "./types";
+import Variable from "./Variable";
+import Precedence from "./Precedence";

@@ -1,4 +1,4 @@
-import Expr, { EqualsPriority } from './Expr';
+import Expr from './Expr';
 
 interface FuncallArgumentType {
 	fun: Expr;
@@ -122,10 +122,6 @@ export default class Funcall extends Expr {
 			expanded: callee.call(this.args),
 			used
 		};
-	}
-
-	protected override getEqualsPriority(): EqualsPriority {
-		return EqualsPriority.THREE;
 	}
 
 	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {

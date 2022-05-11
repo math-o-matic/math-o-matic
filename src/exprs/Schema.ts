@@ -108,7 +108,6 @@ export default class Schema extends Fun {
 
 import $Variable from "./$Variable";
 import Expr from "./Expr";
-import Variable from "./Variable";
 import StackTrace from "../StackTrace";
 import ExecutionContext from "../ExecutionContext";
 import Parameter from "./Parameter";

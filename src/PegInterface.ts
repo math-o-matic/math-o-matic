@@ -3,23 +3,6 @@
  * PEG.js의 출력은 여기에서만 처리해야 한다.
  */
 
-import ExecutionContext from './ExecutionContext';
-import $Variable from './exprs/$Variable';
-import Fun from './exprs/Fun';
-import Funcall from './exprs/Funcall';
-import Expr from './exprs/Expr';
-import ObjectFun from './exprs/ObjectFun';
-import Parameter from './exprs/Parameter';
-import Reduction from './exprs/Reduction';
-import Schema, { SchemaType } from './exprs/Schema';
-import Conditional from './exprs/Conditional';
-import { Type, SimpleType } from './exprs/types';
-import Variable from './exprs/Variable';
-import With from './exprs/With';
-import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
-import Scope, { NestedTypeInput } from './Scope';
-import Precedence from './exprs/Precedence';
-
 function typeObjToString(obj: TypeObject): string {
 	if (obj._type != 'type')
 		throw Error('Assertion failed');
@@ -496,3 +479,20 @@ export default class PI {
 		}, context, scope.trace);
 	}
 }
+
+import ExecutionContext from './ExecutionContext';
+import $Variable from './exprs/$Variable';
+import Fun from './exprs/Fun';
+import Funcall from './exprs/Funcall';
+import Expr from './exprs/Expr';
+import ObjectFun from './exprs/ObjectFun';
+import Parameter from './exprs/Parameter';
+import Reduction from './exprs/Reduction';
+import Schema, { SchemaType } from './exprs/Schema';
+import Conditional from './exprs/Conditional';
+import { Type, SimpleType } from './exprs/types';
+import Variable from './exprs/Variable';
+import With from './exprs/With';
+import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
+import Scope, { NestedTypeInput } from './Scope';
+import Precedence from './exprs/Precedence';

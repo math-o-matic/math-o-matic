@@ -1,3 +1,4 @@
+import Expr from "./Expr";
 import Fun from "./Fun";
 
 export default class ObjectFun extends Fun {
@@ -114,8 +115,6 @@ export default class ObjectFun extends Fun {
 
 import ExecutionContext from "../ExecutionContext";
 import StackTrace from "../StackTrace";
-import Expr from "./Expr";
-import Variable from "./Variable";
 import Parameter from "./Parameter";
 import { Type } from "./types";
 import Precedence from "./Precedence";

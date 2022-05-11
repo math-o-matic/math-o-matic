@@ -1,13 +1,4 @@
-import Counter from '../Counter';
-import ExecutionContext from '../ExecutionContext';
-import { ProofType } from '../ProofType';
-import StackTrace from '../StackTrace';
-import $Variable from './$Variable';
-import Fun from './Fun';
-import Expr, { EqualsPriority } from './Expr';
-import { ConditionalType } from './types';
-import Variable from './Variable';
-import Precedence from './Precedence';
+import Expr from './Expr';
 
 interface ConditionalArgumentType {
 	left: Expr[];
@@ -43,10 +34,6 @@ export default class Conditional extends Expr {
 		if (left.every((l, i) => l == this.left[i]) && right == this.right) return this;
 
 		return new Conditional({left, def$s: null, right}, this.trace);
-	}
-
-	protected override getEqualsPriority(): EqualsPriority {
-		return EqualsPriority.TWO;
 	}
 
 	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
@@ -128,3 +115,13 @@ export default class Conditional extends Expr {
 		].join('');
 	}
 }
+
+import Counter from '../Counter';
+import ExecutionContext from '../ExecutionContext';
+import { ProofType } from '../ProofType';
+import StackTrace from '../StackTrace';
+import $Variable from './$Variable';
+import Fun from './Fun';
+import { ConditionalType } from './types';
+import Variable from './Variable';
+import Precedence from './Precedence';

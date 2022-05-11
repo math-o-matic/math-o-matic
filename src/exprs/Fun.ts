@@ -1,5 +1,5 @@
 import Nameable from './Nameable';
-import Expr, { EqualsPriority } from './Expr';
+import Expr from './Expr';
 
 export default abstract class Fun extends Expr implements Nameable {
 
@@ -49,10 +49,6 @@ export default abstract class Fun extends Expr implements Nameable {
 
 	protected override isProvedInternal(hypotheses: Expr[]): boolean {
 		return this.expr && this.expr.isProved(hypotheses);
-	}
-
-	protected override getEqualsPriority(): EqualsPriority {
-		return EqualsPriority.ONE;
 	}
 	
 	protected override equalsInternal(obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {

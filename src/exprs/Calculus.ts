@@ -1,13 +1,20 @@
-import $Variable from "./$Variable";
-import Conditional from "./Conditional";
-import Expr from "./Expr";
-import Funcall from "./Funcall";
-import ObjectFun from "./ObjectFun";
-import Precedence from "./Precedence";
-import Reduction from "./Reduction";
-import Schema from "./Schema";
-import Variable from "./Variable";
-import With from "./With";
+/**
+ * 숫자가 큰 것이 우선순위가 높다.
+ */
+ export enum EqualsPriority {
+	/** Variable (primitive) */
+	ZERO,
+	/** Fun */
+	ONE,
+	/** Conditional */
+	TWO,
+	/** Funcall */
+	THREE,
+	/** Variable (macro) */
+	FOUR,
+	/** $Variable, Reduction */
+	FIVE
+}
 
 export default class Calculus {
 	/**
@@ -125,4 +132,47 @@ export default class Calculus {
 
 		throw Error('Unknown expression type');
 	}
+
+	public static getEqualsPriority(self: Expr, context: ExecutionContext): EqualsPriority {
+		if (self instanceof Variable) {
+			return self.expr && (!self.sealed || context.canUse(self))
+				? EqualsPriority.FOUR
+				: EqualsPriority.ZERO;
+		}
+
+		if (self instanceof Fun) {
+			return EqualsPriority.ONE;
+		}
+
+		if (self instanceof Conditional) {
+			return EqualsPriority.TWO;
+		}
+
+		if (self instanceof Funcall) {
+			return EqualsPriority.THREE;
+		}
+
+		if (self instanceof Reduction || self instanceof $Variable) {
+			return EqualsPriority.FIVE;
+		}
+
+		if (self instanceof With) {
+			throw new Error("Method not implemented.");
+		}
+
+		throw Error('Unknown expression type');
+	}
 }
+
+import Expr from "./Expr";
+import ExecutionContext from "../ExecutionContext";
+import $Variable from "./$Variable";
+import Conditional from "./Conditional";
+import Fun from "./Fun";
+import Funcall from "./Funcall";
+import ObjectFun from "./ObjectFun";
+import Precedence from "./Precedence";
+import Reduction from "./Reduction";
+import Schema from "./Schema";
+import Variable from "./Variable";
+import With from "./With";

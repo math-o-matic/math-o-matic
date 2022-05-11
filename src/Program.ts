@@ -1,9 +1,3 @@
-import { SimpleType } from './exprs/types';
-import PegInterface from './PegInterface';
-import { EvaluableObject, ImportOrLineObject } from './PegInterfaceDefinitions';
-import ProofExplorer from './ProofExplorer';
-import Scope from './Scope';
-
 let parser: ParserType, evalParser: EvalParserType;
 
 if (process.env.__webpack__) {
@@ -181,3 +175,9 @@ export default class Program {
 		return ProofExplorer.get(this.scope, name, ktx, m42kup);
 	}
 }
+
+import { SimpleType } from './exprs/types';
+import PegInterface from './PegInterface';
+import { EvaluableObject, ImportOrLineObject } from './PegInterfaceDefinitions';
+import ProofExplorer from './ProofExplorer';
+import Scope from './Scope';
