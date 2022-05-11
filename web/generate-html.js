@@ -87,12 +87,11 @@ function generateHtml(program) {
 			if (!v.precedence) continue;
 
 			var prec = v.precedence.toString();
-			if (prec != '0') {
-				if (precedenceMap.has(prec)) {
-					precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
-				} else {
-					precedenceMap.set(prec, [k]);
-				}
+			
+			if (precedenceMap.has(prec)) {
+				precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
+			} else {
+				precedenceMap.set(prec, [k]);
 			}
 		}
 
