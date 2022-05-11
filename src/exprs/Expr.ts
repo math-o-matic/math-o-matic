@@ -19,6 +19,10 @@ export default abstract class Expr {
 		this.trace = trace;
 	}
 
+	public isProved(hypotheses?: Expr[]) {
+		return Calculus.isProved(this, hypotheses);
+	}
+
 	public getProof(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
@@ -78,3 +82,4 @@ import StackTrace from "../StackTrace";
 import UniversalCounter from "../UniversalCounter";
 import Precedence from "../Precedence";
 import { Type } from "./types";
+import Calculus from "../Calculus";
