@@ -4,6 +4,7 @@ import { ProofType } from "../ProofType";
 import StackTrace from "../StackTrace";
 import UniversalCounter from "../UniversalCounter";
 import Fun from "./Fun";
+import Precedence from "./Precedence";
 import { Type } from "./types";
 import Variable from "./Variable";
 
@@ -25,8 +26,6 @@ export enum EqualsPriority {
 	FIVE
 }
 
-export type Precedence = boolean | number | [number, number];
-
 /**
  * 우리의 형식 언어에 포함되는 람다 표현식.
  */
@@ -38,10 +37,6 @@ export default abstract class Expr {
 
 	public readonly type: Type;
 	private expandMetaCache: Expr;
-
-	public static readonly PREC_FUNEXPR = 1000;
-	public static readonly PREC_COMMA = 1000;
-	public static readonly PREC_COLONEQQ = 100000;
 
 	constructor (type: Type, trace: StackTrace) {
 		this._id = UniversalCounter.next();
@@ -172,32 +167,6 @@ export default abstract class Expr {
 		}
 	}
 
-	/*
-	* false corresponds to 0.
-	* true corresponds to w * 2.
-	*/
-	public static normalizePrecedence(prec: Precedence): [number, number] {
-		if (prec === false) return [0, 0];
-		if (prec === true) return [2, 0];
-		if (typeof prec == 'number') return [0, prec];
-
-		if (!(prec instanceof Array && prec.length == 2)) {
-			console.log(prec);
-			throw Error('wut');
-		}
-
-		return prec;
-	}
-
-	public static shouldConsolidate(my: Precedence, your: Precedence): boolean {
-		my = Expr.normalizePrecedence(my || false);
-		your = Expr.normalizePrecedence(your || false);
-
-		if (my[0] == 0 && my[1] == 0) return false;
-
-		return !(my[0] < your[0] || my[0] == your[0] && my[1] < your[1]);
-	}
-
 	public static escapeTeX(s: string): string {
 		return s.replace(/&|%|\$|#|_|{|}|~|\^|\\/g, m => ({
 			'&': '\\&', '%': '\\%', '$': '\\$',
@@ -209,6 +178,10 @@ export default abstract class Expr {
 		})[m]);
 	}
 
+	/**
+	 * 'a' -> 'a'
+	 * 'alpha1' => '\alpha_1'
+	 */
 	public static makeTeXName(name: string): string {
 		var alphabet = [
 			"alpha", "beta", "gamma", "delta",
@@ -250,22 +223,5 @@ export default abstract class Expr {
 		}
 
 		return `\\mathrm{${Expr.escapeTeX(name)}}`;
-	}
-
-	public static makeTeX(id: string, args: string[], tex: string, my: Precedence, your: Precedence) {
-		args = args || [];
-		your = your || false;
-		
-		var ret = tex;
-
-		if (Expr.shouldConsolidate(my, your)) {
-			ret = '\\left(' + ret + '\\right)';
-		}
-
-		return ret.replace(/#([0-9]+)/g, (match, g1) => {
-			return args[g1 * 1 - 1] || `\\texttt{\\textcolor{red}{\\#${g1}}}`;
-		}).replace(/<<(.+?)>>/, (_match, g1) => {
-			return `\\href{#${id}}{${g1}}`;
-		});
 	}
 }

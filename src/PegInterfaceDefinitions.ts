@@ -45,7 +45,7 @@ export interface DefunObject {
 	doc: string;
 	tex: string;
 	tex_attributes: {
-		precedence: number | false
+		precedence: number
 	};
 	sealed: boolean;
 	rettype: TypeObject;

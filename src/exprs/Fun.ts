@@ -1,5 +1,5 @@
 import Nameable from './Nameable';
-import Expr, { EqualsPriority, Precedence } from './Expr';
+import Expr, { EqualsPriority } from './Expr';
 
 export default abstract class Fun extends Expr implements Nameable {
 
@@ -191,6 +191,7 @@ import { ProofType } from '../ProofType';
 import Schema from './Schema';
 import Parameter from './Parameter';
 import { FunctionalType, Type } from './types';
+import Precedence from './Precedence';
 
 interface FunArgumentType {
 	doc: string;

@@ -18,6 +18,7 @@ import Variable from './exprs/Variable';
 import With from './exprs/With';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
+import Precedence from './exprs/Precedence';
 
 function typeObjToString(obj: TypeObject): string {
 	if (obj._type != 'type')
@@ -145,7 +146,7 @@ export default class PI {
 		var scope = parentScope.extend('fun', obj._type == 'defun' ? obj.name : '<anonymous>', obj.location);
 
 		var doc = null,
-			precedence : false | number = false,
+			precedence : number = 0,
 			tex = null,
 			sealed = false,
 			rettype: Type = null,
@@ -184,7 +185,11 @@ export default class PI {
 			expr = PI.objectexpr(obj.expr, scope);
 		}
 
-		return new ObjectFun({sealed, rettype, name, params, expr, doc, precedence, tex}, scope.trace);
+		return new ObjectFun({
+			sealed, rettype, name, params, expr, doc,
+			precedence: new Precedence(precedence),
+			tex
+		}, scope.trace);
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope): Funcall {

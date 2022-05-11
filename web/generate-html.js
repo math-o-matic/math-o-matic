@@ -1,7 +1,7 @@
 function generateTypedefHtml(program, k, v) {
 	return `<div class="block">`
 		+ `<p class="label"><a id="type-${k}" href="#type-${k}"><b>type</b> ${k}</a></p>`
-		+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+		+ `<div class="math">${ktx(v.toTeXString(null, true))}</div>`
 
 		+ (
 			v.doc
@@ -22,7 +22,7 @@ function generateDefHtml(program, k, v) {
 				: `(${v.params.map(p => p.toSimpleString()).join(', ')})`
 					+ `: ${v.type.resolve().to}`
 		}</p>`
-		+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+		+ `<div class="math">${ktx(v.toTeXString(null, true))}</div>`
 
 		+ (
 			v.doc
@@ -41,7 +41,7 @@ function generateSchemaHtml(program, k, v, omitProofExplorer) {
 				? ` <b>using</b> ${v.context.usingList.map(u => u.name).join(', ')}`
 				: ''
 		}</p>`
-		+ `<div class="math">${ktx(v.toTeXString(true, true))}</div>`
+		+ `<div class="math">${ktx(v.toTeXString(null, true))}</div>`
 
 		+ (
 			!v.expr || v.schemaType == 'axiom' || omitProofExplorer
@@ -84,13 +84,15 @@ function generateHtml(program) {
 		var map = {};
 
 		for (var [k, v] of scope.defMap) {
-			var prec = v.precedence;
-			if (prec) {
+			if (!v.precedence) continue;
+
+			var prec = v.precedence.toString();
+			if (prec != '0') {
 				if (precedenceMap.has(prec)) {
 					precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
 				} else {
 					precedenceMap.set(prec, [k]);
-				}	
+				}
 			}
 		}
 

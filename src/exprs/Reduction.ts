@@ -4,13 +4,14 @@ import { ProofType } from "../ProofType";
 import StackTrace from "../StackTrace";
 import Fun from "./Fun";
 import Funcall from "./Funcall";
-import Expr, { EqualsPriority, Precedence } from "./Expr";
+import Expr, { EqualsPriority } from "./Expr";
 import { isNameable } from "./Nameable";
 import Parameter from "./Parameter";
 import Schema from "./Schema";
 import Conditional from "./Conditional";
 import { FunctionalType, ConditionalType } from "./types";
 import Variable from "./Variable";
+import Precedence from "./Precedence";
 
 interface ReductionArgumentType {
 	antecedents: Expr[];
@@ -426,6 +427,9 @@ ${as.expand()}
 	}
 
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
-		return `${this.subject.toTeXString(false)}[${this.antecedents.map(e => e.toTeXString(Expr.PREC_COMMA)).join(', ')}]`;
+		prec = prec || Precedence.INFINITY;
+		root = typeof root == 'boolean' ? root : false;
+
+		return `${this.subject.toTeXString(Precedence.ZERO)}[${this.antecedents.map(e => e.toTeXString(Precedence.COMMA)).join(', ')}]`;
 	}
 }

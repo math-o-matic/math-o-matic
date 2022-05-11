@@ -3,7 +3,7 @@ import ExecutionContext from '../ExecutionContext';
 import { ProofType } from '../ProofType';
 import StackTrace from '../StackTrace';
 import Fun from './Fun';
-import Expr, { EqualsPriority, Precedence } from './Expr';
+import Expr, { EqualsPriority } from './Expr';
 import Nameable from './Nameable';
 
 interface VariableArgumentType {
@@ -105,12 +105,15 @@ export default class Variable extends Expr implements Nameable {
 	}
 
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
+		prec = prec || Precedence.INFINITY;
+		root = typeof root == 'boolean' ? root : false;
+
 		var id = this instanceof Parameter ? `id-${this._id}` : `def-${this.name}`;
 
 		var tex = this.tex || Expr.makeTeXName(this.name);
 		
 		var expr = root && this.expr
-			? `\\coloneqq ${this.expr.toTeXString(Expr.PREC_COLONEQQ)}`
+			? `\\coloneqq ${this.expr.toTeXString(Precedence.COLONEQQ)}`
 			: '';
 		
 		return `\\href{#${id}}{${tex}}${expr}`;
@@ -118,4 +121,5 @@ export default class Variable extends Expr implements Nameable {
 }
 
 import Parameter from './Parameter';
-import { Type } from './types';
+import { Type } from './types';import Precedence from './Precedence';
+

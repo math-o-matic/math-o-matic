@@ -18,7 +18,7 @@ export default class Schema extends Fun {
 			throw Expr.error(`wut`, trace);
 		}
 
-		var precedence = name ? false : Expr.PREC_FUNEXPR;
+		var precedence = name ? Precedence.ZERO : Precedence.FUNEXPR;
 
 		super({doc, precedence, tex, rettype: null, name, params, expr}, trace);
 		
@@ -104,19 +104,22 @@ export default class Schema extends Fun {
 	}
 	
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
+		prec = prec || Precedence.INFINITY;
+		root = typeof root == 'boolean' ? root : false;
+
 		if (!this.name) {
-			var shouldConsolidate = Expr.shouldConsolidate(this.precedence, prec);
+			var shouldConsolidate = this.precedence.shouldConsolidate(prec);
 
 			return [
 				(shouldConsolidate ? '\\left(' : ''),
 
 				(
 					this.params.length == 1
-					? this.params[0].toTeXString(false)
-					: `\\left(${this.params.map(e => e.toTeXString(Expr.PREC_COMMA)).join(', ')}\\right)`
+					? this.params[0].toTeXString(Precedence.ZERO)
+					: `\\left(${this.params.map(e => e.toTeXString(Precedence.COMMA)).join(', ')}\\right)`
 				),
 				'\\mapsto ',
-				this.expr.expand().toTeXString(false),
+				this.expr.expand().toTeXString(Precedence.ZERO),
 
 				(shouldConsolidate ? '\\right)' : '')
 			].join('');
@@ -128,17 +131,18 @@ export default class Schema extends Fun {
 		if (!root)
 			return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${Expr.escapeTeX(this.name)}}}}`;
 	
-		return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${Expr.escapeTeX(this.name)}}}}\\mathord{\\left(${this.params.map(e => e.toTeXStringWithId(Expr.PREC_COMMA) + (e.selector ? `: \\texttt{@${e.selector}}` : '')).join(', ')}\\right)}:\\\\\\quad`
-				+ this.expr.expand().toTeXString(true);
+		return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${Expr.escapeTeX(this.name)}}}}\\mathord{\\left(${this.params.map(e => e.toTeXStringWithId(Precedence.COMMA) + (e.selector ? `: \\texttt{@${e.selector}}` : '')).join(', ')}\\right)}:\\\\\\quad`
+				+ this.expr.expand().toTeXString(Precedence.INFINITY);
 	}
 }
 
 import $Variable from "./$Variable";
-import Expr, { Precedence } from "./Expr";
+import Expr from "./Expr";
 import Variable from "./Variable";
 import StackTrace from "../StackTrace";
 import ExecutionContext from "../ExecutionContext";
 import Parameter from "./Parameter";
+import Precedence from "./Precedence";
 
 interface SchemaArgumentType {
 	doc: string;

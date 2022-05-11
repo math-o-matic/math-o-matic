@@ -1,5 +1,5 @@
 import StackTrace from "../StackTrace";
-import { Precedence } from "./Expr";
+import Precedence from "./Precedence";
 import { Type } from "./types";
 import Variable from "./Variable";
 

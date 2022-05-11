@@ -134,7 +134,7 @@ defun =
 			_type: 'defun',
 			doc: doc ? doc[0] : null,
 			tex_attributes: tex_attributes ? tex_attributes[0] : {
-				precedence: false
+				precedence: 0
 			},
 			tex: tex ? tex[0] : null,
 			sealed: !!sealed,

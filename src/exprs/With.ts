@@ -4,8 +4,9 @@ import { ProofType } from "../ProofType";
 import StackTrace from "../StackTrace";
 import $Variable from "./$Variable";
 import Fun from "./Fun";
-import Expr, { EqualsPriority, Precedence } from "./Expr";
+import Expr, { EqualsPriority } from "./Expr";
 import Variable from "./Variable";
+import Precedence from "./Precedence";
 
 interface WithArgumentType {
 	variable: Variable;
@@ -84,6 +85,8 @@ export default class With extends Expr {
 	}
 
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
+		prec = prec || Precedence.INFINITY;
+		root = typeof root == 'boolean' ? root : false;
 		throw new Error("Method not implemented.");
 	}
 }

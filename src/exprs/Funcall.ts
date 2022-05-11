@@ -1,4 +1,4 @@
-import Expr, { EqualsPriority, Precedence } from './Expr';
+import Expr, { EqualsPriority } from './Expr';
 
 interface FuncallArgumentType {
 	fun: Expr;
@@ -285,13 +285,16 @@ export default class Funcall extends Expr {
 	}
 
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
+		prec = prec || Precedence.INFINITY;
+		root = typeof root == 'boolean' ? root : false;
+
 		if (this.fun instanceof Schema) {
 			return (
 				this.fun.name
 					? `\\href{#def-${this.fun.name}}{\\htmlData{proved=${this.fun.isProved() ? 'p' : 'np'}}{\\textsf{${Expr.escapeTeX(this.fun.name)}}}}`
-					: this.fun.toTeXString(false)
+					: this.fun.toTeXString(Precedence.ZERO)
 			) + `\\mathord{\\left(${this.args.map(arg => {
-				return arg.toTeXString(Expr.PREC_COMMA);
+				return arg.toTeXString(Precedence.COMMA);
 			}).join(', ')}\\right)}`;
 		}
 
@@ -299,12 +302,12 @@ export default class Funcall extends Expr {
 			return this.fun.funcallToTeXString(this.args, prec);
 		
 		var args = this.args.map(arg => {
-			return arg.toTeXString(Expr.PREC_COMMA);
+			return arg.toTeXString(Precedence.COMMA);
 		});
 
 		return (
 			!(isNameable(this.fun) && this.fun.name) || this.fun instanceof Variable
-				? this.fun.toTeXString(false)
+				? this.fun.toTeXString(Precedence.ZERO)
 				: Expr.makeTeXName(this.fun.name)
 		) + `\\mathord{\\left(${args.join(', ')}\\right)}`;
 	}
@@ -320,4 +323,5 @@ import { isNameable } from './Nameable';
 import ObjectFun from './ObjectFun';
 import Schema from './Schema';
 import Variable from './Variable';
-import { FunctionalType } from './types';
+import { FunctionalType } from './types';import Precedence from './Precedence';
+

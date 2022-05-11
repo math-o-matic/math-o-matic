@@ -3,6 +3,7 @@ import ExecutionContext from "../src/ExecutionContext";
 chai.use(require('chai-as-promised'));
 import Expr from "../src/exprs/Expr";
 import ObjectFun from "../src/exprs/ObjectFun";
+import Precedence from "../src/exprs/Precedence";
 import Program from '../src/Program';
 var fs = require('fs');
 var path = require('path');
@@ -53,7 +54,7 @@ describe('ObjectFun', function () {
 	it('should throw if !rettype && !expr', function () {
 		expect(() => new ObjectFun({
 			doc: null,
-			precedence: false,
+			precedence: Precedence.ZERO,
 			tex: null,
 			sealed: false,
 			rettype: null,

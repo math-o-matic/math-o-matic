@@ -36,7 +36,7 @@ export default class ObjectFun extends Fun {
 
 		return new ObjectFun({
 			doc: null,
-			precedence: false,
+			precedence: Precedence.ZERO,
 			tex: null,
 			sealed: this.sealed,
 			rettype: null,
@@ -55,7 +55,7 @@ export default class ObjectFun extends Fun {
 
 		return new ObjectFun({
 			doc: null,
-			precedence: false,
+			precedence: Precedence.ZERO,
 			tex: null,
 			sealed: this.sealed,
 			rettype: null,
@@ -80,18 +80,21 @@ export default class ObjectFun extends Fun {
 	}
 
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
+		prec = prec || Precedence.INFINITY;
+		root = typeof root == 'boolean' ? root : false;
+
 		if (!this.name) {
-			var shouldConsolidate = Expr.shouldConsolidate(Expr.PREC_FUNEXPR, prec);
+			var shouldConsolidate = Precedence.FUNEXPR.shouldConsolidate(prec);
 			return [
 				(shouldConsolidate ? '\\left(' : ''),
 
 				(
 					this.params.length == 1
-					? this.params[0].toTeXString(false)
-					: `\\left(${this.params.map(e => e.toTeXString(Expr.PREC_COMMA)).join(', ')}\\right)`
+					? this.params[0].toTeXString(Precedence.ZERO)
+					: `\\left(${this.params.map(e => e.toTeXString(Precedence.COMMA)).join(', ')}\\right)`
 				),
 				'\\mapsto ',
-				this.expr.expand().toTeXString(false),
+				this.expr.expand().toTeXString(Precedence.ZERO),
 
 				(shouldConsolidate ? '\\right)' : '')
 			].join('');
@@ -103,22 +106,39 @@ export default class ObjectFun extends Fun {
 		if (!this.expr)
 			return this.funcallToTeXString(this.params, prec);
 	
-		return this.funcallToTeXString(this.params, Expr.PREC_COLONEQQ)
-				+ `\\coloneqq ${this.expr.toTeXString(Expr.PREC_COLONEQQ)}`;
+		return this.funcallToTeXString(this.params, Precedence.COLONEQQ)
+				+ `\\coloneqq ${this.expr.toTeXString(Precedence.COLONEQQ)}`;
+	}
+
+	public static makeTeX(id: string, args: string[], tex: string, my: Precedence, your: Precedence) {
+		args = args || [];
+		your = your || Precedence.ZERO;
+		
+		var ret = tex;
+
+		if (my.shouldConsolidate(your)) {
+			ret = '\\left(' + ret + '\\right)';
+		}
+
+		return ret.replace(/#([0-9]+)/g, (match, g1) => {
+			return args[g1 * 1 - 1] || `\\texttt{\\textcolor{red}{\\#${g1}}}`;
+		}).replace(/<<(.+?)>>/, (_match, g1) => {
+			return `\\href{#${id}}{${g1}}`;
+		});
 	}
 
 	public funcallToTeXString(args: Expr[], prec: Precedence) {
 		var argStrings = args.map(arg => {
-			return arg.toTeXString(this.tex ? this.precedence : Expr.PREC_COMMA);
+			return arg.toTeXString(this.tex ? this.precedence : Precedence.COMMA);
 		});
 	
 		if (this.tex) {
-			return Expr.makeTeX('def-' + this.name, argStrings, this.tex, this.precedence, prec);
+			return ObjectFun.makeTeX('def-' + this.name, argStrings, this.tex, this.precedence, prec);
 		}
 	
 		return (
 			!this.name
-				? this.toTeXString(false)
+				? this.toTeXString(Precedence.ZERO)
 				: `\\href{#def-${this.name}}{${Expr.makeTeXName(this.name)}}`
 		) + `\\mathord{\\left(${argStrings.join(', ')}\\right)}`;
 	}
@@ -126,14 +146,15 @@ export default class ObjectFun extends Fun {
 
 import ExecutionContext from "../ExecutionContext";
 import StackTrace from "../StackTrace";
-import Expr, { Precedence } from "./Expr";
+import Expr from "./Expr";
 import Variable from "./Variable";
 import Parameter from "./Parameter";
 import { Type } from "./types";
+import Precedence from "./Precedence";
 
 interface ObjectFunArgumentType {
 	doc: string;
-	precedence: number | false;
+	precedence: Precedence;
 	tex: string;
 	sealed: boolean;
 	rettype: Type;

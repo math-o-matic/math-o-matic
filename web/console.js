@@ -106,7 +106,7 @@ function showPreview() {
 	if (!v.trim()) return;
 
 	try {
-		preview(ktx(Globals.program.evaluate(v).toTeXString(true, true)), {
+		preview(ktx(Globals.program.evaluate(v).toTeXString(null, true)), {
 			noescape: true
 		});
 	} catch (e) {
@@ -141,7 +141,7 @@ $('#console-input').addEventListener('keydown', evt => {
 			}
 
 			try {
-				write(ktx(Globals.program.evaluate(v).toTeXString(true, true)), {
+				write(ktx(Globals.program.evaluate(v).toTeXString(null, true)), {
 					noescape: true
 				});
 			} catch (e) {

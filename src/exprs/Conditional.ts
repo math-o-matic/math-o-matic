@@ -4,9 +4,10 @@ import { ProofType } from '../ProofType';
 import StackTrace from '../StackTrace';
 import $Variable from './$Variable';
 import Fun from './Fun';
-import Expr, { EqualsPriority, Precedence } from './Expr';
+import Expr, { EqualsPriority } from './Expr';
 import { ConditionalType } from './types';
 import Variable from './Variable';
+import Precedence from './Precedence';
 
 interface ConditionalArgumentType {
 	left: Expr[];
@@ -122,13 +123,16 @@ export default class Conditional extends Expr {
 	}
 	
 	public override toTeXString(prec?: Precedence, root?: boolean): string {
+		prec = prec || Precedence.INFINITY;
+		root = typeof root == 'boolean' ? root : false;
+
 		var expanded = this.expand() as Conditional;
 
-		var shouldConsolidate = Expr.shouldConsolidate(Expr.PREC_COMMA, prec);
+		var shouldConsolidate = Precedence.COMMA.shouldConsolidate(prec);
 
 		return [
 			(shouldConsolidate ? '\\left(' : ''),
-			`{${expanded.left.map(e => e.toTeXString(Expr.PREC_COMMA)).join(', ')} \\vdash ${expanded.right.toTeXString(Expr.PREC_COMMA)}}`,
+			`{${expanded.left.map(e => e.toTeXString(Precedence.COMMA)).join(', ')} \\vdash ${expanded.right.toTeXString(Precedence.COMMA)}}`,
 			(shouldConsolidate ? '\\right)' : '')
 		].join('');
 	}
