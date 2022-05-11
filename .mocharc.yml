@@ -3,4 +3,4 @@ require:
   - 'source-map-support/register'
 recursive: true
 extension:
-  - 'ts'
+  - 'spec.ts'
