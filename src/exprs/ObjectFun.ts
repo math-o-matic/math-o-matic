@@ -84,9 +84,9 @@ export default class ObjectFun extends Fun {
 		root = typeof root == 'boolean' ? root : false;
 
 		if (!this.name) {
-			var shouldConsolidate = Precedence.FUNEXPR.shouldConsolidate(prec);
+			var shouldPutParentheses = Precedence.FUNEXPR.shouldPutParentheses(prec);
 			return [
-				(shouldConsolidate ? '\\left(' : ''),
+				(shouldPutParentheses ? '\\left(' : ''),
 
 				(
 					this.params.length == 1
@@ -96,7 +96,7 @@ export default class ObjectFun extends Fun {
 				'\\mapsto ',
 				this.expr.expand().toTeXString(Precedence.ZERO),
 
-				(shouldConsolidate ? '\\right)' : '')
+				(shouldPutParentheses ? '\\right)' : '')
 			].join('');
 		}
 
@@ -116,7 +116,7 @@ export default class ObjectFun extends Fun {
 		
 		var ret = tex;
 
-		if (my.shouldConsolidate(your)) {
+		if (my.shouldPutParentheses(your)) {
 			ret = '\\left(' + ret + '\\right)';
 		}
 

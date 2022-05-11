@@ -108,10 +108,10 @@ export default class Schema extends Fun {
 		root = typeof root == 'boolean' ? root : false;
 
 		if (!this.name) {
-			var shouldConsolidate = this.precedence.shouldConsolidate(prec);
+			var shouldPutParentheses = this.precedence.shouldPutParentheses(prec);
 
 			return [
-				(shouldConsolidate ? '\\left(' : ''),
+				(shouldPutParentheses ? '\\left(' : ''),
 
 				(
 					this.params.length == 1
@@ -121,7 +121,7 @@ export default class Schema extends Fun {
 				'\\mapsto ',
 				this.expr.expand().toTeXString(Precedence.ZERO),
 
-				(shouldConsolidate ? '\\right)' : '')
+				(shouldPutParentheses ? '\\right)' : '')
 			].join('');
 		}
 		

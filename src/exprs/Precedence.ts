@@ -23,7 +23,11 @@ export default class Precedence {
 		return prec;
 	}
 
-	public shouldConsolidate(your: Precedence): boolean {
+	/**
+	 * If my == 0 returns false.
+	 * Otherwise checks if my >= your.
+	 */
+	public shouldPutParentheses(your: Precedence): boolean {
 		var myarr = this.precedence;
 		var yourarr = your.precedence;
 

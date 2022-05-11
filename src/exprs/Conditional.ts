@@ -128,12 +128,12 @@ export default class Conditional extends Expr {
 
 		var expanded = this.expand() as Conditional;
 
-		var shouldConsolidate = Precedence.COMMA.shouldConsolidate(prec);
+		var shouldPutParentheses = Precedence.COMMA.shouldPutParentheses(prec);
 
 		return [
-			(shouldConsolidate ? '\\left(' : ''),
+			(shouldPutParentheses ? '\\left(' : ''),
 			`{${expanded.left.map(e => e.toTeXString(Precedence.COMMA)).join(', ')} \\vdash ${expanded.right.toTeXString(Precedence.COMMA)}}`,
-			(shouldConsolidate ? '\\right)' : '')
+			(shouldPutParentheses ? '\\right)' : '')
 		].join('');
 	}
 }
