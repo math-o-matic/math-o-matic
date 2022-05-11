@@ -33,3 +33,9 @@ jobs:
     - run: npm test
     - run: npm run build
     - run: cd docs && npm run build && cd ..
+    - run: npm run coverage
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
