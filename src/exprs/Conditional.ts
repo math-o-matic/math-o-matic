@@ -23,10 +23,6 @@ export default class Conditional extends Expr {
 		this.right = right;
 	}
 
-	protected override isProvedInternal(hypotheses: Expr[]): boolean {
-		return this.right.isProved(hypotheses.concat(this.left));
-	}
-
 	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,

@@ -7,7 +7,6 @@ export default class Schema extends Fun {
 	public readonly schemaType: SchemaType;
 	public readonly def$s: $Variable[];
 	public readonly context: ExecutionContext;
-	private isProvedCache: boolean;
 
 	constructor ({doc, tex, schemaType, name, params, context, def$s, expr}: SchemaArgumentType, trace: StackTrace) {
 		if (!expr) {
@@ -27,22 +26,10 @@ export default class Schema extends Fun {
 		this.context = context;
 
 		if (schemaType == 'theorem') {
-			if (!this.isProved()) {
+			if (!Calculus.isProved(this)) {
 				throw Expr.error(`Schema ${name} is marked as a theorem but it is not proved`, trace);
 			}
 		}
-	}
-	
-	protected override isProvedInternal(hypotheses: Expr[]): boolean {
-		if (this.isProvedCache) return true;
-
-		if (hypotheses.length == 0 && typeof this.isProvedCache == 'boolean') {
-			return this.isProvedCache;
-		}
-
-		var ret = this.schemaType == 'axiom' || this.expr.isProved(hypotheses);
-		if (!hypotheses.length) this.isProvedCache = ret;
-		return ret;
 	}
 
 	public override isCallable(_context: ExecutionContext): boolean {
@@ -80,7 +67,7 @@ export default class Schema extends Fun {
 		}
 		
 		var id = 'def-' + this.name,
-			proved = this.isProved() ? 'p' : 'np';
+			proved = Calculus.isProved(this) ? 'p' : 'np';
 	
 		if (!root)
 			return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${TeXUtils.escapeTeX(this.name)}}}}`;

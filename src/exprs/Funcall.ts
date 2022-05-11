@@ -38,10 +38,6 @@ export default class Funcall extends Expr {
 		this.args = args;
 	}
 
-	protected override isProvedInternal(hypotheses: Expr[]): boolean {
-		return this.fun.isProved(hypotheses);
-	}
-
 	public isExpandableOnce(context: ExecutionContext): boolean {
 		var callee: Expr = this.fun;
 
@@ -221,7 +217,7 @@ export default class Funcall extends Expr {
 		if (this.fun instanceof Schema) {
 			return (
 				this.fun.name
-					? `\\href{#def-${this.fun.name}}{\\htmlData{proved=${this.fun.isProved() ? 'p' : 'np'}}{\\textsf{${TeXUtils.escapeTeX(this.fun.name)}}}}`
+					? `\\href{#def-${this.fun.name}}{\\htmlData{proved=${Calculus.isProved(this.fun) ? 'p' : 'np'}}{\\textsf{${TeXUtils.escapeTeX(this.fun.name)}}}}`
 					: this.fun.toTeXString(Precedence.ZERO)
 			) + `\\mathord{\\left(${this.args.map(arg => {
 				return arg.toTeXString(Precedence.COMMA);
@@ -255,4 +251,5 @@ import Schema from './Schema';
 import Variable from './Variable';
 import { FunctionalType } from './types';import Precedence from '../Precedence';
 import TeXUtils from '../TeXUtils';
+import Calculus from '../Calculus';
 

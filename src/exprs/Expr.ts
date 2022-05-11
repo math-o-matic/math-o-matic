@@ -19,18 +19,6 @@ export default abstract class Expr {
 		this.trace = trace;
 	}
 
-	public isProved(hypotheses?: Expr[]): boolean {
-		hypotheses = hypotheses || [];
-
-		for (var i = 0; i < hypotheses.length; i++) {
-			if (hypotheses[i] == this) return true;
-		}
-
-		return this.isProvedInternal(hypotheses);
-	}
-
-	protected abstract isProvedInternal(hypotheses: Expr[]): boolean;
-
 	public getProof(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,

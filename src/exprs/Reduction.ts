@@ -140,11 +140,6 @@ ${Calculus.expand(as)}
 		}
 	}
 
-	protected override isProvedInternal(hypotheses: Expr[]): boolean {
-		return this.subject.isProved(hypotheses)
-			&& this.antecedents.every(l => l.isProved(hypotheses));
-	}
-
 	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,

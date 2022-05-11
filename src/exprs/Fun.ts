@@ -47,10 +47,6 @@ export default abstract class Fun extends Expr implements Nameable {
 		return this.params.length;
 	}
 
-	protected override isProvedInternal(hypotheses: Expr[]): boolean {
-		return this.expr && this.expr.isProved(hypotheses);
-	}
-
 	public abstract isCallable(context: ExecutionContext): boolean;
 
 	public call(args: Expr[]): Expr {

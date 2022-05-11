@@ -22,10 +22,6 @@ export default class $Variable extends Expr implements Nameable {
 		this.expr = expr;
 	}
 
-	protected override isProvedInternal(hypotheses: Expr[]): boolean {
-		return this.expr.isProved(hypotheses);
-	}
-
 	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,

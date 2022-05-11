@@ -1,7 +1,7 @@
 /**
  * 숫자가 큰 것이 우선순위가 높다.
  */
- export enum EqualsPriority {
+ enum EqualsPriority {
 	/** Variable (primitive) */
 	ZERO,
 	/** Fun */
@@ -258,7 +258,7 @@ export default class Calculus {
 	 * 
 	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
 	 */
-	 public static equals(self: Expr, obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	public static equals(self: Expr, obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		// console.log(`${self}\n\n${obj}`);
 		// var ret = (() => {
 		
@@ -279,7 +279,7 @@ export default class Calculus {
 	 * 
 	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
 	 */
-	 protected static equalsInternal(self: Expr, obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	protected static equalsInternal(self: Expr, obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		if (self instanceof $Variable) {
 			return Calculus.equals(self.expr, obj, context);
 		}
@@ -417,7 +417,67 @@ export default class Calculus {
 		}
 
 		throw Error('Unknown expression type');
-	 }
+	}
+
+	public static isProved(self: Expr, hypotheses?: Expr[]): boolean {
+		hypotheses = hypotheses || [];
+
+		for (var i = 0; i < hypotheses.length; i++) {
+			if (hypotheses[i] == self) return true;
+		}
+
+		return Calculus.isProvedInternal(self, hypotheses);
+	}
+
+	private static schemaProvedCache: Map<Schema, boolean> = new Map();
+
+	protected static isProvedInternal(self: Expr, hypotheses: Expr[]): boolean {
+		if (self instanceof $Variable) {
+			return Calculus.isProved(self.expr, hypotheses);
+		}
+
+		if (self instanceof Conditional) {
+			return Calculus.isProved(self.right, hypotheses.concat(self.left));
+		}
+
+		if (self instanceof ObjectFun) {
+			return self.expr && Calculus.isProved(self.expr, hypotheses);
+		}
+
+		if (self instanceof Funcall) {
+			return Calculus.isProved(self.fun, hypotheses);
+		}
+
+		if (self instanceof Reduction) {
+			return Calculus.isProved(self.subject, hypotheses)
+				&& self.antecedents.every(l => Calculus.isProved(l, hypotheses));
+		}
+
+		if (self instanceof Schema) {
+			if (Calculus.schemaProvedCache.has(self)) {
+				var cache = Calculus.schemaProvedCache.get(self);
+				if (cache) return true;
+
+				if (hypotheses.length == 0) {
+					return cache;
+				}
+			}
+
+			var ret = self.schemaType == 'axiom' || Calculus.isProved(self.expr, hypotheses);
+			if (!hypotheses.length) Calculus.schemaProvedCache.set(self, ret);
+			return ret;
+		}
+
+		if (self instanceof Variable) {
+			return false;
+		}
+
+		if (self instanceof With) {
+			return Calculus.isProved(self.expr, hypotheses);
+		}
+
+		throw Error('Unknown expression type');
+	}
 }
 
 import Expr from "./exprs/Expr";

@@ -40,10 +40,6 @@ export default class Variable extends Expr implements Nameable {
 		this.expr = expr;
 	}
 
-	protected override isProvedInternal(hypotheses: Expr[]): boolean {
-		return false;
-	}
-
 	protected override getProofInternal(
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
