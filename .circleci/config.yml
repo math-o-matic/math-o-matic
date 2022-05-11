@@ -27,9 +27,6 @@ jobs:
       - node/install-packages:
           # If you are using yarn, change the line below from "npm" to "yarn"
           pkg-manager: npm
-      - node/install-packages:
-          pkg-manager: npm
-          app-dir: ./docs
       - run:
           name: sed -i 's/^dist\/$//g' .gitignore
           command: sed -i 's/^dist\/$//g' .gitignore
@@ -43,8 +40,16 @@ jobs:
           name: Build /
           command: npm run build
       - run:
+          name: cd docs/
+          command: cd docs/
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
           name: Build /docs/
-          command: cd docs && npm run build && cd ..
+          command: npm run build
+      - run:
+          name: cd ..
+          command: cd ..
       - run:
           name: Run coverage
           command: npm run coverage
