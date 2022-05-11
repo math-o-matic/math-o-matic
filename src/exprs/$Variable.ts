@@ -22,23 +22,6 @@ export default class $Variable extends Expr implements Nameable {
 		this.expr = expr;
 	}
 
-	protected override getProofInternal(
-			hypnumMap: Map<Expr, number>,
-			$Map: Map<Expr, number | [number, number]>,
-			ctr: Counter): ProofType[] {
-		
-		if (!$Map.has(this)) {
-			throw Error(`${this.name} is not defined`);
-		}
-
-		return [{
-			_type: 'R',
-			ctr: ctr.next(),
-			num: $Map.get(this),
-			expr: this.expr
-		}];
-	}
-
 	public override toIndentedString(indent: number, root?: boolean): string {
 		return this.name;
 	}
@@ -51,8 +34,6 @@ export default class $Variable extends Expr implements Nameable {
 	}
 }
 
-import Counter from "../Counter";
-import { ProofType } from "../ProofType";
 import StackTrace from "../StackTrace";
 import Precedence from "../Precedence";
 import TeXUtils from "../TeXUtils";

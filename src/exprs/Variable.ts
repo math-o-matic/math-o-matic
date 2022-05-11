@@ -40,18 +40,6 @@ export default class Variable extends Expr implements Nameable {
 		this.expr = expr;
 	}
 
-	protected override getProofInternal(
-			hypnumMap: Map<Expr, number>,
-			$Map: Map<Expr, number | [number, number]>,
-			ctr: Counter): ProofType[] {
-		
-		return [{
-			_type: 'NP',
-			ctr: ctr.next(),
-			expr: this
-		}];
-	}
-
 	// pr f
 	public toSimpleString() {
 		return this.type.toString() + ' ' + this.name;
@@ -79,7 +67,5 @@ export default class Variable extends Expr implements Nameable {
 
 import Parameter from './Parameter';
 import { Type } from './types';import Precedence from '../Precedence';
-import Counter from '../Counter';
-import { ProofType } from '../ProofType';
 import StackTrace from '../StackTrace';
 import TeXUtils from '../TeXUtils';

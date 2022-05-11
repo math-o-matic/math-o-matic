@@ -107,61 +107,6 @@ export default class Funcall extends Expr {
 		};
 	}
 
-	protected override getProofInternal(
-			hypnumMap: Map<Expr, number>,
-			$Map: Map<Expr, number | [number, number]>,
-			ctr: Counter): ProofType[] {
-
-		if (hypnumMap.has(this.fun)) {
-			return [{
-				_type: 'SE',
-				ctr: ctr.next(),
-				schema: hypnumMap.get(this.fun),
-				args: this.args,
-				expr: this
-			}];
-		}
-
-		if ($Map.has(this.fun)) {
-			return [{
-				_type: 'SE',
-				ctr: ctr.next(),
-				schema: $Map.get(this.fun),
-				args: this.args,
-				expr: this
-			}];
-		}
-
-		if (this.fun instanceof Schema && this.fun.name) {
-			return [{
-				_type: 'RC',
-				ctr: ctr.next(),
-				expr: this
-			}];
-		}
-
-		if (!(this.fun instanceof Schema)) {
-			return [{
-				_type: 'NP',
-				ctr: ctr.next(),
-				expr: this
-			}];
-		}
-
-		var schemalines = this.fun.getProof(hypnumMap, $Map, ctr);
-
-		return [
-			...schemalines,
-			{
-				_type: 'SE',
-				ctr: ctr.next(),
-				schema: schemalines[schemalines.length - 1].ctr,
-				args: this.args,
-				expr: this
-			}
-		];
-	}
-
 	public override toIndentedString(indent: number, root?: boolean): string {
 		var args: any = this.args.map(arg => {
 			if (arg instanceof Variable) return `${arg.name}<${arg._id}>`;
@@ -239,9 +184,7 @@ export default class Funcall extends Expr {
 	}
 }
 
-import Counter from '../Counter';
 import ExecutionContext from '../ExecutionContext';
-import { ProofType } from '../ProofType';
 import StackTrace from '../StackTrace';
 import $Variable from './$Variable';
 import Fun from './Fun';

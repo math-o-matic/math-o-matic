@@ -72,62 +72,11 @@ export default abstract class Fun extends Expr implements Nameable {
 
 		return Calculus.substitute(this.expr, map);
 	}
-
-	protected override getProofInternal(
-			hypnumMap: Map<Expr, number>,
-			$Map: Map<Expr, number | [number, number]>,
-			ctr: Counter,
-			root: boolean=false): ProofType[] {
-		
-		if (this instanceof Schema && this.name && !root) {
-			return [{
-				_type: 'RS',
-				ctr: ctr.next(),
-				expr: this
-			}];
-		}
-
-		if (!this.expr) {
-			return [{
-				_type: 'NP',
-				ctr: ctr.next(),
-				expr: this
-			}];
-		}
-
-		$Map = new Map($Map);
-
-		var start = ctr.peek() + 1;
-
-		var $lines: ProofType[] = [];
-		
-		if (this instanceof Schema) {
-			this.def$s.forEach($ => {
-				var lines = $.expr.getProof(hypnumMap, $Map, ctr);
-				$lines = $lines.concat(lines);
-
-				var $num = lines[lines.length - 1].ctr;
-				$Map.set($, $num);
-			});
-		}
-
-		return [{
-			_type: 'V',
-			$lines,
-			lines: this.expr.getProof(hypnumMap, $Map, ctr),
-			params: this.params,
-			ctr: [start, ctr.peek()]
-		}];
-	}
 }
 
-import Funcall from './Funcall';
 import Variable from './Variable';
 import StackTrace from '../StackTrace';
 import ExecutionContext from '../ExecutionContext';
-import Counter from '../Counter';
-import { ProofType } from '../ProofType';
-import Schema from './Schema';
 import Parameter from './Parameter';
 import { FunctionalType, Type } from './types';
 import Precedence from '../Precedence';

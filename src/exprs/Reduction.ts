@@ -15,8 +15,8 @@ export default class Reduction extends Expr {
 	public readonly args: (Expr | null)[];
 	public readonly preFormatConsequent: Expr;
 	public readonly consequent: Expr;
-	private readonly antecedentEqualsResults: (Fun | Variable)[][];
-	private readonly rightEqualsResult: (Fun | Variable)[];
+	public readonly antecedentEqualsResults: (Fun | Variable)[][];
+	public readonly rightEqualsResult: (Fun | Variable)[];
 
 	constructor ({antecedents, subject, args, as}: ReductionArgumentType, context: ExecutionContext, trace: StackTrace) {
 		if (args) {
@@ -138,96 +138,6 @@ ${Calculus.expand(as)}
 		} else {
 			this.consequent = conditional.right;
 		}
-	}
-
-	protected override getProofInternal(
-			hypnumMap: Map<Expr, number>,
-			$Map: Map<Expr, number | [number, number]>,
-			ctr: Counter): ProofType[] {
-		
-		var antecedentLinesList: ProofType[][] = [];
-		var antecedentNums: (number | [number, number])[] = this.antecedents.map((l, i) => {
-			if (!this.antecedentEqualsResults[i].length) {
-				if (hypnumMap.has(l)) return hypnumMap.get(l);
-				if ($Map.has(l)) return $Map.get(l);
-			}
-
-			var ref = hypnumMap.has(l)
-				? hypnumMap.get(l)
-				: $Map.has(l)
-					? $Map.get(l)
-					: null;
-			var lines = ref ? [] : l.getProof(hypnumMap, $Map, ctr);
-
-			if (this.antecedentEqualsResults[i].length) {
-				lines.push({
-					_type: 'bydef',
-					ctr: ctr.next(),
-					ref: ref || lines[lines.length - 1].ctr,
-					expr: this.requiredAntecedents[i],
-					of: this.antecedentEqualsResults[i]
-				});
-			}
-
-			antecedentLinesList.push(lines);
-			return this.antecedentEqualsResults[i].length
-				? ctr.peek()
-				: lines[lines.length - 1].ctr;
-		});
-		
-		var args: Expr[] = null;
-		var subjectlines: ProofType[] = [];
-		var subjectnum = hypnumMap.get(this.subject)
-			|| $Map.get(this.subject)
-			|| (
-				this.subject instanceof Funcall && $Map.has(this.subject.fun)
-					? (args = this.subject.args, $Map.get(this.subject.fun))
-					: false
-			)
-			|| (
-				(s => {
-					return s instanceof Fun && s.name
-						|| s instanceof Funcall && isNameable(s.fun) && s.fun.name;
-				})(this.subject)
-					? this.subject
-					: (subjectlines = this.subject.getProof(hypnumMap, $Map, ctr))[subjectlines.length-1].ctr
-			);
-
-		var ret: ProofType[] = [
-			...antecedentLinesList.flat(),
-			...subjectlines
-		];
-
-		if (this.rightEqualsResult && this.rightEqualsResult.length) {
-			ret.push(
-				{
-					_type: 'TE',
-					ctr: ctr.next(),
-					subject: subjectnum,
-					args,
-					antecedents: antecedentNums,
-					reduced: this.preFormatConsequent
-				},
-				{
-					_type: 'bydef',
-					ref: ctr.peek(),
-					ctr: ctr.next(),
-					expr: this.consequent,
-					of: this.rightEqualsResult
-				}
-			);
-		} else {
-			ret.push({
-				_type: 'TE',
-				ctr: ctr.next(),
-				subject: subjectnum,
-				args,
-				antecedents: antecedentNums,
-				reduced: this.consequent
-			});
-		}
-		
-		return ret;
 	}
 
 	public static guess(
@@ -400,13 +310,10 @@ ${Calculus.expand(as)}
 	}
 }
 
-import Counter from "../Counter";
 import ExecutionContext from "../ExecutionContext";
-import { ProofType } from "../ProofType";
 import StackTrace from "../StackTrace";
 import Fun from "./Fun";
 import Funcall from "./Funcall";
-import { isNameable } from "./Nameable";
 import Parameter from "./Parameter";
 import Schema from "./Schema";
 import Conditional from "./Conditional";

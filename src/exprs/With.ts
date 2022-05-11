@@ -20,30 +20,6 @@ export default class With extends Expr {
 		this.expr = expr;
 	}
 
-	protected override getProofInternal(hypnumMap: Map<Expr, number>, $Map: Map<Expr, number | [number, number]>, ctr: Counter, root?: boolean): ProofType[] {
-
-		$Map = new Map($Map);
-
-		var def: ProofType = {
-			_type: 'def',
-			ctr: ctr.next(),
-			var: this.variable
-		};
-
-		var $lines = this.def$s.map($ => {
-			var lines = $.expr.getProof(hypnumMap, $Map, ctr);
-			var $num = lines[lines.length - 1].ctr;
-			$Map.set($, $num);
-			return lines;
-		}).flat(1);
-
-		return [
-			def,
-			...$lines,
-			...this.expr.getProof(hypnumMap, $Map, ctr)
-		];
-	}
-
 	public override toIndentedString(indent: number, root?: boolean): string {
 		throw new Error("Method not implemented.");
 	}
@@ -55,12 +31,7 @@ export default class With extends Expr {
 	}
 }
 
-import Counter from "../Counter";
-import ExecutionContext from "../ExecutionContext";
-import { ProofType } from "../ProofType";
 import StackTrace from "../StackTrace";
 import $Variable from "./$Variable";
-import Fun from "./Fun";
 import Variable from "./Variable";
 import Precedence from "../Precedence";
-import Calculus from "../Calculus";

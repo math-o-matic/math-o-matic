@@ -23,42 +23,6 @@ export default class Conditional extends Expr {
 		this.right = right;
 	}
 
-	protected override getProofInternal(
-			hypnumMap: Map<Expr, number>,
-			$Map: Map<Expr, number | [number, number]>,
-			ctr: Counter): ProofType[] {
-		
-		hypnumMap = new Map(hypnumMap);
-
-		var start = ctr.peek() + 1;
-
-		var leftlines: ProofType[] = this.left.map(l => {
-			hypnumMap.set(l, ctr.next());
-			
-			return {
-				_type: 'H',
-				ctr: ctr.peek(),
-				expr: l
-			};
-		});
-
-		$Map = new Map($Map);
-
-		var $lines = this.def$s.map($ => {
-			var lines = $.expr.getProof(hypnumMap, $Map, ctr);
-			var $num = lines[lines.length - 1].ctr;
-			$Map.set($, $num);
-			return lines;
-		}).flat(1);
-
-		return [{
-			_type: 'T',
-			leftlines: leftlines as any,
-			rightlines: $lines.concat(this.right.getProof(hypnumMap, $Map, ctr)),
-			ctr: [start, ctr.peek()]
-		}];
-	}
-
 	public override toIndentedString(indent: number, root?: boolean): string {
 		if (!this.left.length) {
 			return '|- ' + this.right.toIndentedString(indent);
@@ -87,13 +51,8 @@ export default class Conditional extends Expr {
 	}
 }
 
-import Counter from '../Counter';
-import ExecutionContext from '../ExecutionContext';
-import { ProofType } from '../ProofType';
 import StackTrace from '../StackTrace';
 import $Variable from './$Variable';
-import Fun from './Fun';
 import { ConditionalType } from './types';
-import Variable from './Variable';
 import Precedence from '../Precedence';
 import Calculus from '../Calculus';

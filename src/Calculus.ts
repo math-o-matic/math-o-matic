@@ -478,6 +478,299 @@ export default class Calculus {
 
 		throw Error('Unknown expression type');
 	}
+
+	public static getProof(
+			self: Expr,
+			hypnumMap: Map<Expr, number>,
+			$Map: Map<Expr, number | [number, number]>,
+			ctr: Counter,
+			root: boolean=false): ProofType[] {
+		
+		if (hypnumMap.has(self)) {
+			return [{
+				_type: 'R',
+				ctr: ctr.next(),
+				num: hypnumMap.get(self),
+				expr: self
+			}];
+		}
+
+		if ($Map.has(self)) {
+			return [{
+				_type: 'R',
+				ctr: ctr.next(),
+				num: $Map.get(self),
+				expr: self
+			}];
+		}
+
+		return Calculus.getProofInternal(self, hypnumMap, $Map, ctr, root);
+	}
+
+	protected static getProofInternal(
+			self: Expr,
+			hypnumMap: Map<Expr, number>,
+			$Map: Map<Expr, number | [number, number]>,
+			ctr: Counter,
+			root?: boolean): ProofType[] {
+		
+		if (self instanceof $Variable) {
+			if (!$Map.has(self)) {
+				throw Error(`${self.name} is not defined`);
+			}
+	
+			return [{
+				_type: 'R',
+				ctr: ctr.next(),
+				num: $Map.get(self),
+				expr: self.expr
+			}];
+		}
+
+		if (self instanceof Conditional) {
+			hypnumMap = new Map(hypnumMap);
+
+			var start = ctr.peek() + 1;
+
+			var leftlines: ProofType[] = self.left.map(l => {
+				hypnumMap.set(l, ctr.next());
+				
+				return {
+					_type: 'H',
+					ctr: ctr.peek(),
+					expr: l
+				};
+			});
+
+			$Map = new Map($Map);
+
+			let $lines = self.def$s.map($ => {
+				var lines = Calculus.getProof($.expr, hypnumMap, $Map, ctr);
+				var $num = lines[lines.length - 1].ctr;
+				$Map.set($, $num);
+				return lines;
+			}).flat(1);
+
+			return [{
+				_type: 'T',
+				leftlines: leftlines as any,
+				rightlines: $lines.concat(Calculus.getProof(self.right, hypnumMap, $Map, ctr)),
+				ctr: [start, ctr.peek()]
+			}];
+		}
+
+		if (self instanceof Fun) {
+			if (self instanceof Schema && self.name && !root) {
+				return [{
+					_type: 'RS',
+					ctr: ctr.next(),
+					expr: self
+				}];
+			}
+	
+			if (!self.expr) {
+				return [{
+					_type: 'NP',
+					ctr: ctr.next(),
+					expr: self
+				}];
+			}
+	
+			$Map = new Map($Map);
+	
+			var start = ctr.peek() + 1;
+	
+			let $lines: ProofType[] = [];
+			
+			if (self instanceof Schema) {
+				self.def$s.forEach($ => {
+					var lines = Calculus.getProof($.expr, hypnumMap, $Map, ctr);
+					$lines = $lines.concat(lines);
+	
+					var $num = lines[lines.length - 1].ctr;
+					$Map.set($, $num);
+				});
+			}
+	
+			return [{
+				_type: 'V',
+				$lines,
+				lines: Calculus.getProof(self.expr, hypnumMap, $Map, ctr),
+				params: self.params,
+				ctr: [start, ctr.peek()]
+			}];
+		}
+
+		if (self instanceof Funcall) {
+			if (hypnumMap.has(self.fun)) {
+				return [{
+					_type: 'SE',
+					ctr: ctr.next(),
+					schema: hypnumMap.get(self.fun),
+					args: self.args,
+					expr: self
+				}];
+			}
+	
+			if ($Map.has(self.fun)) {
+				return [{
+					_type: 'SE',
+					ctr: ctr.next(),
+					schema: $Map.get(self.fun),
+					args: self.args,
+					expr: self
+				}];
+			}
+	
+			if (self.fun instanceof Schema && self.fun.name) {
+				return [{
+					_type: 'RC',
+					ctr: ctr.next(),
+					expr: self
+				}];
+			}
+	
+			if (!(self.fun instanceof Schema)) {
+				return [{
+					_type: 'NP',
+					ctr: ctr.next(),
+					expr: self
+				}];
+			}
+	
+			var schemalines = Calculus.getProof(self.fun, hypnumMap, $Map, ctr);
+	
+			return [
+				...schemalines,
+				{
+					_type: 'SE',
+					ctr: ctr.next(),
+					schema: schemalines[schemalines.length - 1].ctr,
+					args: self.args,
+					expr: self
+				}
+			];
+		}
+
+		if (self instanceof Reduction) {
+			var antecedentLinesList: ProofType[][] = [];
+			var antecedentNums: (number | [number, number])[] = self.antecedents.map((l, i) => {
+				if (!self.antecedentEqualsResults[i].length) {
+					if (hypnumMap.has(l)) return hypnumMap.get(l);
+					if ($Map.has(l)) return $Map.get(l);
+				}
+
+				var ref = hypnumMap.has(l)
+					? hypnumMap.get(l)
+					: $Map.has(l)
+						? $Map.get(l)
+						: null;
+				var lines = ref ? [] : Calculus.getProof(l, hypnumMap, $Map, ctr);
+
+				if (self.antecedentEqualsResults[i].length) {
+					lines.push({
+						_type: 'bydef',
+						ctr: ctr.next(),
+						ref: ref || lines[lines.length - 1].ctr,
+						expr: self.requiredAntecedents[i],
+						of: self.antecedentEqualsResults[i]
+					});
+				}
+
+				antecedentLinesList.push(lines);
+				return self.antecedentEqualsResults[i].length
+					? ctr.peek()
+					: lines[lines.length - 1].ctr;
+			});
+			
+			var args: Expr[] = null;
+			var subjectlines: ProofType[] = [];
+			var subjectnum = hypnumMap.get(self.subject)
+				|| $Map.get(self.subject)
+				|| (
+					self.subject instanceof Funcall && $Map.has(self.subject.fun)
+						? (args = self.subject.args, $Map.get(self.subject.fun))
+						: false
+				)
+				|| (
+					(s => {
+						return s instanceof Fun && s.name
+							|| s instanceof Funcall && isNameable(s.fun) && s.fun.name;
+					})(self.subject)
+						? self.subject
+						: (subjectlines = Calculus.getProof(self.subject, hypnumMap, $Map, ctr))[subjectlines.length-1].ctr
+				);
+
+			var ret: ProofType[] = [
+				...antecedentLinesList.flat(),
+				...subjectlines
+			];
+
+			if (self.rightEqualsResult && self.rightEqualsResult.length) {
+				ret.push(
+					{
+						_type: 'TE',
+						ctr: ctr.next(),
+						subject: subjectnum,
+						args,
+						antecedents: antecedentNums,
+						reduced: self.preFormatConsequent
+					},
+					{
+						_type: 'bydef',
+						ref: ctr.peek(),
+						ctr: ctr.next(),
+						expr: self.consequent,
+						of: self.rightEqualsResult
+					}
+				);
+			} else {
+				ret.push({
+					_type: 'TE',
+					ctr: ctr.next(),
+					subject: subjectnum,
+					args,
+					antecedents: antecedentNums,
+					reduced: self.consequent
+				});
+			}
+			
+			return ret;
+		}
+
+		if (self instanceof Variable) {
+			return [{
+				_type: 'NP',
+				ctr: ctr.next(),
+				expr: self
+			}];
+		}
+
+		if (self instanceof With) {
+			$Map = new Map($Map);
+
+			var def: ProofType = {
+				_type: 'def',
+				ctr: ctr.next(),
+				var: self.variable
+			};
+
+			let $lines = self.def$s.map($ => {
+				var lines = Calculus.getProof($.expr, hypnumMap, $Map, ctr);
+				var $num = lines[lines.length - 1].ctr;
+				$Map.set($, $num);
+				return lines;
+			}).flat(1);
+
+			return [
+				def,
+				...$lines,
+				...Calculus.getProof(self.expr, hypnumMap, $Map, ctr)
+			];
+		}
+
+		throw Error('Unknown expression type');
+	}
 }
 
 import Expr from "./exprs/Expr";
@@ -493,4 +786,7 @@ import Schema from "./exprs/Schema";
 import Variable from "./exprs/Variable";
 import With from "./exprs/With";
 import { FunctionalType } from "./exprs/types";import Parameter from "./exprs/Parameter";
+import Counter from "./Counter";
+import { ProofType } from "./ProofType";
+import { isNameable } from "./exprs/Nameable";
 

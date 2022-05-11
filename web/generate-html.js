@@ -122,12 +122,12 @@ function generateHtml(program) {
 
 		notProvedList = notProvedList.concat(
 			[...scope.schemaMap]
-				.filter(([k, v]) => !v.isProved()).map(([k, v]) => k)
+				.filter(([k, v]) => !MathOMatic.Calculus.isProved(v)).map(([k, v]) => k)
 		);
 
 		provedList = provedList.concat(
 			[...scope.schemaMap]
-				.filter(([k, v]) => v.schemaType != 'axiom' && v.isProved()).map(([k, v]) => k)
+				.filter(([k, v]) => v.schemaType != 'axiom' && MathOMatic.Calculus.isProved(v)).map(([k, v]) => k)
 		);
 
 		for (var [k, v] of scope.typedefMap) {
