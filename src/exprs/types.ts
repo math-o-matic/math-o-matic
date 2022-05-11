@@ -16,6 +16,12 @@ export abstract class Type {
 
 	public abstract resolve(): Type;
 
+	public toString() {
+		return this.toIndentedString(0);
+	}
+
+	public abstract toIndentedString(indent: number): string;
+
 	public abstract toTeXString(root?: boolean): string;
 
 	public abstract isFunctional(): boolean;
@@ -86,6 +92,10 @@ export class ConditionalType extends Type {
 		this.right = right;
 	}
 
+	public override toIndentedString(indent: number): string {
+		return `[${this.left.join(', ')} |- ${this.right}]`;
+	}
+
 	public override toTeXString(root?: boolean): string {
 		throw new Error("Method not implemented.");
 	}
@@ -121,6 +131,10 @@ export class SimpleType extends Type implements Nameable {
 
 	public override resolve(): Type {
 		return this.expr ? this.expr.resolve() : this;
+	}
+
+	public override toIndentedString(indent: number): string {
+		return this.name;
 	}
 
 	public override toTeXString(root?: boolean): string {
@@ -162,6 +176,10 @@ export class FunctionalType extends Type {
 			from: this.from.map(f => f.resolve()),
 			to: this.to.resolve()
 		}, this.trace);
+	}
+
+	public override toIndentedString(indent: number): string {
+		return `[${this.from.join(', ')} -> ${this.to}]`;
 	}
 
 	public override toTeXString(root?: boolean): string {
