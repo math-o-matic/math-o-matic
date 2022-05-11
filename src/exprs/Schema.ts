@@ -83,9 +83,9 @@ export default class Schema extends Fun {
 			proved = this.isProved() ? 'p' : 'np';
 	
 		if (!root)
-			return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${Expr.escapeTeX(this.name)}}}}`;
+			return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${TeXUtils.escapeTeX(this.name)}}}}`;
 	
-		return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${Expr.escapeTeX(this.name)}}}}\\mathord{\\left(${this.params.map(e => e.toTeXStringWithId(Precedence.COMMA) + (e.selector ? `: \\texttt{@${e.selector}}` : '')).join(', ')}\\right)}:\\\\\\quad`
+		return `\\href{#${id}}{\\htmlData{proved=${proved}}{\\mathsf{${TeXUtils.escapeTeX(this.name)}}}}\\mathord{\\left(${this.params.map(e => e.toTeXStringWithId(Precedence.COMMA) + (e.selector ? `: \\texttt{@${e.selector}}` : '')).join(', ')}\\right)}:\\\\\\quad`
 				+ Calculus.expand(this.expr).toTeXString(Precedence.INFINITY);
 	}
 }
@@ -95,8 +95,9 @@ import Expr from "./Expr";
 import StackTrace from "../StackTrace";
 import ExecutionContext from "../ExecutionContext";
 import Parameter from "./Parameter";
-import Precedence from "./Precedence";
-import Calculus from "./Calculus";
+import Precedence from "../Precedence";
+import Calculus from "../Calculus";
+import TeXUtils from "../TeXUtils";
 
 interface SchemaArgumentType {
 	doc: string;

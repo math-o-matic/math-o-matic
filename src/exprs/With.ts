@@ -66,5 +66,5 @@ import StackTrace from "../StackTrace";
 import $Variable from "./$Variable";
 import Fun from "./Fun";
 import Variable from "./Variable";
-import Precedence from "./Precedence";
-import Calculus from "./Calculus";
+import Precedence from "../Precedence";
+import Calculus from "../Calculus";

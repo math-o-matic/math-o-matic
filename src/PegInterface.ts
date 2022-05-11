@@ -495,4 +495,4 @@ import Variable from './exprs/Variable';
 import With from './exprs/With';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
-import Precedence from './exprs/Precedence';
+import Precedence from './Precedence';

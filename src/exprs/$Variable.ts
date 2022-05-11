@@ -51,14 +51,12 @@ export default class $Variable extends Expr implements Nameable {
 		prec = prec || Precedence.INFINITY;
 		root = typeof root == 'boolean' ? root : false;
 
-		return `\\mathtt{${Expr.escapeTeX(this.name)}}`;
+		return `\\mathtt{${TeXUtils.escapeTeX(this.name)}}`;
 	}
 }
 
 import Counter from "../Counter";
-import ExecutionContext from "../ExecutionContext";
 import { ProofType } from "../ProofType";
 import StackTrace from "../StackTrace";
-import Fun from "./Fun";
-import Variable from "./Variable";
-import Precedence from "./Precedence";
+import Precedence from "../Precedence";
+import TeXUtils from "../TeXUtils";

@@ -134,8 +134,8 @@ import { ProofType } from '../ProofType';
 import Schema from './Schema';
 import Parameter from './Parameter';
 import { FunctionalType, Type } from './types';
-import Precedence from './Precedence';
-import Calculus from './Calculus';
+import Precedence from '../Precedence';
+import Calculus from '../Calculus';
 
 interface FunArgumentType {
 	doc: string;

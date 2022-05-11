@@ -1,7 +1,7 @@
 import Counter from "./Counter";
-import Calculus from "./exprs/Calculus";
+import Calculus from "./Calculus";
 import Expr from "./exprs/Expr";
-import Precedence from "./exprs/Precedence";
+import Precedence from "./Precedence";
 import Schema from "./exprs/Schema";
 import Variable from "./exprs/Variable";
 import { ProofType } from "./ProofType";

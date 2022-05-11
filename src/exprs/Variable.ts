@@ -71,7 +71,7 @@ export default class Variable extends Expr implements Nameable {
 
 		var id = this instanceof Parameter ? `id-${this._id}` : `def-${this.name}`;
 
-		var tex = this.tex || Expr.makeTeXName(this.name);
+		var tex = this.tex || TeXUtils.makeTeXName(this.name);
 		
 		var expr = root && this.expr
 			? `\\coloneqq ${this.expr.toTeXString(Precedence.COLONEQQ)}`
@@ -82,9 +82,8 @@ export default class Variable extends Expr implements Nameable {
 }
 
 import Parameter from './Parameter';
-import { Type } from './types';import Precedence from './Precedence';
+import { Type } from './types';import Precedence from '../Precedence';
 import Counter from '../Counter';
-import ExecutionContext from '../ExecutionContext';
 import { ProofType } from '../ProofType';
 import StackTrace from '../StackTrace';
-import Fun from './Fun';
+import TeXUtils from '../TeXUtils';

@@ -420,17 +420,17 @@ export default class Calculus {
 	 }
 }
 
-import Expr from "./Expr";
-import ExecutionContext from "../ExecutionContext";
-import $Variable from "./$Variable";
-import Conditional from "./Conditional";
-import Fun from "./Fun";
-import Funcall from "./Funcall";
-import ObjectFun from "./ObjectFun";
+import Expr from "./exprs/Expr";
+import ExecutionContext from "./ExecutionContext";
+import $Variable from "./exprs/$Variable";
+import Conditional from "./exprs/Conditional";
+import Fun from "./exprs/Fun";
+import Funcall from "./exprs/Funcall";
+import ObjectFun from "./exprs/ObjectFun";
 import Precedence from "./Precedence";
-import Reduction from "./Reduction";
-import Schema from "./Schema";
-import Variable from "./Variable";
-import With from "./With";
-import { FunctionalType } from "./types";import Parameter from "./Parameter";
+import Reduction from "./exprs/Reduction";
+import Schema from "./exprs/Schema";
+import Variable from "./exprs/Variable";
+import With from "./exprs/With";
+import { FunctionalType } from "./exprs/types";import Parameter from "./exprs/Parameter";
 

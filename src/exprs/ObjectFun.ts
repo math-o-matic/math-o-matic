@@ -51,7 +51,7 @@ export default class ObjectFun extends Fun {
 		}
 
 		if (!root)
-			return `\\href{#def-${this.name}}{${Expr.makeTeXName(this.name)}}`;
+			return `\\href{#def-${this.name}}{${TeXUtils.makeTeXName(this.name)}}`;
 	
 		if (!this.expr)
 			return this.funcallToTeXString(this.params, prec);
@@ -89,7 +89,7 @@ export default class ObjectFun extends Fun {
 		return (
 			!this.name
 				? this.toTeXString(Precedence.ZERO)
-				: `\\href{#def-${this.name}}{${Expr.makeTeXName(this.name)}}`
+				: `\\href{#def-${this.name}}{${TeXUtils.makeTeXName(this.name)}}`
 		) + `\\mathord{\\left(${argStrings.join(', ')}\\right)}`;
 	}
 }
@@ -98,8 +98,9 @@ import ExecutionContext from "../ExecutionContext";
 import StackTrace from "../StackTrace";
 import Parameter from "./Parameter";
 import { Type } from "./types";
-import Precedence from "./Precedence";
-import Calculus from "./Calculus";
+import Precedence from "../Precedence";
+import Calculus from "../Calculus";
+import TeXUtils from "../TeXUtils";
 
 interface ObjectFunArgumentType {
 	doc: string;

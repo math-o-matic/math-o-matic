@@ -417,5 +417,5 @@ import Schema from "./Schema";
 import Conditional from "./Conditional";
 import { FunctionalType, ConditionalType } from "./types";
 import Variable from "./Variable";
-import Precedence from "./Precedence";
-import Calculus from "./Calculus";
+import Precedence from "../Precedence";
+import Calculus from "../Calculus";

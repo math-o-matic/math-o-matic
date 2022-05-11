@@ -1,10 +1,10 @@
 import chai, { expect } from "chai";
 import ExecutionContext from "../src/ExecutionContext";
-import Calculus from "../src/exprs/Calculus";
+import Calculus from "../src/Calculus";
 chai.use(require('chai-as-promised'));
 import Expr from "../src/exprs/Expr";
 import ObjectFun from "../src/exprs/ObjectFun";
-import Precedence from "../src/exprs/Precedence";
+import Precedence from "../src/Precedence";
 import Program from '../src/Program';
 var fs = require('fs');
 var path = require('path');

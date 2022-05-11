@@ -221,7 +221,7 @@ export default class Funcall extends Expr {
 		if (this.fun instanceof Schema) {
 			return (
 				this.fun.name
-					? `\\href{#def-${this.fun.name}}{\\htmlData{proved=${this.fun.isProved() ? 'p' : 'np'}}{\\textsf{${Expr.escapeTeX(this.fun.name)}}}}`
+					? `\\href{#def-${this.fun.name}}{\\htmlData{proved=${this.fun.isProved() ? 'p' : 'np'}}{\\textsf{${TeXUtils.escapeTeX(this.fun.name)}}}}`
 					: this.fun.toTeXString(Precedence.ZERO)
 			) + `\\mathord{\\left(${this.args.map(arg => {
 				return arg.toTeXString(Precedence.COMMA);
@@ -238,7 +238,7 @@ export default class Funcall extends Expr {
 		return (
 			!(isNameable(this.fun) && this.fun.name) || this.fun instanceof Variable
 				? this.fun.toTeXString(Precedence.ZERO)
-				: Expr.makeTeXName(this.fun.name)
+				: TeXUtils.makeTeXName(this.fun.name)
 		) + `\\mathord{\\left(${args.join(', ')}\\right)}`;
 	}
 }
@@ -253,5 +253,6 @@ import { isNameable } from './Nameable';
 import ObjectFun from './ObjectFun';
 import Schema from './Schema';
 import Variable from './Variable';
-import { FunctionalType } from './types';import Precedence from './Precedence';
+import { FunctionalType } from './types';import Precedence from '../Precedence';
+import TeXUtils from '../TeXUtils';
 
