@@ -15,8 +15,7 @@ export default abstract class Expr {
 		this.trace = trace;
 	}
 
-	// This method is declared in a weird way to prevent method overrides.
-	public readonly toTeXString = function (prec?: Precedence, root?: boolean): string {
+	public toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;
 		root = typeof root == 'boolean' ? root : false;
 		return this.toTeXStringInternal(prec, root);
