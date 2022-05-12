@@ -25,15 +25,15 @@ export default class Precedence {
 
 	/**
 	 * If my == 0 returns false.
-	 * Otherwise checks if my >= your.
+	 * Otherwise checks if my >= context.
 	 */
-	public shouldPutParentheses(your: Precedence): boolean {
+	public shouldPutParentheses(context: Precedence): boolean {
 		var myarr = this.precedence;
-		var yourarr = your.precedence;
+		var contextarr = context.precedence;
 
 		if (myarr[0] == 0 && myarr[1] == 0) return false;
 
-		return !(myarr[0] < yourarr[0] || myarr[0] == yourarr[0] && myarr[1] < yourarr[1]);
+		return !(myarr[0] < contextarr[0] || myarr[0] == contextarr[0] && myarr[1] < contextarr[1]);
 	}
 
 	public toString(): string {
