@@ -11,7 +11,7 @@ var path = require('path');
 
 import unparse from '../src/Unparser';
 
-function removeLocationAndStringify(obj) {
+function removeLocationAndStringify(obj: any) {
 	return JSON.stringify(obj, (k, v) => {
 		if (k == 'location') return undefined;
 		return v;
