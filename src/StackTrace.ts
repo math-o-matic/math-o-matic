@@ -25,14 +25,15 @@ export default class StackTrace {
 	public error(message: string | InterpolativeString) {
 		var fileUri = this.fileUri || '<unknown>';
 
-		var tail = '\n\tat '
-			+ (
-				this.stack.length
-					? this.stack.map(({type, name, location}) => {
-						return `${type} ${name || '<anonymous>'} (${fileUri}:${location.start.line}:${location.start.column})`;
-					}).join('\n\tat ')
-					: `<root> (${fileUri}:1:1)`
-			);
+		var tail = '\n\tat ';
+
+		if (this.stack.length == 0) {
+			tail += `<root> (${fileUri}:1:1)`;
+		} else {
+			tail += this.stack.map(({type, name, location}) => {
+				return `${type} ${name || '<anonymous>'} (${fileUri}:${location.start.line}:${location.start.column})`;
+			}).join('\n\tat ');
+		}
 		
 		if (message instanceof InterpolativeString) {
 			return new InterpolativeError(message.concatStrings(tail));
