@@ -19,10 +19,7 @@ export default class ObjectFun extends Fun {
 		return this.expr && (!this.sealed || context.canUse(this));
 	}
 
-	public override toTeXString(prec?: Precedence, root?: boolean): string {
-		prec = prec || Precedence.INFINITY;
-		root = typeof root == 'boolean' ? root : false;
-
+	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		if (!this.name) {
 			var shouldPutParentheses = Precedence.FUNEXPR.shouldPutParentheses(prec);
 			return [

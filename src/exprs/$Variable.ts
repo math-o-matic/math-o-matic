@@ -22,10 +22,7 @@ export default class $Variable extends Expr implements Nameable {
 		this.expr = expr;
 	}
 	
-	public override toTeXString(prec?: Precedence, root?: boolean): string {
-		prec = prec || Precedence.INFINITY;
-		root = typeof root == 'boolean' ? root : false;
-
+	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		return `\\mathtt{${TeXUtils.escapeTeX(this.name)}}`;
 	}
 }

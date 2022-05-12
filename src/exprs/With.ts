@@ -20,9 +20,7 @@ export default class With extends Expr {
 		this.expr = expr;
 	}
 
-	public override toTeXString(prec?: Precedence, root?: boolean): string {
-		prec = prec || Precedence.INFINITY;
-		root = typeof root == 'boolean' ? root : false;
+	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		throw new Error("Method not implemented.");
 	}
 }

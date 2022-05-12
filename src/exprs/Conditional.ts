@@ -23,10 +23,7 @@ export default class Conditional extends Expr {
 		this.right = right;
 	}
 	
-	public override toTeXString(prec?: Precedence, root?: boolean): string {
-		prec = prec || Precedence.INFINITY;
-		root = typeof root == 'boolean' ? root : false;
-
+	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		var expanded = Calculus.expand(this) as Conditional;
 
 		var shouldPutParentheses = Precedence.COMMA.shouldPutParentheses(prec);

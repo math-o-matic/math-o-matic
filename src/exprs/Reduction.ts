@@ -279,10 +279,7 @@ ${Calculus.expand(as)}
 		})(1, pattern, instance, []);
 	}
 
-	public override toTeXString(prec?: Precedence, root?: boolean): string {
-		prec = prec || Precedence.INFINITY;
-		root = typeof root == 'boolean' ? root : false;
-
+	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		return `${this.subject.toTeXString(Precedence.ZERO)}[${this.antecedents.map(e => e.toTeXString(Precedence.COMMA)).join(', ')}]`;
 	}
 }

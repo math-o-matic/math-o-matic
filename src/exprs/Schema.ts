@@ -36,10 +36,7 @@ export default class Schema extends Fun {
 		return true;
 	}
 	
-	public override toTeXString(prec?: Precedence, root?: boolean): string {
-		prec = prec || Precedence.INFINITY;
-		root = typeof root == 'boolean' ? root : false;
-
+	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		if (!this.name) {
 			var shouldPutParentheses = this.precedence.shouldPutParentheses(prec);
 

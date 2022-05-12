@@ -44,10 +44,7 @@ export default class Variable extends Expr implements Nameable {
 		return this.type.toString() + ' ' + this.name;
 	}
 
-	public override toTeXString(prec?: Precedence, root?: boolean): string {
-		prec = prec || Precedence.INFINITY;
-		root = typeof root == 'boolean' ? root : false;
-
+	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		var id = this instanceof Parameter ? `id-${this._id}` : `def-${this.name}`;
 
 		var tex = this.tex || TeXUtils.makeTeXName(this.name);
