@@ -224,38 +224,6 @@ export default class Calculus {
 		throw Error('Unknown expression type');
 	}
 
-	public static getEqualsPriority(self: Expr, context: ExecutionContext): EqualsPriority {
-		if (self instanceof Reduction || self instanceof $Variable) {
-			return EqualsPriority.FIVE;
-		}
-
-		if (self instanceof Variable && self.isExpandable(context)) {
-			return EqualsPriority.FOUR;
-		}
-
-		if (self instanceof Funcall) {
-			return EqualsPriority.THREE;
-		}
-
-		if (self instanceof Conditional) {
-			return EqualsPriority.TWO;
-		}
-
-		if (self instanceof Fun) {
-			return EqualsPriority.ONE;
-		}
-
-		if (self instanceof Variable && !self.isExpandable(context)) {
-			return EqualsPriority.ZERO;
-		}
-
-		if (self instanceof With) {
-			throw new Error("Method not implemented.");
-		}
-
-		throw Error('Unknown expression type');
-	}
-
 	/**
 	 * 
 	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
@@ -263,37 +231,37 @@ export default class Calculus {
 	public static equals(self: Expr, obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		// console.log(`${self}\n\n${obj}`);
 		// var ret = (() => {
-		
+
 		if (self === obj) return [];
 		if (!self.type.equals(obj.type)) return false;
-
-		if (Calculus.getEqualsPriority(obj, context) > Calculus.getEqualsPriority(self, context))
-			return Calculus.equalsInternal(obj, self, context);
 		
-		return Calculus.equalsInternal(self, obj, context);
-
-		// })();
-		// console.log(`${self}\n\n${obj}\n\nresult:`, ret);
-		// return ret;
-	}
-
-	/**
-	 * 
-	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
-	 */
-	protected static equalsInternal(self: Expr, obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
 		if (self instanceof $Variable) {
 			return Calculus.equals(self.expr, obj, context);
+		}
+
+		if (obj instanceof $Variable) {
+			return Calculus.equals(self, obj.expr, context);
 		}
 
 		if (self instanceof Reduction) {
 			return Calculus.equals(self.consequent, obj, context);
 		}
 
+		if (obj instanceof Reduction) {
+			return Calculus.equals(self, obj.consequent, context);
+		}
+
 		if (self instanceof Variable && self.isExpandable(context)) {
 			var ret = Calculus.equals(self.expr, obj, context);
 			if (!ret) return ret;
 			ret.push(self);
+			return ret;
+		}
+
+		if (obj instanceof Variable && obj.isExpandable(context)) {
+			var ret = Calculus.equals(self, obj.expr, context);
+			if (!ret) return ret;
+			ret.push(obj);
 			return ret;
 		}
 
@@ -340,6 +308,10 @@ export default class Calculus {
 			return false;
 		}
 
+		if (obj instanceof Funcall) {
+			return Calculus.equals(obj, self, context);
+		}
+
 		if (self instanceof Conditional) {
 			if (!(obj instanceof Conditional)) {
 				throw Error('Assertion failed');
@@ -354,6 +326,10 @@ export default class Calculus {
 			}
 	
 			return Calculus.equals(self.right, obj.right, context);
+		}
+
+		if (obj instanceof Conditional) {
+			return Calculus.equals(obj, self, context);
 		}
 
 		if (self instanceof Fun) {
@@ -409,7 +385,15 @@ export default class Calculus {
 			return ret && ret.concat(usedMacrosList);
 		}
 
+		if (obj instanceof Fun) {
+			return Calculus.equals(obj, self, context);
+		}
+
 		if (self instanceof Variable && !self.isExpandable(context)) {
+			return false;
+		}
+
+		if (obj instanceof Variable && !obj.isExpandable(context)) {
 			return false;
 		}
 
@@ -417,7 +401,15 @@ export default class Calculus {
 			throw new Error("Method not implemented.");
 		}
 
+		if (obj instanceof With) {
+			throw new Error("Method not implemented.");
+		}
+
 		throw Error('Unknown expression type');
+
+		// })();
+		// console.log(`${self}\n\n${obj}\n\nresult: ${ret}`);
+		// return ret;
 	}
 
 	public static isProved(self: Expr, hypotheses?: Expr[]): boolean {
