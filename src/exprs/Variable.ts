@@ -15,7 +15,6 @@ export default class Variable extends Expr implements Nameable {
 	public readonly doc: string;
 	public readonly tex: string;
 	public readonly sealed: boolean;
-	public readonly type: Type;
 	public readonly name: string;
 	public readonly expr: Expr | null;
 
