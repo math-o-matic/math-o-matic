@@ -58,25 +58,28 @@ codemirror.on('inputRead', function (editor, event) {
 	});
 });
 
-function htmlify(v, o) {
-	var {input, noescape, error} = o || {};
+function htmlify(value, options) {
+	var {input, noescape, error} = options || {};
+
+	var escapeOrNot = s => noescape ? s : escapeHtml(s);
 
 	var html = '';
 
-	if (v instanceof MathOMatic.InterpolativeError) {
-		var {strings, values} = v.interpolativeMessage;
-		html += noescape ? strings[0] : escapeHtml(strings[0]);
+	if (value instanceof MathOMatic.InterpolativeError) {
+		var {strings, values} = value.interpolativeMessage;
+		html += escapeOrNot(strings[0]);
 
 		for (var i = 1; i < strings.length; i++) {
-			if (values[i - 1].toTeXString)
+			if (values[i - 1].toTeXString) {
 				html += ktx(values[i - 1].toTeXString());
-			else
-				html += noescape ? values[i - 1] : escapeHtml(values[i - 1]);
-			
-			html += noescape ? strings[i] : escapeHtml(strings[i]);
+			} else {
+				html += escapeOrNot(values[i - 1]);
+			}
+
+			html += escapeOrNot(strings[i]);
 		}
 	} else {
-		html = noescape ? v : escapeHtml(v);
+		html = escapeOrNot(value);
 	}
 
 	var $tr = document.createElement('tr');
@@ -88,8 +91,8 @@ function htmlify(v, o) {
 	return $tr;
 }
 
-function write(v, o) {
-	var $tr = htmlify(v, o);
+function write(value, options) {
+	var $tr = htmlify(value, options);
 
 	if ($('#console-display-preview')) {
 		$('#console-display').insertBefore($tr, $('#console-display-preview'));
@@ -98,14 +101,18 @@ function write(v, o) {
 	}
 
 	$('#console-display-wrap').scrollTop = $('#console-display-wrap').scrollHeight;
+
+	if (timeout) {
+		clearTimeout(timeout);
+	}
+
+	removePreview();
 }
 
-function preview(v, o) {
-	var $tr = htmlify(v, o);
+function preview(value, options) {
+	var $tr = htmlify(value, options);
 
-	if ($('#console-display-preview')) {
-		$('#console-display').removeChild($('#console-display-preview'));
-	}
+	removePreview();
 
 	$tr.id = 'console-display-preview';
 
@@ -116,12 +123,14 @@ var timeout = null;
 
 function showPreview() {
 	if (!Globals.program) {
-		$('#console-input').value = '';
 		return preview('Error: program is not defined', {error: true});
 	}
 
 	var v = codemirror.getValue();
-	if (!v.trim()) return;
+	if (!v.trim()) {
+		removePreview();
+		return;
+	}
 
 	try {
 		preview(ktx(Globals.program.evaluate(v).toTeXString(null, true)), {
@@ -132,29 +141,38 @@ function showPreview() {
 	}
 }
 
+function removePreview() {
+	if ($('#console-display-preview')) {
+		$('#console-display').removeChild($('#console-display-preview'));
+	}
+}
+
 $('#console-input').addEventListener('keydown', evt => {
+	var v = codemirror.getValue();
+
 	if (timeout) {
 		clearTimeout(timeout);
 	}
 
-	timeout = setTimeout(() => {
-		showPreview();
-		timeout = null;
-	}, 1000);
+	if (!v.trim()) {
+		removePreview();
+	} else {
+		timeout = setTimeout(() => {
+			showPreview();
+			timeout = null;
+		}, 1000);
+	}
 
 	if (evt.key == 'Enter') {
 		// submit
 		if (evt.shiftKey) {
 			evt.preventDefault();
 
-			var v = codemirror.getValue();
-
 			if (!v.trim()) return;
 
 			write(v.trim(), {input: true});
 
 			if (!Globals.program) {
-				$('#console-input').value = '';
 				return write('Error: program is not defined', {error: true});
 			}
 
