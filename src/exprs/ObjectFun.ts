@@ -15,7 +15,7 @@ export default class ObjectFun extends Fun {
 		this.sealed = sealed;
 	}
 
-	public override isCallable(context: ExecutionContext): boolean {
+	public override isExpandable(context: ExecutionContext): boolean {
 		return this.expr && (!this.sealed || context.canUse(this));
 	}
 

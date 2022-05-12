@@ -55,7 +55,7 @@ export default class Funcall extends Expr {
 
 		if (!(callee instanceof Fun)) return false;
 
-		return callee.isCallable(context);
+		return callee.isExpandable(context);
 	}
 	
 	public expandOnce(context: ExecutionContext): {expanded: Expr, used: (Fun | Variable)[]} {

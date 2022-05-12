@@ -225,26 +225,28 @@ export default class Calculus {
 	}
 
 	public static getEqualsPriority(self: Expr, context: ExecutionContext): EqualsPriority {
-		if (self instanceof Variable) {
-			return self.expr && (!self.sealed || context.canUse(self))
-				? EqualsPriority.FOUR
-				: EqualsPriority.ZERO;
+		if (self instanceof Reduction || self instanceof $Variable) {
+			return EqualsPriority.FIVE;
 		}
 
-		if (self instanceof Fun) {
-			return EqualsPriority.ONE;
-		}
-
-		if (self instanceof Conditional) {
-			return EqualsPriority.TWO;
+		if (self instanceof Variable && self.isExpandable(context)) {
+			return EqualsPriority.FOUR;
 		}
 
 		if (self instanceof Funcall) {
 			return EqualsPriority.THREE;
 		}
 
-		if (self instanceof Reduction || self instanceof $Variable) {
-			return EqualsPriority.FIVE;
+		if (self instanceof Conditional) {
+			return EqualsPriority.TWO;
+		}
+
+		if (self instanceof Fun) {
+			return EqualsPriority.ONE;
+		}
+
+		if (self instanceof Variable && !self.isExpandable(context)) {
+			return EqualsPriority.ZERO;
 		}
 
 		if (self instanceof With) {
@@ -284,73 +286,15 @@ export default class Calculus {
 			return Calculus.equals(self.expr, obj, context);
 		}
 
-		if (self instanceof Conditional) {
-			if (!(obj instanceof Conditional)) {
-				throw Error('Assertion failed');
-			}
-	
-			if (self.left.length != obj.left.length) {
-				throw Error('Assertion failed');
-			}
-	
-			for (var i = 0; i < self.left.length; i++) {
-				if (!Calculus.equals(self.left[i], obj.left[i], context)) return false;
-			}
-	
-			return Calculus.equals(self.right, obj.right, context);
+		if (self instanceof Reduction) {
+			return Calculus.equals(self.consequent, obj, context);
 		}
 
-		if (self instanceof Fun) {
-			if (!self.isCallable(context)
-					&& !(obj instanceof Fun && obj.isCallable(context))) {
-				return false;
-			}
-
-			var placeholders = [];
-			var types = (self.type.resolve() as FunctionalType).from;
-
-			for (var i = 0; i < types.length; i++) {
-				placeholders.push(new Parameter({
-					type: types[i],
-					name: '$' + i,
-					selector: null
-				}, self.trace));
-			}
-
-			var usedMacrosList = [];
-
-			var thisCall = (() => {
-				if (self.isCallable(context)) {
-					if (self.name) {
-						usedMacrosList.push(self);
-					}
-
-					return self.call(placeholders);
-				}
-
-				return new Funcall({
-					fun: self,
-					args: placeholders
-				}, self.trace);
-			})();
-			
-			var objCall = (() => {
-				if (obj instanceof Fun && obj.isCallable(context)) {
-					if (obj.name) {
-						usedMacrosList.push(obj);
-					}
-
-					return obj.call(placeholders);
-				}
-
-				return new Funcall({
-					fun: obj,
-					args: placeholders
-				}, self.trace);
-			})();
-			
-			var ret = Calculus.equals(thisCall, objCall, context);
-			return ret && ret.concat(usedMacrosList);
+		if (self instanceof Variable && self.isExpandable(context)) {
+			var ret = Calculus.equals(self.expr, obj, context);
+			if (!ret) return ret;
+			ret.push(self);
+			return ret;
 		}
 
 		if (self instanceof Funcall) {
@@ -396,19 +340,76 @@ export default class Calculus {
 			return false;
 		}
 
-		if (self instanceof Reduction) {
-			return Calculus.equals(self.consequent, obj, context);
+		if (self instanceof Conditional) {
+			if (!(obj instanceof Conditional)) {
+				throw Error('Assertion failed');
+			}
+	
+			if (self.left.length != obj.left.length) {
+				throw Error('Assertion failed');
+			}
+	
+			for (var i = 0; i < self.left.length; i++) {
+				if (!Calculus.equals(self.left[i], obj.left[i], context)) return false;
+			}
+	
+			return Calculus.equals(self.right, obj.right, context);
 		}
 
-		if (self instanceof Variable) {
-			if (!self.expr) return false;
-
-			if (!self.sealed || context.canUse(self)) {
-				var tmp = Calculus.equals(self.expr, obj, context);
-				if (!tmp) return tmp;
-				return tmp.push(self), tmp;
+		if (self instanceof Fun) {
+			if (!self.isExpandable(context)
+					&& !(obj instanceof Fun && obj.isExpandable(context))) {
+				return false;
 			}
 
+			var placeholders = [];
+			var types = (self.type.resolve() as FunctionalType).from;
+
+			for (var i = 0; i < types.length; i++) {
+				placeholders.push(new Parameter({
+					type: types[i],
+					name: '$' + i,
+					selector: null
+				}, self.trace));
+			}
+
+			var usedMacrosList = [];
+
+			var thisCall = (() => {
+				if (self.isExpandable(context)) {
+					if (self.name) {
+						usedMacrosList.push(self);
+					}
+
+					return self.call(placeholders);
+				}
+
+				return new Funcall({
+					fun: self,
+					args: placeholders
+				}, self.trace);
+			})();
+			
+			var objCall = (() => {
+				if (obj instanceof Fun && obj.isExpandable(context)) {
+					if (obj.name) {
+						usedMacrosList.push(obj);
+					}
+
+					return obj.call(placeholders);
+				}
+
+				return new Funcall({
+					fun: obj,
+					args: placeholders
+				}, self.trace);
+			})();
+			
+			var ret = Calculus.equals(thisCall, objCall, context);
+			return ret && ret.concat(usedMacrosList);
+		}
+
+		if (self instanceof Variable && !self.isExpandable(context)) {
 			return false;
 		}
 

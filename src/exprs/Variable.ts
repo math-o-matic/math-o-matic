@@ -39,6 +39,10 @@ export default class Variable extends Expr implements Nameable {
 		this.expr = expr;
 	}
 
+	public isExpandable(context: ExecutionContext): boolean {
+		return this.expr && (!this.sealed || context.canUse(this));
+	}
+
 	// pr f
 	public toSimpleString() {
 		return this.type.toString() + ' ' + this.name;
@@ -58,6 +62,8 @@ export default class Variable extends Expr implements Nameable {
 }
 
 import Parameter from './Parameter';
-import { Type } from './types';import Precedence from '../Precedence';
+import { Type } from './types';
+import Precedence from '../Precedence';
 import StackTrace from '../StackTrace';
 import TeXUtils from '../TeXUtils';
+import ExecutionContext from '../ExecutionContext';

@@ -32,7 +32,7 @@ export default class Schema extends Fun {
 		}
 	}
 
-	public override isCallable(_context: ExecutionContext): boolean {
+	public override isExpandable(_context: ExecutionContext): boolean {
 		return true;
 	}
 	

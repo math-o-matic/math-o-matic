@@ -47,7 +47,7 @@ export default abstract class Fun extends Expr implements Nameable {
 		return this.params.length;
 	}
 
-	public abstract isCallable(context: ExecutionContext): boolean;
+	public abstract isExpandable(context: ExecutionContext): boolean;
 
 	public call(args: Expr[]): Expr {
 		if (!this.expr) {
