@@ -1,21 +1,3 @@
-/**
- * 숫자가 큰 것이 우선순위가 높다.
- */
- enum EqualsPriority {
-	/** Variable (primitive) */
-	ZERO,
-	/** Fun */
-	ONE,
-	/** Conditional */
-	TWO,
-	/** Funcall */
-	THREE,
-	/** Variable (macro) */
-	FOUR,
-	/** $Variable, Reduction */
-	FIVE
-}
-
 export default class Calculus {
 	/**
 	 * 표현식에 대해 capture-avoiding substitution
