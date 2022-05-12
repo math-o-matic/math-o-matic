@@ -20,7 +20,7 @@ function generateDefHtml(program, k, v) {
 		}definition</b> ${k}</a>${!v.params
 				? ': ' + v.type
 				: `(${v.params.map(p => p.toSimpleString()).join(', ')})`
-					+ `: ${v.type.resolve().to}`
+					+ `: ${v.type.resolveToFunctionalType().to}`
 		}</p>`
 		+ `<div class="math">${ktx(v.toTeXString(null, true))}</div>`
 

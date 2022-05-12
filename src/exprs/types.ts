@@ -14,7 +14,16 @@ export abstract class Type {
 		this.trace = trace;
 	}
 
+	/**
+	 * Fully resolves the type.
+	 */
 	public abstract resolve(): Type;
+
+	/**
+	 * Resolves until the type becomes a FunctionalType.
+	 * Throws error if the type cannot be resolved to a FunctionalType.
+	 */
+	public abstract resolveToFunctionalType(): FunctionalType;
 
 	public toString() {
 		return this.toIndentedString(0);
@@ -104,6 +113,10 @@ export class ConditionalType extends Type {
 		return this;
 	}
 
+	public resolveToFunctionalType(): FunctionalType {
+		throw new Error(`Type ${this} is not functional`);
+	}
+
 	public override isFunctional(): boolean {
 		return false;
 	}
@@ -131,6 +144,14 @@ export class SimpleType extends Type implements Nameable {
 
 	public override resolve(): Type {
 		return this.expr ? this.expr.resolve() : this;
+	}
+
+	public resolveToFunctionalType(): FunctionalType {
+		if (!this.expr) {
+			throw new Error(`Type ${this} is not functional`);
+		}
+		
+		return this.expr.resolveToFunctionalType();
 	}
 
 	public override toIndentedString(indent: number): string {
@@ -176,6 +197,10 @@ export class FunctionalType extends Type {
 			from: this.from.map(f => f.resolve()),
 			to: this.to.resolve()
 		}, this.trace);
+	}
+
+	public resolveToFunctionalType(): FunctionalType {
+		return this;
 	}
 
 	public override toIndentedString(indent: number): string {
