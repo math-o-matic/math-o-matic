@@ -47,6 +47,28 @@ export default abstract class Fun extends Expr implements Nameable {
 		return this.params.length;
 	}
 
+	protected unnamedToTeXString(prec: Precedence, root: boolean): string {
+		if (this.name) {
+			throw this.error('I have a name');
+		}
+
+		var shouldPutParentheses = this.decoration.precedence.shouldPutParentheses(prec);
+
+		return [
+			(shouldPutParentheses ? '\\left(' : ''),
+
+			(
+				this.params.length == 1
+				? this.params[0].toTeXString(Precedence.ZERO)
+				: `\\left(${this.params.map(e => e.toTeXString(Precedence.COMMA)).join(', ')}\\right)`
+			),
+			'\\mapsto ',
+			Calculus.expand(this.expr).toTeXString(Precedence.ZERO),
+
+			(shouldPutParentheses ? '\\right)' : '')
+		].join('');
+	}
+
 	public abstract isExpandable(context: ExecutionContext): boolean;
 
 	public call(args: Expr[]): Expr {
@@ -82,6 +104,7 @@ import { FunctionalType, Type } from './types';
 import Calculus from '../Calculus';
 import FunctionalAtomicDecoration from '../decoration/FunctionalAtomicDecoration';
 import FunctionalMacroDecoration from '../decoration/FunctionalMacroDecoration';
+import Precedence from '../Precedence';
 
 interface FunArgumentType {
 	decoration: FunctionalAtomicDecoration | FunctionalMacroDecoration;

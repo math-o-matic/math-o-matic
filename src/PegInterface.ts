@@ -138,7 +138,7 @@ export default class PI {
 		var scope = parentScope.extend('fun', obj._type == 'defun' ? obj.name : '<anonymous>', obj.location);
 
 		var doc = null,
-			precedence : number = 0,
+			precedence = Precedence.ZERO,
 			tex = null,
 			sealed = false,
 			rettype: Type = null,
@@ -147,7 +147,7 @@ export default class PI {
 
 		if (obj._type == 'defun') {
 			doc = obj.doc;
-			precedence = obj.tex_attributes.precedence;
+			precedence = new Precedence(obj.tex_attributes.precedence);
 			tex = obj.tex;
 			sealed = obj.sealed;
 			
@@ -157,6 +157,10 @@ export default class PI {
 
 			rettype = scope.getType(typeObjToNestedArr(obj.rettype));
 			name = obj.name;
+		}
+
+		if (obj._type == 'funexpr') {
+			precedence = Precedence.FUNEXPR;
 		}
 
 		var params = obj.params.map(tvo => {
@@ -181,13 +185,13 @@ export default class PI {
 			decoration: expr
 				? new FunctionalMacroDecoration({
 					doc,
-					precedence: new Precedence(precedence),
+					precedence,
 					tex,
 					sealed
 				})
 				: new FunctionalAtomicDecoration({
 					doc,
-					precedence: new Precedence(precedence),
+					precedence,
 					tex
 				}),
 			rettype, name, params, expr

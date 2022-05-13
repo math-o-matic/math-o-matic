@@ -35,21 +35,7 @@ export default class Schema extends Fun {
 	
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		if (!this.name) {
-			var shouldPutParentheses = this.decoration.precedence.shouldPutParentheses(prec);
-
-			return [
-				(shouldPutParentheses ? '\\left(' : ''),
-
-				(
-					this.params.length == 1
-					? this.params[0].toTeXString(Precedence.ZERO)
-					: `\\left(${this.params.map(e => e.toTeXString(Precedence.COMMA)).join(', ')}\\right)`
-				),
-				'\\mapsto ',
-				Calculus.expand(this.expr).toTeXString(Precedence.ZERO),
-
-				(shouldPutParentheses ? '\\right)' : '')
-			].join('');
+			return this.unnamedToTeXString(prec, root);
 		}
 		
 		var id = 'def-' + this.name,

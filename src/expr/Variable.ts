@@ -12,7 +12,7 @@ export default class Variable extends Expr implements Nameable {
 
 	public readonly decoration: SimpleAtomicDecoration | SimpleMacroDecoration;
 	public readonly name: string;
-	public readonly expr: Expr | null;
+	public readonly expr: Expr;
 
 	constructor ({decoration, type, name, expr}: VariableArgumentType, trace: StackTrace) {
 		super(type, trace);
