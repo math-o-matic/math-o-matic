@@ -1,5 +1,5 @@
-import InterpolativeError from "./InterpolativeError";
-import InterpolativeString from "./InterpolativeString";
+import InterpolativeError from "./util/InterpolativeError";
+import InterpolativeString from "./util/InterpolativeString";
 import { LocationObject } from "./PegInterfaceDefinitions";
 
 interface StackTraceElement {

@@ -41,8 +41,9 @@ export default abstract class Expr {
 }
 
 import StackTrace from "../StackTrace";
-import UniversalCounter from "../UniversalCounter";
+import UniversalCounter from "../util/UniversalCounter";
 import Precedence from "../Precedence";
-import { Type } from "./types";import InterpolativeString from "../InterpolativeString";
-import InterpolativeError from "../InterpolativeError";
+import { Type } from "./types";
+import InterpolativeString from "../util/InterpolativeString";
+import InterpolativeError from "../util/InterpolativeError";
 

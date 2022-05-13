@@ -176,7 +176,7 @@ export default class Program {
 	}
 }
 
-import { SimpleType } from './exprs/types';
+import { SimpleType } from './expr/types';
 import PegInterface from './PegInterface';
 import { EvaluableObject, ImportOrLineObject } from './PegInterfaceDefinitions';
 import ProofExplorer from './ProofExplorer';

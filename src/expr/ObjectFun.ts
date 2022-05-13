@@ -87,7 +87,7 @@ import Parameter from "./Parameter";
 import { Type } from "./types";
 import Precedence from "../Precedence";
 import Calculus from "../Calculus";
-import TeXUtils from "../TeXUtils";
+import TeXUtils from "../util/TeXUtils";
 
 interface ObjectFunArgumentType {
 	doc: string;

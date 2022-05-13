@@ -748,20 +748,20 @@ export default class Calculus {
 	}
 }
 
-import Expr from "./exprs/Expr";
+import Expr from "./expr/Expr";
 import ExecutionContext from "./ExecutionContext";
-import $Variable from "./exprs/$Variable";
-import Conditional from "./exprs/Conditional";
-import Fun from "./exprs/Fun";
-import Funcall from "./exprs/Funcall";
-import ObjectFun from "./exprs/ObjectFun";
+import $Variable from "./expr/$Variable";
+import Conditional from "./expr/Conditional";
+import Fun from "./expr/Fun";
+import Funcall from "./expr/Funcall";
+import ObjectFun from "./expr/ObjectFun";
 import Precedence from "./Precedence";
-import Reduction from "./exprs/Reduction";
-import Schema from "./exprs/Schema";
-import Variable from "./exprs/Variable";
-import With from "./exprs/With";
-import { FunctionalType } from "./exprs/types";import Parameter from "./exprs/Parameter";
-import Counter from "./Counter";
+import Reduction from "./expr/Reduction";
+import Schema from "./expr/Schema";
+import Variable from "./expr/Variable";
+import With from "./expr/With";
+import { FunctionalType } from "./expr/types";import Parameter from "./expr/Parameter";
+import Counter from "./util/Counter";
 import { ProofType } from "./ProofType";
-import { isNameable } from "./exprs/Nameable";
+import { isNameable } from "./expr/Nameable";
 

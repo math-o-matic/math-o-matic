@@ -481,18 +481,18 @@ export default class PI {
 }
 
 import ExecutionContext from './ExecutionContext';
-import $Variable from './exprs/$Variable';
-import Fun from './exprs/Fun';
-import Funcall from './exprs/Funcall';
-import Expr from './exprs/Expr';
-import ObjectFun from './exprs/ObjectFun';
-import Parameter from './exprs/Parameter';
-import Reduction from './exprs/Reduction';
-import Schema, { SchemaType } from './exprs/Schema';
-import Conditional from './exprs/Conditional';
-import { Type, SimpleType } from './exprs/types';
-import Variable from './exprs/Variable';
-import With from './exprs/With';
+import $Variable from './expr/$Variable';
+import Fun from './expr/Fun';
+import Funcall from './expr/Funcall';
+import Expr from './expr/Expr';
+import ObjectFun from './expr/ObjectFun';
+import Parameter from './expr/Parameter';
+import Reduction from './expr/Reduction';
+import Schema, { SchemaType } from './expr/Schema';
+import Conditional from './expr/Conditional';
+import { Type, SimpleType } from './expr/types';
+import Variable from './expr/Variable';
+import With from './expr/With';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
 import Precedence from './Precedence';

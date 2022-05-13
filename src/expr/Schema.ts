@@ -73,7 +73,7 @@ import ExecutionContext from "../ExecutionContext";
 import Parameter from "./Parameter";
 import Precedence from "../Precedence";
 import Calculus from "../Calculus";
-import TeXUtils from "../TeXUtils";
+import TeXUtils from "../util/TeXUtils";
 
 interface SchemaArgumentType {
 	doc: string;

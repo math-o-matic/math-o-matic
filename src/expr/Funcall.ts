@@ -142,6 +142,6 @@ import ObjectFun from './ObjectFun';
 import Schema from './Schema';
 import Variable from './Variable';
 import { FunctionalType } from './types';import Precedence from '../Precedence';
-import TeXUtils from '../TeXUtils';
+import TeXUtils from '../util/TeXUtils';
 import Calculus from '../Calculus';
 

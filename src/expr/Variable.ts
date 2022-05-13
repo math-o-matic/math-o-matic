@@ -65,5 +65,5 @@ import Parameter from './Parameter';
 import { Type } from './types';
 import Precedence from '../Precedence';
 import StackTrace from '../StackTrace';
-import TeXUtils from '../TeXUtils';
+import TeXUtils from '../util/TeXUtils';
 import ExecutionContext from '../ExecutionContext';

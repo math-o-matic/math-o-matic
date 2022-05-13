@@ -1,5 +1,5 @@
 import StackTrace from "../StackTrace";
-import UniversalCounter from "../UniversalCounter";
+import UniversalCounter from "../util/UniversalCounter";
 import Nameable from "./Nameable";
 
 export abstract class Type {

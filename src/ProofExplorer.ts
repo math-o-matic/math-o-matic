@@ -1,9 +1,9 @@
-import Counter from "./Counter";
+import Counter from "./util/Counter";
 import Calculus from "./Calculus";
-import Expr from "./exprs/Expr";
+import Expr from "./expr/Expr";
 import Precedence from "./Precedence";
-import Schema from "./exprs/Schema";
-import Variable from "./exprs/Variable";
+import Schema from "./expr/Schema";
+import Variable from "./expr/Variable";
 import { ProofType } from "./ProofType";
 import Scope from "./Scope";
 

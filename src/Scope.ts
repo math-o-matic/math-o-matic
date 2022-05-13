@@ -1,10 +1,10 @@
-import $Variable from './exprs/$Variable';
-import Fun from './exprs/Fun';
-import Expr from './exprs/Expr';
-import ObjectFun from './exprs/ObjectFun';
-import Schema from './exprs/Schema';
-import { FunctionalType, Type, SimpleType } from './exprs/types';
-import Variable from './exprs/Variable';
+import $Variable from './expr/$Variable';
+import Fun from './expr/Fun';
+import Expr from './expr/Expr';
+import ObjectFun from './expr/ObjectFun';
+import Schema from './expr/Schema';
+import { FunctionalType, Type, SimpleType } from './expr/types';
+import Variable from './expr/Variable';
 import { LocationObject } from './PegInterfaceDefinitions';
 import StackTrace from './StackTrace';
 

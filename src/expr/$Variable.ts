@@ -29,4 +29,4 @@ export default class $Variable extends Expr implements Nameable {
 
 import StackTrace from "../StackTrace";
 import Precedence from "../Precedence";
-import TeXUtils from "../TeXUtils";
+import TeXUtils from "../util/TeXUtils";

@@ -1,6 +1,6 @@
-import Fun from "./exprs/Fun";
-import Expr from "./exprs/Expr";
-import Variable from "./exprs/Variable";
+import Fun from "./expr/Fun";
+import Expr from "./expr/Expr";
+import Variable from "./expr/Variable";
 
 export type ProofType = R | SE | RC | RS | H | NP | Wut | T | V | TE | Def | ByDef;
 
