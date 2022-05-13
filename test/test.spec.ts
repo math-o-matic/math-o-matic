@@ -10,6 +10,7 @@ var fs = require('fs');
 var path = require('path');
 
 import unparse from '../src/Unparser';
+import FunctionalAtomicDecoration from "../src/decoration/FunctionalAtomicDecoration";
 
 function removeLocationAndStringify(obj: any) {
 	return JSON.stringify(obj, (k, v) => {
@@ -54,10 +55,11 @@ describe('Program', function () {
 describe('ObjectFun', function () {
 	it('should throw if !rettype && !expr', function () {
 		expect(() => new ObjectFun({
-			doc: null,
-			precedence: Precedence.ZERO,
-			tex: null,
-			sealed: false,
+			decoration: new FunctionalAtomicDecoration({
+				doc: null,
+				precedence: Precedence.ZERO,
+				tex: null
+			}),
 			rettype: null,
 			name: null,
 			params: [],

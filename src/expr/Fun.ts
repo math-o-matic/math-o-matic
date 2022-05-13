@@ -3,14 +3,12 @@ import Expr from './Expr';
 
 export default abstract class Fun extends Expr implements Nameable {
 
-	public readonly doc: string;
-	public readonly precedence: Precedence;
-	public readonly tex: string;
+	public readonly decoration: FunctionalAtomicDecoration | FunctionalMacroDecoration;
 	public readonly name: string;
 	public readonly params: Parameter[];
 	public readonly expr: Expr;
 
-	constructor ({doc, precedence, tex, rettype, name, params, expr}: FunArgumentType, trace: StackTrace) {
+	constructor ({decoration, rettype, name, params, expr}: FunArgumentType, trace: StackTrace) {
 		if (!name && !expr)
 			throw Expr.error('Anonymous fun cannot be primitive', trace);
 
@@ -23,6 +21,10 @@ export default abstract class Fun extends Expr implements Nameable {
 		if (!rettype && !expr) {
 			throw Expr.error('Cannot guess the return type of a primitive fun', trace);
 		}
+
+		if (decoration instanceof FunctionalMacroDecoration && decoration.sealed && !expr) {
+			throw Expr.error('Cannot seal a primitive fun', trace);
+		}
 		
 		super(
 			new FunctionalType({
@@ -31,10 +33,8 @@ export default abstract class Fun extends Expr implements Nameable {
 			}, trace),
 			trace
 		);
-
-		this.doc = doc;
-		this.precedence = precedence;
-		this.tex = tex;
+		
+		this.decoration = decoration;
 		this.name = name;
 		this.params = params;
 		this.expr = expr;
@@ -79,13 +79,12 @@ import StackTrace from '../StackTrace';
 import ExecutionContext from '../ExecutionContext';
 import Parameter from './Parameter';
 import { FunctionalType, Type } from './types';
-import Precedence from '../Precedence';
 import Calculus from '../Calculus';
+import FunctionalAtomicDecoration from '../decoration/FunctionalAtomicDecoration';
+import FunctionalMacroDecoration from '../decoration/FunctionalMacroDecoration';
 
 interface FunArgumentType {
-	doc: string;
-	precedence: Precedence;
-	tex: string;
+	decoration: FunctionalAtomicDecoration | FunctionalMacroDecoration;
 	rettype: Type;
 	name: string;
 	params: Parameter[];

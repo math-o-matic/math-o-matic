@@ -163,7 +163,7 @@ export default class ProofExplorer {
 						return getHtmlLine(
 							line.ctr,
 							left,
-							line.var.doc ? `<p>${exprToHtml(line.var)}</p>${m42kup.render(line.var.doc)}` : exprToHtml(line.var),
+							line.var.decoration.doc ? `<p>${exprToHtml(line.var)}</p>${m42kup.render(line.var.decoration.doc)}` : exprToHtml(line.var),
 							'definition'
 						);
 					case 'bydef':

@@ -243,7 +243,10 @@ ${Calculus.expand(as)}
 					}
 
 					placeholders.push(new Parameter({
-						tex: instance.params[i].tex,
+						decoration: new SimpleAtomicDecoration({
+							doc: null,
+							tex: instance.params[i].decoration.tex
+						}),
 						type: pattern.params[i].type,
 						name: instance.params[i].name,
 						selector: null
@@ -264,9 +267,10 @@ ${Calculus.expand(as)}
 				}
 
 				return new Schema({
-					doc: null,
-					tex: null,
-					schemaType: 'schema',
+					decoration: new SchemaDecoration({
+						doc: null,
+						schemaType: 'schema'
+					}),
 					name: null,
 					params,
 					context: new ExecutionContext(),
@@ -295,4 +299,6 @@ import { FunctionalType, ConditionalType } from "./types";
 import Variable from "./Variable";
 import Precedence from "../Precedence";
 import Calculus from "../Calculus";import InterpolativeString from "../util/InterpolativeString";
+import SchemaDecoration from "../decoration/SchemaDecoration";
+import SimpleAtomicDecoration from "../decoration/SimpleAtomicDecoration";
 

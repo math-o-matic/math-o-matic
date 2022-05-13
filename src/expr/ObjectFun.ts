@@ -2,21 +2,15 @@ import Expr from "./Expr";
 import Fun from "./Fun";
 
 export default class ObjectFun extends Fun {
-
-	public readonly sealed: boolean;
 	
-	constructor ({doc, precedence, tex, sealed, rettype, name, params, expr}: ObjectFunArgumentType, trace: StackTrace) {
-		super({doc, precedence, tex, rettype, name, params, expr}, trace);
-
-		if (sealed && !expr) {
-			throw Expr.error('Cannot seal a primitive fun', trace);
-		}
-
-		this.sealed = sealed;
+	constructor ({decoration, rettype, name, params, expr}: ObjectFunArgumentType, trace: StackTrace) {
+		super({decoration, rettype, name, params, expr}, trace);
 	}
 
 	public override isExpandable(context: ExecutionContext): boolean {
-		return this.expr && (!this.sealed || context.canUse(this));
+		return this.expr
+			&& this.decoration instanceof FunctionalMacroDecoration
+			&& (!this.decoration.sealed || context.canUse(this));
 	}
 
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
@@ -66,11 +60,11 @@ export default class ObjectFun extends Fun {
 
 	public funcallToTeXString(args: Expr[], prec: Precedence) {
 		var argStrings = args.map(arg => {
-			return arg.toTeXString(this.tex ? this.precedence : Precedence.COMMA);
+			return arg.toTeXString(this.decoration.tex ? this.decoration.precedence : Precedence.COMMA);
 		});
 	
-		if (this.tex) {
-			return ObjectFun.makeTeX('def-' + this.name, argStrings, this.tex, this.precedence, prec);
+		if (this.decoration.tex) {
+			return ObjectFun.makeTeX('def-' + this.name, argStrings, this.decoration.tex, this.decoration.precedence, prec);
 		}
 	
 		return (
@@ -88,12 +82,11 @@ import { Type } from "./types";
 import Precedence from "../Precedence";
 import Calculus from "../Calculus";
 import TeXUtils from "../util/TeXUtils";
+import FunctionalAtomicDecoration from "../decoration/FunctionalAtomicDecoration";
+import FunctionalMacroDecoration from "../decoration/FunctionalMacroDecoration";
 
 interface ObjectFunArgumentType {
-	doc: string;
-	precedence: Precedence;
-	tex: string;
-	sealed: boolean;
+	decoration: FunctionalAtomicDecoration | FunctionalMacroDecoration;
 	rettype: Type;
 	name: string;
 	params: Parameter[];

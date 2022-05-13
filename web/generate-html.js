@@ -16,7 +16,7 @@ function generateTypedefHtml(program, k, v) {
 function generateDefHtml(program, k, v) {
 	return `<div class="block">`
 		+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${
-			v.sealed ? 'sealed ' : ''
+			v.decoration.sealed ? 'sealed ' : ''
 		}definition</b> ${k}</a>${!v.params
 				? ': ' + v.type
 				: `(${v.params.map(p => p.toSimpleString()).join(', ')})`
@@ -25,9 +25,9 @@ function generateDefHtml(program, k, v) {
 		+ `<div class="math">${ktx(v.toTeXString(null, true))}</div>`
 
 		+ (
-			v.doc
+			v.decoration.doc
 			? '<p class="label"><b>description</b></p>'
-				+ `<p class="description">${m42kup.render(v.doc)}</p>`
+				+ `<p class="description">${m42kup.render(v.decoration.doc)}</p>`
 			: ''
 		)
 
@@ -36,7 +36,7 @@ function generateDefHtml(program, k, v) {
 
 function generateSchemaHtml(program, k, v, omitProofExplorer) {
 	return `<div class="block">`
-		+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${v.schemaType}</b> ${k}</a>(${v.params.map(p => p.toSimpleString()).join(', ')})${
+		+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${v.decoration.schemaType}</b> ${k}</a>(${v.params.map(p => p.toSimpleString()).join(', ')})${
 			v.context.usingList.length
 				? ` <b>using</b> ${v.context.usingList.map(u => u.name).join(', ')}`
 				: ''
@@ -44,7 +44,7 @@ function generateSchemaHtml(program, k, v, omitProofExplorer) {
 		+ `<div class="math">${ktx(v.toTeXString(null, true))}</div>`
 
 		+ (
-			!v.expr || v.schemaType == 'axiom' || omitProofExplorer
+			!v.expr || v.decoration.schemaType == 'axiom' || omitProofExplorer
 				? ''
 				: '<p class="label"><b>proof explorer</b></p>'
 					+ (
@@ -55,9 +55,9 @@ function generateSchemaHtml(program, k, v, omitProofExplorer) {
 		)
 
 		+ (
-			v.doc
+			v.decoration.doc
 			? '<p class="label"><b>description</b></p>'
-				+ `<p class="description">${m42kup.render(v.doc)}</p>`
+				+ `<p class="description">${m42kup.render(v.decoration.doc)}</p>`
 			: ''
 		)
 
@@ -84,9 +84,9 @@ function generateHtml(program) {
 		var map = {};
 
 		for (var [k, v] of scope.defMap) {
-			if (!v.precedence) continue;
+			if (!v.decoration.precedence) continue;
 
-			var prec = v.precedence.toString();
+			var prec = v.decoration.precedence.toString();
 			
 			if (precedenceMap.has(prec)) {
 				precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
@@ -117,7 +117,7 @@ function generateHtml(program) {
 		
 		axiomSchemaList = axiomSchemaList.concat(
 			[...scope.schemaMap]
-				.filter(([k, v]) => v.schemaType == 'axiom').map(([k, v]) => k)
+				.filter(([k, v]) => v.decoration.schemaType == 'axiom').map(([k, v]) => k)
 		);
 
 		notProvedList = notProvedList.concat(
@@ -127,7 +127,7 @@ function generateHtml(program) {
 
 		provedList = provedList.concat(
 			[...scope.schemaMap]
-				.filter(([k, v]) => v.schemaType != 'axiom' && MathOMatic.Calculus.isProved(v)).map(([k, v]) => k)
+				.filter(([k, v]) => v.decoration.schemaType != 'axiom' && MathOMatic.Calculus.isProved(v)).map(([k, v]) => k)
 		);
 
 		for (var [k, v] of scope.typedefMap) {

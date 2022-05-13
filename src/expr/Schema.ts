@@ -4,28 +4,25 @@ export type SchemaType = 'axiom' | 'theorem' | 'schema';
 
 export default class Schema extends Fun {
 
-	public readonly schemaType: SchemaType;
+	public override readonly decoration: SchemaDecoration;
 	public readonly def$s: $Variable[];
 	public readonly context: ExecutionContext;
 
-	constructor ({doc, tex, schemaType, name, params, context, def$s, expr}: SchemaArgumentType, trace: StackTrace) {
+	constructor ({decoration, name, params, context, def$s, expr}: SchemaArgumentType, trace: StackTrace) {
 		if (!expr) {
 			throw Expr.error('wut', trace);
 		}
 
-		if (schemaType != 'schema' && !name) {
+		if (decoration.schemaType != 'schema' && !name) {
 			throw Expr.error(`wut`, trace);
 		}
 
-		var precedence = name ? Precedence.ZERO : Precedence.FUNEXPR;
-
-		super({doc, precedence, tex, rettype: null, name, params, expr}, trace);
+		super({decoration, rettype: null, name, params, expr}, trace);
 		
-		this.schemaType = schemaType;
 		this.def$s = def$s || [];
 		this.context = context;
 
-		if (schemaType == 'theorem') {
+		if (decoration.schemaType == 'theorem') {
 			if (!Calculus.isProved(this)) {
 				throw Expr.error(`Schema ${name} is marked as a theorem but it is not proved`, trace);
 			}
@@ -38,7 +35,7 @@ export default class Schema extends Fun {
 	
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		if (!this.name) {
-			var shouldPutParentheses = this.precedence.shouldPutParentheses(prec);
+			var shouldPutParentheses = this.decoration.precedence.shouldPutParentheses(prec);
 
 			return [
 				(shouldPutParentheses ? '\\left(' : ''),
@@ -74,11 +71,10 @@ import Parameter from "./Parameter";
 import Precedence from "../Precedence";
 import Calculus from "../Calculus";
 import TeXUtils from "../util/TeXUtils";
+import SchemaDecoration from "../decoration/SchemaDecoration";
 
 interface SchemaArgumentType {
-	doc: string;
-	tex: string;
-	schemaType: SchemaType;
+	decoration: SchemaDecoration;
 	name: string;
 	params: Parameter[];
 	context: ExecutionContext;

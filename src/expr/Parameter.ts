@@ -1,8 +1,7 @@
 import Variable from "./Variable";
 
 interface ParameterArgumentType {
-	doc?: string;
-	tex?: string;
+	decoration: SimpleAtomicDecoration;
 	type: Type;
 	name: string;
 	selector: string;
@@ -12,8 +11,8 @@ export default class Parameter extends Variable {
 
 	public readonly selector: string;
 
-	constructor ({doc, tex, type, name, selector}: ParameterArgumentType, trace: StackTrace) {
-		super({doc, tex, sealed: false, type, name, expr: null}, trace);
+	constructor ({decoration, type, name, selector}: ParameterArgumentType, trace: StackTrace) {
+		super({decoration, type, name, expr: null}, trace);
 
 		this.selector = selector;
 	}
@@ -26,3 +25,4 @@ export default class Parameter extends Variable {
 import StackTrace from "../StackTrace";
 import Precedence from "../Precedence";
 import { Type } from "./types";
+import SimpleAtomicDecoration from "../decoration/SimpleAtomicDecoration";

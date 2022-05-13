@@ -104,8 +104,10 @@ export default class PI {
 
 		if (obj.isParam) {
 			return new Parameter({
-				doc: obj.doc,
-				tex: obj.tex,
+				decoration: new SimpleAtomicDecoration({
+					doc: obj.doc,
+					tex: obj.tex
+				}),
 				type,
 				name: obj.name,
 				selector: obj.selector || null
@@ -113,9 +115,16 @@ export default class PI {
 		}
 
 		return new Variable({
-			doc: obj.doc,
-			tex: obj.tex,
-			sealed: !!obj.sealed,
+			decoration: expr
+				? new SimpleMacroDecoration({
+					doc: obj.doc,
+					tex: obj.tex,
+					sealed: !!obj.sealed
+				})
+				: new SimpleAtomicDecoration({
+					doc: obj.doc,
+					tex: obj.tex
+				}),
 			type,
 			name: obj.name,
 			expr: expr || null
@@ -169,9 +178,19 @@ export default class PI {
 		}
 
 		return new ObjectFun({
-			sealed, rettype, name, params, expr, doc,
-			precedence: new Precedence(precedence),
-			tex
+			decoration: expr
+				? new FunctionalMacroDecoration({
+					doc,
+					precedence: new Precedence(precedence),
+					tex,
+					sealed
+				})
+				: new FunctionalAtomicDecoration({
+					doc,
+					precedence: new Precedence(precedence),
+					tex
+				}),
+			rettype, name, params, expr
 		}, scope.trace);
 	}
 
@@ -426,7 +445,13 @@ export default class PI {
 
 		var expr = PI.expr(obj.expr, scope, context);
 
-		return new Schema({doc, tex: null, schemaType, name, params, context, def$s, expr}, scope.trace);
+		return new Schema({
+			decoration: new SchemaDecoration({
+				doc,
+				schemaType
+			}),
+			name, params, context, def$s, expr
+		}, scope.trace);
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope, context: ExecutionContext): Funcall {
@@ -496,3 +521,8 @@ import With from './expr/With';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
 import Precedence from './Precedence';
+import SimpleAtomicDecoration from './decoration/SimpleAtomicDecoration';import SimpleMacroDecoration from './decoration/SimpleMacroDecoration';
+import FunctionalMacroDecoration from './decoration/FunctionalMacroDecoration';
+import FunctionalAtomicDecoration from './decoration/FunctionalAtomicDecoration';
+import SchemaDecoration from './decoration/SchemaDecoration';
+

@@ -57,9 +57,10 @@ export default class Calculus {
 
 			if (self instanceof Schema) {
 				return new Schema({
-					doc: null,
-					tex: null,
-					schemaType: 'schema',
+					decoration: new SchemaDecoration({
+						doc: null,
+						schemaType: 'schema'
+					}),
 					name: null,
 					params: self.params,
 					context: self.context,
@@ -69,10 +70,13 @@ export default class Calculus {
 			}
 	
 			return new ObjectFun({
-				doc: null,
-				precedence: Precedence.ZERO,
-				tex: null,
-				sealed: self.sealed,
+				decoration: new FunctionalMacroDecoration({
+					doc: null,
+					precedence: Precedence.ZERO,
+					tex: null,
+					sealed: self.decoration instanceof FunctionalMacroDecoration
+							&& self.decoration.sealed
+				}),
 				rettype: null,
 				name: null,
 				params: self.params,
@@ -161,10 +165,13 @@ export default class Calculus {
 			if (expr == self.expr) return self;
 
 			return new ObjectFun({
-				doc: null,
-				precedence: Precedence.ZERO,
-				tex: null,
-				sealed: self.sealed,
+				decoration: new FunctionalMacroDecoration({
+					doc: null,
+					precedence: Precedence.ZERO,
+					tex: null,
+					sealed: self.decoration instanceof FunctionalMacroDecoration
+							&& self.decoration.sealed
+				}),
 				rettype: null,
 				name: null,
 				params: self.params,
@@ -181,9 +188,10 @@ export default class Calculus {
 			if (expr == self.expr) return self;
 			
 			return new Schema({
-				doc: null,
-				tex: null,
-				schemaType: 'schema',
+				decoration: new SchemaDecoration({
+					doc: null,
+					schemaType: 'schema'
+				}),
 				name: null,
 				params: self.params,
 				context: self.context,
@@ -325,6 +333,10 @@ export default class Calculus {
 
 			for (var i = 0; i < types.length; i++) {
 				placeholders.push(new Parameter({
+					decoration: new SimpleAtomicDecoration({
+						doc: null,
+						tex: null
+					}),
 					type: types[i],
 					name: '$' + i,
 					selector: null
@@ -438,7 +450,7 @@ export default class Calculus {
 				}
 			}
 
-			var ret = self.schemaType == 'axiom' || Calculus.isProved(self.expr, hypotheses);
+			var ret = self.decoration.schemaType == 'axiom' || Calculus.isProved(self.expr, hypotheses);
 			if (!hypotheses.length) Calculus.schemaProvedCache.set(self, ret);
 			return ret;
 		}
@@ -764,4 +776,7 @@ import { FunctionalType } from "./expr/types";import Parameter from "./expr/Para
 import Counter from "./util/Counter";
 import { ProofType } from "./ProofType";
 import { isNameable } from "./expr/Nameable";
+import SchemaDecoration from "./decoration/SchemaDecoration";
+import FunctionalMacroDecoration from "./decoration/FunctionalMacroDecoration";
+import SimpleAtomicDecoration from "./decoration/SimpleAtomicDecoration";
 
