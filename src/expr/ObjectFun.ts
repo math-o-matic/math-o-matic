@@ -28,30 +28,24 @@ export default class ObjectFun extends Fun {
 				+ `\\coloneqq ${this.expr.toTeXString(Precedence.COLONEQQ)}`;
 	}
 
-	public static makeTeX(id: string, args: string[], tex: string, my: Precedence, your: Precedence) {
-		args = args || [];
-		your = your || Precedence.ZERO;
-		
-		var ret = tex;
-
-		if (my.shouldPutParentheses(your)) {
-			ret = '\\left(' + ret + '\\right)';
-		}
-
-		return ret.replace(/#([0-9]+)/g, (match, g1) => {
-			return args[g1 * 1 - 1] || `\\texttt{\\textcolor{red}{\\#${g1}}}`;
-		}).replace(/<<(.+?)>>/, (_match, g1) => {
-			return `\\href{#${id}}{${g1}}`;
-		});
-	}
-
-	public funcallToTeXString(args: Expr[], prec: Precedence) {
+	public funcallToTeXString(args: Expr[], prec: Precedence): string {
 		var argStrings = args.map(arg => {
 			return arg.toTeXString(this.decoration.tex ? this.decoration.precedence : Precedence.COMMA);
 		});
 	
 		if (this.decoration.tex) {
-			return ObjectFun.makeTeX('def-' + this.name, argStrings, this.decoration.tex, this.decoration.precedence, prec);
+			var id = 'def-' + this.name;
+			var ret = this.decoration.tex;
+
+			if (this.decoration.precedence.shouldPutParentheses(prec)) {
+				ret = '\\left(' + ret + '\\right)';
+			}
+
+			return ret.replace(/#([0-9]+)/g, (match, g1) => {
+				return argStrings[g1 * 1 - 1] || `\\texttt{\\textcolor{red}{\\#${g1}}}`;
+			}).replace(/<<(.+?)>>/, (_match, g1) => {
+				return `\\href{#${id}}{${g1}}`;
+			});
 		}
 	
 		return (
@@ -67,7 +61,6 @@ import StackTrace from "../StackTrace";
 import Parameter from "./Parameter";
 import { Type } from "./types";
 import Precedence from "../Precedence";
-import Calculus from "../Calculus";
 import TeXUtils from "../util/TeXUtils";
 import FunctionalAtomicDecoration from "../decoration/FunctionalAtomicDecoration";
 import FunctionalMacroDecoration from "../decoration/FunctionalMacroDecoration";
