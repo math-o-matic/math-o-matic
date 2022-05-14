@@ -1,4 +1,4 @@
-# /src/exprs
+# /src/expr
 
 ```
 Expr
@@ -7,8 +7,6 @@ Expr
  ├ $Variable
  ├ With
  ├ Fun
- │  ├ ObjectFun
- │  └ Schema
  ├ Funcall
  └ Variable
     └ Parameter

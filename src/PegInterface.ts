@@ -131,7 +131,7 @@ export default class PI {
 		}, scope.trace);
 	}
 
-	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): ObjectFun {
+	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): Fun {
 		if (obj._type != 'defun' && obj._type != 'funexpr')
 			throw Error('Assertion failed');
 		
@@ -181,7 +181,7 @@ export default class PI {
 			expr = PI.objectexpr(obj.expr, scope);
 		}
 
-		return new ObjectFun({
+		return new Fun({
 			decoration: expr
 				? new FunctionalMacroDecoration({
 					doc,
@@ -194,7 +194,12 @@ export default class PI {
 					precedence,
 					tex
 				}),
-			rettype, name, params, expr
+			rettype,
+			name,
+			params,
+			context: new ExecutionContext(),
+			def$s: [],
+			expr
 		}, scope.trace);
 	}
 
@@ -385,7 +390,7 @@ export default class PI {
 		return new $Variable({name: obj.name, expr}, scope.trace);
 	}
 
-	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, oldContext: ExecutionContext): Schema {
+	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, oldContext: ExecutionContext): Fun {
 		if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 			throw Error('Assertion failed');
 		
@@ -406,7 +411,7 @@ export default class PI {
 				throw Error('duh');
 			}
 
-			var using: (Variable | ObjectFun)[] = obj.using.map(name => {
+			var using: (Variable | Fun)[] = obj.using.map(name => {
 				if (!scope.hasVariable(name)) {
 					throw scope.error(`Variable ${name} is not defined`);
 				}
@@ -449,11 +454,12 @@ export default class PI {
 
 		var expr = PI.expr(obj.expr, scope, context);
 
-		return new Schema({
+		return new Fun({
 			decoration: new SchemaDecoration({
 				doc,
 				schemaType
 			}),
+			rettype: null,
 			name, params, context, def$s, expr
 		}, scope.trace);
 	}
@@ -511,13 +517,11 @@ export default class PI {
 
 import ExecutionContext from './ExecutionContext';
 import $Variable from './expr/$Variable';
-import Fun from './expr/Fun';
+import Fun, { SchemaType } from './expr/Fun';
 import Funcall from './expr/Funcall';
 import Expr from './expr/Expr';
-import ObjectFun from './expr/ObjectFun';
 import Parameter from './expr/Parameter';
 import Reduction from './expr/Reduction';
-import Schema, { SchemaType } from './expr/Schema';
 import Conditional from './expr/Conditional';
 import { Type, SimpleType } from './expr/types';
 import Variable from './expr/Variable';

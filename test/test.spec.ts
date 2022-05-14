@@ -3,14 +3,11 @@ import ExecutionContext from "../src/ExecutionContext";
 import Calculus from "../src/Calculus";
 chai.use(require('chai-as-promised'));
 import Expr from "../src/expr/Expr";
-import ObjectFun from "../src/expr/ObjectFun";
-import Precedence from "../src/Precedence";
 import Program from '../src/Program';
 var fs = require('fs');
 var path = require('path');
 
 import unparse from '../src/Unparser';
-import FunctionalAtomicDecoration from "../src/decoration/FunctionalAtomicDecoration";
 
 function removeLocationAndStringify(obj: any) {
 	return JSON.stringify(obj, (k, v) => {
@@ -49,22 +46,6 @@ describe('Program', function () {
 				code: fs.readFileSync(path.join(__dirname, '../math/' + filename + '.math'), 'utf-8')
 			}));
 		});
-	});
-});
-
-describe('ObjectFun', function () {
-	it('should throw if !rettype && !expr', function () {
-		expect(() => new ObjectFun({
-			decoration: new FunctionalAtomicDecoration({
-				doc: null,
-				precedence: Precedence.ZERO,
-				tex: null
-			}),
-			rettype: null,
-			name: null,
-			params: [],
-			expr: null
-		}, null)).to.throw();
 	});
 });
 

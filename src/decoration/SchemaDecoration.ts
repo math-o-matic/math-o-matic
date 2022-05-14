@@ -1,4 +1,4 @@
-import { SchemaType } from "../expr/Schema";
+import { SchemaType } from "../expr/Fun";
 import Precedence from "../Precedence";
 import FunctionalMacroDecoration from "./FunctionalMacroDecoration";
 

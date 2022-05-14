@@ -266,11 +266,12 @@ ${Calculus.expand(as)}
 					return instance.fun;
 				}
 
-				return new Schema({
+				return new Fun({
 					decoration: new SchemaDecoration({
 						doc: null,
 						schemaType: 'schema'
 					}),
+					rettype: null,
 					name: null,
 					params,
 					context: new ExecutionContext(),
@@ -293,7 +294,6 @@ import StackTrace from "../StackTrace";
 import Fun from "./Fun";
 import Funcall from "./Funcall";
 import Parameter from "./Parameter";
-import Schema from "./Schema";
 import Conditional from "./Conditional";
 import { FunctionalType, ConditionalType } from "./types";
 import Variable from "./Variable";

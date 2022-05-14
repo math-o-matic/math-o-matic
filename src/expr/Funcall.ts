@@ -108,18 +108,19 @@ export default class Funcall extends Expr {
 	}
 
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
-		if (this.fun instanceof Schema) {
-			return (
-				this.fun.name
-					? `\\href{#def-${this.fun.name}}{\\htmlData{proved=${Calculus.isProved(this.fun) ? 'p' : 'np'}}{\\textsf{${TeXUtils.escapeTeX(this.fun.name)}}}}`
-					: this.fun.toTeXString(Precedence.ZERO)
-			) + `\\mathord{\\left(${this.args.map(arg => {
-				return arg.toTeXString(Precedence.COMMA);
-			}).join(', ')}\\right)}`;
-		}
-
-		if (this.fun instanceof ObjectFun)
+		if (this.fun instanceof Fun) {
+			if (this.fun.decoration instanceof SchemaDecoration) {
+				return (
+					this.fun.name
+						? `\\href{#def-${this.fun.name}}{\\htmlData{proved=${Calculus.isProved(this.fun) ? 'p' : 'np'}}{\\textsf{${TeXUtils.escapeTeX(this.fun.name)}}}}`
+						: this.fun.toTeXString(Precedence.ZERO)
+				) + `\\mathord{\\left(${this.args.map(arg => {
+					return arg.toTeXString(Precedence.COMMA);
+				}).join(', ')}\\right)}`;
+			}
+	
 			return this.fun.funcallToTeXString(this.args, prec);
+		}
 		
 		var args = this.args.map(arg => {
 			return arg.toTeXString(Precedence.COMMA);
@@ -138,10 +139,9 @@ import StackTrace from '../StackTrace';
 import $Variable from './$Variable';
 import Fun from './Fun';
 import { isNameable } from './Nameable';
-import ObjectFun from './ObjectFun';
-import Schema from './Schema';
 import Variable from './Variable';
 import { FunctionalType } from './types';import Precedence from '../Precedence';
 import TeXUtils from '../util/TeXUtils';
 import Calculus from '../Calculus';
+import SchemaDecoration from '../decoration/SchemaDecoration';
 

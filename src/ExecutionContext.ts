@@ -1,15 +1,15 @@
-import ObjectFun from "./expr/ObjectFun";
+import Fun from "./expr/Fun";
 import Variable from "./expr/Variable";
 
 export default class ExecutionContext {
 
-	public readonly usingList: (Variable | ObjectFun)[];
+	public readonly usingList: (Variable | Fun)[];
 
-	constructor (usingList?: (Variable | ObjectFun)[]) {
+	constructor (usingList?: (Variable | Fun)[]) {
 		this.usingList = usingList || [];
 	}
 
-	public canUse(fun: Variable | ObjectFun) {
-		return this.usingList.includes(fun);
+	public canUse(variable: Variable | Fun) {
+		return this.usingList.includes(variable);
 	}
 }

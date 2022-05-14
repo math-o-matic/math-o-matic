@@ -35,7 +35,7 @@ export default class Calculus {
 			return expr;
 		}
 
-		if (self instanceof ObjectFun || self instanceof Schema) {
+		if (self instanceof Fun) {
 			if (!self.expr) return self;
 
 			// 이름이 있는 것은 치환될 것을 갖지 않아야 한다.
@@ -55,21 +55,7 @@ export default class Calculus {
 			var expr = Calculus.substitute(self.expr, map);
 			if (expr == self.expr) return self;
 
-			if (self instanceof Schema) {
-				return new Schema({
-					decoration: new SchemaDecoration({
-						doc: null,
-						schemaType: 'schema'
-					}),
-					name: null,
-					params: self.params,
-					context: self.context,
-					def$s: self.def$s,
-					expr
-				}, self.trace);
-			}
-	
-			return new ObjectFun({
+			return new Fun({
 				decoration: new FunctionalMacroDecoration({
 					doc: null,
 					precedence: Precedence.ZERO,
@@ -80,6 +66,8 @@ export default class Calculus {
 				rettype: null,
 				name: null,
 				params: self.params,
+				context: self.context,
+				def$s: self.def$s,
 				expr
 			}, self.trace);
 		}
@@ -148,7 +136,7 @@ export default class Calculus {
 			var fun = Calculus.expand(self.fun),
 				args = self.args.map(arg => Calculus.expand(arg));
 			
-			if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun instanceof Schema)) {
+			if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun.decoration instanceof SchemaDecoration)) {
 				if (fun == self.fun && args.every((arg, i) => arg == self.args[i])) return self;
 				
 				return new Funcall({fun, args}, self.trace);
@@ -157,14 +145,32 @@ export default class Calculus {
 			return Calculus.expand(fun.call(args));
 		}
 
-		if (self instanceof ObjectFun) {
+		if (self instanceof Fun) {
+			if (self.decoration instanceof SchemaDecoration) {
+				var expr = Calculus.expand(self.expr);
+				if (expr == self.expr) return self;
+				
+				return new Fun({
+					decoration: new SchemaDecoration({
+						doc: null,
+						schemaType: 'schema'
+					}),
+					rettype: null,
+					name: null,
+					params: self.params,
+					context: self.context,
+					def$s: self.def$s,
+					expr
+				}, self.trace);
+			}
+
 			if (!self.expr) return self;
 			if (self.name) return self;
 
 			var expr = Calculus.expand(self.expr);
 			if (expr == self.expr) return self;
 
-			return new ObjectFun({
+			return new Fun({
 				decoration: new FunctionalMacroDecoration({
 					doc: null,
 					precedence: Precedence.ZERO,
@@ -175,6 +181,8 @@ export default class Calculus {
 				rettype: null,
 				name: null,
 				params: self.params,
+				context: new ExecutionContext(),
+				def$s: [],
 				expr
 			}, self.trace);
 		}
@@ -182,23 +190,7 @@ export default class Calculus {
 		if (self instanceof Reduction) {
 			return Calculus.expand(self.consequent);
 		}
-
-		if (self instanceof Schema) {
-			var expr = Calculus.expand(self.expr);
-			if (expr == self.expr) return self;
-			
-			return new Schema({
-				decoration: new SchemaDecoration({
-					doc: null,
-					schemaType: 'schema'
-				}),
-				name: null,
-				params: self.params,
-				context: self.context,
-				def$s: self.def$s,
-				expr: Calculus.expand(self.expr)
-			}, self.trace);
-		}
+		
 
 		if (self instanceof Variable) {
 			return self;
@@ -416,7 +408,7 @@ export default class Calculus {
 		return Calculus.isProvedInternal(self, hypotheses);
 	}
 
-	private static schemaProvedCache: Map<Schema, boolean> = new Map();
+	private static schemaProvedCache: Map<Fun, boolean> = new Map();
 
 	protected static isProvedInternal(self: Expr, hypotheses: Expr[]): boolean {
 		if (self instanceof $Variable) {
@@ -427,7 +419,22 @@ export default class Calculus {
 			return Calculus.isProved(self.right, hypotheses.concat(self.left));
 		}
 
-		if (self instanceof ObjectFun) {
+		if (self instanceof Fun) {
+			if (self.decoration instanceof SchemaDecoration) {
+				if (Calculus.schemaProvedCache.has(self)) {
+					var cache = Calculus.schemaProvedCache.get(self);
+					if (cache) return true;
+
+					if (hypotheses.length == 0) {
+						return cache;
+					}
+				}
+
+				var ret = self.decoration.schemaType == 'axiom' || Calculus.isProved(self.expr, hypotheses);
+				if (!hypotheses.length) Calculus.schemaProvedCache.set(self, ret);
+				return ret;
+			}
+
 			return self.expr && Calculus.isProved(self.expr, hypotheses);
 		}
 
@@ -438,21 +445,6 @@ export default class Calculus {
 		if (self instanceof Reduction) {
 			return Calculus.isProved(self.subject, hypotheses)
 				&& self.antecedents.every(l => Calculus.isProved(l, hypotheses));
-		}
-
-		if (self instanceof Schema) {
-			if (Calculus.schemaProvedCache.has(self)) {
-				var cache = Calculus.schemaProvedCache.get(self);
-				if (cache) return true;
-
-				if (hypotheses.length == 0) {
-					return cache;
-				}
-			}
-
-			var ret = self.decoration.schemaType == 'axiom' || Calculus.isProved(self.expr, hypotheses);
-			if (!hypotheses.length) Calculus.schemaProvedCache.set(self, ret);
-			return ret;
 		}
 
 		if (self instanceof Variable) {
@@ -547,7 +539,7 @@ export default class Calculus {
 		}
 
 		if (self instanceof Fun) {
-			if (self instanceof Schema && self.name && !root) {
+			if (self.decoration instanceof SchemaDecoration && self.name && !root) {
 				return [{
 					_type: 'RS',
 					ctr: ctr.next(),
@@ -569,7 +561,7 @@ export default class Calculus {
 	
 			let $lines: ProofType[] = [];
 			
-			if (self instanceof Schema) {
+			if (self.decoration instanceof SchemaDecoration) {
 				self.def$s.forEach($ => {
 					var lines = Calculus.getProof($.expr, hypnumMap, $Map, ctr);
 					$lines = $lines.concat(lines);
@@ -609,7 +601,9 @@ export default class Calculus {
 				}];
 			}
 	
-			if (self.fun instanceof Schema && self.fun.name) {
+			if (self.fun instanceof Fun 
+					&& self.fun.decoration instanceof SchemaDecoration
+					&& self.fun.name) {
 				return [{
 					_type: 'RC',
 					ctr: ctr.next(),
@@ -617,7 +611,8 @@ export default class Calculus {
 				}];
 			}
 	
-			if (!(self.fun instanceof Schema)) {
+			if (!(self.fun instanceof Fun
+					&& self.fun.decoration instanceof SchemaDecoration)) {
 				return [{
 					_type: 'NP',
 					ctr: ctr.next(),
@@ -766,10 +761,8 @@ import $Variable from "./expr/$Variable";
 import Conditional from "./expr/Conditional";
 import Fun from "./expr/Fun";
 import Funcall from "./expr/Funcall";
-import ObjectFun from "./expr/ObjectFun";
 import Precedence from "./Precedence";
 import Reduction from "./expr/Reduction";
-import Schema from "./expr/Schema";
 import Variable from "./expr/Variable";
 import With from "./expr/With";
 import { FunctionalType } from "./expr/types";import Parameter from "./expr/Parameter";

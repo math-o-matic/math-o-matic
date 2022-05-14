@@ -1,8 +1,6 @@
 import $Variable from './expr/$Variable';
 import Fun from './expr/Fun';
 import Expr from './expr/Expr';
-import ObjectFun from './expr/ObjectFun';
-import Schema from './expr/Schema';
 import { FunctionalType, Type, SimpleType } from './expr/types';
 import Variable from './expr/Variable';
 import { LocationObject } from './PegInterfaceDefinitions';
@@ -24,8 +22,8 @@ export default class Scope {
 	public readonly importMap: Map<string, Scope> = new Map();
 
 	public readonly typedefMap: Map<string, SimpleType> = new Map();
-	public readonly defMap: Map<string, Variable | ObjectFun> = new Map();
-	public readonly schemaMap: Map<string, Schema> = new Map();
+	public readonly defMap: Map<string, Variable | Fun> = new Map();
+	public readonly schemaMap: Map<string, Fun> = new Map();
 	public readonly $Map: Map<string, $Variable> = new Map();
 	public readonly hypotheses: Expr[] = [];
 
@@ -166,8 +164,8 @@ export default class Scope {
 		return variable;
 	}
 
-	public addFun(fun: ObjectFun): ObjectFun {
-		if (!(fun instanceof ObjectFun))
+	public addFun(fun: Fun): Fun {
+		if (!(fun instanceof Fun))
 			throw this.error('Illegal argument type');
 
 		if (!fun.name)
@@ -180,7 +178,7 @@ export default class Scope {
 		return fun;
 	}
 
-	public getVariable(name: string): Variable | ObjectFun {
+	public getVariable(name: string): Variable | Fun {
 		if (!this.hasVariable(name))
 			throw this.error(`Definition ${name} is not defined`);
 
@@ -202,7 +200,7 @@ export default class Scope {
 			|| (!!this.parent && this.parent.hasSchema(name));
 	}
 
-	public addSchema(schema: Schema): Schema {
+	public addSchema(schema: Fun): Fun {
 		if (!(schema instanceof Fun))
 			throw this.error('Illegal argument type');
 

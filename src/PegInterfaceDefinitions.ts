@@ -1,4 +1,4 @@
-import { SchemaType } from "./expr/Schema";
+import { SchemaType } from "./expr/Fun";
 
 export type ImportOrLineObject = ImportObject | LineObject;
 

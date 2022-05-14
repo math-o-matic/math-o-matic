@@ -2,10 +2,11 @@ import Counter from "./util/Counter";
 import Calculus from "./Calculus";
 import Expr from "./expr/Expr";
 import Precedence from "./Precedence";
-import Schema from "./expr/Schema";
 import Variable from "./expr/Variable";
 import { ProofType } from "./ProofType";
 import Scope from "./Scope";
+import SchemaDecoration from "./decoration/SchemaDecoration";
+import Fun from "./expr/Fun";
 
 export default class ProofExplorer {
 	public static get(scope: Scope, name: string, ktx, m42kup): string {
@@ -19,7 +20,7 @@ export default class ProofExplorer {
 	
 		var expr = scope.getSchema(name);
 
-		if (!(expr instanceof Schema)) {
+		if (!(expr instanceof Fun && expr.decoration instanceof SchemaDecoration)) {
 			throw Error('wut');
 		}
 
