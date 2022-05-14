@@ -4,7 +4,7 @@ import Fun from "./Fun";
 export default class ObjectFun extends Fun {
 	
 	constructor ({decoration, rettype, name, params, expr}: ObjectFunArgumentType, trace: StackTrace) {
-		super({decoration, rettype, name, params, expr}, trace);
+		super({decoration, rettype, name, params, def$s: [], expr}, trace);
 	}
 
 	public override isExpandable(context: ExecutionContext): boolean {

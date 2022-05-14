@@ -5,7 +5,6 @@ export type SchemaType = 'axiom' | 'theorem' | 'schema';
 export default class Schema extends Fun {
 
 	public override readonly decoration: SchemaDecoration;
-	public readonly def$s: $Variable[];
 	public readonly context: ExecutionContext;
 
 	constructor ({decoration, name, params, context, def$s, expr}: SchemaArgumentType, trace: StackTrace) {
@@ -17,9 +16,8 @@ export default class Schema extends Fun {
 			throw Expr.error(`wut`, trace);
 		}
 
-		super({decoration, rettype: null, name, params, expr}, trace);
+		super({decoration, rettype: null, name, params, def$s, expr}, trace);
 		
-		this.def$s = def$s || [];
 		this.context = context;
 
 		if (decoration.schemaType == 'theorem') {

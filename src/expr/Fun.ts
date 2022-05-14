@@ -6,9 +6,10 @@ export default abstract class Fun extends Expr implements Nameable {
 	public readonly decoration: FunctionalAtomicDecoration | FunctionalMacroDecoration;
 	public readonly name: string;
 	public readonly params: Parameter[];
+	public readonly def$s: $Variable[];
 	public readonly expr: Expr;
 
-	constructor ({decoration, rettype, name, params, expr}: FunArgumentType, trace: StackTrace) {
+	constructor ({decoration, rettype, name, params, def$s, expr}: FunArgumentType, trace: StackTrace) {
 		if (!name && !expr)
 			throw Expr.error('Anonymous fun cannot be primitive', trace);
 
@@ -37,6 +38,7 @@ export default abstract class Fun extends Expr implements Nameable {
 		this.decoration = decoration;
 		this.name = name;
 		this.params = params;
+		this.def$s = def$s || [];
 		this.expr = expr;
 	}
 
@@ -105,11 +107,13 @@ import Calculus from '../Calculus';
 import FunctionalAtomicDecoration from '../decoration/FunctionalAtomicDecoration';
 import FunctionalMacroDecoration from '../decoration/FunctionalMacroDecoration';
 import Precedence from '../Precedence';
+import $Variable from './$Variable';
 
 interface FunArgumentType {
 	decoration: FunctionalAtomicDecoration | FunctionalMacroDecoration;
 	rettype: Type;
 	name: string;
 	params: Parameter[];
+	def$s: $Variable[];
 	expr: Expr;
 }
