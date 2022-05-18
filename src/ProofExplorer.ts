@@ -9,7 +9,7 @@ import SchemaDecoration from "./decoration/SchemaDecoration";
 import Fun from "./expr/Fun";
 
 export default class ProofExplorer {
-	public static get(scope: Scope, name: string, ktx, m42kup): string {
+	public static get(scope: Scope, name: string, ktx: (s: string) => string, m42kup: {render: (s: string) => string}): string {
 		var REPEAT = '<b>R</b>',
 			TE = '<b>⊢E</b>',
 			SE = '<b>↦E</b>';
