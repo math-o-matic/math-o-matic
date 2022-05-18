@@ -53,9 +53,11 @@ export default class Funcall extends Expr {
 			return callee.isExpandableOnce(context);
 		}
 
-		if (!(callee instanceof Fun)) return false;
+		if (callee instanceof Fun) {
+			return callee.isExpandable(context);
+		}
 
-		return callee.isExpandable(context);
+		return false;
 	}
 	
 	public expandOnce(context: ExecutionContext): {expanded: Expr, used: (Fun | Variable)[]} {
@@ -109,20 +111,10 @@ export default class Funcall extends Expr {
 
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		if (this.fun instanceof Fun) {
-			if (this.fun.decoration instanceof SchemaDecoration) {
-				return (
-					this.fun.name
-						? `\\href{#def-${this.fun.name}}{\\htmlData{proved=${Calculus.isProved(this.fun) ? 'p' : 'np'}}{\\textsf{${TeXUtils.escapeTeX(this.fun.name)}}}}`
-						: this.fun.toTeXString(Precedence.ZERO)
-				) + `\\mathord{\\left(${this.args.map(arg => {
-					return arg.toTeXString(Precedence.COMMA);
-				}).join(', ')}\\right)}`;
-			}
-	
 			return this.fun.funcallToTeXString(this.args, prec);
 		}
 		
-		var args = this.args.map(arg => {
+		var argStrings = this.args.map(arg => {
 			return arg.toTeXString(Precedence.COMMA);
 		});
 
@@ -130,7 +122,7 @@ export default class Funcall extends Expr {
 			!(isNameable(this.fun) && this.fun.name) || this.fun instanceof Variable
 				? this.fun.toTeXString(Precedence.ZERO)
 				: TeXUtils.makeTeXName(this.fun.name)
-		) + `\\mathord{\\left(${args.join(', ')}\\right)}`;
+		) + `\\mathord{\\left(${argStrings.join(', ')}\\right)}`;
 	}
 }
 
@@ -142,6 +134,3 @@ import { isNameable } from './Nameable';
 import Variable from './Variable';
 import { FunctionalType } from './types';import Precedence from '../Precedence';
 import TeXUtils from '../util/TeXUtils';
-import Calculus from '../Calculus';
-import SchemaDecoration from '../decoration/SchemaDecoration';
-

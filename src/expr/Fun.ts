@@ -127,6 +127,14 @@ export default class Fun extends Expr implements Nameable {
 		var argStrings = args.map(arg => {
 			return arg.toTeXString(this.decoration.tex ? this.decoration.precedence : Precedence.COMMA);
 		});
+
+		if (this.decoration instanceof SchemaDecoration) {
+			return (
+				this.name
+					? `\\href{#def-${this.name}}{\\htmlData{proved=${Calculus.isProved(this) ? 'p' : 'np'}}{\\textsf{${TeXUtils.escapeTeX(this.name)}}}}`
+					: this.toTeXString(Precedence.ZERO)
+			) + `\\mathord{\\left(${argStrings.join(', ')}\\right)}`;
+		}
 	
 		if (this.decoration.tex) {
 			var id = 'def-' + this.name;
