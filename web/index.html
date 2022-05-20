@@ -144,7 +144,6 @@
 			</div>
 		</div>
 		<script src="console.js"></script>
-		<script src="generate-html.js"></script>
 		<script>
 			Globals = {
 				program: null,
@@ -253,9 +252,11 @@
 
 					evt.preventDefault();
 
+					var generator = new MathOMatic.HtmlGenerator(Globals.program, ktx, m42kup);
+
 					if (Globals.program.scope.hasVariable(name)) {
 						var var_ = Globals.program.scope.getVariable(name);
-						$('#popper-tooltip-holder').innerHTML = generateDefHtml(Globals.program, name, var_);
+						$('#popper-tooltip-holder').innerHTML = generator.def(name, var_);
 
 						Popper.createPopper($a, $('#popper-tooltip-holder *'));
 						return;
@@ -263,7 +264,11 @@
 
 					if (Globals.program.scope.hasSchema(name)) {
 						var var_ = Globals.program.scope.getSchema(name);
-						$('#popper-tooltip-holder').innerHTML = generateSchemaHtml(Globals.program, name, var_, true);
+						$('#popper-tooltip-holder').innerHTML = generator.schema(
+							name, var_,
+							Globals.expansionList.includes(name),
+							true
+						);
 
 						Popper.createPopper($a, $('#popper-tooltip-holder *'));
 					}
@@ -306,7 +311,18 @@
 					console.log('--- PROGRAM END ---');
 					console.log(`Program took ${end - start} ms`);
 
-					generateHtml(Globals.program);
+					var generator = new MathOMatic.HtmlGenerator(Globals.program, ktx, m42kup);
+					var generated = generator.generate(
+						Globals.filename,
+						Globals.expansionList,
+						Globals.getFileLoadPreference() == 'selected-file-and-dependencies'
+					);
+
+					console.log(generated);
+					
+					for (var k in generated) {
+						$(k).innerHTML = generated[k];
+					}
 
 					Globals.currentlyLoadedThing.set(filename);
 				} finally {
