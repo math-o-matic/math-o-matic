@@ -101,7 +101,7 @@ export default class Fun extends Expr implements Nameable {
 		return Calculus.substitute(this.expr, map);
 	}
 
-	protected unnamedToTeXString(prec: Precedence, root: boolean): string {
+	protected unnamedToTeXString(prec: Precedence): string {
 		if (this.name) {
 			throw this.error('I have a name');
 		}
@@ -160,7 +160,7 @@ export default class Fun extends Expr implements Nameable {
 
 	protected toTeXStringInternal(prec: Precedence, root: boolean): string {
 		if (!this.name) {
-			return this.unnamedToTeXString(prec, root);
+			return this.unnamedToTeXString(prec);
 		}
 
 		if (this.decoration instanceof SchemaDecoration) {
