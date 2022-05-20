@@ -286,8 +286,10 @@
 				$('#reload svg').classList.add('rotate');
 
 				try {
+					var start, end;
+
 					console.log('--- PROGRAM START ---');
-					var start = new Date();
+					start = new Date();
 					Globals.program = new MathOMatic.Program();
 					await Globals.program.loadModule(filename, async filename => ({
 						fileUri: `/${filename}.math`,
@@ -306,10 +308,12 @@
 
 					Globals.updateSearchDatabase();
 
-					var end = new Date();
+					end = new Date();
 					console.log(Globals.program);
 					console.log('--- PROGRAM END ---');
 					console.log(`Program took ${end - start} ms`);
+					console.log('--- HTML GENERATION START ---');
+					start = new Date();
 
 					var generator = new MathOMatic.HtmlGenerator(Globals.program, ktx, m42kup);
 					var generated = generator.generate(
@@ -317,10 +321,20 @@
 						Globals.expansionList,
 						Globals.getFileLoadPreference() == 'selected-file-and-dependencies'
 					);
+
+					end = new Date();
+					console.log('--- HTML GENERATION END ---');
+					console.log(`HTML generation took ${end - start} ms`);
+					console.log('--- HTML RENDER START ---');
+					start = new Date();
 					
 					for (var k in generated) {
 						$(k).innerHTML = generated[k];
 					}
+
+					end = new Date();
+					console.log('--- HTML RENDER END ---');
+					console.log(`HTML render took ${end - start} ms`);
 
 					Globals.currentlyLoadedThing.set(filename);
 				} finally {

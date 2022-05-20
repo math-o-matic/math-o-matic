@@ -93,9 +93,6 @@ export default class HtmlGenerator {
 	}
 	
 	public generate(filename: string, expansionList: string[], includeImports: boolean) {
-		console.log('--- HTML GENERATION START ---');
-		var start = new Date(), end: Date;
-	
 		var precedenceMap: Map<string, string[]> = new Map();
 	
 		var primitiveTypeList = [],
@@ -197,12 +194,6 @@ export default class HtmlGenerator {
 		
 		all += printThisScope(this.program.scope);
 	
-		end = new Date();
-		console.log('--- HTML GENERATION END ---');
-		console.log(`HTML generation took ${end.getTime() - start.getTime()} ms`);
-		console.log('--- HTML RENDER START ---');
-		start = new Date();
-	
 		var precedenceTable = [...precedenceMap].sort((a, b) => Number(a[0]) - Number(b[0]));
 	
 		var ret = {
@@ -254,10 +245,6 @@ export default class HtmlGenerator {
 </ul>`,
 			'#all': all
 		};
-	
-		end = new Date();
-		console.log('--- HTML RENDER END ---');
-		console.log(`HTML render took ${end.getTime() - start.getTime()} ms`);
 
 		return ret;
 	}
