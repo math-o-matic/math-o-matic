@@ -1,5 +1,5 @@
 import Program from '../src/Program';
-import ProofExplorer from '../src/ProofExplorer';
+import HtmlGenerator from '../src/HtmlGenerator';
 import fs from 'fs';
 var path = require('path');
 var mkdirp = require('mkdirp');
@@ -13,7 +13,7 @@ var program = new Program();
 		'algebra', 'integer'
 	];
 
-	var proofs = {};
+	var result = {};
 	
 	for (var name of arr) {
 		await program.loadModule(name, (filename: string) => ({
@@ -23,16 +23,15 @@ var program = new Program();
 
 		var keys = [...program.scope.schemaMap.keys()];
 
-		for (var key of keys) {
-			var proof = ProofExplorer.get(program.scope, key, e => e, {render: e => e});
-			proofs[key] = proof;
-		}
+		result[name] = new HtmlGenerator(program, e => e, {render: e => e}).generate(
+			name, keys, false
+		);
 	}
 
-	var compareThis = JSON.stringify(proofs);
+	var compareThis = JSON.stringify(result);
 
 	mkdirp.sync('logs');
-	var filename = 'logs/checkProofExplorerConsistency.log'
+	var filename = 'logs/checkHtmlGeneratorConsistency.log'
 	if (!fs.existsSync(filename)) {
 		console.log('Previous version not found; creating a new one');
 		fs.closeSync(fs.openSync(filename, 'w'));
