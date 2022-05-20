@@ -106,7 +106,7 @@ export default class Fun extends Expr implements Nameable {
 			throw this.error('I have a name');
 		}
 
-		var shouldPutParentheses = this.decoration.precedence.shouldPutParentheses(prec);
+		var shouldPutParentheses = Precedence.FUNEXPR.shouldPutParentheses(prec);
 
 		return [
 			(shouldPutParentheses ? '\\left(' : ''),
