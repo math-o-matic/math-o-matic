@@ -197,7 +197,6 @@ export default class PI {
 			rettype,
 			name,
 			params,
-			context: new ExecutionContext(),
 			def$s: [],
 			expr
 		}, scope.trace);
@@ -457,10 +456,11 @@ export default class PI {
 		return new Fun({
 			decoration: new SchemaDecoration({
 				doc,
-				schemaType
+				schemaType,
+				context
 			}),
 			rettype: null,
-			name, params, context, def$s, expr
+			name, params, def$s, expr
 		}, scope.trace);
 	}
 

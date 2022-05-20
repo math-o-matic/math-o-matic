@@ -1,3 +1,4 @@
+import ExecutionContext from "../ExecutionContext";
 import { SchemaType } from "../expr/Fun";
 import Precedence from "../Precedence";
 import FunctionalMacroDecoration from "./FunctionalMacroDecoration";
@@ -5,10 +6,12 @@ import FunctionalMacroDecoration from "./FunctionalMacroDecoration";
 export default class SchemaDecoration extends FunctionalMacroDecoration {
 	
 	public schemaType: SchemaType;
+	public context: ExecutionContext;
 
-	constructor ({doc, schemaType} : {
+	constructor ({doc, schemaType, context} : {
 		doc: string,
-		schemaType: SchemaType
+		schemaType: SchemaType,
+		context: ExecutionContext
 	}) {
 		
 		super({
@@ -19,5 +22,6 @@ export default class SchemaDecoration extends FunctionalMacroDecoration {
 		});
 
 		this.schemaType = schemaType;
+		this.context = context;
 	}
 }

@@ -269,12 +269,12 @@ ${Calculus.expand(as)}
 				return new Fun({
 					decoration: new SchemaDecoration({
 						doc: null,
-						schemaType: 'schema'
+						schemaType: 'schema',
+						context: new ExecutionContext()
 					}),
 					rettype: null,
 					name: null,
 					params,
-					context: new ExecutionContext(),
 					def$s: [],
 					expr: instance
 				}, trace);

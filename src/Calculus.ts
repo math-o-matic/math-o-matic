@@ -66,7 +66,6 @@ export default class Calculus {
 				rettype: null,
 				name: null,
 				params: self.params,
-				context: self.context,
 				def$s: self.def$s,
 				expr
 			}, self.trace);
@@ -153,12 +152,12 @@ export default class Calculus {
 				return new Fun({
 					decoration: new SchemaDecoration({
 						doc: null,
-						schemaType: 'schema'
+						schemaType: 'schema',
+						context: self.decoration.context
 					}),
 					rettype: null,
 					name: null,
 					params: self.params,
-					context: self.context,
 					def$s: self.def$s,
 					expr
 				}, self.trace);
@@ -181,7 +180,6 @@ export default class Calculus {
 				rettype: null,
 				name: null,
 				params: self.params,
-				context: new ExecutionContext(),
 				def$s: [],
 				expr
 			}, self.trace);

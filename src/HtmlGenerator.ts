@@ -65,8 +65,8 @@ export default class HtmlGenerator {
 
 		return `<div class="block">`
 			+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${v.decoration.schemaType}</b> ${k}</a>(${v.params.map(p => p.toSimpleString()).join(', ')})${
-				v.context.usingList.length
-					? ` <b>using</b> ${v.context.usingList.map(u => u.name).join(', ')}`
+				v.decoration.context.usingList.length
+					? ` <b>using</b> ${v.decoration.context.usingList.map(u => u.name).join(', ')}`
 					: ''
 			}</p>`
 			+ `<div class="math">${this.ktx(v.toTeXString(null, true))}</div>`
