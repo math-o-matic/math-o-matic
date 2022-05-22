@@ -240,15 +240,7 @@
 				if (match) {
 					var name = match[1];
 
-					var $table = $a;
-
-					while (!($table instanceof HTMLTableElement)) {
-						$table = $table.parentElement;
-
-						if (!$table) return;
-					}
-
-					if (!$table.classList.contains('explorer')) return;
+					if (!$a.closest('table.explorer')) return;
 
 					evt.preventDefault();
 
