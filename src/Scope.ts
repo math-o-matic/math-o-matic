@@ -1,10 +1,12 @@
 import $Variable from './expr/$Variable';
 import Expr from './expr/Expr';
-import { FunctionalType, Type, SimpleType } from './expr/types';
 import Variable from './expr/Variable';
 import { LocationObject } from './PegInterfaceDefinitions';
 import StackTrace from './StackTrace';
 import SchemaDecoration from './decoration/SchemaDecoration';
+import { FunctionalType } from './type/FunctionalType';
+import { SimpleType } from './type/SimpleType';
+import Type from './type/Type';
 
 /*
  * 'st'                     -> st

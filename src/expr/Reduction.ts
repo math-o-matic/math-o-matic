@@ -298,10 +298,11 @@ import Fun from "./Fun";
 import Funcall from "./Funcall";
 import Parameter from "./Parameter";
 import Conditional from "./Conditional";
-import { FunctionalType, ConditionalType } from "./types";
 import Variable from "./Variable";
 import Precedence from "../Precedence";
-import Calculus from "../Calculus";import InterpolativeString from "../util/InterpolativeString";
-import SchemaDecoration from "../decoration/SchemaDecoration";
+import Calculus from "../Calculus";
+import InterpolativeString from "../util/InterpolativeString";
 import SimpleAtomicDecoration from "../decoration/SimpleAtomicDecoration";
+import { ConditionalType } from "../type/ConditionalType";
+import { FunctionalType } from "../type/FunctionalType";
 

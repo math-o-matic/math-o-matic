@@ -132,4 +132,5 @@ import $Variable from './$Variable';
 import Fun from './Fun';
 import { isNameable } from './Nameable';
 import Variable from './Variable';
-import { FunctionalType } from './types';import Precedence from '../Precedence';
+import Precedence from '../Precedence';import { FunctionalType } from '../type/FunctionalType';
+

@@ -4,10 +4,10 @@ import FunctionalMacroDecoration from "./decoration/FunctionalMacroDecoration";
 import SchemaDecoration from "./decoration/SchemaDecoration";
 import Fun from "./expr/Fun";
 import Parameter from "./expr/Parameter";
-import { Type } from "./expr/types";
 import Variable from "./expr/Variable";
 import Program from "./Program";
 import Scope from "./Scope";
+import Type from "./type/Type";
 
 export default class HtmlGenerator {
 

@@ -148,7 +148,6 @@ export default class Variable extends Expr implements Nameable {
 }
 
 import Parameter from './Parameter';
-import { Type } from './types';
 import Precedence from '../Precedence';
 import StackTrace from '../StackTrace';
 import TeXUtils from '../util/TeXUtils';
@@ -160,4 +159,5 @@ import FunctionalMacroDecoration from '../decoration/FunctionalMacroDecoration';
 import SchemaDecoration from '../decoration/SchemaDecoration';
 import Calculus from '../Calculus';
 import Fun from './Fun';
+import Type from '../type/Type';
 

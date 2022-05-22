@@ -688,11 +688,11 @@ import Funcall from "./expr/Funcall";
 import Reduction from "./expr/Reduction";
 import Variable from "./expr/Variable";
 import With from "./expr/With";
-import { FunctionalType } from "./expr/types";
 import Parameter from "./expr/Parameter";
 import Counter from "./util/Counter";
 import { ProofType } from "./ProofType";
 import { isNameable } from "./expr/Nameable";
 import SchemaDecoration from "./decoration/SchemaDecoration";
 import SimpleAtomicDecoration from "./decoration/SimpleAtomicDecoration";
+import { FunctionalType } from "./type/FunctionalType";
 

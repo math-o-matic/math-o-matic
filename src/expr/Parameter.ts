@@ -24,5 +24,5 @@ export default class Parameter extends Variable {
 
 import StackTrace from "../StackTrace";
 import Precedence from "../Precedence";
-import { Type } from "./types";
 import SimpleAtomicDecoration from "../decoration/SimpleAtomicDecoration";
+import Type from "../type/Type";

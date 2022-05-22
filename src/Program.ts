@@ -185,8 +185,8 @@ export default class Program {
 }
 
 import Fun from './expr/Fun';
-import { SimpleType } from './expr/types';
 import PegInterface from './PegInterface';
 import { EvaluableObject, ImportOrLineObject } from './PegInterfaceDefinitions';
 import ProofExplorer from './ProofExplorer';
 import Scope from './Scope';
+import { SimpleType } from './type/SimpleType';

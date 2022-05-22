@@ -82,7 +82,7 @@ export default class Fun extends Expr {
 import Variable from './Variable';
 import StackTrace from '../StackTrace';
 import Parameter from './Parameter';
-import { FunctionalType } from './types';
 import Calculus from '../Calculus';
 import Precedence from '../Precedence';
 import $Variable from './$Variable';
+import { FunctionalType } from '../type/FunctionalType';

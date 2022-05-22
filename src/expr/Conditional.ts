@@ -42,6 +42,6 @@ export default class Conditional extends Expr {
 
 import StackTrace from '../StackTrace';
 import $Variable from './$Variable';
-import { ConditionalType } from './types';
 import Precedence from '../Precedence';
 import Calculus from '../Calculus';
+import { ConditionalType } from '../type/ConditionalType';

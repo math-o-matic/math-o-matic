@@ -535,7 +535,6 @@ import Expr from './expr/Expr';
 import Parameter from './expr/Parameter';
 import Reduction from './expr/Reduction';
 import Conditional from './expr/Conditional';
-import { Type, SimpleType, FunctionalType } from './expr/types';
 import Variable from './expr/Variable';
 import With from './expr/With';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
@@ -545,4 +544,7 @@ import SimpleAtomicDecoration from './decoration/SimpleAtomicDecoration';
 import SimpleMacroDecoration from './decoration/SimpleMacroDecoration';
 import FunctionalMacroDecoration from './decoration/FunctionalMacroDecoration';
 import FunctionalAtomicDecoration from './decoration/FunctionalAtomicDecoration';
-import SchemaDecoration, { SchemaType } from './decoration/SchemaDecoration';
+import SchemaDecoration, { SchemaType } from './decoration/SchemaDecoration';import { FunctionalType } from './type/FunctionalType';
+import { SimpleType } from './type/SimpleType';
+import Type from './type/Type';
+
