@@ -1,7 +1,8 @@
 import ExecutionContext from "../ExecutionContext";
-import { SchemaType } from "../expr/Fun";
 import Precedence from "../Precedence";
 import FunctionalMacroDecoration from "./FunctionalMacroDecoration";
+
+export type SchemaType = 'axiom' | 'theorem' | 'schema';
 
 export default class SchemaDecoration extends FunctionalMacroDecoration {
 	

@@ -1,8 +1,6 @@
 import Nameable from './Nameable';
 import Expr from './Expr';
 
-export type SchemaType = 'axiom' | 'theorem' | 'schema';
-
 export default class Fun extends Expr implements Nameable {
 
 	public readonly decoration: FunctionalAtomicDecoration | FunctionalMacroDecoration;

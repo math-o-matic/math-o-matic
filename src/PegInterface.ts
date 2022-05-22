@@ -517,7 +517,7 @@ export default class PI {
 
 import ExecutionContext from './ExecutionContext';
 import $Variable from './expr/$Variable';
-import Fun, { SchemaType } from './expr/Fun';
+import Fun from './expr/Fun';
 import Funcall from './expr/Funcall';
 import Expr from './expr/Expr';
 import Parameter from './expr/Parameter';
@@ -529,8 +529,8 @@ import With from './expr/With';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './Scope';
 import Precedence from './Precedence';
-import SimpleAtomicDecoration from './decoration/SimpleAtomicDecoration';import SimpleMacroDecoration from './decoration/SimpleMacroDecoration';
+import SimpleAtomicDecoration from './decoration/SimpleAtomicDecoration';
+import SimpleMacroDecoration from './decoration/SimpleMacroDecoration';
 import FunctionalMacroDecoration from './decoration/FunctionalMacroDecoration';
 import FunctionalAtomicDecoration from './decoration/FunctionalAtomicDecoration';
-import SchemaDecoration from './decoration/SchemaDecoration';
-
+import SchemaDecoration, { SchemaType } from './decoration/SchemaDecoration';
