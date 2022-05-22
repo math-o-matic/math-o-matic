@@ -1,5 +1,11 @@
 import Expr from './Expr';
 
+interface FunArgumentType {
+	params: Parameter[];
+	def$s: $Variable[];
+	expr: Expr;
+}
+
 export default class Fun extends Expr {
 
 	public readonly params: Parameter[];
@@ -19,7 +25,7 @@ export default class Fun extends Expr {
 		);
 		
 		this.params = params;
-		this.def$s = def$s || [];
+		this.def$s = def$s;
 		this.expr = expr;
 	}
 
@@ -31,10 +37,6 @@ export default class Fun extends Expr {
 	}
 
 	public call(args: Expr[]): Expr {
-		if (!this.expr) {
-			throw Error('Cannot call a primitive fun');
-		}
-
 		if (this.params.length != args.length) {
 			throw Error('Arguments length mismatch');
 		}
@@ -58,7 +60,7 @@ export default class Fun extends Expr {
 		return `((${this.params.join(', ')}) => ${this.expr})`;
 	}
 
-	protected toTeXStringInternal(prec: Precedence, root: boolean): string {
+	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		var shouldPutParentheses = Precedence.FUNEXPR.shouldPutParentheses(prec);
 
 		return [
@@ -79,15 +81,8 @@ export default class Fun extends Expr {
 
 import Variable from './Variable';
 import StackTrace from '../StackTrace';
-import ExecutionContext from '../ExecutionContext';
 import Parameter from './Parameter';
 import { FunctionalType } from './types';
 import Calculus from '../Calculus';
 import Precedence from '../Precedence';
 import $Variable from './$Variable';
-
-interface FunArgumentType {
-	params: Parameter[];
-	def$s: $Variable[];
-	expr: Expr;
-}

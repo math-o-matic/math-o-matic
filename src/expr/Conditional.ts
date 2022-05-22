@@ -19,7 +19,7 @@ export default class Conditional extends Expr {
 		}, trace), trace);
 
 		this.left = left;
-		this.def$s = def$s || [];
+		this.def$s = def$s;
 		this.right = right;
 	}
 

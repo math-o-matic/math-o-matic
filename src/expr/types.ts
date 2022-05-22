@@ -1,6 +1,5 @@
 import StackTrace from "../StackTrace";
 import UniversalCounter from "../util/UniversalCounter";
-import Nameable from "./Nameable";
 
 export abstract class Type {
 
@@ -128,7 +127,7 @@ interface SimpleTypeArgumentType {
 	expr: Type;
 }
 
-export class SimpleType extends Type implements Nameable {
+export class SimpleType extends Type {
 
 	public readonly name: string;
 	public readonly expr: Type;

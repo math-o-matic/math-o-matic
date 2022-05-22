@@ -609,10 +609,8 @@ export default class Calculus {
 						: false
 				)
 				|| (
-					(s => {
-						return s instanceof Variable
-							|| s instanceof Funcall && isNameable(s.fun) && s.fun.name;
-					})(self.subject)
+					self.subject instanceof Variable
+						|| self.subject instanceof Funcall && isNameable(self.subject.fun) && self.subject.fun.name
 						? self.subject
 						: (subjectlines = Calculus.getProof(self.subject, hypnumMap, $Map, ctr))[subjectlines.length-1].ctr
 				);
@@ -687,15 +685,14 @@ import $Variable from "./expr/$Variable";
 import Conditional from "./expr/Conditional";
 import Fun from "./expr/Fun";
 import Funcall from "./expr/Funcall";
-import Precedence from "./Precedence";
 import Reduction from "./expr/Reduction";
 import Variable from "./expr/Variable";
 import With from "./expr/With";
-import { FunctionalType } from "./expr/types";import Parameter from "./expr/Parameter";
+import { FunctionalType } from "./expr/types";
+import Parameter from "./expr/Parameter";
 import Counter from "./util/Counter";
 import { ProofType } from "./ProofType";
 import { isNameable } from "./expr/Nameable";
 import SchemaDecoration from "./decoration/SchemaDecoration";
-import FunctionalMacroDecoration from "./decoration/FunctionalMacroDecoration";
 import SimpleAtomicDecoration from "./decoration/SimpleAtomicDecoration";
 

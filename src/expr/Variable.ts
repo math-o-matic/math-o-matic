@@ -78,9 +78,7 @@ export default class Variable extends Expr implements Nameable {
 		});
 		
 		if (!hasFunctionalDecoration) {
-			return (
-				this.toTeXString(Precedence.ZERO)
-			) + `\\mathord{\\left(${argStrings.join(', ')}\\right)}`;
+			return `${this.toTeXString(Precedence.ZERO)}\\mathord{\\left(${argStrings.join(', ')}\\right)}`;
 		}
 
 		if (this.decoration instanceof SchemaDecoration) {
@@ -102,12 +100,10 @@ export default class Variable extends Expr implements Nameable {
 			});
 		}
 	
-		return (
-			`\\href{#def-${this.name}}{${TeXUtils.makeTeXName(this.name)}}`
-		) + `\\mathord{\\left(${argStrings.join(', ')}\\right)}`;
+		return `\\href{#def-${this.name}}{${TeXUtils.makeTeXName(this.name)}}\\mathord{\\left(${argStrings.join(', ')}\\right)}`;
 	}
 
-	protected toTeXStringInternal(prec: Precedence, root: boolean): string {
+	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		if (this.decoration instanceof SchemaDecoration) {
 			if (!this.expr || !(this.expr instanceof Fun)) {
 				throw Error('wut');
