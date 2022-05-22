@@ -122,14 +122,22 @@ export default class Program {
 				case 'defun':
 					var fun = PegInterface.fun(line, scope);
 
+					if (fun instanceof Fun) {
+						throw Error('wut');
+					}
+
 					if (scope.hasVariable(fun.name)) {
 						throw scope.error(`Definition ${fun.name} has already been declared`);
 					}
 
-					scope.addFun(fun);
+					scope.addVariable(fun);
 					break;
 				case 'defschema':
 					var schema = PegInterface.schema(line, scope, null);
+
+					if (schema instanceof Fun) {
+						throw Error('wut');
+					}
 
 					if (scope.hasSchema(schema.name)) {
 						throw scope.error(`Schema ${schema.name} has already been declared`);
@@ -176,6 +184,7 @@ export default class Program {
 	}
 }
 
+import Fun from './expr/Fun';
 import { SimpleType } from './expr/types';
 import PegInterface from './PegInterface';
 import { EvaluableObject, ImportOrLineObject } from './PegInterfaceDefinitions';

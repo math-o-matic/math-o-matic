@@ -45,7 +45,7 @@ export default class Funcall extends Expr {
 			callee = callee.expr;
 		}
 
-		if (callee instanceof Variable && callee.expr) {
+		if (callee instanceof Variable && callee.isExpandable(context)) {
 			return true;
 		}
 
@@ -54,18 +54,18 @@ export default class Funcall extends Expr {
 		}
 
 		if (callee instanceof Fun) {
-			return callee.isExpandable(context);
+			return true;
 		}
 
 		return false;
 	}
 	
-	public expandOnce(context: ExecutionContext): {expanded: Expr, used: (Fun | Variable)[]} {
+	public expandOnce(context: ExecutionContext): {expanded: Expr, used: Variable[]} {
 		if (!this.isExpandableOnce(context)) {
 			throw Error('Cannot expand');
 		}
 
-		var used: (Fun | Variable)[] = [];
+		var used: Variable[] = [];
 
 		var callee: Expr = this.fun;
 
@@ -101,16 +101,18 @@ export default class Funcall extends Expr {
 			throw Error('Something\'s wrong');
 		}
 
-		if (callee.name) used.push(callee);
-
 		return {
 			expanded: callee.call(this.args),
 			used
 		};
 	}
 
+	public override toString() {
+		return `${this.fun}(${this.args.join(', ')})`;
+	}
+
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
-		if (this.fun instanceof Fun) {
+		if (this.fun instanceof Variable) {
 			return this.fun.funcallToTeXString(this.args, prec);
 		}
 		
@@ -119,9 +121,7 @@ export default class Funcall extends Expr {
 		});
 
 		return (
-			!(isNameable(this.fun) && this.fun.name) || this.fun instanceof Variable
-				? this.fun.toTeXString(Precedence.ZERO)
-				: TeXUtils.makeTeXName(this.fun.name)
+			this.fun.toTeXString(Precedence.ZERO)
 		) + `\\mathord{\\left(${argStrings.join(', ')}\\right)}`;
 	}
 }
@@ -133,4 +133,3 @@ import Fun from './Fun';
 import { isNameable } from './Nameable';
 import Variable from './Variable';
 import { FunctionalType } from './types';import Precedence from '../Precedence';
-import TeXUtils from '../util/TeXUtils';

@@ -1,6 +1,9 @@
 import Calculus from "./Calculus";
+import FunctionalAtomicDecoration from "./decoration/FunctionalAtomicDecoration";
+import FunctionalMacroDecoration from "./decoration/FunctionalMacroDecoration";
 import SchemaDecoration from "./decoration/SchemaDecoration";
 import Fun from "./expr/Fun";
+import Parameter from "./expr/Parameter";
 import { Type } from "./expr/types";
 import Variable from "./expr/Variable";
 import Program from "./Program";
@@ -37,14 +40,28 @@ export default class HtmlGenerator {
 			+ `</div>`;
 	}
 
-	public def(k: string, v: Variable | Fun) {
+	public def(k: string, v: Variable) {
 		return `<div class="block">`
 			+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${
 				'sealed' in v.decoration && v.decoration.sealed ? 'sealed ' : ''
-			}definition</b> ${k}</a>${!(v instanceof Fun)
+			}definition</b> ${k}</a>${!(v.decoration instanceof FunctionalAtomicDecoration || v.decoration instanceof FunctionalMacroDecoration)
 					? ': ' + v.type
-					: `(${v.params.map(p => p.toSimpleString()).join(', ')})`
-						+ `: ${v.type.resolveToFunctionalType().to}`
+					: (v => {
+						var params: Parameter[];
+
+						if (v.decoration instanceof FunctionalAtomicDecoration) {
+							params = v.decoration.params;
+						} else {
+							if (!(v.expr instanceof Fun)) {
+								throw Error('wut');
+							}
+
+							params = v.expr.params;
+						}
+
+						return `(${params.map(p => p.toSimpleString()).join(', ')})`
+								+ `: ${v.type.resolveToFunctionalType().to}`;
+					})(v)
 			}</p>`
 			+ `<div class="math">${this.ktx(v.toTeXString(null, true))}</div>`
 	
@@ -58,13 +75,17 @@ export default class HtmlGenerator {
 			+ `</div>`;
 	}
 	
-	public schema(k: string, v: Fun, expandProofExplorer: boolean, omitProofExplorer: boolean) {
+	public schema(k: string, v: Variable, expandProofExplorer: boolean, omitProofExplorer: boolean) {
 		if (!(v.decoration instanceof SchemaDecoration)) {
 			throw Error('wut');
 		}
 
+		if (!(v.expr instanceof Fun)) {
+			throw Error('wut');
+		}
+
 		return `<div class="block">`
-			+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${v.decoration.schemaType}</b> ${k}</a>(${v.params.map(p => p.toSimpleString()).join(', ')})${
+			+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${v.decoration.schemaType}</b> ${k}</a>(${v.expr.params.map(p => p.toSimpleString()).join(', ')})${
 				v.decoration.context.usingList.length
 					? ` <b>using</b> ${v.decoration.context.usingList.map(u => u.name).join(', ')}`
 					: ''

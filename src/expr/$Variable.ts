@@ -25,6 +25,10 @@ export default class $Variable extends Expr implements Nameable {
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		return `\\mathtt{${TeXUtils.escapeTeX(this.name)}}`;
 	}
+
+	public override toString() {
+		return '$' + this.name;
+	}
 }
 
 import StackTrace from "../StackTrace";

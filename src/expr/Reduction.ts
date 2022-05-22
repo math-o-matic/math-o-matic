@@ -34,17 +34,23 @@ export default class Reduction extends Expr {
 			}
 		}
 
-		if (subject instanceof Fun) {
-			subject.params.forEach((p, i) => {
+		var fun = subject;
+
+		while (fun instanceof Variable) {
+			fun = fun.expr;
+		}
+
+		if (fun instanceof Fun) {
+			fun.params.forEach((p, i) => {
 				if (!(args && args[i]) && !p.selector) {
 					throw Expr.error(`Argument #${i + 1} could not be guessed`, trace);
 				}
 			});
 	
-			var derefs = subject.params.map((p, i) => {
+			var derefs = fun.params.map((p, i) => {
 				if (args && args[i]) return args[i];
 
-				var conditional = Calculus.expand((subject as Fun).expr);
+				var conditional = Calculus.expand((fun as Fun).expr);
 
 				if (!(conditional instanceof Conditional)) throw Error('wut');
 	
@@ -225,8 +231,8 @@ ${Calculus.expand(as)}
 				return recurse(ptr + 1, pattern.right, instance.right, params);
 			} else if (selector[ptr] == 'c') {
 				if (!(
-					pattern instanceof Fun && !pattern.name
-					&& instance instanceof Fun && !instance.name
+					pattern instanceof Fun
+					&& instance instanceof Fun
 				)) {
 					throw Expr.error(`Cannot dereference @${selector} (at ${ptr})`, trace);
 				}
@@ -267,13 +273,6 @@ ${Calculus.expand(as)}
 				}
 
 				return new Fun({
-					decoration: new SchemaDecoration({
-						doc: null,
-						schemaType: 'schema',
-						context: new ExecutionContext()
-					}),
-					rettype: null,
-					name: null,
 					params,
 					def$s: [],
 					expr: instance
@@ -282,6 +281,10 @@ ${Calculus.expand(as)}
 
 			throw Expr.error(`Cannot dereference @${selector} (at ${ptr}): invalid selector`, trace);
 		})(1, pattern, instance, []);
+	}
+
+	public override toString() {
+		return `[${this.antecedents.join(', ')}] > ${this.subject}`;
 	}
 
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {

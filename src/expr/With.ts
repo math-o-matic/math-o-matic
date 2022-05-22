@@ -20,6 +20,10 @@ export default class With extends Expr {
 		this.expr = expr;
 	}
 
+	public override toString() {
+		return `with (${this.variable}) {${this.expr}}`;
+	}
+
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		throw new Error("Method not implemented.");
 	}

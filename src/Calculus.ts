@@ -22,10 +22,6 @@ export default class Calculus {
 
 			// 매크로 변수는 스코프 밖에서 보이지 않으므로 치환될 것을 갖지 않는다는
 			// 생각이 들어 있다.
-			if (self.expr) {
-				return self;
-			}
-
 			return self;
 		}
 		
@@ -37,9 +33,6 @@ export default class Calculus {
 
 		if (self instanceof Fun) {
 			if (!self.expr) return self;
-
-			// 이름이 있는 것은 치환될 것을 갖지 않아야 한다.
-			if (self.name) return self;
 	
 			if (self.params.some(p => map.has(p))) {
 				map = new Map(map);
@@ -56,15 +49,6 @@ export default class Calculus {
 			if (expr == self.expr) return self;
 
 			return new Fun({
-				decoration: new FunctionalMacroDecoration({
-					doc: null,
-					precedence: Precedence.ZERO,
-					tex: null,
-					sealed: self.decoration instanceof FunctionalMacroDecoration
-							&& self.decoration.sealed
-				}),
-				rettype: null,
-				name: null,
 				params: self.params,
 				def$s: self.def$s,
 				expr
@@ -135,7 +119,7 @@ export default class Calculus {
 			var fun = Calculus.expand(self.fun),
 				args = self.args.map(arg => Calculus.expand(arg));
 			
-			if (!(fun instanceof Fun) || !fun.expr || fun.name && !(fun.decoration instanceof SchemaDecoration)) {
+			if (!(fun instanceof Fun)) {
 				if (fun == self.fun && args.every((arg, i) => arg == self.args[i])) return self;
 				
 				return new Funcall({fun, args}, self.trace);
@@ -144,54 +128,27 @@ export default class Calculus {
 			return Calculus.expand(fun.call(args));
 		}
 
-		if (self instanceof Fun) {
+		if (self instanceof Variable) {
 			if (self.decoration instanceof SchemaDecoration) {
-				var expr = Calculus.expand(self.expr);
-				if (expr == self.expr) return self;
-				
-				return new Fun({
-					decoration: new SchemaDecoration({
-						doc: null,
-						schemaType: 'schema',
-						context: self.decoration.context
-					}),
-					rettype: null,
-					name: null,
-					params: self.params,
-					def$s: self.def$s,
-					expr
-				}, self.trace);
+				return Calculus.expand(self.expr);
 			}
 
-			if (!self.expr) return self;
-			if (self.name) return self;
+			return self;
+		}
 
+		if (self instanceof Fun) {
 			var expr = Calculus.expand(self.expr);
 			if (expr == self.expr) return self;
 
 			return new Fun({
-				decoration: new FunctionalMacroDecoration({
-					doc: null,
-					precedence: Precedence.ZERO,
-					tex: null,
-					sealed: self.decoration instanceof FunctionalMacroDecoration
-							&& self.decoration.sealed
-				}),
-				rettype: null,
-				name: null,
 				params: self.params,
-				def$s: [],
+				def$s: self.def$s,
 				expr
 			}, self.trace);
 		}
 
 		if (self instanceof Reduction) {
 			return Calculus.expand(self.consequent);
-		}
-		
-
-		if (self instanceof Variable) {
-			return self;
 		}
 
 		if (self instanceof With) {
@@ -313,11 +270,6 @@ export default class Calculus {
 		}
 
 		if (self instanceof Fun) {
-			if (!self.isExpandable(context)
-					&& !(obj instanceof Fun && obj.isExpandable(context))) {
-				return false;
-			}
-
 			var placeholders = [];
 			var types = (self.type.resolve() as FunctionalType).from;
 
@@ -335,27 +287,10 @@ export default class Calculus {
 
 			var usedMacrosList = [];
 
-			var thisCall = (() => {
-				if (self.isExpandable(context)) {
-					if (self.name) {
-						usedMacrosList.push(self);
-					}
-
-					return self.call(placeholders);
-				}
-
-				return new Funcall({
-					fun: self,
-					args: placeholders
-				}, self.trace);
-			})();
+			var thisCall = self.call(placeholders);
 			
 			var objCall = (() => {
-				if (obj instanceof Fun && obj.isExpandable(context)) {
-					if (obj.name) {
-						usedMacrosList.push(obj);
-					}
-
+				if (obj instanceof Fun) {
 					return obj.call(placeholders);
 				}
 
@@ -406,7 +341,7 @@ export default class Calculus {
 		return Calculus.isProvedInternal(self, hypotheses);
 	}
 
-	private static schemaProvedCache: Map<Fun, boolean> = new Map();
+	private static schemaProvedCache: Map<Variable, boolean> = new Map();
 
 	protected static isProvedInternal(self: Expr, hypotheses: Expr[]): boolean {
 		if (self instanceof $Variable) {
@@ -417,7 +352,7 @@ export default class Calculus {
 			return Calculus.isProved(self.right, hypotheses.concat(self.left));
 		}
 
-		if (self instanceof Fun) {
+		if (self instanceof Variable) {
 			if (self.decoration instanceof SchemaDecoration) {
 				if (Calculus.schemaProvedCache.has(self)) {
 					var cache = Calculus.schemaProvedCache.get(self);
@@ -432,8 +367,12 @@ export default class Calculus {
 				if (!hypotheses.length) Calculus.schemaProvedCache.set(self, ret);
 				return ret;
 			}
+			
+			return false;
+		}
 
-			return self.expr && Calculus.isProved(self.expr, hypotheses);
+		if (self instanceof Fun) {
+			return Calculus.isProved(self.expr, hypotheses);
 		}
 
 		if (self instanceof Funcall) {
@@ -443,10 +382,6 @@ export default class Calculus {
 		if (self instanceof Reduction) {
 			return Calculus.isProved(self.subject, hypotheses)
 				&& self.antecedents.every(l => Calculus.isProved(l, hypotheses));
-		}
-
-		if (self instanceof Variable) {
-			return false;
 		}
 
 		if (self instanceof With) {
@@ -536,38 +471,40 @@ export default class Calculus {
 			}];
 		}
 
+		if (self instanceof Variable) {
+			if (self.decoration instanceof SchemaDecoration) {
+				if (!root) {
+					return [{
+						_type: 'RS',
+						ctr: ctr.next(),
+						expr: self
+					}];
+				}
+				
+				return Calculus.getProof(self.expr, hypnumMap, $Map, ctr, root);
+			}
+
+			return [{
+				_type: 'NP',
+				ctr: ctr.next(),
+				expr: self
+			}];
+		}
+
 		if (self instanceof Fun) {
-			if (self.decoration instanceof SchemaDecoration && self.name && !root) {
-				return [{
-					_type: 'RS',
-					ctr: ctr.next(),
-					expr: self
-				}];
-			}
-	
-			if (!self.expr) {
-				return [{
-					_type: 'NP',
-					ctr: ctr.next(),
-					expr: self
-				}];
-			}
-	
 			$Map = new Map($Map);
 	
 			var start = ctr.peek() + 1;
 	
 			let $lines: ProofType[] = [];
 			
-			if (self.decoration instanceof SchemaDecoration) {
-				self.def$s.forEach($ => {
-					var lines = Calculus.getProof($.expr, hypnumMap, $Map, ctr);
-					$lines = $lines.concat(lines);
-	
-					var $num = lines[lines.length - 1].ctr;
-					$Map.set($, $num);
-				});
-			}
+			self.def$s.forEach($ => {
+				var lines = Calculus.getProof($.expr, hypnumMap, $Map, ctr);
+				$lines = $lines.concat(lines);
+
+				var $num = lines[lines.length - 1].ctr;
+				$Map.set($, $num);
+			});
 	
 			return [{
 				_type: 'V',
@@ -599,9 +536,8 @@ export default class Calculus {
 				}];
 			}
 	
-			if (self.fun instanceof Fun 
-					&& self.fun.decoration instanceof SchemaDecoration
-					&& self.fun.name) {
+			if (self.fun instanceof Variable 
+					&& self.fun.decoration instanceof SchemaDecoration) {
 				return [{
 					_type: 'RC',
 					ctr: ctr.next(),
@@ -609,7 +545,7 @@ export default class Calculus {
 				}];
 			}
 	
-			if (!(self.fun instanceof Fun
+			if (!(self.fun instanceof Variable
 					&& self.fun.decoration instanceof SchemaDecoration)) {
 				return [{
 					_type: 'NP',
@@ -674,7 +610,7 @@ export default class Calculus {
 				)
 				|| (
 					(s => {
-						return s instanceof Fun && s.name
+						return s instanceof Variable
 							|| s instanceof Funcall && isNameable(s.fun) && s.fun.name;
 					})(self.subject)
 						? self.subject
@@ -716,14 +652,6 @@ export default class Calculus {
 			}
 			
 			return ret;
-		}
-
-		if (self instanceof Variable) {
-			return [{
-				_type: 'NP',
-				ctr: ctr.next(),
-				expr: self
-			}];
 		}
 
 		if (self instanceof With) {

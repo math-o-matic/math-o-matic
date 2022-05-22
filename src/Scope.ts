@@ -1,10 +1,10 @@
 import $Variable from './expr/$Variable';
-import Fun from './expr/Fun';
 import Expr from './expr/Expr';
 import { FunctionalType, Type, SimpleType } from './expr/types';
 import Variable from './expr/Variable';
 import { LocationObject } from './PegInterfaceDefinitions';
 import StackTrace from './StackTrace';
+import SchemaDecoration from './decoration/SchemaDecoration';
 
 /*
  * 'st'                     -> st
@@ -22,8 +22,8 @@ export default class Scope {
 	public readonly importMap: Map<string, Scope> = new Map();
 
 	public readonly typedefMap: Map<string, SimpleType> = new Map();
-	public readonly defMap: Map<string, Variable | Fun> = new Map();
-	public readonly schemaMap: Map<string, Fun> = new Map();
+	public readonly defMap: Map<string, Variable> = new Map();
+	public readonly schemaMap: Map<string, Variable> = new Map();
 	public readonly $Map: Map<string, $Variable> = new Map();
 	public readonly hypotheses: Expr[] = [];
 
@@ -153,7 +153,7 @@ export default class Scope {
 			|| (!!this.parent && this.parent.hasVariable(name));
 	}
 
-	public addVariable(variable: Variable | Fun): Variable | Fun {
+	public addVariable(variable: Variable): Variable {
 		if (!(variable instanceof Variable))
 			throw this.error('Illegal argument type');
 
@@ -164,21 +164,7 @@ export default class Scope {
 		return variable;
 	}
 
-	public addFun(fun: Fun): Fun {
-		if (!(fun instanceof Fun))
-			throw this.error('Illegal argument type');
-
-		if (!fun.name)
-			throw this.error('Cannot add anonymous fun to scope');
-
-		if (this.hasOwnVariable(fun.name))
-			throw this.error(`Definition ${fun.name} has already been declared`);
-
-		this.defMap.set(fun.name, fun);
-		return fun;
-	}
-
-	public getVariable(name: string): Variable | Fun {
+	public getVariable(name: string): Variable {
 		if (!this.hasVariable(name))
 			throw this.error(`Definition ${name} is not defined`);
 
@@ -200,9 +186,13 @@ export default class Scope {
 			|| (!!this.parent && this.parent.hasSchema(name));
 	}
 
-	public addSchema(schema: Fun): Fun {
-		if (!(schema instanceof Fun))
+	public addSchema(schema: Variable): Variable {
+		if (!(schema instanceof Variable))
 			throw this.error('Illegal argument type');
+
+		if (!(schema.decoration instanceof SchemaDecoration)) {
+			throw this.error(`Variable ${schema.name} is not a schema`);
+		}
 
 		if (this.hasOwnSchema(schema.name))
 			throw this.error(`Schema ${schema.name} has already been declared`);
@@ -211,7 +201,7 @@ export default class Scope {
 		return schema;
 	}
 
-	public getSchema(name: string): Variable | Fun {
+	public getSchema(name: string): Variable {
 		if (!this.hasSchema(name))
 			throw this.error(`Schema ${name} is not defined`);
 

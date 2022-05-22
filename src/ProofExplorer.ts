@@ -20,7 +20,7 @@ export default class ProofExplorer {
 	
 		var expr = scope.getSchema(name);
 
-		if (!(expr instanceof Fun && expr.decoration instanceof SchemaDecoration)) {
+		if (!(expr instanceof Variable && expr.decoration instanceof SchemaDecoration)) {
 			throw Error('wut');
 		}
 

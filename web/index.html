@@ -292,7 +292,7 @@
 					start = new Date();
 					Globals.program = new MathOMatic.Program();
 					await Globals.program.loadModule(filename, async filename => ({
-						fileUri: `/${filename}.math`,
+						fileUri: `../math/${filename}.math`,
 						code: await new Promise((resolve, reject) => {
 							var xhr = new XMLHttpRequest();
 							xhr.addEventListener('load', () => {

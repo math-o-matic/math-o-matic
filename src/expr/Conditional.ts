@@ -22,6 +22,10 @@ export default class Conditional extends Expr {
 		this.def$s = def$s || [];
 		this.right = right;
 	}
+
+	public override toString() {
+		return `(${this.left.join(', ')} |- ${this.right})`;
+	}
 	
 	protected override toTeXStringInternal(prec: Precedence, root: boolean): string {
 		var expanded = Calculus.expand(this) as Conditional;

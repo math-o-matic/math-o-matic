@@ -78,7 +78,7 @@ export default class PI {
 		}, scope.trace);
 	}
 
-	public static variable(obj: DefvObject | VarObject, parentScope: Scope): Variable | Fun {
+	public static variable(obj: DefvObject | VarObject, parentScope: Scope): Variable {
 		if (!['defv', 'var'].includes(obj._type)) {
 			throw Error('Assertion failed');
 		}
@@ -131,37 +131,11 @@ export default class PI {
 		}, scope.trace);
 	}
 
-	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): Fun {
+	public static fun(obj: DefunObject | FunexprObject, parentScope: Scope): Variable | Fun {
 		if (obj._type != 'defun' && obj._type != 'funexpr')
 			throw Error('Assertion failed');
 		
 		var scope = parentScope.extend('fun', obj._type == 'defun' ? obj.name : '<anonymous>', obj.location);
-
-		var doc = null,
-			precedence = Precedence.ZERO,
-			tex = null,
-			sealed = false,
-			rettype: Type = null,
-			name = null,
-			expr = null;
-
-		if (obj._type == 'defun') {
-			doc = obj.doc;
-			precedence = new Precedence(obj.tex_attributes.precedence);
-			tex = obj.tex;
-			sealed = obj.sealed;
-			
-			if (!scope.hasType(typeObjToNestedArr(obj.rettype))) {
-				throw scope.error(`Type ${typeObjToString(obj.rettype)} is not defined`);
-			}
-
-			rettype = scope.getType(typeObjToNestedArr(obj.rettype));
-			name = obj.name;
-		}
-
-		if (obj._type == 'funexpr') {
-			precedence = Precedence.FUNEXPR;
-		}
 
 		var params = obj.params.map(tvo => {
 			var tv = PI.variable(tvo, scope);
@@ -177,29 +151,51 @@ export default class PI {
 			return tv;
 		});
 
-		if (obj.expr) {
-			expr = PI.objectexpr(obj.expr, scope);
+		if (obj._type == 'defun') {
+			var doc = obj.doc;
+			var precedence = new Precedence(obj.tex_attributes.precedence);
+			var tex = obj.tex;
+			var sealed = obj.sealed;
+			
+			if (!scope.hasType(typeObjToNestedArr(obj.rettype))) {
+				throw scope.error(`Type ${typeObjToString(obj.rettype)} is not defined`);
+			}
+
+			var rettype = scope.getType(typeObjToNestedArr(obj.rettype));
+			var name = obj.name;
+			var expr = obj.expr ? PI.objectexpr(obj.expr, scope) : null;
+
+			return new Variable({
+				decoration: expr
+					? new FunctionalMacroDecoration({
+						doc, precedence, tex, sealed
+					})
+					: new FunctionalAtomicDecoration({
+						doc, precedence, tex, params
+					}),
+				type: new FunctionalType({
+					from: params.map(p => p.type),
+					to: rettype
+				}, scope.trace),
+				name,
+				expr: expr ? new Fun({
+					params, def$s: [], expr
+				}, scope.trace) : null
+			}, scope.trace);
 		}
 
-		return new Fun({
-			decoration: expr
-				? new FunctionalMacroDecoration({
-					doc,
-					precedence,
-					tex,
-					sealed
-				})
-				: new FunctionalAtomicDecoration({
-					doc,
-					precedence,
-					tex
-				}),
-			rettype,
-			name,
-			params,
-			def$s: [],
-			expr
-		}, scope.trace);
+		if (obj._type == 'funexpr') {
+			var precedence = Precedence.FUNEXPR;
+			var expr = PI.objectexpr(obj.expr, scope);
+
+			return new Fun({
+				params,
+				def$s: [],
+				expr
+			}, scope.trace);
+		}
+
+		throw Error('wut');
 	}
 
 	public static funcall(obj: FuncallObject, parentScope: Scope): Funcall {
@@ -389,7 +385,7 @@ export default class PI {
 		return new $Variable({name: obj.name, expr}, scope.trace);
 	}
 
-	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, oldContext: ExecutionContext): Fun {
+	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, oldContext: ExecutionContext): Variable | Fun {
 		if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 			throw Error('Assertion failed');
 		
@@ -410,7 +406,7 @@ export default class PI {
 				throw Error('duh');
 			}
 
-			var using: (Variable | Fun)[] = obj.using.map(name => {
+			var using: Variable[] = obj.using.map(name => {
 				if (!scope.hasVariable(name)) {
 					throw scope.error(`Variable ${name} is not defined`);
 				}
@@ -453,15 +449,31 @@ export default class PI {
 
 		var expr = PI.expr(obj.expr, scope, context);
 
-		return new Fun({
-			decoration: new SchemaDecoration({
-				doc,
-				schemaType,
-				context
-			}),
-			rettype: null,
-			name, params, def$s, expr
-		}, scope.trace);
+		if (obj._type == 'defschema') {
+			return new Variable({
+				decoration: new SchemaDecoration({
+					doc, schemaType, context
+				}),
+				type: new FunctionalType({
+					from: params.map(p => p.type),
+					to: expr.type
+				}, scope.trace),
+				name,
+				expr: new Fun({
+					params, def$s, expr
+				}, scope.trace)
+			}, scope.trace);
+		}
+		
+		if (obj._type == 'schemaexpr') {
+			return new Fun({
+				params,
+				def$s,
+				expr
+			}, scope.trace);
+		}
+
+		throw Error('wut');
 	}
 
 	public static schemacall(obj: SchemacallObject, parentScope: Scope, context: ExecutionContext): Funcall {
@@ -523,7 +535,7 @@ import Expr from './expr/Expr';
 import Parameter from './expr/Parameter';
 import Reduction from './expr/Reduction';
 import Conditional from './expr/Conditional';
-import { Type, SimpleType } from './expr/types';
+import { Type, SimpleType, FunctionalType } from './expr/types';
 import Variable from './expr/Variable';
 import With from './expr/With';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';

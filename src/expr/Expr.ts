@@ -15,6 +15,8 @@ export default abstract class Expr {
 		this.trace = trace;
 	}
 
+	public abstract toString(): string;
+
 	public toTeXString(prec?: Precedence, root?: boolean): string {
 		prec = prec || Precedence.INFINITY;
 		root = typeof root == 'boolean' ? root : false;
