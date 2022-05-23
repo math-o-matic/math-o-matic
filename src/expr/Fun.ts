@@ -47,7 +47,7 @@ export default class Fun extends Expr {
 			}
 		}
 
-		var map: Map<Variable, Expr> = new Map();
+		var map = new Map<Variable, Expr>();
 
 		for (var i = 0; i < this.params.length; i++) {
 			map.set(this.params[i], args[i]);
