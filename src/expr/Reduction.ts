@@ -3,7 +3,7 @@ import Expr from "./Expr";
 interface ReductionArgumentType {
 	antecedents: Expr[];
 	subject: Expr;
-	args: (Expr | null)[];
+	args: Expr[];
 	as: Expr;
 }
 
@@ -12,11 +12,11 @@ export default class Reduction extends Expr {
 	public readonly antecedents: Expr[];
 	public readonly requiredAntecedents: Expr[];
 	public readonly subject: Expr;
-	public readonly args: (Expr | null)[];
+	public readonly args: Expr[];
 	public readonly preFormatConsequent: Expr;
 	public readonly consequent: Expr;
-	public readonly antecedentEqualsResults: (Fun | Variable)[][];
-	public readonly rightEqualsResult: (Fun | Variable)[];
+	public readonly antecedentEqualsResults: Variable[][];
+	public readonly rightEqualsResult: Variable[];
 
 	constructor ({antecedents, subject, args, as}: ReductionArgumentType, context: ExecutionContext, trace: StackTrace) {
 		if (args) {

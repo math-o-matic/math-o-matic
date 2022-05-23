@@ -44,7 +44,7 @@ export default class ProofExplorer {
 			return ktx(expr.toTeXString(Precedence.INFINITY, true));
 		}
 
-		var tree = Calculus.getProof(expr, new Map(), new Map(), new Counter(), true);
+		var tree = Calculus.getProof(expr);
 
 		var innertree: ProofType[] = (tree[0] as any).$lines.concat((tree[0] as any).lines);
 

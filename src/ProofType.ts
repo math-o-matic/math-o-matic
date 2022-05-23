@@ -87,5 +87,5 @@ interface ByDef {
 	ctr: number;
 	ref: number | [number, number];
 	expr: Expr;
-	of: (Fun | Variable)[];
+	of: Variable[];
 }

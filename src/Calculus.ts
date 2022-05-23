@@ -32,8 +32,6 @@ export default class Calculus {
 		}
 
 		if (self instanceof Fun) {
-			if (!self.expr) return self;
-	
 			if (self.params.some(p => map.has(p))) {
 				map = new Map(map);
 	
@@ -101,9 +99,7 @@ export default class Calculus {
 
 	protected static expandInternal(self: Expr): Expr {
 		if (self instanceof $Variable) {
-			var expr = Calculus.expand(self.expr);
-			if (expr == self.expr) return self;
-			return expr;
+			return Calculus.expand(self.expr);
 		}
 
 		if (self instanceof Conditional) {
@@ -165,7 +161,7 @@ export default class Calculus {
 	 * 
 	 * @return 같지 않으면 `false`. 같으면 같음을 보이는 데 사용한 매크로들의 목록.
 	 */
-	public static equals(self: Expr, obj: Expr, context: ExecutionContext): (Fun | Variable)[] | false {
+	public static equals(self: Expr, obj: Expr, context: ExecutionContext): Variable[] | false {
 		// console.log(`${self}\n\n${obj}`);
 		// var ret = (() => {
 
@@ -211,10 +207,10 @@ export default class Calculus {
 				return ret && ret.concat(used);
 			}
 	
-			var argsEquals: (Fun | Variable)[] | false = (() => {
+			var argsEquals: Variable[] | false = (() => {
 				if (self.args.length != obj.args.length) return false;
 	
-				var tmp: (Fun | Variable)[] = [];
+				var tmp: Variable[] = [];
 	
 				for (var i = 0; i < self.args.length; i++) {
 					var e = Calculus.equals(self.args[i], obj.args[i], context);
@@ -251,11 +247,11 @@ export default class Calculus {
 
 		if (self instanceof Conditional) {
 			if (!(obj instanceof Conditional)) {
-				throw Error('Assertion failed');
+				return false;
 			}
 	
 			if (self.left.length != obj.left.length) {
-				throw Error('Assertion failed');
+				return false;
 			}
 	
 			for (var i = 0; i < self.left.length; i++) {
@@ -316,20 +312,14 @@ export default class Calculus {
 			return false;
 		}
 
-		if (self instanceof With) {
-			throw new Error("Method not implemented.");
-		}
-
-		if (obj instanceof With) {
-			throw new Error("Method not implemented.");
-		}
-
-		throw Error('Unknown expression type');
+		throw Error(`Unknown expression type ${self.constructor.name}`);
 
 		// })();
 		// console.log(`${self}\n\n${obj}\n\nresult: ${ret}`);
 		// return ret;
 	}
+
+	private static schemaProvedCache: Map<Variable, boolean> = new Map();
 
 	public static isProved(self: Expr, hypotheses?: Expr[]): boolean {
 		hypotheses = hypotheses || [];
@@ -338,12 +328,6 @@ export default class Calculus {
 			if (hypotheses[i] == self) return true;
 		}
 
-		return Calculus.isProvedInternal(self, hypotheses);
-	}
-
-	private static schemaProvedCache: Map<Variable, boolean> = new Map();
-
-	protected static isProvedInternal(self: Expr, hypotheses: Expr[]): boolean {
 		if (self instanceof $Variable) {
 			return Calculus.isProved(self.expr, hypotheses);
 		}
@@ -391,7 +375,11 @@ export default class Calculus {
 		throw Error('Unknown expression type');
 	}
 
-	public static getProof(
+	public static getProof(self: Expr): ProofType[] {
+		return Calculus.getProofInternal(self, new Map(), new Map(), new Counter(), true);
+	}
+
+	protected static getProofInternal(
 			self: Expr,
 			hypnumMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
@@ -415,16 +403,6 @@ export default class Calculus {
 				expr: self
 			}];
 		}
-
-		return Calculus.getProofInternal(self, hypnumMap, $Map, ctr, root);
-	}
-
-	protected static getProofInternal(
-			self: Expr,
-			hypnumMap: Map<Expr, number>,
-			$Map: Map<Expr, number | [number, number]>,
-			ctr: Counter,
-			root?: boolean): ProofType[] {
 		
 		if (self instanceof $Variable) {
 			if (!$Map.has(self)) {
@@ -457,7 +435,7 @@ export default class Calculus {
 			$Map = new Map($Map);
 
 			let $lines = self.def$s.map($ => {
-				var lines = Calculus.getProof($.expr, hypnumMap, $Map, ctr);
+				var lines = Calculus.getProofInternal($.expr, hypnumMap, $Map, ctr);
 				var $num = lines[lines.length - 1].ctr;
 				$Map.set($, $num);
 				return lines;
@@ -466,7 +444,7 @@ export default class Calculus {
 			return [{
 				_type: 'T',
 				leftlines: leftlines as any,
-				rightlines: $lines.concat(Calculus.getProof(self.right, hypnumMap, $Map, ctr)),
+				rightlines: $lines.concat(Calculus.getProofInternal(self.right, hypnumMap, $Map, ctr)),
 				ctr: [start, ctr.peek()]
 			}];
 		}
@@ -481,7 +459,7 @@ export default class Calculus {
 					}];
 				}
 				
-				return Calculus.getProof(self.expr, hypnumMap, $Map, ctr, root);
+				return Calculus.getProofInternal(self.expr, hypnumMap, $Map, ctr, root);
 			}
 
 			return [{
@@ -499,7 +477,7 @@ export default class Calculus {
 			let $lines: ProofType[] = [];
 			
 			self.def$s.forEach($ => {
-				var lines = Calculus.getProof($.expr, hypnumMap, $Map, ctr);
+				var lines = Calculus.getProofInternal($.expr, hypnumMap, $Map, ctr);
 				$lines = $lines.concat(lines);
 
 				var $num = lines[lines.length - 1].ctr;
@@ -509,7 +487,7 @@ export default class Calculus {
 			return [{
 				_type: 'V',
 				$lines,
-				lines: Calculus.getProof(self.expr, hypnumMap, $Map, ctr),
+				lines: Calculus.getProofInternal(self.expr, hypnumMap, $Map, ctr),
 				params: self.params,
 				ctr: [start, ctr.peek()]
 			}];
@@ -554,7 +532,7 @@ export default class Calculus {
 				}];
 			}
 	
-			var schemalines = Calculus.getProof(self.fun, hypnumMap, $Map, ctr);
+			var schemalines = Calculus.getProofInternal(self.fun, hypnumMap, $Map, ctr);
 	
 			return [
 				...schemalines,
@@ -581,7 +559,7 @@ export default class Calculus {
 					: $Map.has(l)
 						? $Map.get(l)
 						: null;
-				var lines = ref ? [] : Calculus.getProof(l, hypnumMap, $Map, ctr);
+				var lines = ref ? [] : Calculus.getProofInternal(l, hypnumMap, $Map, ctr);
 
 				if (self.antecedentEqualsResults[i].length) {
 					lines.push({
@@ -612,7 +590,7 @@ export default class Calculus {
 					self.subject instanceof Variable
 						|| self.subject instanceof Funcall && isNameable(self.subject.fun) && self.subject.fun.name
 						? self.subject
-						: (subjectlines = Calculus.getProof(self.subject, hypnumMap, $Map, ctr))[subjectlines.length-1].ctr
+						: (subjectlines = Calculus.getProofInternal(self.subject, hypnumMap, $Map, ctr))[subjectlines.length-1].ctr
 				);
 
 			var ret: ProofType[] = [
@@ -662,7 +640,7 @@ export default class Calculus {
 			};
 
 			let $lines = self.def$s.map($ => {
-				var lines = Calculus.getProof($.expr, hypnumMap, $Map, ctr);
+				var lines = Calculus.getProofInternal($.expr, hypnumMap, $Map, ctr);
 				var $num = lines[lines.length - 1].ctr;
 				$Map.set($, $num);
 				return lines;
@@ -671,7 +649,7 @@ export default class Calculus {
 			return [
 				def,
 				...$lines,
-				...Calculus.getProof(self.expr, hypnumMap, $Map, ctr)
+				...Calculus.getProofInternal(self.expr, hypnumMap, $Map, ctr)
 			];
 		}
 
