@@ -185,7 +185,6 @@ export default class PI {
 		}
 
 		if (obj._type == 'funexpr') {
-			var precedence = Precedence.FUNEXPR;
 			var expr = PI.objectexpr(obj.expr, scope);
 
 			return new Fun({
