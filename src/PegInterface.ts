@@ -547,4 +547,3 @@ import FunctionalAtomicDecoration from './decoration/FunctionalAtomicDecoration'
 import SchemaDecoration, { SchemaType } from './decoration/SchemaDecoration';import { FunctionalType } from './type/FunctionalType';
 import { SimpleType } from './type/SimpleType';
 import Type from './type/Type';
-

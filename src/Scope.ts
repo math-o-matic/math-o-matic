@@ -34,12 +34,13 @@ export default class Scope {
 
 	public readonly trace: StackTrace;
 
-	/** 파일 경로. 예를 들어 `/propositional.math`이다. 파일과 일대일대응이어야 한다. */
+	/**
+	 * 파일 경로. 예를 들어 `/propositional.math`이다. 파일과 일대일대응이어야 한다.
+	 */
 	public readonly fileUri: string;
 
 	constructor (fileUri: string, parent: Scope, trace?: StackTrace) {
 		this.fileUri = fileUri;
-
 		this.parent = parent;
 		this.root = parent ? parent.root : this;
 
@@ -76,6 +77,7 @@ export default class Scope {
 			return this.hasOwnType(e);
 		}).every(e => e);
 	}
+
 	public hasType(name: NestedTypeInput): boolean {
 		if (typeof name == 'string') {
 			return this.hasOwnType(name)
