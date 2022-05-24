@@ -188,6 +188,21 @@ export default class Calculus {
 			return Calculus.equals(self, obj.consequent, context);
 		}
 
+		if (self instanceof Variable && self.isExpandable(context)
+				&& obj instanceof Variable && obj.isExpandable(context)) {
+			if (self._id > obj._id) {
+				var ret = Calculus.equals(self.expr, obj, context);
+				if (!ret) return ret;
+				ret.push(self);
+				return ret;
+			} else {
+				var ret = Calculus.equals(self, obj.expr, context);
+				if (!ret) return ret;
+				ret.push(obj);
+				return ret;
+			}
+		}
+
 		if (self instanceof Variable && self.isExpandable(context)) {
 			var ret = Calculus.equals(self.expr, obj, context);
 			if (!ret) return ret;
