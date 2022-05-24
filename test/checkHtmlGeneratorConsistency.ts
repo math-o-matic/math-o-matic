@@ -28,7 +28,7 @@ var program = new Program();
 		);
 	}
 
-	var compareThis = JSON.stringify(result);
+	var compareThis = JSON.stringify(result, null, 4);
 
 	mkdirp.sync('logs');
 	var filename = 'logs/checkHtmlGeneratorConsistency.log'
@@ -43,6 +43,9 @@ var program = new Program();
 		}
 
 		if (compareThis != withThis) {
+			fs.closeSync(fs.openSync(filename + '.new', 'w'));
+			fs.writeFileSync(filename + '.new', compareThis);
+
 			throw Error('The current version is different from the previous one');
 		}
 
