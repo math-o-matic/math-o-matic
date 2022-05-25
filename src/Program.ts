@@ -179,8 +179,8 @@ export default class Program {
 		}
 	}
 
-	public getProofExplorer(name: string, ktx, m42kup) {
-		return ProofExplorer.get(this.scope, name, ktx, m42kup);
+	public getProofExplorer(name: string, ktx, yamd) {
+		return ProofExplorer.get(this.scope, name, ktx, yamd);
 	}
 }
 

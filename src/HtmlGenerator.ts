@@ -13,16 +13,16 @@ export default class HtmlGenerator {
 
 	public readonly program: Program;
 	public readonly ktx: (s: string) => string;
-	public readonly m42kup: {render: (s: string) => string};
+	public readonly yamd: {render: (s: string) => string};
 
-	constructor (program: Program, ktx: (s: string) => string, m42kup: {render: (s: string) => string}) {
-		if (!program || !ktx || !m42kup) {
+	constructor (program: Program, ktx: (s: string) => string, yamd: {render: (s: string) => string}) {
+		if (!program || !ktx || !yamd) {
 			throw Error('wut');
 		}
 
 		this.program = program;
 		this.ktx = ktx;
-		this.m42kup = m42kup;
+		this.yamd = yamd;
 	}
 
 	public typedef(k: string, v: Type) {
@@ -33,7 +33,7 @@ export default class HtmlGenerator {
 			+ (
 				v.doc
 				? '<p class="label"><b>description</b></p>'
-					+ `<p class="description">${this.m42kup.render(v.doc)}</p>`
+					+ `<p class="description">${this.yamd.render(v.doc)}</p>`
 				: ''
 			)
 	
@@ -68,7 +68,7 @@ export default class HtmlGenerator {
 			+ (
 				v.decoration.doc
 				? '<p class="label"><b>description</b></p>'
-					+ `<p class="description">${this.m42kup.render(v.decoration.doc)}</p>`
+					+ `<p class="description">${this.yamd.render(v.decoration.doc)}</p>`
 				: ''
 			)
 	
@@ -98,15 +98,15 @@ export default class HtmlGenerator {
 					: '<p class="label"><b>proof explorer</b></p>'
 						+ (
 							expandProofExplorer
-								? `<p>${this.program.getProofExplorer(k, this.ktx, this.m42kup)}</p>`
-								: `<p><input type="button" value="show" class="colored button-expand-proof" onclick="this.parentElement.innerHTML = Globals.program.getProofExplorer('${k}', ktx, m42kup);Globals.expansionList.push('${k}');"></p>`
+								? `<p>${this.program.getProofExplorer(k, this.ktx, this.yamd)}</p>`
+								: `<p><input type="button" value="show" class="colored button-expand-proof" onclick="this.parentElement.innerHTML = Globals.program.getProofExplorer('${k}', ktx, yamd);Globals.expansionList.push('${k}');"></p>`
 						)
 			)
 	
 			+ (
 				v.decoration.doc
 				? '<p class="label"><b>description</b></p>'
-					+ `<p class="description">${this.m42kup.render(v.decoration.doc)}</p>`
+					+ `<p class="description">${this.yamd.render(v.decoration.doc)}</p>`
 				: ''
 			)
 	

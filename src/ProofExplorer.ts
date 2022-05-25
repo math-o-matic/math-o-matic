@@ -8,7 +8,7 @@ import Scope from "./Scope";
 import SchemaDecoration from "./decoration/SchemaDecoration";
 
 export default class ProofExplorer {
-	public static get(scope: Scope, name: string, ktx: (s: string) => string, m42kup: {render: (s: string) => string}): string {
+	public static get(scope: Scope, name: string, ktx: (s: string) => string, yamd: {render: (s: string) => string}): string {
 		var REPEAT = '<b>R</b>',
 			TE = '<b>⊢E</b>',
 			SE = '<b>↦E</b>';
@@ -163,7 +163,7 @@ export default class ProofExplorer {
 						return getHtmlLine(
 							line.ctr,
 							left,
-							line.var.decoration.doc ? `<p>${exprToHtml(line.var)}</p>${m42kup.render(line.var.decoration.doc)}` : exprToHtml(line.var),
+							line.var.decoration.doc ? `<p>${exprToHtml(line.var)}</p>${yamd.render(line.var.decoration.doc)}` : exprToHtml(line.var),
 							'definition'
 						);
 					case 'bydef':
