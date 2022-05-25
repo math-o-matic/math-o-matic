@@ -1,4 +1,3 @@
-import Counter from "./util/Counter";
 import Calculus from "./Calculus";
 import Expr from "./expr/Expr";
 import Precedence from "./Precedence";

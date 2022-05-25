@@ -1,4 +1,3 @@
-import Fun from "./expr/Fun";
 import Expr from "./expr/Expr";
 import Variable from "./expr/Variable";
 
