@@ -67,6 +67,7 @@ input[type=button], input[type=submit], button {
 	padding: 1ex 1em;
 	cursor: pointer;
 	font: .85em Roboto, sans-serif;
+	margin: .15em;
 }
 
 textarea {
