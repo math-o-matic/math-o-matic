@@ -30,4 +30,4 @@ This code produces&hellip;
 * Find more math-o-matic code in [/math](/math) directory.
 * Refer to the [documentation](https://math-o-matic.github.io/math-o-matic/docs/build/index.html) to learn how to write proofs.
 * Click on the colored parts of the previous proof in the [main page](https://math-o-matic.github.io/math-o-matic/web/index.html) to jump to definitions.
-* math-o-matic language support for Visual Studio Code can be found in [/tools](/tools).
+* math-o-matic language support for Visual Studio Code can be found [here](https://github.com/math-o-matic/vscode).
