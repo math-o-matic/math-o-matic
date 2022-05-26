@@ -79,12 +79,12 @@ axiom Ae2(st p: @11, st q: @12) {
 	A(p, q) |- q
 }
 
-"[$\top] 도입."
+"[#T] 도입."
 axiom Ti() {
 	T
 }
 
-"[$\neg]에 관한 공리."
+"[#N]에 관한 공리."
 axiom luk3(st p: @111, st q: @121) {
 	I(N(p), N(q)) |- I(q, p)
 }
@@ -162,7 +162,7 @@ theorem Nec2(st p: @1, st q: @r2) {
 	}
 }
 
-"[$\bot]을 도입한다. falsum introduction이라 불러도 좋을 것이다."
+"[#F]을 도입한다. falsum introduction이라 불러도 좋을 것이다."
 theorem Fi(st p: @1) {
 	Ne(p, F)
 }
@@ -175,7 +175,7 @@ theorem Fi_c(st p: @11) {
 	}
 }
 
-"[$\bot]을 소거한다. falsum elimination이라 불러도 좋을 것이다. Ne와 마찬가지로 폭발률을 나타낸다 할 수 있다."
+"[#F]을 소거한다. falsum elimination이라 불러도 좋을 것이다. [#Ne]와 마찬가지로 폭발률을 나타낸다 할 수 있다."
 theorem Fe(st p) {
 	F |- {
 		N(p) |- @h1 > Nim_alt
@@ -250,7 +250,7 @@ theorem Ei(st p: @11, st q: @12) using E {
 	}
 }
 
-"Ei의 다른 버전."
+"[#Ei]의 다른 버전."
 theorem Ei_alt(st p: @11, st q: @21) {
 	(p |- q), (q |- p) |- {
 		[
@@ -342,7 +342,7 @@ theorem syll(st p: @11, st q: @12, st r: @22) {
 	}
 }
 
-"syll을 두 번 적용한 것. 사단논법이라 해도 좋을 것이다."
+"[#syll]을 두 번 적용한 것. 사단논법이라 해도 좋을 것이다."
 theorem syll4(st p: @11, st q: @21, st r: @31, st s: @32) {
 	I(p, q), I(q, r), I(r, s) |- {
 		[
@@ -352,7 +352,7 @@ theorem syll4(st p: @11, st q: @21, st r: @31, st s: @32) {
 	}
 }
 
-"E를 위한 syll."
+"[#E]를 위한 [#syll]."
 theorem syllE(st p: @11, st q: @12, st r: @22) {
 	E(p, q), E(q, r) |- {
 		[
@@ -391,7 +391,7 @@ theorem contrapose(st p: @11, st q: @12) {
 	}
 }
 
-"contrapose의 다른 버전."
+"[#contrapose]의 다른 버전."
 theorem contrapose_alt(st p: @11, st q: @1r) {
 	(p |- q) |- {
 		N(q) |- {

@@ -925,7 +925,7 @@ theorem injection_dom_Q_m(cls f: @11, $A$ cls a: @12, $B$ cls b: @13, cls x1: @3
 	}
 }
 
-"전단사함수(bijective function). [~(href=#def-is_fun)is_fun]의 정의와의 유사성에 주목하라."
+"전단사함수(bijective function). [#is_fun]의 정의와의 유사성에 주목하라."
 $<<\mathop\mathrm{bijection}>>\left(#1: #2 \to #3\right)$
 st is_bijection(cls f, $A$ cls a, $B$ cls b) {
 	A(is_fun(f, a, b), Uin(b, (cls y) => A(Xin(a, (cls x) => in(pair(x, y), f)), Q((cls x) => in(pair(x, y), f)))))

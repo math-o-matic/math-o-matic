@@ -201,7 +201,7 @@ theorem pair_eq_e2_v2(cls x: @211, cls y: @212, cls u: @221, cls v: @222) {
 	}
 }
 
-"순서쌍을 위한 setbuilder. 즉 [$\{(a, b): f(a, b)\}]이다."
+"순서쌍을 위한 [#setbuilder]. 즉 [$\{(a, b): f(a, b)\}]이다."
 $\left\{<<:>>#1\right\}$
 cls setbuilder_pair(pr2 f) {
 	setbuilder((cls z) => X2((cls a, cls b) => A(eq(z, pair(a, b)), f(a, b))))
@@ -235,7 +235,7 @@ theorem setbuilder_pair_e(pr2 f: @121, cls a: @111, cls b: @112) {
 	}
 }
 
-"순서쌍을 위한 setbuilder2. 즉 [$\{f(a, b): g(a, b)\}]이다."
+"순서쌍을 위한 [#setbuilder2]. 즉 [$\{f(a, b): g(a, b)\}]이다."
 $\left\{#1<<:>>#2\right\}$
 cls setbuilder2_pair(fun2 f, pr2 g) {
 	setbuilder((cls z) => X2((cls a, cls b) => A(eq(z, f(a, b)), g(a, b))))
@@ -327,7 +327,7 @@ st is_rel_over_set($R$ cls r, $A$ cls a) {
 	is_rel_over_sets(r, a, a)
 }
 
-"정의역과 치역에 관한 조건이 없는 이항관계. [$V\times V]의 부분집합이다. `[Pinter]`에서 graph라 부르는 것이다."
+"정의역과 치역에 관한 조건이 없는 이항관계. [#cartesian(universe, universe)]의 부분집합이다. `[Pinter]`에서 graph라 부르는 것이다."
 $\left(<<\operatorname{relation}>> #1\right)$
 st is_rel($R$ cls r) {
 	is_rel_over_set(r, universe)
@@ -768,7 +768,7 @@ theorem setbuilder_pair_is_rel(pr2 f: @r11) {
 	}
 }
 
-"이항관계를 위한 U.
+"이항관계를 위한 [#U].
 
 [$R]이 이항관계일 때 임의의 [$.(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
 theorem rel_U(pr f: @r2, $R$ cls r: @11) {

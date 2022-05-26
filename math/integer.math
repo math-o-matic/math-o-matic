@@ -60,7 +60,7 @@ theorem omega_sub_as_int_eq_i(cls m: @11, cls n: @21, $m'$ cls mp: @12, $n'$ cls
 	}
 }
 
-"[$\omega]에서 [$\Z]로의 canonical embedding."
+"[#omega]에서 [#int]로의 canonical embedding."
 $\left(#1\right)_{<<\omega\to\Z>>}$
 cls ntoz(cls n) {
 	omega_sub_as_int(n, omega_zero)

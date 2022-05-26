@@ -21,79 +21,79 @@ type fun = [cls -> cls];
 "이항 메타함수."
 type fun2 = [cls, cls -> cls];
 
-"pr 타입을 위한 A."
+"pr 타입을 위한 [#A]."
 $\left(#1<<\land>>#2\right)$
 pr Af(pr f, pr g) {
 	(cls z) => A(f(z), g(z))
 }
 
-"pr 타입을 위한 O."
+"pr 타입을 위한 [#O]."
 $\left(#1<<\lor>>#2\right)$
 pr Of(pr f, pr g) {
 	(cls z) => O(f(z), g(z))
 }
 
-"pr 타입을 위한 I."
+"pr 타입을 위한 [#I]."
 $\left(#1<<\to>>#2\right)$
 pr If(pr f, pr g) {
 	(cls z) => I(f(z), g(z))
 }
 
-"pr 타입을 위한 E."
+"pr 타입을 위한 [#E]."
 $\left(#1<<\leftrightarrow>>#2\right)$
 pr Ef(pr f, pr g) {
 	(cls z) => E(f(z), g(z))
 }
 
-"pr 타입을 위한 N."
+"pr 타입을 위한 [#N]."
 $\left(<<\neg>>#1\right)$
 pr Nf(pr f) {
 	(cls z) => N(f(z))
 }
 
-"pr2 타입을 위한 A."
+"pr2 타입을 위한 [#A]."
 $\left(#1<<\land>>#2\right)$
 pr2 Af2(pr2 f, pr2 g) {
 	(cls x, cls y) => A(f(x, y), g(x, y))
 }
 
-"pr2 타입을 위한 O."
+"pr2 타입을 위한 [#O]."
 $\left(#1<<\lor>>#2\right)$
 pr2 Of2(pr2 f, pr2 g) {
 	(cls x, cls y) => O(f(x, y), g(x, y))
 }
 
-"pr2 타입을 위한 I."
+"pr2 타입을 위한 [#I]."
 $\left(#1<<\to>>#2\right)$
 pr2 If2(pr2 f, pr2 g) {
 	(cls x, cls y) => I(f(x, y), g(x, y))
 }
 
-"pr3 타입을 위한 I."
+"pr3 타입을 위한 [#I]."
 $\left(#1<<\to>>#2\right)$
 pr3 If3(pr3 f, pr3 g) {
 	(cls x, cls y, cls z) => I(f(x, y, z), g(x, y, z))
 }
 
-"pr4 타입을 위한 I."
+"pr4 타입을 위한 [#I]."
 $\left(#1<<\to>>#2\right)$
 pr4 If4(pr4 f, pr4 g) {
 	(cls x, cls y, cls z, cls w) => I(f(x, y, z, w), g(x, y, z, w))
 }
 
-"pr2 타입을 위한 E."
+"pr2 타입을 위한 [#E]."
 $\left(#1<<\leftrightarrow>>#2\right)$
 pr2 Ef2(pr2 f, pr2 g) {
 	(cls x, cls y) => E(f(x, y), g(x, y))
 }
 
-"pr2 타입을 위한 N."
+"pr2 타입을 위한 [#N]."
 $\left(<<\neg>>#1\right)$
 pr2 Nf2(pr2 f) {
 	(cls x, cls y) => N(f(x, y))
 }
 
-"보편 양화(universal quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받는다. 또한 [*domain of discourse는 공집합일 수도 있다]."
+"보편 양화(universal quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받는다. 또한 domain of discourse는 공집합일 수도 있다."
 [precedence=249]
 $<<\forall>>#1$
 st U(pr f);
@@ -119,7 +119,7 @@ st U4(pr4 f) {
 	U((cls x) => U((cls y) => U((cls z) => U((cls w) => f(x, y, z, w)))))
 }
 
-"존재 양화(existential quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받으며 U에 의존한다. 또한 [*domain of discourse는 공집합일 수도 있다]."
+"존재 양화(existential quantification). 일반적인 표기법과는 다르게 pr을 입력으로 받으며 [#U]에 의존한다. 또한 domain of discourse는 공집합일 수도 있다."
 [precedence=249]
 $<<\exists>>#1$
 st X(pr f) {
@@ -132,7 +132,7 @@ st NX(pr f) {
 	N(X(f))
 }
 
-"pr2를 위한 존재 양화. X에 의존한다."
+"pr2를 위한 존재 양화. [#X]에 의존한다."
 [precedence=249]
 $<<\exists^2>>#1$
 st X2(pr2 f) {
@@ -209,14 +209,14 @@ theorem Ui_p(st p: @1) {
 	}
 }
 
-"pr 타입을 위한 NNe."
+"pr 타입을 위한 [#NNe]."
 theorem NNeU(pr f: @1111) {
 	U(Nf(Nf(f))) |- {
 		(cls x) => { @h1 > Ue(?, x) > NNe } > Ui as U(f)
 	}
 }
 
-"pr 타입을 위한 NNi."
+"pr 타입을 위한 [#NNi]."
 theorem NNiU(pr f: @11) {
 	U(f) |- {
 		(cls x) => { @h1 > Ue(?, x) > NNi } > Ui as U(Nf(Nf(f)))
@@ -241,14 +241,14 @@ theorem XN_to_NU(pr f: @111) {
 	}
 }
 
-"U를 위한 contrapose."
+"[#U]를 위한 [#contrapose]."
 theorem contrapose_U(pr f: @111, pr g: @112) {
 	U(If(f, g)) |- {
 		(cls x) => { @h1 > Ue(?, x) > contrapose(f(x), g(x)) } > Ui
 	}
 }
 
-"U를 위한 mp."
+"[#U]를 위한 [#mp]."
 theorem mpU(pr f: @11, pr g: @212) {
 	U(f), U(If(f, g)) |- {
 		(cls x) => {
@@ -260,7 +260,7 @@ theorem mpU(pr f: @11, pr g: @212) {
 	}
 }
 
-"U를 위한 mt."
+"[#U]를 위한 [#mt]."
 theorem mtU(pr f: @111, pr g: @112) {
 	U(If(f, g)), N(U(g)) |- {
 		U(f) |- {
@@ -300,14 +300,14 @@ theorem UI_to_IU(pr f: @111, pr g: @112) {
 	}
 }
 
-"U를 위한 Oi1."
+"[#U]를 위한 [#Oi1]."
 theorem Oi1U(pr f, pr g) {
 	U(f) |- {
 		(cls x) => { @h1 > Ue(?, x) > Oi1(?, g(x)) } > Ui as U(Of(f, g))
 	}
 }
 
-"U를 위한 Oi2."
+"[#U]를 위한 [#Oi2]."
 theorem Oi2U(pr f, pr g) {
 	U(g) |- {
 		(cls x) => { @h1 > Ue(?, x) > Oi2(f(x), ?) } > Ui as U(Of(f, g))
@@ -351,28 +351,28 @@ theorem EiU(pr f: @111, pr g: @112) {
 	}
 }
 
-"Ee1의 U형."
+"[#Ee1]의 [#U]형."
 theorem Ee1U(pr f: @111, pr g: @112) {
 	U(Ef(f, g)) |- {
 		(cls x) => { @h1 > Ue(?, x) as E(f(x), g(x)) > Ee1 } > Ui as U(If(f, g))
 	}
 }
 
-"Ee2의 U형."
+"[#Ee2]의 [#U]형."
 theorem Ee2U(pr f: @111, pr g: @112) {
 	U(Ef(f, g)) |- {
 		(cls x) => { @h1 > Ue(?, x) as E(f(x), g(x)) > Ee2 } > Ui as U(If(g, f))
 	}
 }
 
-"Ee1의 U2형."
+"[#Ee1]의 [#U2]형."
 theorem Ee1U2(pr2 f: @111, pr2 g: @112) {
 	U2(Ef2(f, g)) |- {
 		(cls x) => { @h1 > Ue(?, x) > Ee1U((cls y) => f(x, y), (cls y) => g(x, y)) } > Ui as U2(If2(f, g))
 	}
 }
 
-"Ee2의 U2형."
+"[#Ee2]의 [#U2]형."
 theorem Ee2U2(pr2 f: @111, pr2 g: @112) {
 	U2(Ef2(f, g)) |- {
 		(cls x) => { @h1 > Ue(?, x) > Ee2U((cls y) => f(x, y), (cls y) => g(x, y)) } > Ui as U2(If2(g, f))
@@ -410,7 +410,7 @@ theorem syllUE(pr f: @111, pr g: @112, pr h: @212) {
 	}
 }
 
-"존재 양화 도입(existential introduction). Ue와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
+"존재 양화 도입(existential introduction). [#Ue]와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
 theorem Xi(pr f: @r1, cls x: @12) {
 	f(x) |- {
 		@h1 > NNi > (Ue(Nf(f), x) > contrapose_alt) as X(f)
@@ -423,7 +423,7 @@ theorem X2i(pr2 f, cls x, cls y) {
 	}
 }
 
-"X를 위한 mp."
+"[#X]를 위한 [#mp]."
 theorem mpX(pr f: @11, pr g: @r1) {
 	X(f), U(If(f, g)) |- {
 		N(X(g)) |- {
@@ -440,7 +440,7 @@ theorem mpX(pr f: @11, pr g: @r1) {
 	}
 }
 
-"X2를 위한 mp."
+"[#X2]를 위한 [#mp]."
 theorem mpX2(pr2 f: @11, pr2 g: @r1) {
 	X2(f), U2(If2(f, g)) |- {
 		$U = (cls x) => {
@@ -453,7 +453,7 @@ theorem mpX2(pr2 f: @11, pr2 g: @r1) {
 	}
 }
 
-"X3을 위한 mp."
+"[#X3]을 위한 [#mp]."
 theorem mpX3(pr3 f: @11, pr3 g: @r1) {
 	X3(f), U3(If3(f, g)) |- {
 		$U = (cls x) => {
@@ -466,7 +466,7 @@ theorem mpX3(pr3 f: @11, pr3 g: @r1) {
 	}
 }
 
-"X4를 위한 mp."
+"[#X4]를 위한 [#mp]."
 theorem mpX4(pr4 f: @11, pr4 g: @r1) {
 	X4(f), U4(If4(f, g)) |- {
 		$U = (cls x) => {
@@ -479,7 +479,7 @@ theorem mpX4(pr4 f: @11, pr4 g: @r1) {
 	}
 }
 
-"mpX의 더 강력한 버전."
+"[#mpX]의 더 강력한 버전."
 theorem mpX_strong(pr f: @11, pr g: @212) {
 	X(f), U(If(f, g)) |- {
 		[
@@ -517,7 +517,7 @@ theorem mpXE2(pr f, pr g) {
 	}
 }
 
-"문장 타입을 위한 존재 양화 소거(existential elimination). 존재 양화 소거는 일반적으로 [$.(\exists x)(\varphi(x))\vdash \varphi(c)]를 뜻하나 이는 새로운 상수 기호 [$c]의 도입을 필요로 하며 math-o-matic 문법은 이를 지원하지 않는다. 또 완전히 새로운 기호 [$c]에 관하여 [$\varphi(c)]임을 주장하는 것은 이상한 일이다. 그러므로 math-o-matic에서는 일반적 존재 양화 소거를 지원하지 않는데, mpX 및 Xe 등을 사용하여 비슷한 효과를 낼 수 있디."
+"문장 타입을 위한 존재 양화 소거(existential elimination). 존재 양화 소거는 일반적으로 [$.(\exists x)(\varphi(x))\vdash \varphi(c)]를 뜻하나 이는 새로운 상수 기호 [$c]의 도입을 필요로 하며 math-o-matic 문법은 이를 지원하지 않는다. 또 완전히 새로운 기호 [$c]에 관하여 [$\varphi(c)]임을 주장하는 것은 이상한 일이다. 그러므로 math-o-matic에서는 일반적 존재 양화 소거를 지원하지 않는데, [#mpX] 및 [#Xe] 등을 사용하여 비슷한 효과를 낼 수 있디."
 theorem Xe(st p) {
 	X((cls x) => p) |- {
 		N(p) |- {
