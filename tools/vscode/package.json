@@ -6,7 +6,7 @@
 	"icon": "logo/logomark.png",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/logico-philosophical/math-o-matic.git"
+		"url": "https://github.com/math-o-matic/math-o-matic.git"
 	},
 	"version": "0.1.1",
 	"engines": {

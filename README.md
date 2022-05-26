@@ -1,16 +1,14 @@
 <h1 align="center">math-o-matic</h1>
-<p align="center"><a href="https://logico-philosophical.github.io/math-o-matic/docs/build/index.html">docs</a> &middot; <a href="https://logico-philosophical.github.io/math-o-matic/web/index.html">main page</a></p>
+<p align="center"><a href="https://math-o-matic.github.io/math-o-matic/docs/build/index.html">docs</a> &middot; <a href="https://math-o-matic.github.io/math-o-matic/web/index.html">main page</a></p>
 
 [![npm](https://img.shields.io/npm/v/math-o-matic)](https://www.npmjs.com/package/math-o-matic)
-[![GitHub](https://img.shields.io/github/license/logico-philosophical/math-o-matic)](https://github.com/logico-philosophical/math-o-matic/blob/master/LICENSE)
-[![Node.js CI](https://github.com/logico-philosophical/math-o-matic/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/logico-philosophical/math-o-matic/actions/workflows/test-and-build.yml)
-[![Coverage Status](https://img.shields.io/coveralls/github/logico-philosophical/math-o-matic)](https://coveralls.io/github/logico-philosophical/math-o-matic?branch=master)
-[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/logico-philosophical/math-o-matic)](https://lgtm.com/projects/g/logico-philosophical/math-o-matic/alerts/)
-[![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/logico-philosophical/math-o-matic)](https://lgtm.com/projects/g/logico-philosophical/math-o-matic/context:javascript)
+[![GitHub](https://img.shields.io/github/license/math-o-matic/math-o-matic)](https://github.com/math-o-matic/math-o-matic/blob/master/LICENSE)
+[![Node.js CI](https://github.com/math-o-matic/math-o-matic/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/math-o-matic/math-o-matic/actions/workflows/test-and-build.yml)
+[![Coverage Status](https://img.shields.io/coveralls/github/math-o-matic/math-o-matic)](https://coveralls.io/github/math-o-matic/math-o-matic?branch=master)
+[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/math-o-matic/math-o-matic)](https://lgtm.com/projects/g/math-o-matic/math-o-matic/alerts/)
+[![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/math-o-matic/math-o-matic)](https://lgtm.com/projects/g/math-o-matic/math-o-matic/context:javascript)
 
-**English** &middot; [한국어](/README.ko.md)
-
-**math-o-matic** is a computerized proof system that lets you create an axiomatic system and prove its theorems. Its aim is to make it easy to read and write rigorous mathematical proofs. You can see the current axiomatic system by pressing one of the buttons at the bottom of the [main page](https://logico-philosophical.github.io/math-o-matic/web/index.html).
+**math-o-matic** is a computerized proof system that lets you create an axiomatic system and prove its theorems. Its aim is to make it easy to read and write rigorous mathematical proofs. You can see the current axiomatic system by pressing one of the buttons at the bottom of the [main page](https://math-o-matic.github.io/math-o-matic/web/index.html).
 
 ## Code example
 
@@ -30,6 +28,6 @@ This code produces&hellip;
 ## Keep reading
 
 * Find more math-o-matic code in [/math](/math) directory.
-* Refer to the [documentation](https://logico-philosophical.github.io/math-o-matic/docs/build/index.html) to learn how to write proofs.
-* Click on the colored parts of the previous proof in the [main page](https://logico-philosophical.github.io/math-o-matic/web/index.html) to jump to definitions.
+* Refer to the [documentation](https://math-o-matic.github.io/math-o-matic/docs/build/index.html) to learn how to write proofs.
+* Click on the colored parts of the previous proof in the [main page](https://math-o-matic.github.io/math-o-matic/web/index.html) to jump to definitions.
 * math-o-matic language support for Visual Studio Code can be found in [/tools](/tools).

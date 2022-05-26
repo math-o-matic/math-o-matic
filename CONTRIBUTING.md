@@ -7,13 +7,13 @@
 먼저 git과 node.js를 설치한 뒤 터미널에 다음을 입력하세요.
 
 ```shell
-git clone https://github.com/logico-philosophical/math-o-matic.git
+git clone https://github.com/math-o-matic/math-o-matic.git
 cd math-o-matic
 npm install
 npm run build
 ```
 
-빌드가 성공했다면 `/dist`에 `math.min.js` 및 `math.min.js.map`이 생성됩니다.
+빌드가 성공했다면 `/dist`에 `math-o-matic.min.js` 및 `math-o-matic.min.js.map`이 생성됩니다.
 
 ### Pull request를 열기 전에
 

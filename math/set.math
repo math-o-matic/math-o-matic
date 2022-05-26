@@ -1701,7 +1701,7 @@ theorem is_singleton_i(cls x: @11, cls z: @12) {
 
 "싱글턴 클래스. [$x]가 집합일 때는 일반적인 정의와 같이 [$x]만을 원소로 갖는 클래스가 되고 [$x]가 고유 클래스(proper class)일 경우는 전체집합 [$V]가 되는데, [$x]가 고유 클래스일 때의 동작에는 의존하지 말라.
 
-싱글턴의 이전 정의에 관하여는 [~(href=https://github.com/logico-philosophical/math-o-matic/issues/8)이슈 #8]에 기록되어 있다.
+싱글턴의 이전 정의에 관하여는 [~(href=https://github.com/math-o-matic/math-o-matic/issues/8)이슈 #8]에 기록되어 있다.
 
 @sealed [$x]가 집합이 아닐 때 이상하게 되어 봉인되었다."
 $\left\{#1\right\}{}^{<<\scriptscriptstyle\dag>>}$
