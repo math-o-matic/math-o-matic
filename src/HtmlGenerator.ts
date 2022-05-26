@@ -219,49 +219,45 @@ export default class HtmlGenerator {
 	
 		var ret = {
 			'#precedence': `
-<p>현재 연산자 우선순위는 다음과 같습니다.</p>
-
 <table>
-	<tr><th>우선순위</th><th>연산자</th></tr>
+	<tr><th>Precedence</th><th>Operators</th></tr>
 	${precedenceTable.map(([k, v]) => {
 		return `<tr><td>${k}</td><td>${v.map(w => {
 			return `<a href="#def-${w}">${w}</a>`;
 		}).join(', ')}</td></tr>`;
 	}).join('')}
-</table>
-
-<p>위 표는 자동으로 생성되었습니다.</p>`,
+</table>`,
 			'#summary': `
 <ul>
-	<li><p><b>타입</b>(${primitiveTypeList.length + macroTypeList.length})</p>
+	<li><p><b>Types</b> (${primitiveTypeList.length + macroTypeList.length})</p>
 	<ul>
-		<li><b>원시 타입</b>(${primitiveTypeList.length}): ${
+		<li><b>Atomic types</b> (${primitiveTypeList.length}): ${
 			primitiveTypeList.map(n => `<a href="#type-${n}">${n}</a>`).join(', ')
 		}
-		<li><b>매크로</b>(${macroTypeList.length}): ${
+		<li><b>Macro types</b> (${macroTypeList.length}): ${
 			macroTypeList.map(n => `<a href="#type-${n}">${n}</a>`).join(', ')
 		}
 	</ul>
 
-	<li><p><b>용어</b>(${primitiveDefinitionList.length + macroDefinitionList.length})</p>
+	<li><p><b>Variable declarations</b> (${primitiveDefinitionList.length + macroDefinitionList.length})</p>
 	<ul>
-		<li><b>무정의용어</b>(${primitiveDefinitionList.length}): ${
+		<li><b>Atomic variables</b> (${primitiveDefinitionList.length}): ${
 			primitiveDefinitionList.map(n => `<a href="#def-${n}">${n}</a>`).join(', ')
 		}
-		<li><b>매크로</b>(${macroDefinitionList.length}): ${
+		<li><b>Macro variables</b> (${macroDefinitionList.length}): ${
 			macroDefinitionList.map(n => `<a href="#def-${n}">${n}</a>`).join(', ')
 		}
 	</ul>
 	
-	<li><p><b>스키마</b>(${axiomSchemaList.length + notProvedList.length + provedList.length})</p>
+	<li><p><b>Schemata</b> (${axiomSchemaList.length + notProvedList.length + provedList.length})</p>
 	<ul>
-		<li><b>공리</b>(${axiomSchemaList.length}): ${
+		<li><b>Axioms</b> (${axiomSchemaList.length}): ${
 			axiomSchemaList.map(n => `<a href="#def-${n}">${n}</a>`).join(', ')
 		}
-		<li><b>증명되지 않음</b>(${notProvedList.length}): ${
+		<li><b>Not proved</b> (${notProvedList.length}): ${
 			notProvedList.map(n => `<a href="#def-${n}">${n}</a>`).join(', ')
 		}
-		<li><b>정리</b>(${provedList.length})
+		<li><b>Theorems</b> (${provedList.length})
 	</ul>
 </ul>`,
 			'#all': all
