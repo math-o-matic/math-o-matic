@@ -3,7 +3,6 @@ import Expr from './expr/Expr';
 import Variable from './expr/Variable';
 import { LocationObject } from './PegInterfaceDefinitions';
 import StackTrace from './StackTrace';
-import SchemaDecoration from './decoration/SchemaDecoration';
 import { FunctionalType } from './type/FunctionalType';
 import { SimpleType } from './type/SimpleType';
 import Type from './type/Type';
@@ -29,7 +28,6 @@ export default class Scope {
 	public readonly hypotheses: Expr[] = [];
 
 	public readonly parent: Scope;
-	public readonly root: Scope;
 
 	public readonly trace: StackTrace;
 
@@ -41,7 +39,6 @@ export default class Scope {
 	constructor (fileUri: string, parent: Scope, trace?: StackTrace) {
 		this.fileUri = fileUri;
 		this.parent = parent;
-		this.root = parent ? parent.root : this;
 
 		if (trace && !(trace instanceof StackTrace)) {
 			throw Error('Assertion failed');
