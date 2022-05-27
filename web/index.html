@@ -188,8 +188,7 @@
 
 					function addThisScope(scope) {
 						searchDatabase = searchDatabase
-							.concat([...scope.defMap.keys()])
-							.concat([...scope.schemaMap.keys()]);
+							.concat([...scope.variableMap.keys()]);
 					}
 
 					function addImportedScopes(scope) {
@@ -270,19 +269,19 @@
 
 					if (Globals.program.scope.hasVariable(name)) {
 						var var_ = Globals.program.scope.getVariable(name);
-						$('#popper-tooltip-holder').innerHTML = generator.def(name, var_);
+						var html;
 
-						Popper.createPopper($a, $('#popper-tooltip-holder *'));
-						return;
-					}
+						if (var_.decoration instanceof MathOMatic.SchemaDecoration) {
+							html = generator.schema(
+								name, var_,
+								Globals.expansionList.includes(name),
+								true
+							);
+						} else {
+							html = generator.def(name, var_);
+						}
 
-					if (Globals.program.scope.hasSchema(name)) {
-						var var_ = Globals.program.scope.getSchema(name);
-						$('#popper-tooltip-holder').innerHTML = generator.schema(
-							name, var_,
-							Globals.expansionList.includes(name),
-							true
-						);
+						$('#popper-tooltip-holder').innerHTML = html;
 
 						Popper.createPopper($a, $('#popper-tooltip-holder *'));
 					}

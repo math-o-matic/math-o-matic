@@ -139,11 +139,11 @@ export default class Program {
 						throw Error('wut');
 					}
 
-					if (scope.hasSchema(schema.name)) {
+					if (scope.hasVariable(schema.name)) {
 						throw scope.error(`Schema ${schema.name} has already been declared`);
 					}
 
-					scope.addSchema(schema);
+					scope.addVariable(schema);
 					break;
 				default:
 					throw Error(`Unknown line type ${(line as any)._type}`);

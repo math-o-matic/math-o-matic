@@ -23,9 +23,8 @@ export type NestedTypeInput = string | NestedTypeInput[];
 export default class Scope {
 	public readonly importMap: Map<string, Scope> = new Map();
 
-	public readonly typedefMap: Map<string, SimpleType> = new Map();
-	public readonly defMap: Map<string, Variable> = new Map();
-	public readonly schemaMap: Map<string, Variable> = new Map();
+	public readonly typeMap: Map<string, SimpleType> = new Map();
+	public readonly variableMap: Map<string, Variable> = new Map();
 	public readonly $Map: Map<string, $Variable> = new Map();
 	public readonly hypotheses: Expr[] = [];
 
@@ -63,7 +62,7 @@ export default class Scope {
 
 	public hasOwnType(name: NestedTypeInput): boolean {
 		if (typeof name == 'string') {
-			return this.typedefMap.has(name)
+			return this.typeMap.has(name)
 				|| [...this.importMap.values()].some(s => s.hasOwnType(name));
 		}
 
@@ -105,7 +104,7 @@ export default class Scope {
 		if (this.hasOwnType(type.name))
 			throw this.error(`Type ${type.name} has already been declared`);
 
-		this.typedefMap.set(type.name, type);
+		this.typeMap.set(type.name, type);
 		return type;
 	}
 
@@ -121,8 +120,8 @@ export default class Scope {
 			if (!this.hasType(name))
 				throw this.error(`Type ${name} is not defined`);
 
-			return this.typedefMap.has(name)
-				? this.typedefMap.get(name)
+			return this.typeMap.has(name)
+				? this.typeMap.get(name)
 				: (!!this.parent && this.parent.getType(name))
 					|| [...this.importMap.values()].filter(s => {
 						return s.hasType(name)
@@ -148,7 +147,7 @@ export default class Scope {
 	}
 
 	public hasOwnVariable(name: string): boolean {
-		return this.defMap.has(name)
+		return this.variableMap.has(name)
 			|| [...this.importMap.values()].some(s => s.hasOwnVariable(name));
 	}
 
@@ -164,7 +163,7 @@ export default class Scope {
 		if (this.hasOwnVariable(variable.name))
 			throw this.error(`Definition ${variable.name} has already been declared`);
 
-		this.defMap.set(variable.name, variable);
+		this.variableMap.set(variable.name, variable);
 		return variable;
 	}
 
@@ -172,51 +171,12 @@ export default class Scope {
 		if (!this.hasVariable(name))
 			throw this.error(`Definition ${name} is not defined`);
 
-		return this.defMap.has(name)
-			? this.defMap.get(name)
+		return this.variableMap.has(name)
+			? this.variableMap.get(name)
 			: (!!this.parent && this.parent.getVariable(name))
 				|| [...this.importMap.values()].filter(s => {
 					return s.hasVariable(name)
 				})[0].getVariable(name);
-	}
-
-	public hasOwnSchema(name: string): boolean {
-		return this.schemaMap.has(name) || this.defMap.has(name)
-			|| [...this.importMap.values()].some(s => s.hasOwnSchema(name));
-	}
-
-	public hasSchema(name: string): boolean {
-		return this.hasOwnSchema(name)
-			|| (!!this.parent && this.parent.hasSchema(name));
-	}
-
-	public addSchema(schema: Variable): Variable {
-		if (!(schema instanceof Variable))
-			throw this.error('Illegal argument type');
-
-		if (!(schema.decoration instanceof SchemaDecoration)) {
-			throw this.error(`Variable ${schema.name} is not a schema`);
-		}
-
-		if (this.hasOwnSchema(schema.name))
-			throw this.error(`Schema ${schema.name} has already been declared`);
-
-		this.schemaMap.set(schema.name, schema);
-		return schema;
-	}
-
-	public getSchema(name: string): Variable {
-		if (!this.hasSchema(name))
-			throw this.error(`Schema ${name} is not defined`);
-
-		return this.schemaMap.has(name)
-			? this.schemaMap.get(name)
-			: this.defMap.has(name)
-				? this.defMap.get(name)
-				: (!!this.parent && this.parent.getSchema(name))
-					|| [...this.importMap.values()].filter(s => {
-						return s.hasSchema(name)
-					})[0].getSchema(name);
 	}
 
 	public hasOwn$(name: string): boolean {

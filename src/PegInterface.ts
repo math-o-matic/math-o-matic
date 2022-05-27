@@ -301,10 +301,10 @@ export default class PI {
 
 				return scope.get$(obj.name);
 			case 'normal':
-				if (!scope.hasSchema(obj.name))
+				if (!scope.hasVariable(obj.name))
 					throw scope.error(`Schema ${varObjToString(obj)} is not defined`);
 
-				return scope.getSchema(obj.name);
+				return scope.getVariable(obj.name);
 			default:
 				throw scope.error(`Unknown type ${obj.type}`);
 		}

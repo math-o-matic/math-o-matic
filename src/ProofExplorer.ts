@@ -12,11 +12,11 @@ export default class ProofExplorer {
 			TE = '<b>⊢E</b>',
 			SE = '<b>↦E</b>';
 		
-		if (!scope.hasSchema(name)) {
+		if (!scope.hasVariable(name)) {
 			throw Error('wut');
 		}
 	
-		var expr = scope.getSchema(name);
+		var expr = scope.getVariable(name);
 
 		if (!(expr instanceof Variable && expr.decoration instanceof SchemaDecoration)) {
 			throw Error('wut');

@@ -1,6 +1,7 @@
 import Program from '../src/Program';
 import HtmlGenerator from '../src/HtmlGenerator';
 import fs from 'fs';
+import SchemaDecoration from '../src/decoration/SchemaDecoration';
 var path = require('path');
 var mkdirp = require('mkdirp');
 
@@ -21,7 +22,7 @@ var program = new Program();
 			code: fs.readFileSync(path.join(__dirname, '../math/' + filename + '.math'), 'utf-8')
 		}));
 
-		var keys = [...program.scope.schemaMap.keys()];
+		var keys = [...program.scope.variableMap].filter(([k, v]) => v.decoration instanceof SchemaDecoration).map(([k, v]) => k);
 
 		result[name] = new HtmlGenerator(program, e => e, {render: e => e}).generate(
 			name, keys, false

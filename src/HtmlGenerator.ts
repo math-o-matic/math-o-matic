@@ -127,7 +127,8 @@ export default class HtmlGenerator {
 		var printThisScope = (scope: Scope) => {
 			var map: {[k: number]: string} = {};
 	
-			for (let [k, v] of scope.defMap) {
+			for (let [k, v] of scope.variableMap) {
+				if (v.decoration instanceof SchemaDecoration) continue;
 				if (!('precedence' in v.decoration) || !v.decoration.precedence) continue;
 	
 				var prec = v.decoration.precedence.toString();
@@ -140,50 +141,50 @@ export default class HtmlGenerator {
 			}
 	
 			primitiveTypeList = primitiveTypeList.concat(
-				[...scope.typedefMap]
+				[...scope.typeMap]
 					.filter(([k, v]) => !v.expr).map(([k, v]) => k)
 			);
 	
 			macroTypeList = macroTypeList.concat(
-				[...scope.typedefMap]
+				[...scope.typeMap]
 					.filter(([k, v]) => v.expr).map(([k, v]) => k)
 			);
 	
 			primitiveDefinitionList = primitiveDefinitionList.concat(
-				[...scope.defMap]
-					.filter(([k, v]) => !v.expr).map(([k, v]) => k)
+				[...scope.variableMap]
+					.filter(([k, v]) => !(v.decoration instanceof SchemaDecoration) && !v.expr).map(([k, v]) => k)
 			);
 	
 			macroDefinitionList = macroDefinitionList.concat(
-				[...scope.defMap]
-					.filter(([k, v]) => v.expr).map(([k, v]) => k)
+				[...scope.variableMap]
+					.filter(([k, v]) => !(v.decoration instanceof SchemaDecoration) && v.expr).map(([k, v]) => k)
 			);
 			
 			axiomSchemaList = axiomSchemaList.concat(
-				[...scope.schemaMap]
+				[...scope.variableMap]
 					.filter(([k, v]) => v.decoration instanceof SchemaDecoration && v.decoration.schemaType == 'axiom').map(([k, v]) => k)
 			);
 	
 			notProvedList = notProvedList.concat(
-				[...scope.schemaMap]
-					.filter(([k, v]) => !Calculus.isProved(v)).map(([k, v]) => k)
+				[...scope.variableMap]
+					.filter(([k, v]) => v.decoration instanceof SchemaDecoration && !Calculus.isProved(v)).map(([k, v]) => k)
 			);
 	
 			provedList = provedList.concat(
-				[...scope.schemaMap]
+				[...scope.variableMap]
 					.filter(([k, v]) => v.decoration instanceof SchemaDecoration && v.decoration.schemaType != 'axiom' && Calculus.isProved(v)).map(([k, v]) => k)
 			);
 	
-			for (let [k, v] of scope.typedefMap) {
+			for (let [k, v] of scope.typeMap) {
 				map[v._id] = this.typedef(k, v);
 			}
 	
-			for (let [k, v] of scope.defMap) {
-				map[v._id] = this.def(k, v);
-			}
-	
-			for (let [k, v] of scope.schemaMap) {
-				map[v._id] = this.schema(k, v, expansionList.includes(k), false);
+			for (let [k, v] of scope.variableMap) {
+				if (v.decoration instanceof SchemaDecoration) {
+					map[v._id] = this.schema(k, v, expansionList.includes(k), false);
+				} else {
+					map[v._id] = this.def(k, v);
+				}
 			}
 	
 			return `<h3 class="label">${scope.fileUri} (${Object.keys(map).length})</h3><div class="block-file">`
