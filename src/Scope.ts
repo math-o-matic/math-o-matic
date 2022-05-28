@@ -27,16 +27,16 @@ export default class Scope {
 	public readonly $Map: Map<string, $Variable> = new Map();
 	public readonly hypotheses: Expr[] = [];
 
-	public readonly parent: Scope;
+	public readonly parent: Scope | null;
 
 	public readonly trace: StackTrace;
 
 	/**
 	 * 파일 경로. 예를 들어 `/propositional.math`이다. 파일과 일대일대응이어야 한다.
 	 */
-	public readonly fileUri: string;
+	public readonly fileUri: string | null;
 
-	constructor (fileUri: string, parent: Scope, trace?: StackTrace) {
+	constructor (fileUri: string | null, parent: Scope | null, trace?: StackTrace) {
 		this.fileUri = fileUri;
 		this.parent = parent;
 
@@ -47,7 +47,7 @@ export default class Scope {
 		this.trace = trace || new StackTrace(fileUri);
 	}
 
-	public extend(type: string, name: string, location: LocationObject): Scope {
+	public extend(type: string, name: string | null, location: LocationObject): Scope {
 		var child = new Scope(this.fileUri, this, this.trace.extend({type, name, location}));
 		this.hypotheses.forEach(h => child.hypotheses.push(h));
 		return child;
@@ -118,7 +118,7 @@ export default class Scope {
 				throw this.error(`Type ${name} is not defined`);
 
 			return this.typeMap.has(name)
-				? this.typeMap.get(name)
+				? this.typeMap.get(name)!
 				: (!!this.parent && this.parent.getType(name))
 					|| [...this.importMap.values()].filter(s => {
 						return s.hasType(name)
@@ -169,7 +169,7 @@ export default class Scope {
 			throw this.error(`Definition ${name} is not defined`);
 
 		return this.variableMap.has(name)
-			? this.variableMap.get(name)
+			? this.variableMap.get(name)!
 			: (!!this.parent && this.parent.getVariable(name))
 				|| [...this.importMap.values()].filter(s => {
 					return s.hasVariable(name)
@@ -202,7 +202,7 @@ export default class Scope {
 			throw this.error(`$ variable ${name} is not defined`);
 
 		return this.$Map.has(name)
-			? this.$Map.get(name)
+			? this.$Map.get(name)!
 			: (!!this.parent && this.parent.get$(name))
 				|| [...this.importMap.values()].filter(s => {
 					return s.has$(name)

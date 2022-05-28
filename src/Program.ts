@@ -30,7 +30,7 @@ export type EvalParserType = {
 
 export default class Program {
 	
-	public scope: Scope;
+	public scope: Scope = new Scope(null, null);
 	public readonly scopeMap: Map<string, Scope> = new Map();
 	
 	public static parser: ParserType = parser;
@@ -45,7 +45,7 @@ export default class Program {
 	 * 
 	 * See https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search.
 	 */
-	private loadingModules: string[];
+	private loadingModules: string[] = [];
 
 	public async loadModule(filename: string, loader: LoaderType): Promise<Scope> {
 		this.loadingModules = [];
@@ -55,7 +55,7 @@ export default class Program {
 	private async loadModuleInternal(filename: string, loader: LoaderType): Promise<Scope> {
 		// the file has a permanent mark
 		if (this.scopeMap.has(filename)) {
-			return this.scopeMap.get(filename);
+			return this.scopeMap.get(filename)!;
 		}
 
 		var loadingModuleIndex = this.loadingModules.indexOf(filename);
@@ -76,7 +76,7 @@ export default class Program {
 
 		var {fileUri, code} = await loader(filename);
 
-		var scope = new Scope(fileUri, null);
+		var scope = new Scope(fileUri || null, null);
 
 		await this.feed(code, scope, loader);
 
@@ -179,7 +179,7 @@ export default class Program {
 		}
 	}
 
-	public getProofExplorer(name: string, ktx, yamd) {
+	public getProofExplorer(name: string, ktx: (s: string) => string, yamd: {render: (s: string) => string}) {
 		return ProofExplorer.get(this.scope, name, ktx, yamd);
 	}
 }

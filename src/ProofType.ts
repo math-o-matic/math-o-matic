@@ -1,4 +1,5 @@
 import Expr from "./expr/Expr";
+import Parameter from "./expr/Parameter";
 import Variable from "./expr/Variable";
 
 export type ProofType = R | SE | RC | RS | H | NP | Wut | T | V | TE | Def | ByDef;
@@ -63,14 +64,14 @@ interface V {
 	ctr: [number, number];
 	$lines: ProofType[];
 	lines: ProofType[];
-	params: Variable[];
+	params: Parameter[];
 }
 
 interface TE {
 	_type: 'TE';
 	ctr: number;
 	subject: number | [number, number] | Expr;
-	args: Expr[];
+	args: Expr[] | null;
 	antecedents: (number | [number, number])[];
 	reduced: Expr;
 }

@@ -4,16 +4,16 @@ import { LocationObject } from "./PegInterfaceDefinitions";
 
 interface StackTraceElement {
 	type: string;
-	name: string;
+	name: string | null;
 	location: LocationObject;
 }
 
 export default class StackTrace {
 
-	public readonly fileUri: string;
+	public readonly fileUri: string | null;
 	public readonly stack: StackTraceElement[];
 
-	constructor (fileUri: string, stack?: StackTraceElement[]) {
+	constructor (fileUri: string | null, stack?: StackTraceElement[]) {
 		this.fileUri = fileUri;
 		this.stack = stack || [];
 	}

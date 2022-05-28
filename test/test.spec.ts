@@ -65,7 +65,7 @@ cls y;
 		var foo = program.evaluate('(f(x))(y)') as Expr,
 			baz = program.evaluate('(f(x))(y)') as Expr;
 		
-		expect(!!Calculus.equals(foo, baz, null)).to.be.true;
+		expect(!!Calculus.equals(foo, baz, new ExecutionContext())).to.be.true;
 	});
 });
 

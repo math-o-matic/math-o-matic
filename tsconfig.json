@@ -9,7 +9,8 @@
 			"es2019"
 		],
 		"esModuleInterop": true,
-		"noImplicitOverride": true
+		"noImplicitOverride": true,
+		"strict": true
 	},
 	"include": ["./src/**/*.ts"]
 }

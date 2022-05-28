@@ -58,7 +58,7 @@ export default class PI {
 
 		var scope: Scope = parentScope.extend('type', obj.name, obj.location);
 
-		var expr: Type = obj.expr ? scope.getType(typeObjToNestedArr(obj.expr)) : null;
+		var expr: Type | null = obj.expr ? scope.getType(typeObjToNestedArr(obj.expr)) : null;
 
 		var name: string = obj.name;
 		var doc: string = obj.doc;
@@ -185,7 +185,7 @@ export default class PI {
 		}
 
 		if (obj._type == 'funexpr') {
-			var expr = PI.objectexpr(obj.expr, scope);
+			let expr = PI.objectexpr(obj.expr, scope);
 
 			return new Fun({
 				params,
@@ -212,7 +212,7 @@ export default class PI {
 		return new Funcall({fun, args}, scope.trace);
 	}
 
-	public static expr(obj: ExprObject, parentScope: Scope, context: ExecutionContext): Expr {
+	public static expr(obj: ExprObject, parentScope: Scope, context: ExecutionContext | null): Expr {
 		if (!['conditional', 'reduction', 'schemacall', 'schemaexpr', 'var', 'with'].includes(obj._type)) {
 			throw Error('Assertion failed');
 		}
@@ -310,7 +310,7 @@ export default class PI {
 		}
 	}
 
-	public static with(obj: WithObject, parentScope: Scope, context: ExecutionContext): With {
+	public static with(obj: WithObject, parentScope: Scope, context: ExecutionContext | null): With {
 		if (obj._type != 'with') {
 			throw Error('Assertion failed');
 		}
@@ -347,7 +347,7 @@ export default class PI {
 		}, scope.trace);
 	}
 
-	public static conditional(obj: ConditionalObject, parentScope: Scope, context: ExecutionContext): Conditional {
+	public static conditional(obj: ConditionalObject, parentScope: Scope, context: ExecutionContext | null): Conditional {
 		if (obj._type != 'conditional')
 			throw Error('Assertion failed');
 
@@ -373,7 +373,7 @@ export default class PI {
 		return new Conditional({left, def$s, right}, scope.trace);
 	}
 
-	public static def$(obj: Def$Object, parentScope: Scope, context: ExecutionContext): $Variable {
+	public static def$(obj: Def$Object, parentScope: Scope, context: ExecutionContext | null): $Variable {
 		if (obj._type != 'def$')
 			throw Error('Assertion failed');
 		
@@ -384,7 +384,7 @@ export default class PI {
 		return new $Variable({name: obj.name, expr}, scope.trace);
 	}
 
-	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, oldContext: ExecutionContext): Variable | Fun {
+	public static schema(obj: DefschemaObject | SchemaexprObject, parentScope: Scope, oldContext: ExecutionContext | null): Variable | Fun {
 		if (obj._type != 'defschema' && obj._type != 'schemaexpr')
 			throw Error('Assertion failed');
 		
@@ -393,7 +393,7 @@ export default class PI {
 		var scope = parentScope.extend('schema', name, obj.location);
 
 		var schemaType: SchemaType = 'schema',
-			doc: string = null,
+			doc: string | null = null,
 			context = oldContext;
 
 		if (obj._type == 'defschema') {
@@ -449,9 +449,11 @@ export default class PI {
 		var expr = PI.expr(obj.expr, scope, context);
 
 		if (obj._type == 'defschema') {
+			if (!name) throw scope.error('wut');
+			
 			return new Variable({
 				decoration: new SchemaDecoration({
-					doc, schemaType, context
+					doc, schemaType, context: context!
 				}),
 				type: new FunctionalType({
 					from: params.map(p => p.type),
@@ -475,7 +477,7 @@ export default class PI {
 		throw Error('wut');
 	}
 
-	public static schemacall(obj: SchemacallObject, parentScope: Scope, context: ExecutionContext): Funcall {
+	public static schemacall(obj: SchemacallObject, parentScope: Scope, context: ExecutionContext | null): Funcall {
 		if (obj._type != 'schemacall')
 			throw Error('Assertion failed');
 
@@ -493,7 +495,7 @@ export default class PI {
 		}, scope.trace);
 	}
 
-	public static reduction(obj: ReductionObject, parentScope: Scope, context: ExecutionContext): Reduction {
+	public static reduction(obj: ReductionObject, parentScope: Scope, context: ExecutionContext | null): Reduction {
 		if (obj._type != 'reduction')
 			throw Error('Assertion failed');
 		

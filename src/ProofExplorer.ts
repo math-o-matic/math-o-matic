@@ -5,6 +5,7 @@ import Variable from "./expr/Variable";
 import { ProofType } from "./ProofType";
 import Scope from "./Scope";
 import SchemaDecoration from "./decoration/SchemaDecoration";
+import Parameter from "./expr/Parameter";
 
 export default class ProofExplorer {
 	public static get(scope: Scope, name: string, ktx: (s: string) => string, yamd: {render: (s: string) => string}): string {
@@ -22,12 +23,12 @@ export default class ProofExplorer {
 			throw Error('wut');
 		}
 
-		function getHtmlLine(ctr: string | number, left: any[], h1: string, h2: string | string[], options?) {
+		function getHtmlLine(ctr: string | number, left: Parameter[][], h1: string, h2: string | string[], options?: {bbb: boolean, rrb: boolean}) {
 			var padding = left.length;
 
 			var {bbb=false, rrb=false} = options || {};
 	
-			var htmlLeft = left.map((e, i, a) => `<td class="${rrb && i == a.length - 1 ? 'rrb' : 'brb'}">${e.map(f => ktx(f.toTeXStringWithId(true))).join(', ')}</td>`).join('');
+			var htmlLeft = left.map((e, i, a) => `<td class="${rrb && i == a.length - 1 ? 'rrb' : 'brb'}">${e.map(f => ktx(f.toTeXStringWithId(Precedence.INFINITY))).join(', ')}</td>`).join('');
 
 			for (var i = 0; i < left.length; i++)
 				while(left[i].length) left[i].pop();
@@ -69,7 +70,7 @@ export default class ProofExplorer {
 		var html = '<table class="explorer">';
 		html += `<tr><th>#</th><th colspan="${ncols}">expression</th><th colspan="2">rule</th></tr>`;
 		
-		html += (function tree2html(lines: ProofType[], left: Variable[][]) {
+		html += (function tree2html(lines: ProofType[], left: Parameter[][]): string {
 			return lines.map(line => {
 				switch (line._type) {
 					case 'V':
@@ -166,7 +167,7 @@ export default class ProofExplorer {
 							'definition'
 						);
 					case 'bydef':
-						var of_ = [];
+						var of_: Variable[] = [];
 						line.of.forEach(e => {
 							if (!of_.includes(e)) of_.push(e);
 						});

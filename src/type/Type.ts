@@ -2,9 +2,9 @@ export default abstract class Type {
 
 	public readonly _id: number;
 	public readonly trace: StackTrace;
-	public readonly doc: string;
+	public readonly doc: string | null;
 
-	constructor (doc: string, trace: StackTrace) {
+	constructor (doc: string | null, trace: StackTrace) {
 		this._id = UniversalCounter.next();
 		this.doc = doc;
 		this.trace = trace;

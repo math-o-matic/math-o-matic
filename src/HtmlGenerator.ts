@@ -63,7 +63,7 @@ export default class HtmlGenerator {
 								+ `: ${v.type.resolveToFunctionalType().to}`;
 					})(v)
 			}</p>`
-			+ `<div class="math">${this.ktx(v.toTeXString(null, true))}</div>`
+			+ `<div class="math">${this.ktx(v.toTeXString(undefined, true))}</div>`
 	
 			+ (
 				v.decoration.doc
@@ -90,7 +90,7 @@ export default class HtmlGenerator {
 					? ` <b>using</b> ${v.decoration.context.usingList.map(u => u.name).join(', ')}`
 					: ''
 			}</p>`
-			+ `<div class="math">${this.ktx(v.toTeXString(null, true))}</div>`
+			+ `<div class="math">${this.ktx(v.toTeXString(undefined, true))}</div>`
 	
 			+ (
 				!v.expr || v.decoration.schemaType == 'axiom' || omitProofExplorer
@@ -116,16 +116,16 @@ export default class HtmlGenerator {
 	public generate(filename: string, expansionList: string[], includeImports: boolean) {
 		var precedenceMap: Map<string, string[]> = new Map();
 	
-		var primitiveTypeList = [],
-			macroTypeList = [],
-			primitiveDefinitionList = [],
-			macroDefinitionList = [],
-			axiomSchemaList = [],
-			notProvedList = [],
-			provedList = [];
+		var primitiveTypeList: string[] = [],
+			macroTypeList: string[] = [],
+			primitiveDefinitionList: string[] = [],
+			macroDefinitionList: string[] = [],
+			axiomSchemaList: string[] = [],
+			notProvedList: string[] = [],
+			provedList: string[] = [];
 	
 		var printThisScope = (scope: Scope) => {
-			var map: {[k: number]: string} = {};
+			var map: {[k: string]: string} = {};
 	
 			for (let [k, v] of scope.variableMap) {
 				if (v.decoration instanceof SchemaDecoration) continue;
@@ -134,7 +134,7 @@ export default class HtmlGenerator {
 				var prec = v.decoration.precedence.toString();
 				
 				if (precedenceMap.has(prec)) {
-					precedenceMap.set(prec, precedenceMap.get(prec).concat([k]));
+					precedenceMap.set(prec, precedenceMap.get(prec)!.concat([k]));
 				} else {
 					precedenceMap.set(prec, [k]);
 				}

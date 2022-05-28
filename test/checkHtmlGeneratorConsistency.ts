@@ -14,7 +14,11 @@ var program = new Program();
 		'algebra', 'integer'
 	];
 
-	var result = {};
+	var result: {
+		[k: string]: {
+			[k: string]: string
+		}
+	} = {};
 	
 	for (var name of arr) {
 		await program.loadModule(name, (filename: string) => ({

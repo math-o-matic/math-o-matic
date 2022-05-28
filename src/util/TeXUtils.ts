@@ -7,7 +7,7 @@ export default class TeXUtils {
 			'~': '\\textasciitilde',
 			'^': '\\textasciicircum',
 			'\\': '\\textbackslash'
-		})[m]);
+		})[m]!);
 	}
 
 	/**

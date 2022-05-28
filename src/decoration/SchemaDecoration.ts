@@ -10,7 +10,7 @@ export default class SchemaDecoration extends FunctionalMacroDecoration {
 	public context: ExecutionContext;
 
 	constructor ({doc, schemaType, context} : {
-		doc: string,
+		doc: string | null,
 		schemaType: SchemaType,
 		context: ExecutionContext
 	}) {

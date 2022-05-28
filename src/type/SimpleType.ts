@@ -3,13 +3,13 @@ import Type from "./Type";
 interface SimpleTypeArgumentType {
 	doc: string;
 	name: string;
-	expr: Type;
+	expr: Type | null;
 }
 
 export class SimpleType extends Type {
 
 	public readonly name: string;
-	public readonly expr: Type;
+	public readonly expr: Type | null;
 
 	constructor ({doc, name, expr}: SimpleTypeArgumentType, trace: StackTrace) {
 		super(doc, trace);

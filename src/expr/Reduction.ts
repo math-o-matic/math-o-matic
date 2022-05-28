@@ -3,7 +3,7 @@ import Expr from "./Expr";
 interface ReductionArgumentType {
 	antecedents: Expr[];
 	subject: Expr;
-	args: Expr[];
+	args: (Expr | null)[] | null;
 	as: Expr;
 }
 
@@ -15,7 +15,7 @@ export default class Reduction extends Expr {
 	public readonly preFormatConsequent: Expr;
 	public readonly consequent: Expr;
 	public readonly antecedentEqualsResults: Variable[][];
-	public readonly rightEqualsResult: Variable[];
+	public readonly rightEqualsResult: Variable[] | null;
 
 	constructor ({antecedents, subject, args, as}: ReductionArgumentType, context: ExecutionContext, trace: StackTrace) {
 		if (args) {
@@ -27,7 +27,7 @@ export default class Reduction extends Expr {
 				throw Expr.error(`Invalid number of arguments (expected ${paramTypes.length}): ${argTypes.length}`, trace);
 
 			for (var i = 0; i < paramTypes.length; i++) {
-				if (argTypes[i] && !paramTypes[i].equals(argTypes[i])) {
+				if (argTypes[i] && !paramTypes[i].equals(argTypes[i]!)) {
 					throw Expr.error(`Argument #${i + 1} has illegal argument type (expected ${paramTypes[i]}): ${argTypes[i]}`, trace);
 				}
 			}
@@ -36,6 +36,10 @@ export default class Reduction extends Expr {
 		var fun = subject;
 
 		while (fun instanceof Variable) {
+			if (!fun.expr) {
+				throw Expr.error(`Subject reduces to an atomic variable`, trace);
+			}
+
 			fun = fun.expr;
 		}
 
@@ -47,14 +51,14 @@ export default class Reduction extends Expr {
 			});
 	
 			var derefs = fun.params.map((p, i) => {
-				if (args && args[i]) return args[i];
+				if (args && args[i]) return args[i]!;
 
 				var conditional = Calculus.expand((fun as Fun).expr);
 
 				if (!(conditional instanceof Conditional)) throw Error('wut');
 	
 				return Reduction.guess(
-					p.selector,
+					p.selector!,
 					conditional.left, antecedents,
 					conditional.right, as,
 					context, trace
@@ -143,6 +147,7 @@ ${Calculus.expand(as)}
 			this.rightEqualsResult = tmp;
 			this.consequent = as;
 		} else {
+			this.rightEqualsResult = null;
 			this.consequent = conditional.right;
 		}
 	}

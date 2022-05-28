@@ -5,14 +5,14 @@ interface VariableArgumentType {
 	decoration: SimpleAtomicDecoration | SimpleMacroDecoration;
 	type: Type;
 	name: string;
-	expr: Expr;
+	expr: Expr | null;
 }
 
 export default class Variable extends Expr implements Nameable {
 
 	public readonly decoration: SimpleAtomicDecoration | SimpleMacroDecoration | FunctionalAtomicDecoration | FunctionalMacroDecoration;
 	public readonly name: string;
-	public readonly expr: Expr;
+	public readonly expr: Expr | null;
 
 	constructor ({decoration, type, name, expr}: VariableArgumentType, trace: StackTrace) {
 		super(type, trace);
@@ -66,7 +66,7 @@ export default class Variable extends Expr implements Nameable {
 	}
 
 	public funcallToTeXString(args: Expr[], prec: Precedence): string {
-		var hasFunctionalDecoration: boolean;
+		var hasFunctionalDecoration = false;
 		var myPrecedence = this.decoration.tex
 			&& (hasFunctionalDecoration =
 				(this.decoration instanceof FunctionalAtomicDecoration

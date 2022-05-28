@@ -15,6 +15,10 @@ export default class With extends Expr {
 	constructor({variable, def$s, expr}: WithArgumentType, trace: StackTrace) {
 		super(expr.type, trace);
 
+		if (!variable.expr) {
+			throw Expr.error('Variable is atomic', trace);
+		}
+
 		this.variable = variable;
 		this.def$s = def$s;
 		this.expr = expr;
