@@ -12,7 +12,6 @@ export default class Reduction extends Expr {
 	public readonly antecedents: Expr[];
 	public readonly requiredAntecedents: Expr[];
 	public readonly subject: Expr;
-	public readonly args: Expr[];
 	public readonly preFormatConsequent: Expr;
 	public readonly consequent: Expr;
 	public readonly antecedentEqualsResults: Variable[][];
