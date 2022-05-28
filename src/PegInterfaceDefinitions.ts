@@ -31,8 +31,8 @@ export interface DefvObject {
 	_type: 'defv';
 	isParam: boolean;
 	selector?: string;
-	doc: string;
-	tex: string;
+	doc: string | null;
+	tex: string | null;
 	sealed?: boolean;
 	type: TypeObject;
 	name: string;
@@ -42,8 +42,8 @@ export interface DefvObject {
 
 export interface DefunObject {
 	_type: 'defun';
-	doc: string;
-	tex: string;
+	doc: string | null;
+	tex: string | null;
 	tex_attributes: {
 		precedence: number
 	};
