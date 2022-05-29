@@ -69,9 +69,9 @@ export default class Scope {
 		if (name.length < 2)
 			throw this.error('Illegal array length');
 
-		return name.map(e => {
+		return name.every(e => {
 			return this.hasOwnType(e);
-		}).every(e => e);
+		});
 	}
 
 	public hasType(name: NestedTypeInput): boolean {
@@ -86,9 +86,9 @@ export default class Scope {
 		if (name.length < 2)
 			throw this.error('Illegal array length');
 
-		return name.map(e => {
+		return name.every(e => {
 			return this.hasType(e);
-		}).every(e => e);
+		});
 	}
 
 	public addType(type: SimpleType): SimpleType {
@@ -114,15 +114,25 @@ export default class Scope {
 	 */
 	public getType(name: NestedTypeInput): Type {
 		if (typeof name == 'string') {
-			if (!this.hasType(name))
+			if (!this.hasType(name)) {
 				throw this.error(`Type ${name} is not defined`);
+			}
+			
+			if (this.typeMap.has(name)) {
+				return this.typeMap.get(name)!;
+			}
 
-			return this.typeMap.has(name)
-				? this.typeMap.get(name)!
-				: (!!this.parent && this.parent.getType(name))
-					|| [...this.importMap.values()].filter(s => {
-						return s.hasType(name)
-					})[0].getType(name);
+			if (this.parent?.hasType(name)) {
+				return this.parent.getType(name);
+			}
+
+			for (var scope of this.importMap.values()) {
+				if (scope.hasType(name)) {
+					return scope.getType(name);
+				}
+			}
+
+			throw this.error('wut');
 		}
 
 		if (!(name instanceof Array))
@@ -168,12 +178,21 @@ export default class Scope {
 		if (!this.hasVariable(name))
 			throw this.error(`Definition ${name} is not defined`);
 
-		return this.variableMap.has(name)
-			? this.variableMap.get(name)!
-			: (!!this.parent && this.parent.getVariable(name))
-				|| [...this.importMap.values()].filter(s => {
-					return s.hasVariable(name)
-				})[0].getVariable(name);
+		if (this.variableMap.has(name)) {
+			return this.variableMap.get(name)!;
+		}
+
+		if (this.parent?.hasVariable(name)) {
+			return this.parent.getVariable(name);
+		}
+
+		for (var scope of this.importMap.values()) {
+			if (scope.hasVariable(name)) {
+				return scope.getVariable(name);
+			}
+		}
+
+		throw this.error('wut');
 	}
 
 	public hasOwn$(name: string): boolean {
@@ -200,12 +219,21 @@ export default class Scope {
 	public get$(name: string): $Variable {
 		if (!this.has$(name))
 			throw this.error(`$ variable ${name} is not defined`);
+		
+		if (this.$Map.has(name)) {
+			return this.$Map.get(name)!;
+		}
 
-		return this.$Map.has(name)
-			? this.$Map.get(name)!
-			: (!!this.parent && this.parent.get$(name))
-				|| [...this.importMap.values()].filter(s => {
-					return s.has$(name)
-				})[0].get$(name);
+		if (this.parent?.has$(name)) {
+			return this.parent.get$(name);
+		}
+
+		for (var scope of this.importMap.values()) {
+			if (scope.has$(name)) {
+				return scope.get$(name);
+			}
+		}
+
+		throw this.error('wut');
 	}
 }
