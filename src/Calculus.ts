@@ -400,16 +400,16 @@ export default class Calculus {
 
 	protected static getProofInternal(
 			self: Expr,
-			hypnumMap: Map<Expr, number>,
+			hypothesisMap: Map<Expr, number>,
 			$Map: Map<Expr, number | [number, number]>,
 			ctr: Counter,
 			root: boolean=false): ProofType[] {
 		
-		if (hypnumMap.has(self)) {
+		if (hypothesisMap.has(self)) {
 			return [{
 				_type: 'R',
 				ctr: ctr.next(),
-				num: hypnumMap.get(self)!,
+				num: hypothesisMap.get(self)!,
 				expr: self
 			}];
 		}
@@ -437,12 +437,12 @@ export default class Calculus {
 		}
 
 		if (self instanceof Conditional) {
-			hypnumMap = new Map(hypnumMap);
+			hypothesisMap = new Map(hypothesisMap);
 
 			var start = ctr.peek() + 1;
 
 			var leftlines: ProofType[] = self.left.map(l => {
-				hypnumMap.set(l, ctr.next());
+				hypothesisMap.set(l, ctr.next());
 				
 				return {
 					_type: 'H',
@@ -454,7 +454,7 @@ export default class Calculus {
 			$Map = new Map($Map);
 
 			let $lines = self.def$s.map($ => {
-				var lines = Calculus.getProofInternal($.expr, hypnumMap, $Map, ctr);
+				var lines = Calculus.getProofInternal($.expr, hypothesisMap, $Map, ctr);
 				var $num = lines[lines.length - 1].ctr;
 				$Map.set($, $num);
 				return lines;
@@ -463,7 +463,7 @@ export default class Calculus {
 			return [{
 				_type: 'T',
 				leftlines: leftlines as any,
-				rightlines: $lines.concat(Calculus.getProofInternal(self.right, hypnumMap, $Map, ctr)),
+				rightlines: $lines.concat(Calculus.getProofInternal(self.right, hypothesisMap, $Map, ctr)),
 				ctr: [start, ctr.peek()]
 			}];
 		}
@@ -478,7 +478,7 @@ export default class Calculus {
 					}];
 				}
 				
-				return Calculus.getProofInternal(self.expr!, hypnumMap, $Map, ctr, root);
+				return Calculus.getProofInternal(self.expr!, hypothesisMap, $Map, ctr, root);
 			}
 
 			return [{
@@ -496,7 +496,7 @@ export default class Calculus {
 			let $lines: ProofType[] = [];
 			
 			self.def$s.forEach($ => {
-				var lines = Calculus.getProofInternal($.expr, hypnumMap, $Map, ctr);
+				var lines = Calculus.getProofInternal($.expr, hypothesisMap, $Map, ctr);
 				$lines = $lines.concat(lines);
 
 				var $num = lines[lines.length - 1].ctr;
@@ -506,18 +506,18 @@ export default class Calculus {
 			return [{
 				_type: 'V',
 				$lines,
-				lines: Calculus.getProofInternal(self.expr, hypnumMap, $Map, ctr),
+				lines: Calculus.getProofInternal(self.expr, hypothesisMap, $Map, ctr),
 				params: self.params,
 				ctr: [start, ctr.peek()]
 			}];
 		}
 
 		if (self instanceof Funcall) {
-			if (hypnumMap.has(self.fun)) {
+			if (hypothesisMap.has(self.fun)) {
 				return [{
 					_type: 'SE',
 					ctr: ctr.next(),
-					schema: hypnumMap.get(self.fun)!,
+					schema: hypothesisMap.get(self.fun)!,
 					args: self.args,
 					expr: self
 				}];
@@ -551,7 +551,7 @@ export default class Calculus {
 				}];
 			}
 	
-			var schemalines = Calculus.getProofInternal(self.fun, hypnumMap, $Map, ctr);
+			var schemalines = Calculus.getProofInternal(self.fun, hypothesisMap, $Map, ctr);
 	
 			return [
 				...schemalines,
@@ -569,16 +569,16 @@ export default class Calculus {
 			var antecedentLinesList: ProofType[][] = [];
 			var antecedentNums: (number | [number, number])[] = self.antecedents.map((l, i) => {
 				if (!self.antecedentEqualsResults[i].length) {
-					if (hypnumMap.has(l)) return hypnumMap.get(l)!;
+					if (hypothesisMap.has(l)) return hypothesisMap.get(l)!;
 					if ($Map.has(l)) return $Map.get(l)!;
 				}
 
-				var ref = hypnumMap.has(l)
-					? hypnumMap.get(l)
+				var ref = hypothesisMap.has(l)
+					? hypothesisMap.get(l)
 					: $Map.has(l)
 						? $Map.get(l)
 						: null;
-				var lines = ref ? [] : Calculus.getProofInternal(l, hypnumMap, $Map, ctr);
+				var lines = ref ? [] : Calculus.getProofInternal(l, hypothesisMap, $Map, ctr);
 
 				if (self.antecedentEqualsResults[i].length) {
 					lines.push({
@@ -599,8 +599,8 @@ export default class Calculus {
 			var args: Expr[] | null = null;
 			var subjectlines: ProofType[] = [];
 			var subjectnum = (() => {
-				if (hypnumMap.has(self.subject)) {
-					return hypnumMap.get(self.subject)!;
+				if (hypothesisMap.has(self.subject)) {
+					return hypothesisMap.get(self.subject)!;
 				}
 
 				if ($Map.has(self.subject)) {
@@ -619,7 +619,7 @@ export default class Calculus {
 					return self.subject;
 				}
 
-				subjectlines = Calculus.getProofInternal(self.subject, hypnumMap, $Map, ctr);
+				subjectlines = Calculus.getProofInternal(self.subject, hypothesisMap, $Map, ctr);
 
 				return subjectlines[subjectlines.length - 1].ctr;
 			})();
@@ -671,7 +671,7 @@ export default class Calculus {
 			};
 
 			let $lines = self.def$s.map($ => {
-				var lines = Calculus.getProofInternal($.expr, hypnumMap, $Map, ctr);
+				var lines = Calculus.getProofInternal($.expr, hypothesisMap, $Map, ctr);
 				var $num = lines[lines.length - 1].ctr;
 				$Map.set($, $num);
 				return lines;
@@ -680,7 +680,7 @@ export default class Calculus {
 			return [
 				def,
 				...$lines,
-				...Calculus.getProofInternal(self.expr, hypnumMap, $Map, ctr)
+				...Calculus.getProofInternal(self.expr, hypothesisMap, $Map, ctr)
 			];
 		}
 
