@@ -598,19 +598,31 @@ export default class Calculus {
 			
 			var args: Expr[] | null = null;
 			var subjectlines: ProofType[] = [];
-			var subjectnum = hypnumMap.get(self.subject)
-				|| $Map.get(self.subject)
-				|| (
-					self.subject instanceof Funcall && $Map.has(self.subject.fun)
-						? (args = self.subject.args, $Map.get(self.subject.fun))
-						: false
-				)
-				|| (
-					self.subject instanceof Variable
-						|| self.subject instanceof Funcall && isNameable(self.subject.fun) && self.subject.fun.name
-						? self.subject
-						: (subjectlines = Calculus.getProofInternal(self.subject, hypnumMap, $Map, ctr))[subjectlines.length-1].ctr
-				);
+			var subjectnum = (() => {
+				if (hypnumMap.has(self.subject)) {
+					return hypnumMap.get(self.subject)!;
+				}
+
+				if ($Map.has(self.subject)) {
+					return $Map.get(self.subject)!;
+				}
+
+				if (self.subject instanceof Funcall && $Map.has(self.subject.fun)) {
+					args = self.subject.args;
+					return $Map.get(self.subject.fun)!;
+				}
+
+				if (self.subject instanceof Variable
+						|| self.subject instanceof Funcall
+							&& isNameable(self.subject.fun)
+							&& self.subject.fun.name) {
+					return self.subject;
+				}
+
+				subjectlines = Calculus.getProofInternal(self.subject, hypnumMap, $Map, ctr);
+
+				return subjectlines[subjectlines.length - 1].ctr;
+			})();
 
 			var ret: ProofType[] = [
 				...antecedentLinesList.flat(),
