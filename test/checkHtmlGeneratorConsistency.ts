@@ -26,7 +26,7 @@ var program = new Program();
 			code: fs.readFileSync(path.join(__dirname, '../math/' + filename + '.math'), 'utf-8')
 		}));
 
-		var keys = [...program.scope.variableMap].filter(([k, v]) => v.decoration instanceof SchemaDecoration).map(([k, v]) => k);
+		var keys = [...program.scope!.variableMap].filter(([k, v]) => v.decoration instanceof SchemaDecoration).map(([k, v]) => k);
 
 		result[name] = new HtmlGenerator(program, e => e, {render: e => e}).generate(
 			name, keys, false

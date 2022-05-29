@@ -3,7 +3,7 @@ import Expr from "./expr/Expr";
 import Precedence from "./Precedence";
 import Variable from "./expr/Variable";
 import { ProofType } from "./ProofType";
-import Scope from "./Scope";
+import Scope from "./scope/Scope";
 import SchemaDecoration from "./decoration/SchemaDecoration";
 import Parameter from "./expr/Parameter";
 

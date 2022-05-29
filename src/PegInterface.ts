@@ -539,7 +539,7 @@ import Conditional from './expr/Conditional';
 import Variable from './expr/Variable';
 import With from './expr/With';
 import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
-import Scope, { NestedTypeInput } from './Scope';
+import Scope, { NestedTypeInput } from './scope/Scope';
 import Precedence from './Precedence';
 import SimpleAtomicDecoration from './decoration/SimpleAtomicDecoration';
 import SimpleMacroDecoration from './decoration/SimpleMacroDecoration';

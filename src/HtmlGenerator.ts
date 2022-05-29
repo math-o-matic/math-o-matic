@@ -6,7 +6,7 @@ import Fun from "./expr/Fun";
 import Parameter from "./expr/Parameter";
 import Variable from "./expr/Variable";
 import Program from "./Program";
-import Scope from "./Scope";
+import FileScope from "./scope/FileScope";
 import Type from "./type/Type";
 
 export default class HtmlGenerator {
@@ -124,7 +124,7 @@ export default class HtmlGenerator {
 			notProvedList: string[] = [],
 			provedList: string[] = [];
 	
-		var printThisScope = (scope: Scope) => {
+		var printThisScope = (scope: FileScope) => {
 			var map: {[k: string]: string} = {};
 	
 			for (let [k, v] of scope.variableMap) {
@@ -194,7 +194,7 @@ export default class HtmlGenerator {
 	
 		var visitedFiles = [filename];
 	
-		function printImportedScopes(scope: Scope) {
+		function printImportedScopes(scope: FileScope) {
 			var ret = '';
 	
 			for (var [k, s] of scope.importMap) {
@@ -209,6 +209,10 @@ export default class HtmlGenerator {
 		}
 
 		var all = '';
+
+		if (!this.program.scope) {
+			throw Error('wut');
+		}
 		
 		if (includeImports) {
 			all += printImportedScopes(this.program.scope);

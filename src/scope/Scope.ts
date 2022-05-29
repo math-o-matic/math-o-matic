@@ -1,11 +1,11 @@
-import $Variable from './expr/$Variable';
-import Expr from './expr/Expr';
-import Variable from './expr/Variable';
-import { LocationObject } from './PegInterfaceDefinitions';
-import StackTrace from './StackTrace';
-import { FunctionalType } from './type/FunctionalType';
-import { SimpleType } from './type/SimpleType';
-import Type from './type/Type';
+import $Variable from '../expr/$Variable';
+import Expr from '../expr/Expr';
+import Variable from '../expr/Variable';
+import { LocationObject } from '../PegInterfaceDefinitions';
+import StackTrace from '../StackTrace';
+import { FunctionalType } from '../type/FunctionalType';
+import { SimpleType } from '../type/SimpleType';
+import Type from '../type/Type';
 
 /*
  * 'st'                     -> st
@@ -20,8 +20,7 @@ export type NestedTypeInput = string | NestedTypeInput[];
  * 구문 분석 과정에서 name resolution을 할 때에만 사용해야 한다.
  */
 export default class Scope {
-	public readonly importMap: Map<string, Scope> = new Map();
-
+	
 	public readonly typeMap: Map<string, SimpleType> = new Map();
 	public readonly variableMap: Map<string, Variable> = new Map();
 	public readonly $Map: Map<string, $Variable> = new Map();
@@ -31,24 +30,18 @@ export default class Scope {
 
 	public readonly trace: StackTrace;
 
-	/**
-	 * 파일 경로. 예를 들어 `/propositional.math`이다. 파일과 일대일대응이어야 한다.
-	 */
-	public readonly fileUri: string | null;
-
-	constructor (fileUri: string | null, parent: Scope | null, trace?: StackTrace) {
-		this.fileUri = fileUri;
+	constructor (parent: Scope | null, trace: StackTrace) {
 		this.parent = parent;
 
-		if (trace && !(trace instanceof StackTrace)) {
+		if (!(trace instanceof StackTrace)) {
 			throw Error('Assertion failed');
 		}
 
-		this.trace = trace || new StackTrace(fileUri);
+		this.trace = trace;
 	}
 
 	public extend(type: string, name: string | null, location: LocationObject): Scope {
-		var child = new Scope(this.fileUri, this, this.trace.extend({type, name, location}));
+		var child = new Scope(this, this.trace.extend({type, name, location}));
 		this.hypotheses.forEach(h => child.hypotheses.push(h));
 		return child;
 	}
@@ -57,10 +50,13 @@ export default class Scope {
 		return this.trace.error(message);
 	}
 
+	public hasOwnSimpleType(name: string): boolean {
+		return this.typeMap.has(name);
+	}
+
 	public hasOwnType(name: NestedTypeInput): boolean {
 		if (typeof name == 'string') {
-			return this.typeMap.has(name)
-				|| [...this.importMap.values()].some(s => s.hasOwnType(name));
+			return this.hasOwnSimpleType(name);
 		}
 
 		if (!(name instanceof Array))
@@ -105,34 +101,25 @@ export default class Scope {
 		return type;
 	}
 
-	/*
-	 * Possible input values:
-	 * 'st'						-> st
-	 * ['cls', 'st']			-> [cls -> st]
-	 * ['cls', 'cls', 'st']		-> [(cls, cls) -> st]
-	 * [['cls', 'st'], 'st']	-> [[cls -> st] -> st]
-	 */
+	public getSimpleType(name: string): SimpleType {
+		if (!this.hasType(name)) {
+			throw this.error(`Type ${name} is not defined`);
+		}
+		
+		if (this.typeMap.has(name)) {
+			return this.typeMap.get(name)!;
+		}
+
+		if (this.parent?.hasType(name)) {
+			return this.parent.getSimpleType(name);
+		}
+
+		throw this.error('wut');
+	}
+
 	public getType(name: NestedTypeInput): Type {
 		if (typeof name == 'string') {
-			if (!this.hasType(name)) {
-				throw this.error(`Type ${name} is not defined`);
-			}
-			
-			if (this.typeMap.has(name)) {
-				return this.typeMap.get(name)!;
-			}
-
-			if (this.parent?.hasType(name)) {
-				return this.parent.getType(name);
-			}
-
-			for (var scope of this.importMap.values()) {
-				if (scope.hasType(name)) {
-					return scope.getType(name);
-				}
-			}
-
-			throw this.error('wut');
+			return this.getSimpleType(name);
 		}
 
 		if (!(name instanceof Array))
@@ -154,8 +141,7 @@ export default class Scope {
 	}
 
 	public hasOwnVariable(name: string): boolean {
-		return this.variableMap.has(name)
-			|| [...this.importMap.values()].some(s => s.hasOwnVariable(name));
+		return this.variableMap.has(name);
 	}
 
 	public hasVariable(name: string): boolean {
@@ -186,18 +172,11 @@ export default class Scope {
 			return this.parent.getVariable(name);
 		}
 
-		for (var scope of this.importMap.values()) {
-			if (scope.hasVariable(name)) {
-				return scope.getVariable(name);
-			}
-		}
-
 		throw this.error('wut');
 	}
 
 	public hasOwn$(name: string): boolean {
-		return this.$Map.has(name)
-			|| [...this.importMap.values()].some(s => s.hasOwn$(name));
+		return this.$Map.has(name);
 	}
 
 	public has$(name: string): boolean {
@@ -226,12 +205,6 @@ export default class Scope {
 
 		if (this.parent?.has$(name)) {
 			return this.parent.get$(name);
-		}
-
-		for (var scope of this.importMap.values()) {
-			if (scope.has$(name)) {
-				return scope.get$(name);
-			}
 		}
 
 		throw this.error('wut');

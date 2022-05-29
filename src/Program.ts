@@ -30,8 +30,8 @@ export type EvalParserType = {
 
 export default class Program {
 	
-	public scope: Scope = new Scope(null, null);
-	public readonly scopeMap: Map<string, Scope> = new Map();
+	public scope: FileScope | null = null;
+	public readonly scopeMap: Map<string, FileScope> = new Map();
 	
 	public static parser: ParserType = parser;
 	public static evalParser: EvalParserType = evalParser;
@@ -45,17 +45,21 @@ export default class Program {
 	 * 
 	 * See https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search.
 	 */
-	private loadingModules: string[] = [];
+	private loadingModules: string[] | null = null;
 
-	public async loadModule(filename: string, loader: LoaderType): Promise<Scope> {
+	public async loadModule(filename: string, loader: LoaderType): Promise<FileScope> {
 		this.loadingModules = [];
 		return this.scope = await this.loadModuleInternal(filename, loader);
 	}
 
-	private async loadModuleInternal(filename: string, loader: LoaderType): Promise<Scope> {
+	private async loadModuleInternal(filename: string, loader: LoaderType): Promise<FileScope> {
 		// the file has a permanent mark
 		if (this.scopeMap.has(filename)) {
 			return this.scopeMap.get(filename)!;
+		}
+
+		if (!this.loadingModules) {
+			throw Error('wut');
 		}
 
 		var loadingModuleIndex = this.loadingModules.indexOf(filename);
@@ -76,7 +80,7 @@ export default class Program {
 
 		var {fileUri, code} = await loader(filename);
 
-		var scope = new Scope(fileUri || null, null);
+		var scope = new FileScope(null, fileUri || null);
 
 		await this.feed(code, scope, loader);
 
@@ -90,7 +94,11 @@ export default class Program {
 		return scope;
 	}
 
-	public async feed(code: string, scope: Scope=this.scope, loader: LoaderType) {
+	public async feed(code: string, scope: FileScope | null=this.scope, loader: LoaderType) {
+		if (!scope) {
+			throw Error('wut');
+		}
+
 		var lines = parser.parse(code);
 
 		for (var i = 0; i < lines.length; i++) {
@@ -154,7 +162,7 @@ export default class Program {
 	public evaluate(code: string) {
 		var line = evalParser.parse(code);
 
-		var scope = new Scope('<repl>', this.scope);
+		var scope = new FileScope(this.scope, '<repl>');
 
 		switch (line._type) {
 			case 'typedef':
@@ -180,6 +188,8 @@ export default class Program {
 	}
 
 	public getProofExplorer(name: string, ktx: (s: string) => string, yamd: {render: (s: string) => string}) {
+		if (!this.scope) throw Error('wut');
+
 		return ProofExplorer.get(this.scope, name, ktx, yamd);
 	}
 }
@@ -188,5 +198,5 @@ import Fun from './expr/Fun';
 import PegInterface from './PegInterface';
 import { EvaluableObject, ImportOrLineObject } from './PegInterfaceDefinitions';
 import ProofExplorer from './ProofExplorer';
-import Scope from './Scope';
+import FileScope from './scope/FileScope';
 import { SimpleType } from './type/SimpleType';
