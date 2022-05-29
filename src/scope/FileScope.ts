@@ -16,8 +16,8 @@ export default class FileScope extends Scope {
 	 */
 	public readonly fileUri: string | null;
 
-	constructor (parent: FileScope | null, fileUri: string | null) {
-		super(parent, new StackTrace(fileUri));
+	constructor (fileUri: string | null) {
+		super(null, new StackTrace(fileUri));
 
 		this.fileUri = fileUri;
 	}

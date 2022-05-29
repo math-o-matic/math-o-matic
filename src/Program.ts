@@ -80,7 +80,7 @@ export default class Program {
 
 		var {fileUri, code} = await loader(filename);
 
-		var scope = new FileScope(null, fileUri || null);
+		var scope = new FileScope(fileUri || null);
 
 		await this.feed(code, scope, loader);
 
@@ -162,7 +162,7 @@ export default class Program {
 	public evaluate(code: string) {
 		var line = evalParser.parse(code);
 
-		var scope = new FileScope(this.scope, '<repl>');
+		var scope = new Scope(this.scope, new StackTrace('<repl>'));
 
 		switch (line._type) {
 			case 'typedef':
@@ -199,4 +199,6 @@ import PegInterface from './PegInterface';
 import { EvaluableObject, ImportOrLineObject } from './PegInterfaceDefinitions';
 import ProofExplorer from './ProofExplorer';
 import FileScope from './scope/FileScope';
+import Scope from './scope/Scope';
+import StackTrace from './StackTrace';
 import { SimpleType } from './type/SimpleType';
