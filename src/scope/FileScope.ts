@@ -9,7 +9,7 @@ import Scope from "./Scope";
  */
 export default class FileScope extends Scope {
 
-	public readonly importMap: Map<string, FileScope> = new Map();
+	public readonly importMap = new Map<string, FileScope>();
 
 	/**
 	 * 파일 경로. 예를 들어 `/propositional.math`이다. 파일과 일대일대응이어야 한다.

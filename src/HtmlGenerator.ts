@@ -114,7 +114,7 @@ export default class HtmlGenerator {
 	}
 	
 	public generate(filename: string, expansionList: string[], includeImports: boolean) {
-		var precedenceMap: Map<string, string[]> = new Map();
+		var precedenceMap = new Map<string, string[]>();
 	
 		var primitiveTypeList: string[] = [],
 			macroTypeList: string[] = [],

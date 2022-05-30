@@ -21,9 +21,9 @@ export type NestedTypeInput = string | NestedTypeInput[];
  */
 export default class Scope {
 	
-	public readonly typeMap: Map<string, SimpleType> = new Map();
-	public readonly variableMap: Map<string, Variable> = new Map();
-	public readonly $Map: Map<string, $Variable> = new Map();
+	public readonly typeMap = new Map<string, SimpleType>();
+	public readonly variableMap = new Map<string, Variable>();
+	public readonly $Map = new Map<string, $Variable>();
 	public readonly hypotheses: Expr[] = [];
 
 	public readonly parent: Scope | null;

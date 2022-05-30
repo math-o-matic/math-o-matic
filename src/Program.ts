@@ -31,7 +31,7 @@ export type EvalParserType = {
 export default class Program {
 	
 	public scope: FileScope | null = null;
-	public readonly scopeMap: Map<string, FileScope> = new Map();
+	public readonly scopeMap = new Map<string, FileScope>();
 	
 	public static parser: ParserType = parser;
 	public static evalParser: EvalParserType = evalParser;

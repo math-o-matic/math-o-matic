@@ -92,7 +92,7 @@ export default class Calculus {
 		throw Error('Unknown expression type');
 	}
 
-	private static expandCache: Map<Expr, Expr> = new Map();
+	private static expandCache = new Map<Expr, Expr>();
 
 	public static expand(self: Expr): Expr {
 		if (Calculus.expandCache.has(self)) return Calculus.expandCache.get(self)!;
