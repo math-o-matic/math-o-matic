@@ -188,7 +188,11 @@ export default class HtmlGenerator {
 				}
 			}
 	
-			return `<h3 class="label">${scope.name} (${Object.keys(map).length})</h3><div class="block-file">`
+			return `<h3 class="label">system ${scope.name}${
+				scope.extendsMap.size
+				? ' extends ' + [...scope.extendsMap.keys()].join(', ')
+				: ''
+			} (${Object.keys(map).length})</h3><div class="block-file">`
 				+ Object.keys(map).sort((l, r) => Number(l) - Number(r)).map(k => map[k]).join('')
 				+ '</div>';
 		};
@@ -215,13 +219,11 @@ export default class HtmlGenerator {
 			throw Error('wut');
 		}
 		
-		for (var sysScope of this.program.scope.systemMap.values()) {
-			if (includeImports) {
-				all += printImportedScopes(sysScope);
-			}
-			
-			all += printThisScope(sysScope);
+		if (includeImports) {
+			all += printImportedScopes(this.program.scope);
 		}
+		
+		all += printThisScope(this.program.scope);
 		
 	
 		var precedenceTable = [...precedenceMap].sort((a, b) => Number(a[0]) - Number(b[0]));

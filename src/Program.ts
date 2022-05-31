@@ -30,7 +30,7 @@ export type EvalParserType = {
 
 export default class Program {
 	
-	public scope: FileScope | null = null;
+	public scope: SystemScope | null = null;
 	public readonly scopeMap = new Map<string, FileScope>();
 	
 	public static parser: ParserType = parser;
@@ -47,9 +47,10 @@ export default class Program {
 	 */
 	private loadingModules: string[] | null = null;
 
-	public async loadModule(filename: string, loader: LoaderType): Promise<FileScope> {
+	public async loadModule(filename: string, loader: LoaderType): Promise<SystemScope> {
 		this.loadingModules = [];
-		return this.scope = await this.loadModuleInternal(filename, loader);
+		var fileScope = await this.loadModuleInternal(filename, loader);
+		return this.scope = [...fileScope.systemMap.values()][0];
 	}
 
 	private async loadModuleInternal(filename: string, loader: LoaderType): Promise<FileScope> {
@@ -94,11 +95,7 @@ export default class Program {
 		return scope;
 	}
 
-	public async feed(code: string, scope: FileScope | null=this.scope, loader: LoaderType) {
-		if (!scope) {
-			throw Error('wut');
-		}
-
+	public async feed(code: string, scope: FileScope, loader: LoaderType) {
 		var lines = parser.parse(code);
 
 		for (var i = 0; i < lines.length; i++) {
@@ -123,57 +120,7 @@ export default class Program {
 						sysScope.extendsMap.set(extend.name, extend);
 					}
 
-					for (var line2 of line.lines) {
-						switch (line2._type) {
-							case 'typedef':
-								var type = PegInterface.type(line2, sysScope) as SimpleType;
-
-								if (sysScope.hasType(type.name)) {
-									throw sysScope.error(`Type ${type.name} has already been declared`);
-								}
-
-								sysScope.addType(type);
-								break;
-							case 'defv':
-								var variable = PegInterface.variable(line2, sysScope);
-
-								if (sysScope.hasVariable(variable.name)) {
-									throw sysScope.error(`Definition ${variable.name} has already been declared`);
-								}
-
-								sysScope.addVariable(variable);
-								break;
-							case 'defun':
-								var fun = PegInterface.fun(line2, sysScope);
-
-								if (fun instanceof Fun) {
-									throw Error('wut');
-								}
-
-								if (sysScope.hasVariable(fun.name)) {
-									throw sysScope.error(`Definition ${fun.name} has already been declared`);
-								}
-
-								sysScope.addVariable(fun);
-								break;
-							case 'defschema':
-								var schema = PegInterface.schema(line2, sysScope, null);
-
-								if (schema instanceof Fun) {
-									throw Error('wut');
-								}
-
-								if (sysScope.hasVariable(schema.name)) {
-									throw sysScope.error(`Schema ${schema.name} has already been declared`);
-								}
-
-								sysScope.addVariable(schema);
-								break;
-							default:
-								throw Error(`Unknown line type ${(line2 as any)._type}`);
-						}
-					}
-
+					Program.feed2(line.lines, sysScope);
 					scope.addSystem(sysScope);
 					break;
 				default:
@@ -182,12 +129,65 @@ export default class Program {
 		};
 	}
 
+	public static feed2(lines: LineObject[], scope: SystemScope) {
+		for (var line of lines) {
+			switch (line._type) {
+				case 'typedef':
+					var type = PegInterface.type(line, scope) as SimpleType;
+
+					if (scope.hasType(type.name)) {
+						throw scope.error(`Type ${type.name} has already been declared`);
+					}
+
+					scope.addType(type);
+					break;
+				case 'defv':
+					var variable = PegInterface.variable(line, scope);
+
+					if (scope.hasVariable(variable.name)) {
+						throw scope.error(`Definition ${variable.name} has already been declared`);
+					}
+
+					scope.addVariable(variable);
+					break;
+				case 'defun':
+					var fun = PegInterface.fun(line, scope);
+
+					if (fun instanceof Fun) {
+						throw Error('wut');
+					}
+
+					if (scope.hasVariable(fun.name)) {
+						throw scope.error(`Definition ${fun.name} has already been declared`);
+					}
+
+					scope.addVariable(fun);
+					break;
+				case 'defschema':
+					var schema = PegInterface.schema(line, scope, null);
+
+					if (schema instanceof Fun) {
+						throw Error('wut');
+					}
+
+					if (scope.hasVariable(schema.name)) {
+						throw scope.error(`Schema ${schema.name} has already been declared`);
+					}
+
+					scope.addVariable(schema);
+					break;
+				default:
+					throw Error(`Unknown line type ${(line as any)._type}`);
+			}
+		}
+	}
+
 	public evaluate(code: string) {
 		if (!this.scope) throw Error('wut');
 		
 		var line = evalParser.parse(code);
 
-		var scope = new Scope([...this.scope.systemMap.values()][0], new StackTrace('<repl>'));
+		var scope = new Scope(this.scope, new StackTrace('<repl>'));
 
 		switch (line._type) {
 			case 'typedef':
@@ -215,13 +215,13 @@ export default class Program {
 	public getProofExplorer(name: string, ktx: (s: string) => string, yamd: {render: (s: string) => string}) {
 		if (!this.scope) throw Error('wut');
 
-		return ProofExplorer.get([...this.scope.systemMap.values()][0], name, ktx, yamd);
+		return ProofExplorer.get(this.scope, name, ktx, yamd);
 	}
 }
 
 import Fun from './expr/Fun';
 import PegInterface from './PegInterface';
-import { EvaluableObject, ImportOrDefsystemObject } from './PegInterfaceDefinitions';
+import { EvaluableObject, ImportOrDefsystemObject, LineObject } from './PegInterfaceDefinitions';
 import ProofExplorer from './ProofExplorer';
 import FileScope from './scope/FileScope';
 import Scope from './scope/Scope';
