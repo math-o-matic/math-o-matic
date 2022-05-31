@@ -7,6 +7,7 @@ import Parameter from "./expr/Parameter";
 import Variable from "./expr/Variable";
 import Program from "./Program";
 import FileScope from "./scope/FileScope";
+import SystemScope from "./scope/SystemScope";
 import Type from "./type/Type";
 
 export default class HtmlGenerator {
@@ -124,7 +125,7 @@ export default class HtmlGenerator {
 			notProvedList: string[] = [],
 			provedList: string[] = [];
 	
-		var printThisScope = (scope: FileScope) => {
+		var printThisScope = (scope: SystemScope) => {
 			var map: {[k: string]: string} = {};
 	
 			for (let [k, v] of scope.variableMap) {
@@ -187,17 +188,17 @@ export default class HtmlGenerator {
 				}
 			}
 	
-			return `<h3 class="label">${scope.fileUri} (${Object.keys(map).length})</h3><div class="block-file">`
+			return `<h3 class="label">${scope.name} (${Object.keys(map).length})</h3><div class="block-file">`
 				+ Object.keys(map).sort((l, r) => Number(l) - Number(r)).map(k => map[k]).join('')
 				+ '</div>';
 		};
 	
 		var visitedFiles = [filename];
 	
-		function printImportedScopes(scope: FileScope) {
+		function printImportedScopes(scope: SystemScope) {
 			var ret = '';
 	
-			for (var [k, s] of scope.importMap) {
+			for (var [k, s] of scope.extendsMap) {
 				if (visitedFiles.includes(k)) continue;
 				visitedFiles.push(k);
 	
@@ -214,11 +215,14 @@ export default class HtmlGenerator {
 			throw Error('wut');
 		}
 		
-		if (includeImports) {
-			all += printImportedScopes(this.program.scope);
+		for (var sysScope of this.program.scope.systemMap.values()) {
+			if (includeImports) {
+				all += printImportedScopes(sysScope);
+			}
+			
+			all += printThisScope(sysScope);
 		}
 		
-		all += printThisScope(this.program.scope);
 	
 		var precedenceTable = [...precedenceMap].sort((a, b) => Number(a[0]) - Number(b[0]));
 	

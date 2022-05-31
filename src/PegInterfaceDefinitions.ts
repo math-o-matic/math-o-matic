@@ -1,6 +1,6 @@
 import { SchemaType } from "./decoration/SchemaDecoration";
 
-export type ImportOrLineObject = ImportObject | LineObject;
+export type ImportOrDefsystemObject = ImportObject | DefsystemObject;
 
 export type LineObject = TypedefObject
 		| DefvObject
@@ -16,6 +16,14 @@ export type EvaluableObject = TypedefObject
 export interface ImportObject {
 	_type: 'import';
 	filename: string;
+	location: LocationObject;
+}
+
+export interface DefsystemObject {
+	_type: 'defsystem';
+	name: string;
+	extends_: string[];
+	lines: LineObject[];
 	location: LocationObject;
 }
 

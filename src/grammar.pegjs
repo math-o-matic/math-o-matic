@@ -1,8 +1,33 @@
 start =
 	_
 	imports:(i:import _ {return i})*
-	lines:(a:line _ {return a})*
-	{return imports.concat(lines)}
+	systems:(a:system _ {return a})*
+	{return imports.concat(systems)}
+
+system =
+	'system' __
+	name:ident __
+	extends_:(
+		'extends' __
+		a:(
+			head:ident
+			tail:(_ "," _ e:ident {return e})*
+			{return [head].concat(tail)}
+		) _
+		{return a}
+	)?
+	'{' _
+	lines:(a:line _ {return a})* _
+	'}'
+	{
+		return {
+			_type: 'defsystem',
+			name,
+			extends_: extends_ || [],
+			lines,
+			location: location()
+		}
+	}
 
 line =
 	typedef
@@ -115,10 +140,10 @@ defun =
 	params:(
 		"(" _
 		p:(
-			head:defparam _
-			tail:("," _ tv:defparam _ {return tv})*
+			head:defparam
+			tail:(_ "," _ tv:defparam {return tv})*
 			{return [head].concat(tail)}
-		)?
+		)? _
 		")" _
 		{return p || []}
 	)
@@ -153,20 +178,20 @@ defschema =
 	params:(
 		"(" _
 		p:(
-			head:defschemaparam _
-			tail:("," _ tv:defschemaparam _ {return tv})*
+			head:defschemaparam
+			tail:(_ "," _ tv:defschemaparam {return tv})*
 			{return [head].concat(tail)}
-		)?
+		)? _
 		")" _
 		{return p || []}
 	)
 	using:(
 		'using' __
 		x:(
-			head:ident _
-			tail:(',' _ n:ident _ {return n})*
+			head:ident
+			tail:(_ ',' _ n:ident {return n})*
 			{return [head].concat(tail)}
-		)
+		) _
 		{return x}
 	)?
 	"{" _
@@ -197,8 +222,9 @@ reduction =
 		a:expr_internal_2 {return [a]}
 		/ "[" _
 		b:(
-			head:expr _
-			tail:(";" _ e:expr _ {return e})*
+			head:expr
+			tail:(_ ";" _ e:expr {return e})*
+			_
 			{return [head].concat(tail)}
 		)?
 		"]"
@@ -217,8 +243,9 @@ reduction =
 		args:(
 			_ "(" _
 			a:(
-				head:('?' {return null} / objectexpr) _
-				tail:("," _ e:('?' {return null} / objectexpr) _ {return e})*
+				head:('?' {return null} / objectexpr)
+				tail:(_ "," _ e:('?' {return null} / objectexpr) {return e})*
+				_
 				{return [head].concat(tail)}
 			)?
 			")"
@@ -266,8 +293,9 @@ schemacall =
 	args:(
 		"(" _
 		a:(
-			head:objectexpr _
-			tail:("," _ e:objectexpr _ {return e})*
+			head:objectexpr
+			tail:(_ "," _ e:objectexpr {return e})*
+			_
 			{return [head].concat(tail)}
 		)?
 		")"
@@ -295,8 +323,9 @@ funcall =
 	args:(
 		"(" _
 		a:(
-			head:objectexpr _
-			tail:("," _ e:objectexpr _ {return e})*
+			head:objectexpr
+			tail:(_ "," _ e:objectexpr {return e})*
+			_
 			{return [head].concat(tail)}
 		)?
 		")"
@@ -317,8 +346,9 @@ funexpr =
 	params:(
 		"(" _
 		p:(
-			head:defparam _
-			tail:("," _ tv:defparam _ {return tv})*
+			head:defparam
+			tail:(_ "," _ tv:defparam {return tv})*
+			_
 			{return [head].concat(tail)}
 		)?
 		")" _
@@ -344,8 +374,9 @@ schemaexpr =
 	params:(
 		"(" _
 		p:(
-			head:defparam _
-			tail:("," _ tv:defparam _ {return tv})*
+			head:defparam
+			tail:(_ "," _ tv:defparam {return tv})*
+			_
 			{return [head].concat(tail)}
 		)?
 		")" _
@@ -374,10 +405,12 @@ schemaexpr =
 conditional =
 	left:(
 		l:(
-			head:expr_internal_1 _
-			tail:("," _ e:expr_internal_1 _ {return e})*
+			head:expr_internal_1
+			tail:(_ "," _ e:expr_internal_1 {return e})*
+			_
 			{return [head].concat(tail)}
-		)? {return l || []}
+		)?
+		{return l || []}
 	)
 	"|-" _
 	foo:(
@@ -551,9 +584,11 @@ plain_var =
 keyword =
 	'as'
 	/ 'axiom'
+	/ 'extends'
 	/ 'import'
 	/ 'schema'
 	/ 'sealed'
+	/ 'system'
 	/ 'theorem'
 	/ 'type'
 	/ 'using'

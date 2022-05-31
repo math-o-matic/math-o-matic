@@ -192,7 +192,7 @@
 					}
 
 					function addImportedScopes(scope) {
-						for (var [k, s] of scope.importMap) {
+						for (var [k, s] of scope.extendsMap) {
 							if (visitedFiles.includes(k)) continue;
 							visitedFiles.push(k);
 
@@ -201,8 +201,11 @@
 						}
 					}
 
-					addImportedScopes(this.program.scope);
-					addThisScope(this.program.scope);
+					for (var sysScope of this.program.scope.systemMap.values()) {
+						addImportedScopes(sysScope);
+						addThisScope(sysScope);
+					}
+					
 
 					this.searchDatabase = searchDatabase;
 				},

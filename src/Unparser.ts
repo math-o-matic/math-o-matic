@@ -1,6 +1,6 @@
-import { Def$Object, DefvObject, ObjectExprObject, ImportOrLineObject, ExprObject, StypeObject, TypeObject } from "./PegInterfaceDefinitions";
+import { Def$Object, DefvObject, ObjectExprObject, ImportOrDefsystemObject, ExprObject, StypeObject, TypeObject, LineObject } from "./PegInterfaceDefinitions";
 
-export default function unparse(tree: ImportOrLineObject[]) {
+export default function unparse(tree: ImportOrDefsystemObject[]) {
 	var strings = tree.map(line => recurse(line, Context.NORMAL, 0));
 
 	var ret = '';
@@ -26,16 +26,15 @@ function isOneLiner(s: string) {
 }
 
 function recurse(
-		line: ImportOrLineObject | Def$Object | ExprObject | ObjectExprObject | TypeObject,
+		line: ImportOrDefsystemObject | LineObject | Def$Object | ExprObject | ObjectExprObject | TypeObject,
 		context: Context,
 		indent: number): string {
 	return recurseInternal(line, context)
-		.replace(/\n/g, '\n' + '\t'.repeat(indent))
 		.replace(/(?<=\n)\s+(?=\n)/g, '');
 }
 
 function recurseInternal(
-		line: ImportOrLineObject | Def$Object | ExprObject | ObjectExprObject | TypeObject,
+		line: ImportOrDefsystemObject | LineObject | Def$Object | ExprObject | ObjectExprObject | TypeObject,
 		context: Context): string {
 	
 	function defv(line: DefvObject, param: boolean) {
@@ -64,6 +63,20 @@ function recurseInternal(
 	}
 
 	switch (line._type) {
+		case 'defsystem':
+			/* export interface DefsystemObject {
+				_type: 'defsystem';
+				name: string;
+				extends_: string[];
+				lines: LineObject[];
+				location: LocationObject;
+			} */
+			return `system ${line.name}${
+	line.extends_.length ? ` extends ${line.extends_.join(', ')}` : ''
+} {
+	${line.lines.map(line => recurse(line, Context.NORMAL, 1)).join('\n\n\t')}
+}`
+			break;
 		case 'defschema':
 			/* export interface DefschemaObject {
 				_type: 'defschema';

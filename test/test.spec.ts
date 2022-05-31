@@ -27,7 +27,7 @@ describe('Unparser', function () {
 			var parsed = Program.parser.parse(o);
 			var parsed_unparsed_parsed = Program.parser.parse(unparse(parsed));
 			
-			expect(removeLocationAndStringify(parsed) == removeLocationAndStringify(parsed_unparsed_parsed)).to.be.true;
+			expect(removeLocationAndStringify(parsed_unparsed_parsed)).to.equal(removeLocationAndStringify(parsed));
 		});
 	});
 });
@@ -55,11 +55,13 @@ describe('Issue #52', function () {
 
 		await program.loadModule('duh', (_filename: string) => ({
 			code: `
-type cls;
+system s {
+	type cls;
 
-[cls -> [cls -> cls]] f;
-cls x;
-cls y;
+	[cls -> [cls -> cls]] f;
+	cls x;
+	cls y;
+}
 `
 		}));
 		var foo = program.evaluate('(f(x))(y)') as Expr,
@@ -75,14 +77,16 @@ describe('Sealed macro & using', function () {
 		
 		await program.loadModule('duh', (_filename: string) => ({
 			code: `
-type st;
+system s {
+	type st;
 
-st p;
+	st p;
 
-st N(st p);
+	st N(st p);
 
-sealed st N2(st p) {
-	N(p)
+	sealed st N2(st p) {
+		N(p)
+	}
 }
 `
 		}));
@@ -93,27 +97,29 @@ sealed st N2(st p) {
 	});
 
 	for (let i = 0; i < 2; i++) {
-		it(`Issue #53.${i + 1}`, async function () {
+		it(`Issue #53 (${i + 1})`, async function () {
 			var program = new Program();
 			
 			await expect(program.loadModule('duh', (_filename: string) => ({
 				code: `
-type st;
-st p;
-st N(st p);
+system s {
+	type st;
+	st p;
+	st N(st p);
 
-sealed st N2(st p) {
-	N(p)
-}
+	sealed st N2(st p) {
+		N(p)
+	}
 
-schema foo(st p) using N2 {
-	N2(p) |- p
-}
+	schema foo(st p) using N2 {
+		N2(p) |- p
+	}
 
-schema bar(st p) ${i == 0 ? '' : 'using N2'} {
-	N(p) |- {
-        @h1 > foo(p)
-    }
+	schema bar(st p) ${i == 0 ? '' : 'using N2'} {
+		N(p) |- {
+			@h1 > foo(p)
+		}
+	}
 }
 `
 			}))).to.be[i == 0 ? 'rejected' : 'fulfilled'];

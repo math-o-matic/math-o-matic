@@ -1,819 +1,816 @@
-import propositional;
-import predicate;
-import set;
-import relation;
-import function;
 import natural;
 
-"정수 집합의 정의를 위해 사용되는 이항관계."
-${\sim}_{\omega\times\omega}$
-cls rel_omega_pair = setbuilder_pair((cls x, cls y) => {
-	Xin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => A(A(eq(x, pair(a, b)), eq(y, pair(ap, bp))), eq(omega_add(a, bp), omega_add(ap, b))))
-});
+system integer extends natural {
+	"정수 집합의 정의를 위해 사용되는 이항관계."
+	${\sim}_{\omega\times\omega}$
+	cls rel_omega_pair = setbuilder_pair((cls x, cls y) => {
+		Xin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => A(A(eq(x, pair(a, b)), eq(y, pair(ap, bp))), eq(omega_add(a, bp), omega_add(ap, b))))
+	});
 
-"정수 집합. 독일어 [*Zahlen]의 Z이다. 자연수 순서쌍의 동치류의 집합으로 정의된다. 이때 자연수 순서쌍의 동치류 [$`[(a, b)]`]가 정수 [$a - b]를 의미한다. 예를 들어 [$`[(3, 5)] = [(5, 7)] = -2`]이다.
+	"정수 집합. 독일어 [*Zahlen]의 Z이다. 자연수 순서쌍의 동치류의 집합으로 정의된다. 이때 자연수 순서쌍의 동치류 [$`[(a, b)]`]가 정수 [$a - b]를 의미한다. 예를 들어 [$`[(3, 5)] = [(5, 7)] = -2`]이다.
 
-@see [~https://en.wikipedia.org/wiki/Integer#Construction]"
-$\Z$
-cls int = quotient_set(cartesian(omega, omega), rel_omega_pair);
+	@see [~https://en.wikipedia.org/wiki/Integer#Construction]"
+	$\Z$
+	cls int = quotient_set(cartesian(omega, omega), rel_omega_pair);
 
-theorem int_is_set() {
-	$om = omega_is_set();
-	$cart = [$om; $om] > cartesian_is_set;
-	$cart > quotient_set_is_set as is_set(int)
-}
-
-"자연수 [$m]에서 자연수 [$n]을 뺀 것을 정수로 나타낸 것."
-$\left(#1<<-_{\omega\to\Z}>>#2\right)$
-cls omega_sub_as_int(cls m, cls n) {
-	equiv_cls(pair(m, n), cartesian(omega, omega), rel_omega_pair)
-}
-
-theorem omega_sub_as_int_in_int(cls m: @11, cls n: @21) {
-	in(m, omega), in(n, omega) |- {
-		$set_om = omega_is_set();
-		[
-			[$set_om; $set_om] > cartesian_is_set;
-			[@h1; @h2] > cartesian_in_i
-		] > quotient_set_in_i as in(omega_sub_as_int(m, n), int)
+	theorem int_is_set() {
+		$om = omega_is_set();
+		$cart = [$om; $om] > cartesian_is_set;
+		$cart > quotient_set_is_set as is_set(int)
 	}
-}
 
-theorem omega_sub_as_int_eq_i_left(cls m: @r11, cls n: @11, $n'$ cls np: @12) {
-	eq(n, np) |- {
-		@h1 > call_eq_i((cls n) => omega_sub_as_int(m, n), ?, ?)
+	"자연수 [$m]에서 자연수 [$n]을 뺀 것을 정수로 나타낸 것."
+	$\left(#1<<-_{\omega\to\Z}>>#2\right)$
+	cls omega_sub_as_int(cls m, cls n) {
+		equiv_cls(pair(m, n), cartesian(omega, omega), rel_omega_pair)
 	}
-}
 
-theorem omega_sub_as_int_eq_i_right(cls m: @11, $m'$ cls mp: @12, cls n: @r12) {
-	eq(m, mp) |- {
-		@h1 > call_eq_i((cls m) => omega_sub_as_int(m ,n), ?, ?)
+	theorem omega_sub_as_int_in_int(cls m: @11, cls n: @21) {
+		in(m, omega), in(n, omega) |- {
+			$set_om = omega_is_set();
+			[
+				[$set_om; $set_om] > cartesian_is_set;
+				[@h1; @h2] > cartesian_in_i
+			] > quotient_set_in_i as in(omega_sub_as_int(m, n), int)
+		}
 	}
-}
 
-theorem omega_sub_as_int_eq_i(cls m: @11, cls n: @21, $m'$ cls mp: @12, $n'$ cls np: @22) {
-	eq(m, mp), eq(n, np) |- {
-		[
-			@h1 > omega_sub_as_int_eq_i_right(m, mp, n);
-			@h2 > omega_sub_as_int_eq_i_left(mp, n, np)
-		] > eq_transitive
+	theorem omega_sub_as_int_eq_i_left(cls m: @r11, cls n: @11, $n'$ cls np: @12) {
+		eq(n, np) |- {
+			@h1 > call_eq_i((cls n) => omega_sub_as_int(m, n), ?, ?)
+		}
 	}
-}
 
-"[#omega]에서 [#int]로의 canonical embedding."
-$\left(#1\right)_{<<\omega\to\Z>>}$
-cls ntoz(cls n) {
-	omega_sub_as_int(n, omega_zero)
-}
-
-theorem ntoz_in_int(cls n: @11) {
-	in(n, omega) |- {
-		[@h1; zero_in_omega()] > omega_sub_as_int_in_int as in(ntoz(n), int)
+	theorem omega_sub_as_int_eq_i_right(cls m: @11, $m'$ cls mp: @12, cls n: @r12) {
+		eq(m, mp) |- {
+			@h1 > call_eq_i((cls m) => omega_sub_as_int(m ,n), ?, ?)
+		}
 	}
-}
 
-"정수로서의 0."
-$0_\Z$
-cls int_zero = ntoz(omega_zero);
+	theorem omega_sub_as_int_eq_i(cls m: @11, cls n: @21, $m'$ cls mp: @12, $n'$ cls np: @22) {
+		eq(m, mp), eq(n, np) |- {
+			[
+				@h1 > omega_sub_as_int_eq_i_right(m, mp, n);
+				@h2 > omega_sub_as_int_eq_i_left(mp, n, np)
+			] > eq_transitive
+		}
+	}
 
-"정수로서의 1."
-$1_\Z$
-cls int_one = ntoz(omega_one);
+	"[#omega]에서 [#int]로의 canonical embedding."
+	$\left(#1\right)_{<<\omega\to\Z>>}$
+	cls ntoz(cls n) {
+		omega_sub_as_int(n, omega_zero)
+	}
 
-"정수로서의 2."
-$2_\Z$
-cls int_two = ntoz(omega_two);
+	theorem ntoz_in_int(cls n: @11) {
+		in(n, omega) |- {
+			[@h1; zero_in_omega()] > omega_sub_as_int_in_int as in(ntoz(n), int)
+		}
+	}
 
-theorem rel_omega_pair_is_rel() {
-	(cls z) => {
-		in(z, rel_omega_pair) |- {
-			$X = @h1 > setbuilder_e as X2((cls x, cls y) => A(
-				eq(z, pair(x, y)),
-				Xin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
-					A(
+	"정수로서의 0."
+	$0_\Z$
+	cls int_zero = ntoz(omega_zero);
+
+	"정수로서의 1."
+	$1_\Z$
+	cls int_one = ntoz(omega_one);
+
+	"정수로서의 2."
+	$2_\Z$
+	cls int_two = ntoz(omega_two);
+
+	theorem rel_omega_pair_is_rel() {
+		(cls z) => {
+			in(z, rel_omega_pair) |- {
+				$X = @h1 > setbuilder_e as X2((cls x, cls y) => A(
+					eq(z, pair(x, y)),
+					Xin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
 						A(
-							eq(x, pair(a, b)),
-							eq(y, pair(ap, bp))
-						),
-						eq(omega_add(a, bp), omega_add(ap, b))
-					)
-				})
-			));
-
-			$U = (cls x, cls y) => {
-				eq(z, pair(x, y)),
-				Xin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
-					A(
-						A(
-							eq(x, pair(a, b)),
-							eq(y, pair(ap, bp))
-						),
-						eq(omega_add(a, bp), omega_add(ap, b))
-					)
-				}) |- {
-					$U = (cls a) => { in(a, omega) /* @h4 */ |- {
-					(cls b) => { in(b, omega) |- {
-					($a'$ cls ap) => { in(ap, omega) |- {
-					($b'$ cls bp) => { in(bp, omega) |- {
-						eq(x, pair(a, b)) /* @h8 */, eq(y, pair(ap, bp)), eq(omega_add(a, bp), omega_add(ap, b)) |- {
-							$x_in_om_om = [@h8; [@h4; @h5] > cartesian_in_i] > eq_in;
-							$y_in_om_om = [@h9; [@h6; @h7] > cartesian_in_i] > eq_in;
-
-							[@h2; [$x_in_om_om; $y_in_om_om] > cartesian_in_i] > eq_in
-						} > cp3
-					} > cp } > Ui
-					} > cp } > Ui
-					} > cp } > Ui
-					} > cp } > Ui as Uin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
-						I(
 							A(
-								A(
-									eq(x, pair(a, b)),
-									eq(y, pair(ap, bp))
-								),
-								eq(omega_add(a, bp), omega_add(ap, b))
+								eq(x, pair(a, b)),
+								eq(y, pair(ap, bp))
 							),
-							in(z, cartesian(cartesian(omega, omega), cartesian(omega, omega)))
-						)
-					});
-
-					[@h3; $U] > mpXin4_alt as in(z, cartesian(cartesian(omega, omega), cartesian(omega, omega)))
-				} > cp2
-			} > U2i;
-
-			[$X; $U] > mpX2_alt as in(z, cartesian(cartesian(omega, omega), cartesian(omega, omega)))
-		} > cp
-	} > Ui as is_rel_over_set(rel_omega_pair, cartesian(omega, omega))
-}
-
-theorem rel_omega_pair_is_reflexive() {
-	(cls x) => {
-		in(x, cartesian(omega, omega)) |- {
-			$X = @h1 > setbuilder_e;
-
-			$U = (cls a, cls b) => {
-				eq(x, pair(a, b)), A(in(a, omega), in(b, omega)) |- {
-					$a_in_omega = @h3 > Ae1;
-					$b_in_omega = @h3 > Ae2;
-
-					$set_x = @h1 > is_set_i;
-					$set_xx = [$set_x; $set_x] > pair_set_i;
-
-					$X4 = [
-						$a_in_omega; $b_in_omega; $a_in_omega; $b_in_omega;
-						[[@h2; @h2] > Ai; eq_reflexive(omega_add(a, b))] > Ai
-					] > Xin4i as Xin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
-						A(
-							A(eq(x, pair(a, b)), eq(x, pair(ap, bp))),
 							eq(omega_add(a, bp), omega_add(ap, b))
 						)
-					});
+					})
+				));
 
-					[$set_xx; $X4] > setbuilder_pair_i as rel_call(rel_omega_pair, x, x)
-				} > cp2
-			} > U2i;
+				$U = (cls x, cls y) => {
+					eq(z, pair(x, y)),
+					Xin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
+						A(
+							A(
+								eq(x, pair(a, b)),
+								eq(y, pair(ap, bp))
+							),
+							eq(omega_add(a, bp), omega_add(ap, b))
+						)
+					}) |- {
+						$U = (cls a) => { in(a, omega) /* @h4 */ |- {
+						(cls b) => { in(b, omega) |- {
+						($a'$ cls ap) => { in(ap, omega) |- {
+						($b'$ cls bp) => { in(bp, omega) |- {
+							eq(x, pair(a, b)) /* @h8 */, eq(y, pair(ap, bp)), eq(omega_add(a, bp), omega_add(ap, b)) |- {
+								$x_in_om_om = [@h8; [@h4; @h5] > cartesian_in_i] > eq_in;
+								$y_in_om_om = [@h9; [@h6; @h7] > cartesian_in_i] > eq_in;
 
-			[$X; $U] > mpX2_alt as rel_call(rel_omega_pair, x, x)
-		} > cp
-	} > Ui as rel_reflexive(rel_omega_pair, cartesian(omega, omega))
-}
+								[@h2; [$x_in_om_om; $y_in_om_om] > cartesian_in_i] > eq_in
+							} > cp3
+						} > cp } > Ui
+						} > cp } > Ui
+						} > cp } > Ui
+						} > cp } > Ui as Uin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
+							I(
+								A(
+									A(
+										eq(x, pair(a, b)),
+										eq(y, pair(ap, bp))
+									),
+									eq(omega_add(a, bp), omega_add(ap, b))
+								),
+								in(z, cartesian(cartesian(omega, omega), cartesian(omega, omega)))
+							)
+						});
 
-theorem rel_omega_pair_is_symmetric() {
-	(cls x, cls y) => {
-		in(x, cartesian(omega, omega)), in(y, cartesian(omega, omega)) |- {
+						[@h3; $U] > mpXin4_alt as in(z, cartesian(cartesian(omega, omega), cartesian(omega, omega)))
+					} > cp2
+				} > U2i;
+
+				[$X; $U] > mpX2_alt as in(z, cartesian(cartesian(omega, omega), cartesian(omega, omega)))
+			} > cp
+		} > Ui as is_rel_over_set(rel_omega_pair, cartesian(omega, omega))
+	}
+
+	theorem rel_omega_pair_is_reflexive() {
+		(cls x) => {
+			in(x, cartesian(omega, omega)) |- {
+				$X = @h1 > setbuilder_e;
+
+				$U = (cls a, cls b) => {
+					eq(x, pair(a, b)), A(in(a, omega), in(b, omega)) |- {
+						$a_in_omega = @h3 > Ae1;
+						$b_in_omega = @h3 > Ae2;
+
+						$set_x = @h1 > is_set_i;
+						$set_xx = [$set_x; $set_x] > pair_set_i;
+
+						$X4 = [
+							$a_in_omega; $b_in_omega; $a_in_omega; $b_in_omega;
+							[[@h2; @h2] > Ai; eq_reflexive(omega_add(a, b))] > Ai
+						] > Xin4i as Xin4(omega, omega, omega, omega, (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
+							A(
+								A(eq(x, pair(a, b)), eq(x, pair(ap, bp))),
+								eq(omega_add(a, bp), omega_add(ap, b))
+							)
+						});
+
+						[$set_xx; $X4] > setbuilder_pair_i as rel_call(rel_omega_pair, x, x)
+					} > cp2
+				} > U2i;
+
+				[$X; $U] > mpX2_alt as rel_call(rel_omega_pair, x, x)
+			} > cp
+		} > Ui as rel_reflexive(rel_omega_pair, cartesian(omega, omega))
+	}
+
+	theorem rel_omega_pair_is_symmetric() {
+		(cls x, cls y) => {
+			in(x, cartesian(omega, omega)), in(y, cartesian(omega, omega)) |- {
+				with ([cls, cls -> pr4] predicate = (cls x, cls y) => {
+					(cls a, cls b, $a'$ cls ap, $b'$ cls bp) => A(
+						A(eq(x, pair(a, b)), eq(y, pair(ap, bp))),
+						eq(omega_add(a, bp), omega_add(ap, b))
+					)
+				}) {
+					rel_call(rel_omega_pair, x, y) |- {
+						$X = @h3 > setbuilder_pair_e as Xin4(omega, omega, omega, omega, predicate(x, y));
+
+						$U = (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
+							/* @h4 */ in(a, omega), in(b, omega), in(ap, omega), in(bp, omega) |- {
+								/* @h8 */ (predicate(x, y))(a, b, ap, bp) |- {
+									[
+										@h6; @h7; @h4; @h5;
+										[@h8 > Ae1 > A_flip; @h8 > Ae2 > eq_symmetric] > Ai
+									] > Xin4i as Xin4(omega, omega, omega, omega, predicate(y, x))
+								} > cp
+							}
+						} > Uin4i;
+
+						$f = [$X; $U] > mpXin4_alt as Xin4(omega, omega, omega, omega, predicate(y, x));
+
+						[[@h2 > is_set_i; @h1 > is_set_i] > pair_set_i; $f] > setbuilder_pair_i as rel_call(rel_omega_pair, y, x)
+					} > cp
+				}
+			}
+		} > Uin2i as rel_symmetric(rel_omega_pair, cartesian(omega, omega))
+	}
+
+	theorem rel_omega_pair_i(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41) {
+		in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega), eq(omega_add(a1, b2), omega_add(a2, b1)) |- {
 			with ([cls, cls -> pr4] predicate = (cls x, cls y) => {
 				(cls a, cls b, $a'$ cls ap, $b'$ cls bp) => A(
 					A(eq(x, pair(a, b)), eq(y, pair(ap, bp))),
 					eq(omega_add(a, bp), omega_add(ap, b))
 				)
 			}) {
-				rel_call(rel_omega_pair, x, y) |- {
-					$X = @h3 > setbuilder_pair_e as Xin4(omega, omega, omega, omega, predicate(x, y));
-
-					$U = (cls a, cls b, $a'$ cls ap, $b'$ cls bp) => {
-						/* @h4 */ in(a, omega), in(b, omega), in(ap, omega), in(bp, omega) |- {
-							/* @h8 */ (predicate(x, y))(a, b, ap, bp) |- {
-								[
-									@h6; @h7; @h4; @h5;
-									[@h8 > Ae1 > A_flip; @h8 > Ae2 > eq_symmetric] > Ai
-								] > Xin4i as Xin4(omega, omega, omega, omega, predicate(y, x))
-							} > cp
-						}
-					} > Uin4i;
-
-					$f = [$X; $U] > mpXin4_alt as Xin4(omega, omega, omega, omega, predicate(y, x));
-
-					[[@h2 > is_set_i; @h1 > is_set_i] > pair_set_i; $f] > setbuilder_pair_i as rel_call(rel_omega_pair, y, x)
-				} > cp
+				$X = [
+					@h1; @h2; @h3; @h4;
+					[eq_reflexive(pair(a1, b1)); eq_reflexive(pair(a2, b2)); @h5] > A3i
+				] > Xin4i as Xin4(omega, omega, omega, omega, predicate(pair(a1, b1), pair(a2, b2)));
+				
+				[
+					[
+						[@h1 > is_set_i; @h2 > is_set_i] > pair_set_i;
+						[@h3 > is_set_i; @h4 > is_set_i] > pair_set_i
+					] > pair_set_i;
+					$X
+				] > setbuilder_pair_i as rel_call(rel_omega_pair, pair(a1, b1), pair(a2, b2))
 			}
 		}
-	} > Uin2i as rel_symmetric(rel_omega_pair, cartesian(omega, omega))
-}
-
-theorem rel_omega_pair_i(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41) {
-	in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega), eq(omega_add(a1, b2), omega_add(a2, b1)) |- {
-		with ([cls, cls -> pr4] predicate = (cls x, cls y) => {
-			(cls a, cls b, $a'$ cls ap, $b'$ cls bp) => A(
-				A(eq(x, pair(a, b)), eq(y, pair(ap, bp))),
-				eq(omega_add(a, bp), omega_add(ap, b))
-			)
-		}) {
-			$X = [
-				@h1; @h2; @h3; @h4;
-				[eq_reflexive(pair(a1, b1)); eq_reflexive(pair(a2, b2)); @h5] > A3i
-			] > Xin4i as Xin4(omega, omega, omega, omega, predicate(pair(a1, b1), pair(a2, b2)));
-			
-			[
-				[
-					[@h1 > is_set_i; @h2 > is_set_i] > pair_set_i;
-					[@h3 > is_set_i; @h4 > is_set_i] > pair_set_i
-				] > pair_set_i;
-				$X
-			] > setbuilder_pair_i as rel_call(rel_omega_pair, pair(a1, b1), pair(a2, b2))
-		}
 	}
-}
 
-theorem rel_omega_pair_e(cls a: @11, cls b: @21, $a'$ cls ap: @31, $b'$ cls bp: @41) {
-	in(a, omega), in(b, omega), in(ap, omega), in(bp, omega),
-	rel_call(rel_omega_pair, pair(a, b), pair(ap, bp)) |- {
-		$X = @h5 > setbuilder_pair_e as Xin4(omega, omega, omega, omega, (cls c, cls d, $c'$ cls cp, $d'$ cls dp) => {
-			A(
+	theorem rel_omega_pair_e(cls a: @11, cls b: @21, $a'$ cls ap: @31, $b'$ cls bp: @41) {
+		in(a, omega), in(b, omega), in(ap, omega), in(bp, omega),
+		rel_call(rel_omega_pair, pair(a, b), pair(ap, bp)) |- {
+			$X = @h5 > setbuilder_pair_e as Xin4(omega, omega, omega, omega, (cls c, cls d, $c'$ cls cp, $d'$ cls dp) => {
+				A(
+					A(
+						eq(pair(a, b), pair(c, d)),
+						eq(pair(ap, bp), pair(cp, dp))
+					),
+					eq(omega_add(c, dp), omega_add(cp, d))
+				)
+			});
+			
+			$U = (cls c, cls d, $c'$ cls cp, $d'$ cls dp) => {
 				A(
 					eq(pair(a, b), pair(c, d)),
 					eq(pair(ap, bp), pair(cp, dp))
 				),
-				eq(omega_add(c, dp), omega_add(cp, d))
-			)
-		});
-		
-		$U = (cls c, cls d, $c'$ cls cp, $d'$ cls dp) => {
-			A(
-				eq(pair(a, b), pair(c, d)),
-				eq(pair(ap, bp), pair(cp, dp))
-			),
-			eq(omega_add(c, dp), omega_add(cp, d)) |- {
-				$set_a = @h1 > is_set_i; $set_b = @h2 > is_set_i;
-				$set_ap = @h3 > is_set_i; $set_bp = @h4 > is_set_i;
-				$set_ab = [$set_a; $set_b] > pair_set_i;
-				$set_apbp = [$set_ap; $set_bp] > pair_set_i;
+				eq(omega_add(c, dp), omega_add(cp, d)) |- {
+					$set_a = @h1 > is_set_i; $set_b = @h2 > is_set_i;
+					$set_ap = @h3 > is_set_i; $set_bp = @h4 > is_set_i;
+					$set_ab = [$set_a; $set_b] > pair_set_i;
+					$set_apbp = [$set_ap; $set_bp] > pair_set_i;
 
-				$ab_is_cd = @h6 > Ae1;
-				$apbp_is_cpdp = @h6 > Ae2;
+					$ab_is_cd = @h6 > Ae1;
+					$apbp_is_cpdp = @h6 > Ae2;
 
-				$a_is_c = [$set_ab; $ab_is_cd] > pair_eq_e1_v1;
-				$b_is_d = [$set_ab; $ab_is_cd] > pair_eq_e2_v1;
-				$ap_is_cp = [$set_apbp; $apbp_is_cpdp] > pair_eq_e1_v1;
-				$bp_is_dp = [$set_apbp; $apbp_is_cpdp] > pair_eq_e2_v1;
+					$a_is_c = [$set_ab; $ab_is_cd] > pair_eq_e1_v1;
+					$b_is_d = [$set_ab; $ab_is_cd] > pair_eq_e2_v1;
+					$ap_is_cp = [$set_apbp; $apbp_is_cpdp] > pair_eq_e1_v1;
+					$bp_is_dp = [$set_apbp; $apbp_is_cpdp] > pair_eq_e2_v1;
 
-				[
-					[$a_is_c; $bp_is_dp] > omega_add_eq_i;
-					@h7;
-					[$ap_is_cp; $b_is_d] > omega_add_eq_i > eq_symmetric
-				] > eq_transitive_3
-			} > cp2
-		} > U4i > U4_to_Uin4(omega, omega, omega, omega, ?);
-		
-		[$X; $U] > mpXin4_alt as eq(omega_add(a, bp), omega_add(ap, b))
-	}
-}
-
-theorem int_eq_e(cls a: @11, cls b: @21, $a'$ cls ap: @31, $b'$ cls bp: @41) {
-	in(a, omega), in(b, omega), in(ap, omega), in(bp, omega),
-	eq(omega_sub_as_int(a, b), omega_sub_as_int(ap, bp)) |- {
-		[
-			rel_omega_pair_is_reflexive();
-			[@h1; @h2] > cartesian_in_i;
-			[@h3; @h4] > cartesian_in_i;
-			@h5
-		] > equiv_cls_eq_e
-	}
-}
-
-theorem rel_omega_pair_is_transitive() {
-	(cls x, cls y, cls z) => {
-		in(x, cartesian(omega, omega)), in(y, cartesian(omega, omega)), in(z, cartesian(omega, omega)) |- {
-			with ([cls, cls -> pr4] predicate = (cls x, cls y) => {
-				(cls a, cls b, $a'$ cls ap, $b'$ cls bp) => A(
-					A(eq(x, pair(a, b)), eq(y, pair(ap, bp))),
-					eq(omega_add(a, bp), omega_add(ap, b))
-				)
-			}) {
-				/* @h4 */ rel_call(rel_omega_pair, x, y), rel_call(rel_omega_pair, y, z) |- {
-					$X = @h4 > setbuilder_pair_e as Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => (predicate(x, y))(a1, b1, a2, b2));
-
-					$U = (cls a1, cls b1, cls a2, cls b2) => {
-						/* @h6 */ in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega) |- {
-							/* @h10 */ (predicate(x, y))(a1, b1, a2, b2) |- {
-								$X = @h5 > setbuilder_pair_e as Xin4(omega, omega, omega, omega, ($a_2'$ cls a2p, $b_2'$ cls b2p, cls a3, cls b3) => (predicate(y, z))(a2p, b2p,a3, b3));
-
-								$U = ($a_2'$ cls a2p, $b_2'$ cls b2p, cls a3, cls b3) => {
-									/* @h11 */ in(a2p, omega), in(b2p, omega), in(a3, omega), in(b3, omega) |- {
-										/* @h15 */ (predicate(y, z))(a2p, b2p, a3, b3) |- {
-											$a1b2_is_a2b1 = @h10 > Ae2;
-											$foo1 = @h10 > Ae1;
-											$x_is_a1b1 = $foo1 > Ae1;
-											$y_is_a2b2 = $foo1 > Ae2;
-
-											$a2pb3_is_a3b2p = @h15 > Ae2;
-											$foo2 = @h15 > Ae1;
-											$y_is_a2pb2p = $foo2 > Ae1;
-											$z_is_a3b3 = $foo2 > Ae2;
-
-											$a2b2_is_a2pb2p = [$y_is_a2b2 > eq_symmetric; $y_is_a2pb2p] > eq_transitive;
-											$foo3 = [@h8 > is_set_i; @h9 > is_set_i; @h11 > is_set_i; @h12 > is_set_i; $a2b2_is_a2pb2p] > pair_eq_e;
-											$a2_is_a2p = $foo3 > Ae1;
-											$b2_is_b2p = $foo3 > Ae2;
-
-											$a2b3_is_a3b2 = [
-												$a2_is_a2p > omega_add_eq_i_right(?, ?, b3);
-												$a2pb3_is_a3b2p;
-												$b2_is_b2p > omega_add_eq_i_left(a3, ?, ?) > eq_symmetric
-											] > eq_transitive_3;
-
-											$foo4 = [
-												[@h8; @h9] > omega_add_commutative > omega_add_eq_i_left(omega_add(a1, b3), ?, ?);
-												[@h6; @h9; @h8; @h14] > omega_add_inner_to_right > eq_symmetric;
-												[$a1b2_is_a2b1; $a2b3_is_a3b2] > omega_add_eq_i;
-												[@h8; @h7; @h13; @h9] > omega_add_inner_to_left
-											] > eq_transitive_4;
-
-											$foo5 = [
-												[
-													[@h6; @h14] > omega_add_in_omega;
-													[@h7; @h13] > omega_add_in_omega;
-													[@h8; @h9] > omega_add_in_omega;
-													$foo4
-												] > omega_add_eq_e_right;
-												[@h7; @h13] > omega_add_commutative
-											] > eq_transitive;
-
-											$foo6 = [
-												@h6; @h7; @h13; @h14;
-												$foo5
-											] > rel_omega_pair_i;
-
-											[
-												$z_is_a3b3;
-												[
-													$x_is_a1b1;
-													$foo6
-												] > ax_indiscernible_m2((cls x) => rel_call(rel_omega_pair, x, pair(a3, b3)), ?, ?)
-											] > ax_indiscernible_m2((cls z) => rel_call(rel_omega_pair, x, z), ?, ?)
-										} > cp
-									}
-								} > Uin4i;
-
-								[$X; $U] > mpXin4_alt as rel_call(rel_omega_pair, x, z)
-							} > cp
-						}
-					} > Uin4i;
-
-					[$X; $U] > mpXin4_alt as rel_call(rel_omega_pair, x, z)
+					[
+						[$a_is_c; $bp_is_dp] > omega_add_eq_i;
+						@h7;
+						[$ap_is_cp; $b_is_d] > omega_add_eq_i > eq_symmetric
+					] > eq_transitive_3
 				} > cp2
-			}
+			} > U4i > U4_to_Uin4(omega, omega, omega, omega, ?);
+			
+			[$X; $U] > mpXin4_alt as eq(omega_add(a, bp), omega_add(ap, b))
 		}
-	} > Uin3i as rel_transitive(rel_omega_pair, cartesian(omega, omega))
-}
-
-theorem rel_omega_pair_is_equiv_rel() {
-	[
-		rel_omega_pair_is_rel();
-		rel_omega_pair_is_reflexive();
-		rel_omega_pair_is_symmetric();
-		rel_omega_pair_is_transitive()
-	] > equiv_rel_i
-}
-
-theorem int_in_e(cls n: @11) {
-	in(n, int) |- {
-		$X = @h1 > setbuilder_e;
-		
-		$U = (cls z) => {
-			eq(n, equiv_cls(z, cartesian(omega, omega), rel_omega_pair)), in(z, cartesian(omega, omega)) |- {
-				$X = @h3 > setbuilder_e;
-
-				$U = (cls a, cls b) => {
-					eq(z, pair(a, b)), A(in(a, omega), in(b, omega)) |- {
-						$a_in_omega = @h5 > Ae1;
-						$b_in_omega = @h5 > Ae2;
-
-						[
-							$a_in_omega; $b_in_omega;
-							[
-								@h2;
-								@h4 > call_eq_i((cls z) => equiv_cls(z, cartesian(omega, omega), rel_omega_pair), ?, ?)
-							] > eq_transitive
-						] > Xin2i as Xin2(omega, omega, (cls a, cls b) => eq(n, omega_sub_as_int(a, b)))
-					} > cp2
-				} > U2i;
-
-				[$X; $U] > mpX2_alt as Xin2(omega, omega, (cls a, cls b) => eq(n, omega_sub_as_int(a, b)))
-			} > cp2
-		} > Ui;
-		
-		[$X; $U] > mpX_alt as Xin2(omega, omega, (cls a, cls b) => eq(n, omega_sub_as_int(a, b)))
 	}
-}
 
-theorem int_U(pr f: @r2) {
-	Uin2(omega, omega, (cls a, cls b) => f(omega_sub_as_int(a, b))) |- {
-		(cls n) => {
-			in(n, int) |- {
-				$X = @h2 > int_in_e;
-				
-				$U = (cls a, cls b) => {
-					in(a, omega), in(b, omega) |- {
-						eq(n, omega_sub_as_int(a, b)) |- {
-							[
-								@h5;
-								[@h1; @h3; @h4] > Uin2e
-							] > ax_indiscernible_m2(f, ?, ?)
-						} > cp
-					}
-				} > Uin2i;
-				
-				[$X; $U] > mpXin2_alt as f(n)
-			} > cp
-		} > Ui as Uin(int, f)
-	}
-}
-
-"정수 덧셈."
-[precedence=300]
-$#1<<+_\Z>>#2$
-cls int_add(cls m, cls n) {
-	instantiate((cls k) => {
-		Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => {
-			A(A(eq(m, omega_sub_as_int(a1, b1)), eq(n, omega_sub_as_int(a2, b2))), eq(k, omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2))))
-		})
-	})
-}
-
-theorem int_add_eq_i_left(cls m: @r11, cls n: @11, $n'$ cls np: @12) {
-	eq(n, np) |- {
-		@h1 > call_eq_i((cls n) => int_add(m, n), ?, ?)
-	}
-}
-
-theorem int_add_eq_i_right(cls m: @11, $m'$ cls mp: @12, cls n: @r12) {
-	eq(m, mp) |- {
-		@h1 > call_eq_i((cls m) => int_add(m ,n), ?, ?)
-	}
-}
-
-theorem int_add_eq_i(cls m: @11, cls n: @21, $m'$ cls mp: @12, $n'$ cls np: @22) {
-	eq(m, mp), eq(n, np) |- {
-		[
-			@h1 > int_add_eq_i_right(m, mp, n);
-			@h2 > int_add_eq_i_left(mp, n, np)
-		] > eq_transitive
-	}
-}
-
-theorem omega_add_sub_eq_i(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41, $a_1'$ cls a1p: @51, $b_1'$ cls b1p: @61, $a_2'$ cls a2p: @71, $b_2'$ cls b2p: @81) {
-	in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega),
-	in(a1p, omega), in(b1p, omega), in(a2p, omega), in(b2p, omega),
-	eq(omega_sub_as_int(a1, b1), omega_sub_as_int(a1p, b1p)),
-	eq(omega_sub_as_int(a2, b2), omega_sub_as_int(a2p, b2p)) |- {
-		$a1b1p_is_a1pb1 = [
-			@h1; @h2; @h5; @h6;
-			[@h1; @h2; @h5; @h6; @h9] > int_eq_e
-		] > rel_omega_pair_e;
-
-		$a2b2p_is_a2pb2 = [
-			@h3; @h4; @h7; @h8;
-			[@h3; @h4; @h7; @h8; @h10] > int_eq_e
-		] > rel_omega_pair_e;
-
-		$nat_a1a2 = [@h1; @h3] > omega_add_in_omega;
-		$nat_b1pb2p = [@h6; @h8] > omega_add_in_omega;
-		$nat_a1pa2p = [@h5; @h7] > omega_add_in_omega;
-		$nat_b1b2 = [@h2; @h4] > omega_add_in_omega;
-
-		$rel = [
-			$nat_a1a2; $nat_b1b2; $nat_a1pa2p; $nat_b1pb2p;
+	theorem int_eq_e(cls a: @11, cls b: @21, $a'$ cls ap: @31, $b'$ cls bp: @41) {
+		in(a, omega), in(b, omega), in(ap, omega), in(bp, omega),
+		eq(omega_sub_as_int(a, b), omega_sub_as_int(ap, bp)) |- {
 			[
-				[@h1; @h6; @h3; @h8] > omega_add_flip_inner > eq_symmetric;
-				[$a1b1p_is_a1pb1; $a2b2p_is_a2pb2] > omega_add_eq_i;
-				[@h5; @h2; @h7; @h4] > omega_add_flip_inner
-			] > eq_transitive_3
-		] > rel_omega_pair_i;
-
-		[
-			rel_omega_pair_is_equiv_rel();
-			[$nat_a1a2; $nat_b1b2] > cartesian_in_i;
-			[$nat_a1pa2p; $nat_b1pb2p] > cartesian_in_i;
-			$rel
-		] > equiv_cls_eq_i as eq(
-			omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2)),
-			omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p))
-		)
-	}
-}
-
-theorem int_add_X(cls m: @11, cls n: @21) {
-	in(m, int), in(n, int) |- {
-		with (pr predicate = (cls k) => {
-			Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => {
-				A(A(eq(m, omega_sub_as_int(a1, b1)), eq(n, omega_sub_as_int(a2, b2))), eq(k, omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2))))
-			})
-		}) {
-			$X = @h1 > int_in_e as Xin2(omega, omega, ($a_1'$ cls a1p, $b_1'$ cls b1p) => {
-				eq(m, omega_sub_as_int(a1p, b1p))
-			});
-			
-			$U = ($a_1'$ cls a1p) => { /* @h3 */ in(a1p, omega) |- {
-			($b_1'$ cls b1p) => { in(b1p, omega) |- {
-				eq(m, omega_sub_as_int(a1p, b1p)) |- {
-					$X = @h2 > int_in_e as Xin2(omega, omega, ($a_2'$ cls a2p, $b_2'$ cls b2p) => {
-						eq(n, omega_sub_as_int(a2p, b2p))
-					});
-					
-					$U = ($a_2'$ cls a2p) => { /* @h6 */ in(a2p, omega) |- {
-					($b_2'$ cls b2p) => { in(b2p, omega) |- {
-						/* @h8 */ eq(n, omega_sub_as_int(a2p, b2p)) |- {
-							[
-								@h3; @h4; @h6; @h7;
-								[
-									[@h5; @h8] > Ai;
-									eq_reflexive(omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p)))
-								] > Ai
-							] > Xin4i as predicate(omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p)))
-							> Xi(?, omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p))) as X((cls k) => predicate(k))
-						} > cp
-					} > cp } > Ui
-					} > cp } > Ui;
-					
-					[$X; $U] > mpXin2_alt as X((cls k) => predicate(k))
-				} > cp
-			} > cp } > Ui
-			} > cp } > Ui;
-			
-			[$X; $U] > mpXin2_alt as X((cls k) => predicate(k))
+				rel_omega_pair_is_reflexive();
+				[@h1; @h2] > cartesian_in_i;
+				[@h3; @h4] > cartesian_in_i;
+				@h5
+			] > equiv_cls_eq_e
 		}
 	}
-}
 
-theorem int_add_Q(cls m: @11, cls n: @21) {
-	in(m, int), in(n, int) |- {
-		with ([cls -> pr4] predicate4 = (cls k) => {
-			($a_1'$ cls a1p, $b_1'$ cls b1p, $a_2'$ cls a2p, $b_2'$ cls b2p) => {
-				A(A(eq(m, omega_sub_as_int(a1p, b1p)), eq(n, omega_sub_as_int(a2p, b2p))), eq(k, omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p))))
-			}
-		}) {
-			with (pr predicate = (cls k) => {
-				Xin4(omega, omega, omega, omega, predicate4(k))
-			}) {
-				$X = @h1 > int_in_e as Xin2(omega, omega, (cls a1, cls b1) => eq(m, omega_sub_as_int(a1, b1)));
+	theorem rel_omega_pair_is_transitive() {
+		(cls x, cls y, cls z) => {
+			in(x, cartesian(omega, omega)), in(y, cartesian(omega, omega)), in(z, cartesian(omega, omega)) |- {
+				with ([cls, cls -> pr4] predicate = (cls x, cls y) => {
+					(cls a, cls b, $a'$ cls ap, $b'$ cls bp) => A(
+						A(eq(x, pair(a, b)), eq(y, pair(ap, bp))),
+						eq(omega_add(a, bp), omega_add(ap, b))
+					)
+				}) {
+					/* @h4 */ rel_call(rel_omega_pair, x, y), rel_call(rel_omega_pair, y, z) |- {
+						$X = @h4 > setbuilder_pair_e as Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => (predicate(x, y))(a1, b1, a2, b2));
 
-				$U = (cls a1, cls b1) => {
-					/* @h3 */ in(a1, omega), in(b1, omega) |- {
-						/* @h5 */ eq(m, omega_sub_as_int(a1, b1)) |- {
-							$X = @h2 > int_in_e as Xin2(omega, omega, (cls a2, cls b2) => eq(n, omega_sub_as_int(a2, b2)));
+						$U = (cls a1, cls b1, cls a2, cls b2) => {
+							/* @h6 */ in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega) |- {
+								/* @h10 */ (predicate(x, y))(a1, b1, a2, b2) |- {
+									$X = @h5 > setbuilder_pair_e as Xin4(omega, omega, omega, omega, ($a_2'$ cls a2p, $b_2'$ cls b2p, cls a3, cls b3) => (predicate(y, z))(a2p, b2p,a3, b3));
 
-							$U = (cls a2, cls b2) => {
-								/* @h6 */ in(a2, omega), in(b2, omega) |- {
-									/* @h8 */ eq(n, omega_sub_as_int(a2, b2)) |- {
-										(cls k) => {
-											/* @h9 */ predicate(k) |- {
-												$U = ($a_1'$ cls a1p, $b_1'$ cls b1p, $a_2'$ cls a2p, $b_2'$ cls b2p) => {
-													/* @h10 */ in(a1p, omega), in(b1p, omega), in(a2p, omega), in(b2p, omega) |- {
-														/* @h14 */ (predicate4(k))(a1p, b1p, a2p, b2p) |- {
-															$foo = @h14 > Ae1;
-															$m_is_a1pb1p = $foo > Ae1;
-															$n_is_a2pb2p = $foo > Ae2;
-															$k_is_a1pa2p_b1pb2p = @h14 > Ae2;
+									$U = ($a_2'$ cls a2p, $b_2'$ cls b2p, cls a3, cls b3) => {
+										/* @h11 */ in(a2p, omega), in(b2p, omega), in(a3, omega), in(b3, omega) |- {
+											/* @h15 */ (predicate(y, z))(a2p, b2p, a3, b3) |- {
+												$a1b2_is_a2b1 = @h10 > Ae2;
+												$foo1 = @h10 > Ae1;
+												$x_is_a1b1 = $foo1 > Ae1;
+												$y_is_a2b2 = $foo1 > Ae2;
 
-															$a1b1_is_a1pb1p = [@h5 > eq_symmetric; $m_is_a1pb1p] > eq_transitive;
-															$a2b2_is_a2pb2p = [@h8 > eq_symmetric; $n_is_a2pb2p] > eq_transitive;
+												$a2pb3_is_a3b2p = @h15 > Ae2;
+												$foo2 = @h15 > Ae1;
+												$y_is_a2pb2p = $foo2 > Ae1;
+												$z_is_a3b3 = $foo2 > Ae2;
 
-															$foo2 = [
-																@h3; @h4; @h6; @h7;
-																@h10; @h11; @h12; @h13;
-																$a1b1_is_a1pb1p;
-																$a2b2_is_a2pb2p
-															] > omega_add_sub_eq_i;
+												$a2b2_is_a2pb2p = [$y_is_a2b2 > eq_symmetric; $y_is_a2pb2p] > eq_transitive;
+												$foo3 = [@h8 > is_set_i; @h9 > is_set_i; @h11 > is_set_i; @h12 > is_set_i; $a2b2_is_a2pb2p] > pair_eq_e;
+												$a2_is_a2p = $foo3 > Ae1;
+												$b2_is_b2p = $foo3 > Ae2;
 
-															[
-																$k_is_a1pa2p_b1pb2p;
-																$foo2 > eq_symmetric
-															] > eq_transitive
-														} > cp
-													}
-												} > Uin4i;
+												$a2b3_is_a3b2 = [
+													$a2_is_a2p > omega_add_eq_i_right(?, ?, b3);
+													$a2pb3_is_a3b2p;
+													$b2_is_b2p > omega_add_eq_i_left(a3, ?, ?) > eq_symmetric
+												] > eq_transitive_3;
 
-												[@h9; $U] > mpXin4_alt as eq(k, omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2)))
+												$foo4 = [
+													[@h8; @h9] > omega_add_commutative > omega_add_eq_i_left(omega_add(a1, b3), ?, ?);
+													[@h6; @h9; @h8; @h14] > omega_add_inner_to_right > eq_symmetric;
+													[$a1b2_is_a2b1; $a2b3_is_a3b2] > omega_add_eq_i;
+													[@h8; @h7; @h13; @h9] > omega_add_inner_to_left
+												] > eq_transitive_4;
+
+												$foo5 = [
+													[
+														[@h6; @h14] > omega_add_in_omega;
+														[@h7; @h13] > omega_add_in_omega;
+														[@h8; @h9] > omega_add_in_omega;
+														$foo4
+													] > omega_add_eq_e_right;
+													[@h7; @h13] > omega_add_commutative
+												] > eq_transitive;
+
+												$foo6 = [
+													@h6; @h7; @h13; @h14;
+													$foo5
+												] > rel_omega_pair_i;
+
+												[
+													$z_is_a3b3;
+													[
+														$x_is_a1b1;
+														$foo6
+													] > ax_indiscernible_m2((cls x) => rel_call(rel_omega_pair, x, pair(a3, b3)), ?, ?)
+												] > ax_indiscernible_m2((cls z) => rel_call(rel_omega_pair, x, z), ?, ?)
 											} > cp
-										} > Ui > Qim
-									} > cp
-								}
-							} > Uin2i;
+										}
+									} > Uin4i;
 
-							[$X; $U] > mpXin2_alt as Q(predicate)
-						} > cp
-					}
-				} > Uin2i;
-				
-				[$X; $U] > mpXin2_alt as Q(predicate)
-			}
-		}
-	}
-}
+									[$X; $U] > mpXin4_alt as rel_call(rel_omega_pair, x, z)
+								} > cp
+							}
+						} > Uin4i;
 
-theorem int_add_def(cls m: @11, cls n: @21) {
-	in(m, int), in(n, int) |- {
-		with (pr predicate = (cls k) => {
-			Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => {
-				A(A(eq(m, omega_sub_as_int(a1, b1)), eq(n, omega_sub_as_int(a2, b2))), eq(k, omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2))))
-			})
-		}) {
-			$X = [@h1; @h2] > int_add_X as X(predicate);
-			$Q = [@h1; @h2] > int_add_Q as Q(predicate);
-
-			[$X; $Q] > XQ_to_Xq > instantiate_def as predicate(int_add(m, n))
-		}
-	}
-}
-
-theorem int_add_def_alt(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41, cls m: @51, cls n: @61) {
-	in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega),
-	eq(m, omega_sub_as_int(a1, b1)), eq(n, omega_sub_as_int(a2, b2)) |- {
-		with ([cls -> pr4] predicate4 = (cls k) => {
-			($a_1'$ cls a1p, $b_1'$ cls b1p, $a_2'$ cls a2p, $b_2'$ cls b2p) => {
-				A(A(eq(m, omega_sub_as_int(a1p, b1p)), eq(n, omega_sub_as_int(a2p, b2p))), eq(k, omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p))))
-			}
-		}) {
-			$int_m = [@h5; [@h1; @h2] > omega_sub_as_int_in_int] > eq_in;
-			$int_n = [@h6; [@h3; @h4] > omega_sub_as_int_in_int] > eq_in;
-			
-			$X = [$int_m; $int_n] > int_add_def as Xin4(omega, omega, omega, omega, predicate4(int_add(m, n)));
-			
-			$U = ($a_1'$ cls a1p, $b_1'$ cls b1p, $a_2'$ cls a2p, $b_2'$ cls b2p) => {
-				in(a1p, omega), in(b1p, omega), in(a2p, omega), in(b2p, omega) |- {
-					/* @h11 */ (predicate4(int_add(m, n)))(a1p, b1p, a2p, b2p) |- {
-						$foo = @h11 > Ae1;
-						$m_is_a1pb1p = $foo > Ae1;
-						$n_is_a2pb2p = $foo > Ae2;
-						$bar = @h11 > Ae2;
-
-						$1 = [@h5 > eq_symmetric; $m_is_a1pb1p] > eq_transitive;
-						$2 = [@h6 > eq_symmetric; $n_is_a2pb2p] > eq_transitive;
-
-						[
-							$bar;
-							[@h1; @h2; @h3; @h4; @h7; @h8; @h9; @h10; $1; $2] > omega_add_sub_eq_i > eq_symmetric
-						] > eq_transitive
-					} > cp
+						[$X; $U] > mpXin4_alt as rel_call(rel_omega_pair, x, z)
+					} > cp2
 				}
-			} > Uin4i;
+			}
+		} > Uin3i as rel_transitive(rel_omega_pair, cartesian(omega, omega))
+	}
+
+	theorem rel_omega_pair_is_equiv_rel() {
+		[
+			rel_omega_pair_is_rel();
+			rel_omega_pair_is_reflexive();
+			rel_omega_pair_is_symmetric();
+			rel_omega_pair_is_transitive()
+		] > equiv_rel_i
+	}
+
+	theorem int_in_e(cls n: @11) {
+		in(n, int) |- {
+			$X = @h1 > setbuilder_e;
 			
-			[$X; $U] > mpXin4_alt as eq(int_add(m, n), omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2)))
+			$U = (cls z) => {
+				eq(n, equiv_cls(z, cartesian(omega, omega), rel_omega_pair)), in(z, cartesian(omega, omega)) |- {
+					$X = @h3 > setbuilder_e;
+
+					$U = (cls a, cls b) => {
+						eq(z, pair(a, b)), A(in(a, omega), in(b, omega)) |- {
+							$a_in_omega = @h5 > Ae1;
+							$b_in_omega = @h5 > Ae2;
+
+							[
+								$a_in_omega; $b_in_omega;
+								[
+									@h2;
+									@h4 > call_eq_i((cls z) => equiv_cls(z, cartesian(omega, omega), rel_omega_pair), ?, ?)
+								] > eq_transitive
+							] > Xin2i as Xin2(omega, omega, (cls a, cls b) => eq(n, omega_sub_as_int(a, b)))
+						} > cp2
+					} > U2i;
+
+					[$X; $U] > mpX2_alt as Xin2(omega, omega, (cls a, cls b) => eq(n, omega_sub_as_int(a, b)))
+				} > cp2
+			} > Ui;
+			
+			[$X; $U] > mpX_alt as Xin2(omega, omega, (cls a, cls b) => eq(n, omega_sub_as_int(a, b)))
 		}
 	}
-}
 
-theorem int_add_def_alt2(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41) {
-	in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega) |- {
-		[
-			@h1; @h2; @h3; @h4;
-			eq_reflexive(omega_sub_as_int(a1, b1));
-			eq_reflexive(omega_sub_as_int(a2, b2))
-		] > int_add_def_alt
-	}
-}
-
-theorem int_add_commutative(cls m: @11, cls n: @21) {
-	in(m, int), in(n, int) |- {
-		$X = @h1 > int_in_e as Xin2(omega, omega, (cls a1, cls b1) => eq(m, omega_sub_as_int(a1, b1)));
-		
-		$U = (cls a1, cls b1) => {
-			in(a1, omega), in(b1, omega) |- {
-				eq(m, omega_sub_as_int(a1, b1)) |- {
-					$X = @h2 > int_in_e as Xin2(omega, omega, (cls a2, cls b2) => eq(n, omega_sub_as_int(a2, b2)));
-
-					$U = (cls a2, cls b2) => {
-						in(a2, omega), in(b2, omega) |- {
-							eq(n, omega_sub_as_int(a2, b2)) |- {
-								$1 = [@h3; @h4; @h6; @h7; @h5; @h8] > int_add_def_alt;
-								$2 = [@h6; @h7; @h3; @h4; @h8; @h5] > int_add_def_alt;
-
-								$3 = [@h3; @h6] > omega_add_commutative;
-								$4 = [@h4; @h7] > omega_add_commutative;
-
+	theorem int_U(pr f: @r2) {
+		Uin2(omega, omega, (cls a, cls b) => f(omega_sub_as_int(a, b))) |- {
+			(cls n) => {
+				in(n, int) |- {
+					$X = @h2 > int_in_e;
+					
+					$U = (cls a, cls b) => {
+						in(a, omega), in(b, omega) |- {
+							eq(n, omega_sub_as_int(a, b)) |- {
 								[
-									$1;
-									[$3; $4] > omega_sub_as_int_eq_i;
-									$2 > eq_symmetric
-								] > eq_transitive_3
+									@h5;
+									[@h1; @h3; @h4] > Uin2e
+								] > ax_indiscernible_m2(f, ?, ?)
 							} > cp
 						}
 					} > Uin2i;
-
-					[$X; $U] > mpXin2_alt as eq(int_add(m, n), int_add(n, m))
-				} > cp
-			}
-		} > Uin2i;
-		
-		[$X; $U] > mpXin2_alt as eq(int_add(m, n), int_add(n, m))
-	}
-}
-
-theorem int_add_associative(cls l: @11, cls m: @21, cls n: @31) {
-	in(l, int), in(m, int), in(n, int) |- {
-		$U = (cls a1, cls b1) => {
-			/* @h4 */ in(a1, omega), in(b1, omega) |- {
-				with (cls l = omega_sub_as_int(a1, b1)) {
-					$U = (cls a2, cls b2) => {
-						/* @h6 */ in(a2, omega), in(b2, omega) |- {
-							with (cls m = omega_sub_as_int(a2, b2)) {
-								$U = (cls a3, cls b3) => {
-									/* @h8 */ in(a3, omega), in(b3, omega) |- {
-										with (cls n = omega_sub_as_int(a3, b3)) {
-											$nat_a12 = [@h4; @h6] > omega_add_in_omega;
-											$nat_b12 = [@h5; @h7] > omega_add_in_omega;
-											$nat_a23 = [@h6; @h8] > omega_add_in_omega;
-											$nat_b23 = [@h7; @h9] > omega_add_in_omega;
-											
-											$1 = [
-												[@h4; @h5; @h6; @h7] > int_add_def_alt2 > int_add_eq_i_right(?, ?, n);
-												[$nat_a12; $nat_b12; @h8; @h9] > int_add_def_alt2
-											] > eq_transitive;
-											
-											$2 = [
-												[@h4; @h6; @h8] > omega_add_associative;
-												[@h5; @h7; @h9] > omega_add_associative
-											] > omega_sub_as_int_eq_i;
-											
-											$3 = [
-												[@h6; @h7; @h8; @h9] > int_add_def_alt2 > int_add_eq_i_left(l, ?, ?);
-												[@h4; @h5; $nat_a23; $nat_b23] > int_add_def_alt2
-											] > eq_transitive;
-											
-											[$1; $2; $3 > eq_symmetric] > eq_transitive_3
-										}
-									}
-								} > Uin2i > int_U as Uin(int, (cls n) => eq(
-									int_add(int_add(l, m), n),
-									int_add(l, int_add(m, n))
-								));
-								
-								[$U; @h3] > Uin_e
-							}
-						}
-					} > Uin2i > int_U as Uin(int, (cls m) => eq(
-						int_add(int_add(l, m), n),
-						int_add(l, int_add(m, n))
-					));
 					
-					[$U; @h2] > Uin_e
+					[$X; $U] > mpXin2_alt as f(n)
+				} > cp
+			} > Ui as Uin(int, f)
+		}
+	}
+
+	"정수 덧셈."
+	[precedence=300]
+	$#1<<+_\Z>>#2$
+	cls int_add(cls m, cls n) {
+		instantiate((cls k) => {
+			Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => {
+				A(A(eq(m, omega_sub_as_int(a1, b1)), eq(n, omega_sub_as_int(a2, b2))), eq(k, omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2))))
+			})
+		})
+	}
+
+	theorem int_add_eq_i_left(cls m: @r11, cls n: @11, $n'$ cls np: @12) {
+		eq(n, np) |- {
+			@h1 > call_eq_i((cls n) => int_add(m, n), ?, ?)
+		}
+	}
+
+	theorem int_add_eq_i_right(cls m: @11, $m'$ cls mp: @12, cls n: @r12) {
+		eq(m, mp) |- {
+			@h1 > call_eq_i((cls m) => int_add(m ,n), ?, ?)
+		}
+	}
+
+	theorem int_add_eq_i(cls m: @11, cls n: @21, $m'$ cls mp: @12, $n'$ cls np: @22) {
+		eq(m, mp), eq(n, np) |- {
+			[
+				@h1 > int_add_eq_i_right(m, mp, n);
+				@h2 > int_add_eq_i_left(mp, n, np)
+			] > eq_transitive
+		}
+	}
+
+	theorem omega_add_sub_eq_i(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41, $a_1'$ cls a1p: @51, $b_1'$ cls b1p: @61, $a_2'$ cls a2p: @71, $b_2'$ cls b2p: @81) {
+		in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega),
+		in(a1p, omega), in(b1p, omega), in(a2p, omega), in(b2p, omega),
+		eq(omega_sub_as_int(a1, b1), omega_sub_as_int(a1p, b1p)),
+		eq(omega_sub_as_int(a2, b2), omega_sub_as_int(a2p, b2p)) |- {
+			$a1b1p_is_a1pb1 = [
+				@h1; @h2; @h5; @h6;
+				[@h1; @h2; @h5; @h6; @h9] > int_eq_e
+			] > rel_omega_pair_e;
+
+			$a2b2p_is_a2pb2 = [
+				@h3; @h4; @h7; @h8;
+				[@h3; @h4; @h7; @h8; @h10] > int_eq_e
+			] > rel_omega_pair_e;
+
+			$nat_a1a2 = [@h1; @h3] > omega_add_in_omega;
+			$nat_b1pb2p = [@h6; @h8] > omega_add_in_omega;
+			$nat_a1pa2p = [@h5; @h7] > omega_add_in_omega;
+			$nat_b1b2 = [@h2; @h4] > omega_add_in_omega;
+
+			$rel = [
+				$nat_a1a2; $nat_b1b2; $nat_a1pa2p; $nat_b1pb2p;
+				[
+					[@h1; @h6; @h3; @h8] > omega_add_flip_inner > eq_symmetric;
+					[$a1b1p_is_a1pb1; $a2b2p_is_a2pb2] > omega_add_eq_i;
+					[@h5; @h2; @h7; @h4] > omega_add_flip_inner
+				] > eq_transitive_3
+			] > rel_omega_pair_i;
+
+			[
+				rel_omega_pair_is_equiv_rel();
+				[$nat_a1a2; $nat_b1b2] > cartesian_in_i;
+				[$nat_a1pa2p; $nat_b1pb2p] > cartesian_in_i;
+				$rel
+			] > equiv_cls_eq_i as eq(
+				omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2)),
+				omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p))
+			)
+		}
+	}
+
+	theorem int_add_X(cls m: @11, cls n: @21) {
+		in(m, int), in(n, int) |- {
+			with (pr predicate = (cls k) => {
+				Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => {
+					A(A(eq(m, omega_sub_as_int(a1, b1)), eq(n, omega_sub_as_int(a2, b2))), eq(k, omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2))))
+				})
+			}) {
+				$X = @h1 > int_in_e as Xin2(omega, omega, ($a_1'$ cls a1p, $b_1'$ cls b1p) => {
+					eq(m, omega_sub_as_int(a1p, b1p))
+				});
+				
+				$U = ($a_1'$ cls a1p) => { /* @h3 */ in(a1p, omega) |- {
+				($b_1'$ cls b1p) => { in(b1p, omega) |- {
+					eq(m, omega_sub_as_int(a1p, b1p)) |- {
+						$X = @h2 > int_in_e as Xin2(omega, omega, ($a_2'$ cls a2p, $b_2'$ cls b2p) => {
+							eq(n, omega_sub_as_int(a2p, b2p))
+						});
+						
+						$U = ($a_2'$ cls a2p) => { /* @h6 */ in(a2p, omega) |- {
+						($b_2'$ cls b2p) => { in(b2p, omega) |- {
+							/* @h8 */ eq(n, omega_sub_as_int(a2p, b2p)) |- {
+								[
+									@h3; @h4; @h6; @h7;
+									[
+										[@h5; @h8] > Ai;
+										eq_reflexive(omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p)))
+									] > Ai
+								] > Xin4i as predicate(omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p)))
+								> Xi(?, omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p))) as X((cls k) => predicate(k))
+							} > cp
+						} > cp } > Ui
+						} > cp } > Ui;
+						
+						[$X; $U] > mpXin2_alt as X((cls k) => predicate(k))
+					} > cp
+				} > cp } > Ui
+				} > cp } > Ui;
+				
+				[$X; $U] > mpXin2_alt as X((cls k) => predicate(k))
+			}
+		}
+	}
+
+	theorem int_add_Q(cls m: @11, cls n: @21) {
+		in(m, int), in(n, int) |- {
+			with ([cls -> pr4] predicate4 = (cls k) => {
+				($a_1'$ cls a1p, $b_1'$ cls b1p, $a_2'$ cls a2p, $b_2'$ cls b2p) => {
+					A(A(eq(m, omega_sub_as_int(a1p, b1p)), eq(n, omega_sub_as_int(a2p, b2p))), eq(k, omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p))))
+				}
+			}) {
+				with (pr predicate = (cls k) => {
+					Xin4(omega, omega, omega, omega, predicate4(k))
+				}) {
+					$X = @h1 > int_in_e as Xin2(omega, omega, (cls a1, cls b1) => eq(m, omega_sub_as_int(a1, b1)));
+
+					$U = (cls a1, cls b1) => {
+						/* @h3 */ in(a1, omega), in(b1, omega) |- {
+							/* @h5 */ eq(m, omega_sub_as_int(a1, b1)) |- {
+								$X = @h2 > int_in_e as Xin2(omega, omega, (cls a2, cls b2) => eq(n, omega_sub_as_int(a2, b2)));
+
+								$U = (cls a2, cls b2) => {
+									/* @h6 */ in(a2, omega), in(b2, omega) |- {
+										/* @h8 */ eq(n, omega_sub_as_int(a2, b2)) |- {
+											(cls k) => {
+												/* @h9 */ predicate(k) |- {
+													$U = ($a_1'$ cls a1p, $b_1'$ cls b1p, $a_2'$ cls a2p, $b_2'$ cls b2p) => {
+														/* @h10 */ in(a1p, omega), in(b1p, omega), in(a2p, omega), in(b2p, omega) |- {
+															/* @h14 */ (predicate4(k))(a1p, b1p, a2p, b2p) |- {
+																$foo = @h14 > Ae1;
+																$m_is_a1pb1p = $foo > Ae1;
+																$n_is_a2pb2p = $foo > Ae2;
+																$k_is_a1pa2p_b1pb2p = @h14 > Ae2;
+
+																$a1b1_is_a1pb1p = [@h5 > eq_symmetric; $m_is_a1pb1p] > eq_transitive;
+																$a2b2_is_a2pb2p = [@h8 > eq_symmetric; $n_is_a2pb2p] > eq_transitive;
+
+																$foo2 = [
+																	@h3; @h4; @h6; @h7;
+																	@h10; @h11; @h12; @h13;
+																	$a1b1_is_a1pb1p;
+																	$a2b2_is_a2pb2p
+																] > omega_add_sub_eq_i;
+
+																[
+																	$k_is_a1pa2p_b1pb2p;
+																	$foo2 > eq_symmetric
+																] > eq_transitive
+															} > cp
+														}
+													} > Uin4i;
+
+													[@h9; $U] > mpXin4_alt as eq(k, omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2)))
+												} > cp
+											} > Ui > Qim
+										} > cp
+									}
+								} > Uin2i;
+
+								[$X; $U] > mpXin2_alt as Q(predicate)
+							} > cp
+						}
+					} > Uin2i;
+					
+					[$X; $U] > mpXin2_alt as Q(predicate)
 				}
 			}
-		} > Uin2i > int_U as Uin(int, (cls l) => eq(
-			int_add(int_add(l, m), n),
-			int_add(l, int_add(m, n))
-		));
-		
-		[$U; @h1] > Uin_e
+		}
 	}
-}
 
-"정수의 덧셈의 역원."
-$\left(<<-_\Z>>#1\right)$
-cls int_neg(cls n) {
-	instantiate((cls k) => {
-		Xin2(omega, omega, (cls a, cls b) => {
-			A(
-				eq(n, omega_sub_as_int(a, b)),
-				eq(k, omega_sub_as_int(b, a))
-			)
-		})
-	})
-}
+	theorem int_add_def(cls m: @11, cls n: @21) {
+		in(m, int), in(n, int) |- {
+			with (pr predicate = (cls k) => {
+				Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => {
+					A(A(eq(m, omega_sub_as_int(a1, b1)), eq(n, omega_sub_as_int(a2, b2))), eq(k, omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2))))
+				})
+			}) {
+				$X = [@h1; @h2] > int_add_X as X(predicate);
+				$Q = [@h1; @h2] > int_add_Q as Q(predicate);
 
-"정수 뺄셈."
-[precedence=300]
-$#1<<-_\Z>>#2$
-cls int_sub(cls m, cls n) {
-	int_add(m, int_neg(n))
-}
+				[$X; $Q] > XQ_to_Xq > instantiate_def as predicate(int_add(m, n))
+			}
+		}
+	}
 
-"정수 곱셈."
-[precedence=299]
-$#1<<\times_\Z>>#2$
-cls int_mul(cls m, cls n) {
-	instantiate((cls k) => {
-		Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => {
-			A(
+	theorem int_add_def_alt(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41, cls m: @51, cls n: @61) {
+		in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega),
+		eq(m, omega_sub_as_int(a1, b1)), eq(n, omega_sub_as_int(a2, b2)) |- {
+			with ([cls -> pr4] predicate4 = (cls k) => {
+				($a_1'$ cls a1p, $b_1'$ cls b1p, $a_2'$ cls a2p, $b_2'$ cls b2p) => {
+					A(A(eq(m, omega_sub_as_int(a1p, b1p)), eq(n, omega_sub_as_int(a2p, b2p))), eq(k, omega_sub_as_int(omega_add(a1p, a2p), omega_add(b1p, b2p))))
+				}
+			}) {
+				$int_m = [@h5; [@h1; @h2] > omega_sub_as_int_in_int] > eq_in;
+				$int_n = [@h6; [@h3; @h4] > omega_sub_as_int_in_int] > eq_in;
+				
+				$X = [$int_m; $int_n] > int_add_def as Xin4(omega, omega, omega, omega, predicate4(int_add(m, n)));
+				
+				$U = ($a_1'$ cls a1p, $b_1'$ cls b1p, $a_2'$ cls a2p, $b_2'$ cls b2p) => {
+					in(a1p, omega), in(b1p, omega), in(a2p, omega), in(b2p, omega) |- {
+						/* @h11 */ (predicate4(int_add(m, n)))(a1p, b1p, a2p, b2p) |- {
+							$foo = @h11 > Ae1;
+							$m_is_a1pb1p = $foo > Ae1;
+							$n_is_a2pb2p = $foo > Ae2;
+							$bar = @h11 > Ae2;
+
+							$1 = [@h5 > eq_symmetric; $m_is_a1pb1p] > eq_transitive;
+							$2 = [@h6 > eq_symmetric; $n_is_a2pb2p] > eq_transitive;
+
+							[
+								$bar;
+								[@h1; @h2; @h3; @h4; @h7; @h8; @h9; @h10; $1; $2] > omega_add_sub_eq_i > eq_symmetric
+							] > eq_transitive
+						} > cp
+					}
+				} > Uin4i;
+				
+				[$X; $U] > mpXin4_alt as eq(int_add(m, n), omega_sub_as_int(omega_add(a1, a2), omega_add(b1, b2)))
+			}
+		}
+	}
+
+	theorem int_add_def_alt2(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41) {
+		in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega) |- {
+			[
+				@h1; @h2; @h3; @h4;
+				eq_reflexive(omega_sub_as_int(a1, b1));
+				eq_reflexive(omega_sub_as_int(a2, b2))
+			] > int_add_def_alt
+		}
+	}
+
+	theorem int_add_commutative(cls m: @11, cls n: @21) {
+		in(m, int), in(n, int) |- {
+			$X = @h1 > int_in_e as Xin2(omega, omega, (cls a1, cls b1) => eq(m, omega_sub_as_int(a1, b1)));
+			
+			$U = (cls a1, cls b1) => {
+				in(a1, omega), in(b1, omega) |- {
+					eq(m, omega_sub_as_int(a1, b1)) |- {
+						$X = @h2 > int_in_e as Xin2(omega, omega, (cls a2, cls b2) => eq(n, omega_sub_as_int(a2, b2)));
+
+						$U = (cls a2, cls b2) => {
+							in(a2, omega), in(b2, omega) |- {
+								eq(n, omega_sub_as_int(a2, b2)) |- {
+									$1 = [@h3; @h4; @h6; @h7; @h5; @h8] > int_add_def_alt;
+									$2 = [@h6; @h7; @h3; @h4; @h8; @h5] > int_add_def_alt;
+
+									$3 = [@h3; @h6] > omega_add_commutative;
+									$4 = [@h4; @h7] > omega_add_commutative;
+
+									[
+										$1;
+										[$3; $4] > omega_sub_as_int_eq_i;
+										$2 > eq_symmetric
+									] > eq_transitive_3
+								} > cp
+							}
+						} > Uin2i;
+
+						[$X; $U] > mpXin2_alt as eq(int_add(m, n), int_add(n, m))
+					} > cp
+				}
+			} > Uin2i;
+			
+			[$X; $U] > mpXin2_alt as eq(int_add(m, n), int_add(n, m))
+		}
+	}
+
+	theorem int_add_associative(cls l: @11, cls m: @21, cls n: @31) {
+		in(l, int), in(m, int), in(n, int) |- {
+			$U = (cls a1, cls b1) => {
+				/* @h4 */ in(a1, omega), in(b1, omega) |- {
+					with (cls l = omega_sub_as_int(a1, b1)) {
+						$U = (cls a2, cls b2) => {
+							/* @h6 */ in(a2, omega), in(b2, omega) |- {
+								with (cls m = omega_sub_as_int(a2, b2)) {
+									$U = (cls a3, cls b3) => {
+										/* @h8 */ in(a3, omega), in(b3, omega) |- {
+											with (cls n = omega_sub_as_int(a3, b3)) {
+												$nat_a12 = [@h4; @h6] > omega_add_in_omega;
+												$nat_b12 = [@h5; @h7] > omega_add_in_omega;
+												$nat_a23 = [@h6; @h8] > omega_add_in_omega;
+												$nat_b23 = [@h7; @h9] > omega_add_in_omega;
+												
+												$1 = [
+													[@h4; @h5; @h6; @h7] > int_add_def_alt2 > int_add_eq_i_right(?, ?, n);
+													[$nat_a12; $nat_b12; @h8; @h9] > int_add_def_alt2
+												] > eq_transitive;
+												
+												$2 = [
+													[@h4; @h6; @h8] > omega_add_associative;
+													[@h5; @h7; @h9] > omega_add_associative
+												] > omega_sub_as_int_eq_i;
+												
+												$3 = [
+													[@h6; @h7; @h8; @h9] > int_add_def_alt2 > int_add_eq_i_left(l, ?, ?);
+													[@h4; @h5; $nat_a23; $nat_b23] > int_add_def_alt2
+												] > eq_transitive;
+												
+												[$1; $2; $3 > eq_symmetric] > eq_transitive_3
+											}
+										}
+									} > Uin2i > int_U as Uin(int, (cls n) => eq(
+										int_add(int_add(l, m), n),
+										int_add(l, int_add(m, n))
+									));
+									
+									[$U; @h3] > Uin_e
+								}
+							}
+						} > Uin2i > int_U as Uin(int, (cls m) => eq(
+							int_add(int_add(l, m), n),
+							int_add(l, int_add(m, n))
+						));
+						
+						[$U; @h2] > Uin_e
+					}
+				}
+			} > Uin2i > int_U as Uin(int, (cls l) => eq(
+				int_add(int_add(l, m), n),
+				int_add(l, int_add(m, n))
+			));
+			
+			[$U; @h1] > Uin_e
+		}
+	}
+
+	"정수의 덧셈의 역원."
+	$\left(<<-_\Z>>#1\right)$
+	cls int_neg(cls n) {
+		instantiate((cls k) => {
+			Xin2(omega, omega, (cls a, cls b) => {
 				A(
-					eq(m, omega_sub_as_int(a1, b1)),
-					eq(n, omega_sub_as_int(a2, b2))
-				),
-				eq(k, omega_sub_as_int(
-					omega_add(omega_mul(a1, a2), omega_mul(b1, b2)),
-					omega_add(omega_mul(a1, b2), omega_mul(a2, b1))
-				))
-			)
+					eq(n, omega_sub_as_int(a, b)),
+					eq(k, omega_sub_as_int(b, a))
+				)
+			})
 		})
-	})
+	}
+
+	"정수 뺄셈."
+	[precedence=300]
+	$#1<<-_\Z>>#2$
+	cls int_sub(cls m, cls n) {
+		int_add(m, int_neg(n))
+	}
+
+	"정수 곱셈."
+	[precedence=299]
+	$#1<<\times_\Z>>#2$
+	cls int_mul(cls m, cls n) {
+		instantiate((cls k) => {
+			Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => {
+				A(
+					A(
+						eq(m, omega_sub_as_int(a1, b1)),
+						eq(n, omega_sub_as_int(a2, b2))
+					),
+					eq(k, omega_sub_as_int(
+						omega_add(omega_mul(a1, a2), omega_mul(b1, b2)),
+						omega_add(omega_mul(a1, b2), omega_mul(a2, b1))
+					))
+				)
+			})
+		})
+	}
 }
