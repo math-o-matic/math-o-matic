@@ -18,9 +18,9 @@ function removeLocationAndStringify(obj: any) {
 
 describe('Unparser', function () {
 	[
-		'propositional', 'predicate', 'set',
-		'relation', 'function', 'natural',
-		'algebra', 'integer'
+		'Propositional', 'Predicate', 'Set',
+		'Relation', 'Function', 'Natural',
+		'Algebra', 'Integer'
 	].forEach(name => {
 		it(`can unparse ${name}.math`, async function () {
             var o = fs.readFileSync(path.join(__dirname, '../math/' + name + '.math'), 'utf-8');
@@ -36,9 +36,9 @@ describe('Program', function () {
 	var program = new Program();
 
 	[
-		'propositional', 'predicate', 'set',
-		'relation', 'function', 'natural',
-		'algebra', 'integer'
+		'Propositional', 'Predicate', 'Set',
+		'Relation', 'Function', 'Natural',
+		'Algebra', 'Integer'
 	].forEach(name => {
 		it(`can load ${name}.math`, async function () {
 			await program.loadModule(name, (filename: string) => ({

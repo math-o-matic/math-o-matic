@@ -1,6 +1,6 @@
-import function;
+import Function;
 
-system natural extends function {
+system Natural extends Function {
 	"따름 순서수(successor ordinal)."
 	${#1}^{<<+>>}$
 	cls successor(cls x) {

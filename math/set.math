@@ -1,6 +1,6 @@
-import predicate;
+import Predicate;
 
-system set extends predicate {
+system Set extends Predicate {
 	"집합론에서 정의하는 [$\in] 관계."
 	[precedence=450]
 	$#1<<\in>>#2$

@@ -1,4 +1,4 @@
-system propositional {
+system Propositional {
 	"문장 타입."
 	type st;
 

@@ -1,6 +1,6 @@
-import propositional;
+import Propositional;
 
-system predicate extends propositional {
+system Predicate extends Propositional {
 	"클래스 타입. 술어 논리에서 쓰인다."
 	type cls;
 

@@ -1,6 +1,6 @@
-import set;
+import Set;
 
-system relation extends set {
+system Relation extends Set {
 	"순서쌍(ordered pair). Kuratowski의 정의이다."
 	$\left(#1<<,>>#2\right)$
 	sealed cls pair(cls x, cls y) {

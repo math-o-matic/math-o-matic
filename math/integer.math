@@ -1,6 +1,6 @@
-import natural;
+import Natural;
 
-system integer extends natural {
+system Integer extends Natural {
 	"정수 집합의 정의를 위해 사용되는 이항관계."
 	${\sim}_{\omega\times\omega}$
 	cls rel_omega_pair = setbuilder_pair((cls x, cls y) => {

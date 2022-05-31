@@ -9,9 +9,9 @@ var program = new Program();
 
 (async () => {
 	var arr = [
-		'propositional', 'predicate', 'set',
-		'relation', 'function', 'natural',
-		'algebra', 'integer'
+		'Propositional', 'Predicate', 'Set',
+		'Relation', 'Function', 'Natural',
+		'Algebra', 'Integer'
 	];
 
 	var result: {

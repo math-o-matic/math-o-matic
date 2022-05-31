@@ -14,7 +14,7 @@ export default class FileScope extends Scope {
 	public readonly systemMap = new Map<string, SystemScope>();
 
 	/**
-	 * 파일 경로. 예를 들어 `/propositional.math`이다. 파일과 일대일대응이어야 한다.
+	 * 파일 경로. 예를 들어 `/Propositional.math`이다. 파일과 일대일대응이어야 한다.
 	 */
 	public readonly fileUri: string | null;
 
