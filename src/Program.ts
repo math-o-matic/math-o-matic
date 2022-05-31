@@ -109,77 +109,18 @@ export default class Program {
 					}
 					break;
 				case 'defsystem':
-					var sysScope = new SystemScope(scope, line.name, scope.trace.extend({
-						type: 'system',
-						name: line.name,
-						location: line.location
-					}));
+					var sysScope = PegInterface.defsystem(line, scope);
 
-					for (var extendName of line.extends_) {
-						var extend = scope.getSystem(extendName);
-						sysScope.extendsMap.set(extend.name, extend);
+					if (scope.hasSystem(sysScope.name)) {
+						throw scope.error(`System ${sysScope.name} has already been declared`);
 					}
 
-					Program.feed2(line.lines, sysScope);
 					scope.addSystem(sysScope);
 					break;
 				default:
 					throw Error(`Unknown line type ${(line as any)._type}`);
 			}
 		};
-	}
-
-	public static feed2(lines: LineObject[], scope: SystemScope) {
-		for (var line of lines) {
-			switch (line._type) {
-				case 'typedef':
-					var type = PegInterface.type(line, scope) as SimpleType;
-
-					if (scope.hasType(type.name)) {
-						throw scope.error(`Type ${type.name} has already been declared`);
-					}
-
-					scope.addType(type);
-					break;
-				case 'defv':
-					var variable = PegInterface.variable(line, scope);
-
-					if (scope.hasVariable(variable.name)) {
-						throw scope.error(`Definition ${variable.name} has already been declared`);
-					}
-
-					scope.addVariable(variable);
-					break;
-				case 'defun':
-					var fun = PegInterface.fun(line, scope);
-
-					if (fun instanceof Fun) {
-						throw Error('wut');
-					}
-
-					if (scope.hasVariable(fun.name)) {
-						throw scope.error(`Definition ${fun.name} has already been declared`);
-					}
-
-					scope.addVariable(fun);
-					break;
-				case 'defschema':
-					var schema = PegInterface.schema(line, scope, null);
-
-					if (schema instanceof Fun) {
-						throw Error('wut');
-					}
-
-					if (scope.hasVariable(schema.name)) {
-						throw scope.error(`Schema ${schema.name} has already been declared`);
-					}
-
-					scope.addVariable(schema);
-					break;
-				default:
-					throw Error(`Unknown line type ${(line as any)._type}`);
-			}
-		}
 	}
 
 	public evaluate(code: string) {
@@ -219,12 +160,10 @@ export default class Program {
 	}
 }
 
-import Fun from './expr/Fun';
 import PegInterface from './PegInterface';
-import { EvaluableObject, ImportOrDefsystemObject, LineObject } from './PegInterfaceDefinitions';
+import { EvaluableObject, ImportOrDefsystemObject } from './PegInterfaceDefinitions';
 import ProofExplorer from './ProofExplorer';
 import FileScope from './scope/FileScope';
 import Scope from './scope/Scope';
 import SystemScope from './scope/SystemScope';
 import StackTrace from './StackTrace';
-import { SimpleType } from './type/SimpleType';

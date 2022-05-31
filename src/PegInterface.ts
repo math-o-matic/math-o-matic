@@ -526,6 +526,72 @@ export default class PI {
 			as
 		}, context, scope.trace);
 	}
+
+	public static defsystem(obj: DefsystemObject, parentScope: FileScope): SystemScope {
+		var scope = new SystemScope(parentScope, obj.name, parentScope.trace.extend({
+			type: 'system',
+			name: obj.name,
+			location: obj.location
+		}));
+
+		for (var extendName of obj.extends_) {
+			var extend = parentScope.getSystem(extendName);
+			scope.extendsMap.set(extend.name, extend);
+		}
+
+		for (var line of obj.lines) {
+			switch (line._type) {
+				case 'typedef':
+					var type = PI.type(line, scope) as SimpleType;
+
+					if (scope.hasType(type.name)) {
+						throw scope.error(`Type ${type.name} has already been declared`);
+					}
+
+					scope.addType(type);
+					break;
+				case 'defv':
+					var variable = PI.variable(line, scope);
+
+					if (scope.hasVariable(variable.name)) {
+						throw scope.error(`Definition ${variable.name} has already been declared`);
+					}
+
+					scope.addVariable(variable);
+					break;
+				case 'defun':
+					var fun = PI.fun(line, scope);
+
+					if (fun instanceof Fun) {
+						throw Error('wut');
+					}
+
+					if (scope.hasVariable(fun.name)) {
+						throw scope.error(`Definition ${fun.name} has already been declared`);
+					}
+
+					scope.addVariable(fun);
+					break;
+				case 'defschema':
+					var schema = PI.schema(line, scope, null);
+
+					if (schema instanceof Fun) {
+						throw Error('wut');
+					}
+
+					if (scope.hasVariable(schema.name)) {
+						throw scope.error(`Schema ${schema.name} has already been declared`);
+					}
+
+					scope.addVariable(schema);
+					break;
+				default:
+					throw Error(`Unknown line type ${(line as any)._type}`);
+			}
+		}
+
+		return scope;
+	}
 }
 
 import ExecutionContext from './ExecutionContext';
@@ -538,13 +604,16 @@ import Reduction from './expr/Reduction';
 import Conditional from './expr/Conditional';
 import Variable from './expr/Variable';
 import With from './expr/With';
-import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject } from './PegInterfaceDefinitions';
+import { Def$Object, DefschemaObject, DefunObject, DefvObject, ObjectExprObject, FuncallObject, FunexprObject, ExprObject, ReductionObject, SchemacallObject, SchemaexprObject, StypeObject, ConditionalObject, TypedefObject, TypeObject, VarObject, WithObject, DefsystemObject } from './PegInterfaceDefinitions';
 import Scope, { NestedTypeInput } from './scope/Scope';
 import Precedence from './Precedence';
 import SimpleAtomicDecoration from './decoration/SimpleAtomicDecoration';
 import SimpleMacroDecoration from './decoration/SimpleMacroDecoration';
 import FunctionalMacroDecoration from './decoration/FunctionalMacroDecoration';
 import FunctionalAtomicDecoration from './decoration/FunctionalAtomicDecoration';
-import SchemaDecoration, { SchemaType } from './decoration/SchemaDecoration';import { FunctionalType } from './type/FunctionalType';
+import SchemaDecoration, { SchemaType } from './decoration/SchemaDecoration';
+import { FunctionalType } from './type/FunctionalType';
 import { SimpleType } from './type/SimpleType';
 import Type from './type/Type';
+import FileScope from './scope/FileScope';
+import SystemScope from './scope/SystemScope';
