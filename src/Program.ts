@@ -31,7 +31,7 @@ export type EvalParserType = {
 export default class Program {
 	
 	public scope: SystemScope | null = null;
-	public readonly scopeMap = new Map<string, FileScope>();
+	private readonly scopeMap = new Map<string, FileScope>();
 	
 	public static parser: ParserType = parser;
 	public static evalParser: EvalParserType = evalParser;
@@ -41,7 +41,7 @@ export default class Program {
 	 * 
 	 * This is the list of filenames of the files with a temporary mark during a
 	 * depth-first topological sort. Note that the file is considered to be
-	 * marked with a permanent mark if {@code this.scopeMap} has the filename.
+	 * marked with a permanent mark if {@link scopeMap} has the filename.
 	 * 
 	 * See https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search.
 	 */

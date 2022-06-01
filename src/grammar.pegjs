@@ -1,6 +1,6 @@
 start =
 	_
-	defpackage:(defpackage?)
+	defpackage:(defpackage?) _
 	imports:(i:import _ {return i})*
 	systems:(a:system _ {return a})*
 	{
