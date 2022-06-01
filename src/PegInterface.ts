@@ -534,9 +534,35 @@ export default class PI {
 			location: obj.location
 		}));
 
+		var allInheritedTypesMap = new Map<string, SimpleType>(),
+			allInheritedVariablesMap = new Map<string, Variable>();
+
+		if (new Set(obj.extends_).size != obj.extends_.length) {
+			throw scope.error(`Cannot extend the same system more than twice`);
+		}
+
 		for (var extendName of obj.extends_) {
-			var extend = parentScope.getSystem(extendName);
-			scope.extendsMap.set(extend.name, extend);
+			var super_ = parentScope.getSystem(extendName);
+
+			for (let [k, v] of super_.typeMap) {
+				if (allInheritedTypesMap.has(k)
+						&& allInheritedTypesMap.get(k)! != v) {
+					throw scope.error(`Conflicting definition for the inherited type ${k}`);
+				}
+
+				allInheritedTypesMap.set(k, v);
+			}
+
+			for (let [k, v] of super_.variableMap) {
+				if (allInheritedVariablesMap.has(k)
+						&& allInheritedVariablesMap.get(k)! != v) {
+					throw scope.error(`Conflicting definition for the inherited variable ${k}`);
+				}
+
+				allInheritedVariablesMap.set(k, v);
+			}
+
+			scope.extendsMap.set(super_.name, super_);
 		}
 
 		for (var line of obj.lines) {
