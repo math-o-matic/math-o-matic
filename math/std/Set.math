@@ -1,4 +1,6 @@
-import Predicate;
+package std;
+
+import std.Predicate;
 
 system Set extends Predicate {
 	"집합론에서 정의하는 [$\in] 관계."

@@ -1,4 +1,6 @@
-import Relation;
+package std;
+
+import std.Relation;
 
 system Function extends Relation {
 	"어떤 [$\langle f, A, B\rangle]가 함수이다.

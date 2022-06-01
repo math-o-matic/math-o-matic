@@ -1,4 +1,6 @@
-import Function;
+package std;
+
+import std.Function;
 
 system Natural extends Function {
 	"따름 순서수(successor ordinal)."

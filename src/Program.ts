@@ -18,7 +18,7 @@ interface LoaderReturnType {
 	code: string;
 }
 
-type LoaderType = (packageName: string) => (LoaderReturnType | Promise<LoaderReturnType>);
+type LoaderType = (fqn: string) => (LoaderReturnType | Promise<LoaderReturnType>);
 
 export type ParserType = {
 	parse: (code: string) => StartObject;
@@ -31,7 +31,7 @@ export type EvalParserType = {
 export default class Program {
 	
 	public scope: SystemScope | null = null;
-	private readonly scopeMap = new Map<string, FileScope>();
+	private readonly fileScopeMap = new Map<string, FileScope>();
 	
 	public static parser: ParserType = parser;
 	public static evalParser: EvalParserType = evalParser;
@@ -41,57 +41,64 @@ export default class Program {
 	 * 
 	 * This is the list of filenames of the files with a temporary mark during a
 	 * depth-first topological sort. Note that the file is considered to be
-	 * marked with a permanent mark if {@link scopeMap} has the filename.
+	 * marked with a permanent mark if {@link fileScopeMap} has the filename.
 	 * 
 	 * See https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search.
 	 */
 	private loadingModules: string[] | null = null;
 
-	public async loadModule(filename: string, loader: LoaderType): Promise<SystemScope> {
+	public async loadModule(fqn: string, loader: LoaderType): Promise<SystemScope> {
 		this.loadingModules = [];
-		var fileScope = await this.loadModuleInternal(filename, loader);
-		return this.scope = [...fileScope.systemMap.values()][0];
+		var fileScope = await this.loadModuleInternal(fqn, loader);
+
+		var systemName = fqn.slice(fqn.lastIndexOf('.') + 1);
+
+		if (!fileScope.hasSystem(systemName)) {
+			throw Error(`System ${fqn} not found`);
+		}
+
+		return this.scope = fileScope.getSystem(systemName);
 	}
 
-	private async loadModuleInternal(filename: string, loader: LoaderType): Promise<FileScope> {
+	private async loadModuleInternal(fqn: string, loader: LoaderType): Promise<FileScope> {
 		// the file has a permanent mark
-		if (this.scopeMap.has(filename)) {
-			return this.scopeMap.get(filename)!;
+		if (this.fileScopeMap.has(fqn)) {
+			return this.fileScopeMap.get(fqn)!;
 		}
 
 		if (!this.loadingModules) {
 			throw Error('wut');
 		}
 
-		var loadingModuleIndex = this.loadingModules.indexOf(filename);
+		var loadingModuleIndex = this.loadingModules.indexOf(fqn);
 
 		// the file has a temporary mark
 		if (loadingModuleIndex >= 0) {
 			if (loadingModuleIndex == this.loadingModules.length - 1) {
-				throw Error(`Cannot self import (${filename})`);
+				throw Error(`Cannot self import (${fqn})`);
 			}
 
-			var cycle = this.loadingModules.slice(loadingModuleIndex).concat(filename);
+			var cycle = this.loadingModules.slice(loadingModuleIndex).concat(fqn);
 
 			throw Error(`Circular import detected (${cycle.join(' -> ')}). Sadly, circular import is currently not supported.`);
 		}
 
 		// mark the file with a temporary mark
-		this.loadingModules.push(filename);
+		this.loadingModules.push(fqn);
 
-		var {fileUri, code} = await loader(filename);
+		var {fileUri, code} = await loader(fqn);
 
 		var scope = new FileScope(fileUri || null);
 
 		await this.feed(code, scope, loader);
 
 		// remove temporary mark
-		if (this.loadingModules.pop() != filename) {
+		if (this.loadingModules.pop() != fqn) {
 			throw Error('Something\'s wrong');
 		}
 
 		// mark the file with a permanent mark
-		this.scopeMap.set(filename, scope);
+		this.fileScopeMap.set(fqn, scope);
 		return scope;
 	}
 

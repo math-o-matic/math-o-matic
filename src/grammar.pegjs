@@ -26,7 +26,7 @@ defpackage =
 
 import =
 	'import' __
-	name:ident _
+	name:$((ident '.')+ ident) _
 	sem
 	{
 		return {

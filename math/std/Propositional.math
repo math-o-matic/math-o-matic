@@ -1,3 +1,5 @@
+package std;
+
 system Propositional {
 	"문장 타입."
 	type st;

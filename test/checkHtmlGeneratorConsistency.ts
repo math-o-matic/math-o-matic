@@ -21,9 +21,9 @@ var program = new Program();
 	} = {};
 	
 	for (var name of arr) {
-		await program.loadModule(name, (filename: string) => ({
-			fileUri: filename + '.math',
-			code: fs.readFileSync(path.join(__dirname, '../math/' + filename + '.math'), 'utf-8')
+		await program.loadModule('std.' + name, (fqn: string) => ({
+			fileUri: fqn,
+			code: fs.readFileSync(path.join(__dirname, '../math/' + fqn.replace(/\./g, '/') + '.math'), 'utf-8')
 		}));
 
 		var keys = [...program.scope!.variableMap].filter(([k, v]) => v.decoration instanceof SchemaDecoration).map(([k, v]) => k);

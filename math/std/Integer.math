@@ -1,4 +1,6 @@
-import Natural;
+package std;
+
+import std.Natural;
 
 system Integer extends Natural {
 	"정수 집합의 정의를 위해 사용되는 이항관계."

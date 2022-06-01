@@ -138,18 +138,18 @@
 		<script>
 			(() => {
 			
-			var fileList = [
-				['Propositional', 'Propositional logic'],
-				['Predicate', 'Predicate logic'],
-				['Set', 'Set theory'],
-				['Relation', 'Binary relations'],
-				['Function', 'Functions'],
-				['Algebra', 'Algebra'],
-				['Natural', 'Natural numbers'],
-				['Integer', 'Integers']
+			var fqnList = [
+				['std.Propositional', 'Propositional logic'],
+				['std.Predicate', 'Predicate logic'],
+				['std.Set', 'Set theory'],
+				['std.Relation', 'Binary relations'],
+				['std.Function', 'Functions'],
+				['std.Algebra', 'Algebra'],
+				['std.Natural', 'Natural numbers'],
+				['std.Integer', 'Integers']
 			];
 
-			$('#list').innerHTML = fileList.map(([k, v]) => {
+			$('#list').innerHTML = fqnList.map(([k, v]) => {
 				return `<input type="button" value="${v}" style="border:1px #222 solid" onclick="reload('${k}')">`;
 			}).join('');
 
@@ -169,7 +169,7 @@
 			Globals = {
 				program: null,
 				reloading: false,
-				filename: null,
+				fqn: null,
 				currentlyLoadedThing: {
 					_thing: null,
 					set(thing) {
@@ -182,7 +182,7 @@
 				},
 				searchDatabase: [],
 				updateSearchDatabase() {
-					var visitedFiles = [this.filename];
+					var visitedFiles = [this.fqn];
 
 					var searchDatabase = [];
 
@@ -289,12 +289,12 @@
 				}
 			});
 
-			async function reload(filename) {
-				if (!filename) return;
+			async function reload(fqn) {
+				if (!fqn) return;
 
 				if (Globals.reloading) return;
 				Globals.reloading = true;
-				Globals.filename = filename;
+				Globals.fqn = fqn;
 
 				$('#reload').disabled = true;
 				$('#reload svg').classList.add('rotate');
@@ -305,8 +305,8 @@
 					console.log('--- PROGRAM START ---');
 					start = new Date();
 					Globals.program = new MathOMatic.Program();
-					await Globals.program.loadModule(filename, async filename => ({
-						fileUri: `../math/${filename}.math`,
+					await Globals.program.loadModule(fqn, async fqn => ({
+						fileUri: fqn,
 						code: await new Promise((resolve, reject) => {
 							var xhr = new XMLHttpRequest();
 							xhr.addEventListener('load', () => {
@@ -315,7 +315,7 @@
 							xhr.addEventListener('error', () => {
 								reject();
 							});
-							xhr.open('GET', `../math/${filename}.math`);
+							xhr.open('GET', `../math/${fqn.replace(/\./g, '/')}.math`);
 							xhr.send();
 						})
 					}));
@@ -331,7 +331,7 @@
 
 					var generator = new MathOMatic.HtmlGenerator(Globals.program, ktx, yamd);
 					var generated = generator.generate(
-						Globals.filename,
+						Globals.fqn,
 						Globals.expansionList,
 						Globals.getFileLoadPreference() == 'selected-file-and-dependencies'
 					);
@@ -350,7 +350,7 @@
 					console.log('--- HTML RENDER END ---');
 					console.log(`HTML render took ${end - start} ms`);
 
-					Globals.currentlyLoadedThing.set(filename);
+					Globals.currentlyLoadedThing.set(fqn);
 				} finally {
 					$('#reload').disabled = false;
 					$('#reload svg').classList.remove('rotate');
@@ -358,11 +358,11 @@
 				}
 			}
 
-			$('#reload').addEventListener('click', () => reload(Globals.filename));
+			$('#reload').addEventListener('click', () => reload(Globals.fqn));
 
 			hotkeys('r', (evt, handler) => {
 				evt.preventDefault();
-				reload(Globals.filename);
+				reload(Globals.fqn);
 			});
 		</script>
 		<div id="popper-tooltip-holder"></div>

@@ -23,7 +23,7 @@ describe('Unparser', function () {
 		'Algebra', 'Integer'
 	].forEach(name => {
 		it(`can unparse ${name}.math`, async function () {
-            var o = fs.readFileSync(path.join(__dirname, '../math/' + name + '.math'), 'utf-8');
+            var o = fs.readFileSync(path.join(__dirname, '../math/std/' + name + '.math'), 'utf-8');
 			var parsed = Program.parser.parse(o);
 			var parsed_unparsed_parsed = Program.parser.parse(unparse(parsed));
 			
@@ -41,9 +41,9 @@ describe('Program', function () {
 		'Algebra', 'Integer'
 	].forEach(name => {
 		it(`can load ${name}.math`, async function () {
-			await program.loadModule(name, (filename: string) => ({
-                fileUri: filename + '.math',
-				code: fs.readFileSync(path.join(__dirname, '../math/' + filename + '.math'), 'utf-8')
+			await program.loadModule('std.' + name, (fqn: string) => ({
+                fileUri: fqn,
+				code: fs.readFileSync(path.join(__dirname, '../math/' + fqn.replace(/\./g, '/') + '.math'), 'utf-8')
 			}));
 		});
 	});
@@ -53,9 +53,9 @@ describe('Issue #52', function () {
 	it('(f(x))(y) == (f(x))(y)', async function () {
 		var program = new Program();
 
-		await program.loadModule('duh', (_filename: string) => ({
+		await program.loadModule('duh', (_fqn: string) => ({
 			code: `
-system s {
+system duh {
 	type cls;
 
 	[cls -> [cls -> cls]] f;
@@ -75,9 +75,9 @@ describe('Sealed macro & using', function () {
 	it('N(p) != (sealed p => N(p))', async function () {
 		var program = new Program();
 		
-		await program.loadModule('duh', (_filename: string) => ({
+		await program.loadModule('duh', (_fqn: string) => ({
 			code: `
-system s {
+system duh {
 	type st;
 
 	st p;
@@ -100,9 +100,9 @@ system s {
 		it(`Issue #53 (${i + 1})`, async function () {
 			var program = new Program();
 			
-			await expect(program.loadModule('duh', (_filename: string) => ({
+			await expect(program.loadModule('duh', (_fqn: string) => ({
 				code: `
-system s {
+system duh {
 	type st;
 	st p;
 	st N(st p);
