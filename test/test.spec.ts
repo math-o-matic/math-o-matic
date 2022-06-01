@@ -6,6 +6,7 @@ import Expr from "../src/expr/Expr";
 import Program from '../src/Program';
 var fs = require('fs');
 var path = require('path');
+var glob = require('glob');
 
 import unparse from '../src/Unparser';
 
@@ -16,14 +17,14 @@ function removeLocationAndStringify(obj: any) {
 	}, 2);
 }
 
+var fqns: string[] = glob.sync('**/*.math', {cwd: 'math'}).map((filename: string) => {
+	return filename.replace(/\//g, '.').replace(/\.math$/, '');
+});
+
 describe('Unparser', function () {
-	[
-		'Propositional', 'Predicate', 'Set',
-		'Relation', 'Function', 'Natural',
-		'Algebra', 'Integer'
-	].forEach(name => {
-		it(`can unparse ${name}.math`, async function () {
-            var o = fs.readFileSync(path.join(__dirname, '../math/std/' + name + '.math'), 'utf-8');
+	fqns.forEach(fqn => {
+		it(`can unparse ${fqn}`, async function () {
+            var o = fs.readFileSync(path.join(__dirname, '../math/' + fqn.replace(/\./g, '/') + '.math'), 'utf-8');
 			var parsed = Program.parser.parse(o);
 			var parsed_unparsed_parsed = Program.parser.parse(unparse(parsed));
 			
@@ -35,13 +36,9 @@ describe('Unparser', function () {
 describe('Program', function () {
 	var program = new Program();
 
-	[
-		'Propositional', 'Predicate', 'Set',
-		'Relation', 'Function', 'Natural',
-		'Algebra', 'Integer'
-	].forEach(name => {
-		it(`can load ${name}.math`, async function () {
-			await program.loadModule('std.' + name, (fqn: string) => ({
+	fqns.forEach(fqn => {
+		it(`can load ${fqn}`, async function () {
+			await program.loadModule(fqn, (fqn: string) => ({
                 fileUri: fqn,
 				code: fs.readFileSync(path.join(__dirname, '../math/' + fqn.replace(/\./g, '/') + '.math'), 'utf-8')
 			}));
