@@ -1,6 +1,5 @@
 import $Variable from "../expr/$Variable";
 import Variable from "../expr/Variable";
-import { LocationObject } from "../PegInterfaceDefinitions";
 import StackTrace from "../StackTrace";
 import { SimpleType } from "../type/SimpleType";
 import FileScope from "./FileScope";

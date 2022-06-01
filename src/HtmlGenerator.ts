@@ -6,7 +6,6 @@ import Fun from "./expr/Fun";
 import Parameter from "./expr/Parameter";
 import Variable from "./expr/Variable";
 import Program from "./Program";
-import FileScope from "./scope/FileScope";
 import SystemScope from "./scope/SystemScope";
 import Type from "./type/Type";
 

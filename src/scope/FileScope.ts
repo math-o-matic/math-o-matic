@@ -1,7 +1,4 @@
-import $Variable from "../expr/$Variable";
-import Variable from "../expr/Variable";
 import StackTrace from "../StackTrace";
-import { SimpleType } from "../type/SimpleType";
 import Scope from "./Scope";
 import SystemScope from "./SystemScope";
 

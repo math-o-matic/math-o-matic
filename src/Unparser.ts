@@ -64,7 +64,7 @@ function recurseInternal(
 	line.extends_.length ? ` extends ${line.extends_.join(', ')}` : ''
 } {
 	${line.lines.map(line => recurse(line, Context.NORMAL, 1)).join('\n\n\t')}
-}`
+}`;
 			break;
 		case 'defschema':
 			return `${
