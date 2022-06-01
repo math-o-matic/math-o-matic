@@ -1,17 +1,22 @@
-import { Def$Object, DefvObject, ObjectExprObject, ImportOrDefsystemObject, ExprObject, StypeObject, TypeObject, LineObject } from "./PegInterfaceDefinitions";
+import { Def$Object, DefvObject, ObjectExprObject, StartObject, ExprObject, StypeObject, TypeObject, LineObject, DefpackageObject, ImportObject, DefsystemObject } from "./PegInterfaceDefinitions";
 
-export default function unparse(tree: ImportOrDefsystemObject[]) {
-	var strings = tree.map(line => recurse(line, Context.NORMAL, 0));
-
+export default function unparse(start: StartObject) {
 	var ret = '';
 
-	for (var i = 0; i < strings.length; i++) {
-		if (i != 0) {
-			ret += tree[i - 1]._type == 'import' && tree[i]._type == 'import'
-				? '\n' : '\n\n';
-		}
+	if (start.defpackage) {
+		ret += recurse(start.defpackage, Context.NORMAL, 0) + '\n\n';
+	}
 
-		ret += strings[i];
+	if (start.imports.length) {
+		for (var importObject of start.imports) {
+			ret += recurse(importObject, Context.NORMAL, 0) + '\n';
+		}
+	
+		ret += '\n';
+	}
+
+	for (var defsystemObject of start.systems) {
+		ret += recurse(defsystemObject, Context.NORMAL, 0) + '\n\n';
 	}
 
 	return ret;
@@ -26,7 +31,7 @@ function isOneLiner(s: string) {
 }
 
 function recurse(
-		line: ImportOrDefsystemObject | LineObject | Def$Object | ExprObject | ObjectExprObject | TypeObject,
+		line: DefpackageObject | ImportObject | DefsystemObject | LineObject | Def$Object | ExprObject | ObjectExprObject | TypeObject,
 		context: Context,
 		indent: number): string {
 	return recurseInternal(line, context)
@@ -34,7 +39,7 @@ function recurse(
 }
 
 function recurseInternal(
-		line: ImportOrDefsystemObject | LineObject | Def$Object | ExprObject | ObjectExprObject | TypeObject,
+		line: DefpackageObject | ImportObject | DefsystemObject | LineObject | Def$Object | ExprObject | ObjectExprObject | TypeObject,
 		context: Context): string {
 	
 	function defv(line: DefvObject, param: boolean) {
@@ -63,6 +68,13 @@ function recurseInternal(
 	}
 
 	switch (line._type) {
+		case 'defpackage':
+			/* export interface DefpackageObject {
+				_type: 'defpackage';
+				name: string;
+				location: LocationObject;
+			} */
+			return `package ${line.name};`;
 		case 'defsystem':
 			/* export interface DefsystemObject {
 				_type: 'defsystem';
@@ -134,7 +146,7 @@ function recurseInternal(
 				filename: string;
 				location: LocationObject;
 			} */
-			return `import ${line.filename};`;
+			return `import ${line.name};`;
 		case 'typedef':
 			/* export interface TypedefObject {
 				_type: 'typedef';

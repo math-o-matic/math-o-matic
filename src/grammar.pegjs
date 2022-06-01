@@ -1,8 +1,40 @@
 start =
 	_
+	defpackage:(defpackage?)
 	imports:(i:import _ {return i})*
 	systems:(a:system _ {return a})*
-	{return imports.concat(systems)}
+	{
+		return {
+			_type: 'start',
+			defpackage: defpackage || null,
+			imports,
+			systems
+		}
+	}
+
+defpackage =
+	'package' __
+	name:$((ident '.')* ident) _
+	sem
+	{
+		return {
+			_type: 'defpackage',
+			name,
+			location: location()
+		}
+	}
+
+import =
+	'import' __
+	name:ident _
+	sem
+	{
+		return {
+			_type: 'import',
+			name,
+			location: location()
+		}
+	}
 
 system =
 	'system' __
@@ -44,18 +76,6 @@ evaluable_internal =
 	/ defun
 	/ defschema
 	/ expr
-
-import =
-	'import' __
-	filename:ident _
-	sem
-	{
-		return {
-			_type: 'import',
-			filename,
-			location: location()
-		}
-	}
 
 typedef =
 	doc:(documentation __)?
@@ -586,6 +606,7 @@ keyword =
 	/ 'axiom'
 	/ 'extends'
 	/ 'import'
+	/ 'package'
 	/ 'schema'
 	/ 'sealed'
 	/ 'system'

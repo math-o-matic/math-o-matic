@@ -21,7 +21,7 @@ interface LoaderReturnType {
 type LoaderType = (packageName: string) => (LoaderReturnType | Promise<LoaderReturnType>);
 
 export type ParserType = {
-	parse: (code: string) => ImportOrDefsystemObject[];
+	parse: (code: string) => StartObject;
 };
 
 export type EvalParserType = {
@@ -96,31 +96,28 @@ export default class Program {
 	}
 
 	public async feed(code: string, scope: FileScope, loader: LoaderType) {
-		var lines = parser.parse(code);
+		var start = parser.parse(code);
 
-		for (var i = 0; i < lines.length; i++) {
-			var line = lines[i];
-			
-			switch (line._type) {
-				case 'import':
-					var imported = await this.loadModuleInternal(line.filename, loader);
-					for (var importedSys of imported.systemMap.values()) {
-						scope.importMap.set(importedSys.name, importedSys);
-					}
-					break;
-				case 'defsystem':
-					var sysScope = PegInterface.defsystem(line, scope);
+		if (start.defpackage) {
+			// TODO
+		}
 
-					if (scope.hasSystem(sysScope.name)) {
-						throw scope.error(`System ${sysScope.name} has already been declared`);
-					}
-
-					scope.addSystem(sysScope);
-					break;
-				default:
-					throw Error(`Unknown line type ${(line as any)._type}`);
+		for (let line of start.imports) {
+			var imported = await this.loadModuleInternal(line.name, loader);
+			for (var importedSys of imported.systemMap.values()) {
+				scope.importMap.set(importedSys.name, importedSys);
 			}
-		};
+		}
+
+		for (let line of start.systems) {
+			var sysScope = PegInterface.defsystem(line, scope);
+
+			if (scope.hasSystem(sysScope.name)) {
+				throw scope.error(`System ${sysScope.name} has already been declared`);
+			}
+
+			scope.addSystem(sysScope);
+		}
 	}
 
 	public evaluate(code: string) {
@@ -161,7 +158,7 @@ export default class Program {
 }
 
 import PegInterface from './PegInterface';
-import { EvaluableObject, ImportOrDefsystemObject } from './PegInterfaceDefinitions';
+import { EvaluableObject, StartObject } from './PegInterfaceDefinitions';
 import ProofExplorer from './ProofExplorer';
 import FileScope from './scope/FileScope';
 import Scope from './scope/Scope';
