@@ -90,23 +90,14 @@ export default class Program {
 
 		var scope = new FileScope(fileUri || null);
 
-		await this.feed(code, scope, loader);
-
-		// remove temporary mark
-		if (this.loadingModules.pop() != fqn) {
-			throw Error('Something\'s wrong');
-		}
-
-		// mark the file with a permanent mark
-		this.fileScopeMap.set(fqn, scope);
-		return scope;
-	}
-
-	public async feed(code: string, scope: FileScope, loader: LoaderType) {
 		var start = parser.parse(code);
 
 		if (start.defpackage) {
-			// TODO
+			var packageName = fqn.slice(0, fqn.lastIndexOf('.'));
+			
+			if (start.defpackage.name != packageName) {
+				throw scope.extend('defpackage', null, start.defpackage.location).error(`Package declaration ${start.defpackage.name} does not match the expected package name ${packageName}`);
+			}
 		}
 
 		for (let line of start.imports) {
@@ -125,6 +116,15 @@ export default class Program {
 
 			scope.addSystem(sysScope);
 		}
+
+		// remove temporary mark
+		if (this.loadingModules.pop() != fqn) {
+			throw Error('Something\'s wrong');
+		}
+
+		// mark the file with a permanent mark
+		this.fileScopeMap.set(fqn, scope);
+		return scope;
 	}
 
 	public evaluate(code: string) {
