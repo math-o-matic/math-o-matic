@@ -18,19 +18,19 @@ export type EvaluableObject = TypedefObject
 		| DefschemaObject
 		| ExprObject;
 
-export interface DefpackageObject {
+export type DefpackageObject = {
 	_type: 'defpackage';
 	name: string;
 	location: LocationObject;
 }
 
-export interface ImportObject {
+export type ImportObject = {
 	_type: 'import';
 	name: string;
 	location: LocationObject;
 }
 
-export interface DefsystemObject {
+export type DefsystemObject = {
 	_type: 'defsystem';
 	name: string;
 	extends_: string[];
@@ -38,7 +38,7 @@ export interface DefsystemObject {
 	location: LocationObject;
 }
 
-export interface TypedefObject {
+export type TypedefObject = {
 	_type: 'typedef';
 	doc: string;
 	expr: FtypeObject;
@@ -46,7 +46,7 @@ export interface TypedefObject {
 	location: LocationObject;
 }
 
-export interface DefvObject {
+export type DefvObject = {
 	_type: 'defv';
 	isParam: boolean;
 	selector?: string;
@@ -59,7 +59,7 @@ export interface DefvObject {
 	location: LocationObject;
 }
 
-export interface DefunObject {
+export type DefunObject = {
 	_type: 'defun';
 	doc: string | null;
 	tex: string | null;
@@ -77,7 +77,7 @@ export interface DefunObject {
 export type ObjectExprObject = FuncallObject | FunexprObject | VarObject;
 export type ExprObject = ConditionalObject | ReductionObject | SchemacallObject | WithObject | VarObject | SchemaexprObject;
 
-export interface DefschemaObject {
+export type DefschemaObject = {
 	_type: 'defschema';
 	doc: string;
 	schemaType: SchemaType,
@@ -89,7 +89,7 @@ export interface DefschemaObject {
 	location: LocationObject;
 }
 
-export interface ReductionObject {
+export type ReductionObject = {
 	_type: 'reduction';
 	subject: ExprObject;
 	args: Array<ObjectExprObject | null>;
@@ -98,28 +98,28 @@ export interface ReductionObject {
 	location: LocationObject;
 }
 
-export interface SchemacallObject {
+export type SchemacallObject = {
 	_type: 'schemacall';
 	schema: ExprObject;
 	args: ObjectExprObject[];
 	location: LocationObject;
 }
 
-export interface FuncallObject {
+export type FuncallObject = {
 	_type: 'funcall';
 	schema: ObjectExprObject;
 	args: ObjectExprObject[];
 	location: LocationObject;
 }
 
-export interface FunexprObject {
+export type FunexprObject = {
 	_type: 'funexpr';
 	params: DefvObject[];
 	expr: ObjectExprObject;
 	location: LocationObject;
 }
 
-export interface SchemaexprObject {
+export type SchemaexprObject = {
 	_type: 'schemaexpr';
 	params: DefvObject[];
 	def$s: Def$Object[];
@@ -127,7 +127,7 @@ export interface SchemaexprObject {
 	location: LocationObject;
 }
 
-export interface WithObject {
+export type WithObject = {
 	_type: 'with';
 	with: DefvObject;
 	def$s: Def$Object[];
@@ -135,7 +135,7 @@ export interface WithObject {
 	location: LocationObject;
 }
 
-export interface ConditionalObject {
+export type ConditionalObject = {
 	_type: 'conditional';
 	left: ExprObject[];
 	def$s: Def$Object[];
@@ -143,21 +143,21 @@ export interface ConditionalObject {
 	location: LocationObject;
 }
 
-export interface Def$Object {
+export type Def$Object = {
 	_type: 'def$';
 	name: string;
 	expr: ExprObject;
 	location: LocationObject;
 }
 
-export interface StypeObject {
+export type StypeObject = {
 	_type: 'type';
 	ftype: false;
 	name: string;
 	location: LocationObject;
 }
 
-export interface FtypeObject {
+export type FtypeObject = {
 	_type: 'type';
 	ftype: true;
 	from: TypeObject[];
@@ -167,19 +167,19 @@ export interface FtypeObject {
 
 export type TypeObject = StypeObject | FtypeObject;
 
-export interface VarObject {
+export type VarObject = {
 	_type: 'var';
 	type: '@' | '$' | 'normal';
 	name: string;
 	location: LocationObject;
 }
 
-export interface LocationObject {
+export type LocationObject = {
 	start: LocationObjectInternal;
 	end: LocationObjectInternal;
 }
 
-interface LocationObjectInternal {
+type LocationObjectInternal = {
 	offset: number;
 	line: number;
 	column: number;

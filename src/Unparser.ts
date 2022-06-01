@@ -1,4 +1,4 @@
-import { Def$Object, DefvObject, ObjectExprObject, StartObject, ExprObject, StypeObject, TypeObject, LineObject, DefpackageObject, ImportObject, DefsystemObject } from "./PegInterfaceDefinitions";
+import { Def$Object, DefvObject, ObjectExprObject, StartObject, ExprObject, TypeObject, LineObject, DefpackageObject, ImportObject, DefsystemObject } from "./PegInterfaceDefinitions";
 
 export default function unparse(start: StartObject) {
 	var ret = '';
@@ -35,6 +35,7 @@ function recurse(
 		context: Context,
 		indent: number): string {
 	return recurseInternal(line, context)
+		// .replace(/\n/g, '\n' + '\t'.repeat(indent))
 		.replace(/(?<=\n)\s+(?=\n)/g, '');
 }
 
@@ -43,18 +44,6 @@ function recurseInternal(
 		context: Context): string {
 	
 	function defv(line: DefvObject, param: boolean) {
-		/* export interface DefvObject {
-			_type: 'defv';
-			isParam: boolean;
-			selector?: string;
-			doc: string;
-			tex: string;
-			sealed?: boolean;
-			type: TypeObject;
-			name: string;
-			expr?: ObjectExprObject;
-			location: LocationObject;
-		} */
 		var s = param ? ' ' : '\n';
 		return `${
 	line.doc ? `"${line.doc}"` + s : ''
@@ -69,20 +58,8 @@ function recurseInternal(
 
 	switch (line._type) {
 		case 'defpackage':
-			/* export interface DefpackageObject {
-				_type: 'defpackage';
-				name: string;
-				location: LocationObject;
-			} */
 			return `package ${line.name};`;
 		case 'defsystem':
-			/* export interface DefsystemObject {
-				_type: 'defsystem';
-				name: string;
-				extends_: string[];
-				lines: LineObject[];
-				location: LocationObject;
-			} */
 			return `system ${line.name}${
 	line.extends_.length ? ` extends ${line.extends_.join(', ')}` : ''
 } {
@@ -90,17 +67,6 @@ function recurseInternal(
 }`
 			break;
 		case 'defschema':
-			/* export interface DefschemaObject {
-				_type: 'defschema';
-				doc: string;
-				schemaType: SchemaType,
-				name: string;
-				params: DefvObject[];
-				using: string[];
-				def$s: Def$Object[];
-				expr: ExprObject;
-				location: LocationObject;
-			} */
 			return `${
 	line.doc ? `"${line.doc}"\n` : ''
 }${line.schemaType} ${line.name}(${
@@ -111,20 +77,6 @@ function recurseInternal(
 	}
 }`;
 		case 'defun':
-			/* export interface DefunObject {
-				_type: 'defun';
-				doc: string;
-				tex: string;
-				tex_attributes: {
-					precedence: number
-				};
-				sealed: boolean;
-				rettype: TypeObject;
-				name: string;
-				params: DefvObject[];
-				expr: ObjectExprObject;
-				location: LocationObject;
-			} */
 			return `${
 	line.doc ? `"${line.doc}"\n` : ''
 }${typeof line.tex_attributes.precedence == 'number' ? `[precedence=${line.tex_attributes.precedence}]\n` : ''}${
@@ -141,41 +93,16 @@ function recurseInternal(
 		case 'defv':
 			return defv(line, line.isParam);
 		case 'import':
-			/* export interface ImportObject {
-				_type: 'import';
-				filename: string;
-				location: LocationObject;
-			} */
 			return `import ${line.name};`;
 		case 'typedef':
-			/* export interface TypedefObject {
-				_type: 'typedef';
-				doc: string;
-				expr: FtypeObject;
-				name: string;
-				location: LocationObject;
-			} */
 			return `${
 	line.doc ? `"${line.doc}"\n` : ''
 }type ${line.name}${
 	line.expr ? ' = ' + recurse(line.expr, Context.NORMAL, 0) : ''
 };`;
 		case 'def$':
-			/* export interface Def$Object {
-				_type: 'def$';
-				name: string;
-				expr: ExprObject;
-				location: LocationObject;
-			} */
 			return `${line.name} = ${recurse(line.expr, Context.NORMAL, 0)};`;
 		case 'conditional':
-			/* export interface ConditionalObject {
-				_type: 'conditional';
-				left: ExprObject[];
-				def$s: Def$Object[];
-				right: ExprObject;
-				location: LocationObject;
-			} */
 			if (context <= Context.CONDITIONALLEFT)
 				return '(' + recurse(line, Context.NORMAL, 0) + ')';
 			
@@ -212,14 +139,6 @@ function recurseInternal(
 				def$s.map(d => d + '\n\n\t').join('')
 			}${right}${braces[1]}`;
 		case 'reduction':
-			/* export interface ReductionObject {
-				_type: 'reduction';
-				subject: ExprObject;
-				args: Array<ObjectExprObject | null>;
-				antecedents: ExprObject[];
-				as: ExprObject;
-				location: LocationObject;
-			} */
 			if (context <= Context.REDUCTIONRIGHT)
 				return '(' + recurse(line, Context.NORMAL, 0) + ')';
 			
@@ -250,19 +169,6 @@ function recurseInternal(
 			}${line.as ? ' as ' + recurse(line.as, Context.REDUCTIONRIGHT, 0) : ''}`;
 		case 'schemacall':
 		case 'funcall':
-			/* export interface SchemacallObject {
-				_type: 'schemacall';
-				schema: ExprObject;
-				args: ObjectExprObject[];
-				location: LocationObject;
-			} */
-
-			/* export interface FuncallObject {
-				_type: 'funcall';
-				schema: ObjectExprObject;
-				args: ObjectExprObject[];
-				location: LocationObject;
-			} */
 			var brackets = ['var'].includes(line.schema._type)
 				? ['', '']
 				: ['(', ')'];
@@ -271,25 +177,12 @@ function recurseInternal(
 				line.args.map(arg => recurse(arg, Context.NORMAL, 0)).join(', ')
 			})`;
 		case 'with':
-			/* export interface WithObject {
-				_type: 'with';
-				with: DefvObject;
-				def$s: Def$Object[];
-				expr: ExprObject;
-				location: LocationObject;
-			} */
 			return `with (${defv(line.with, true)}) {
 	${line.def$s.map(def$ => recurse(def$, Context.NORMAL, 1) + '\n\n\t').join('')}${
 		recurse(line.expr, Context.NORMAL, 1)
 	}
 }`;
 		case 'var':
-			/* export interface VarObject {
-				_type: 'var';
-				type: '@' | '$' | 'normal';
-				name: string;
-				location: LocationObject;
-			} */
 			switch (line.type) {
 				case '@': return line.name;
 				case '$': return line.name;
@@ -297,20 +190,6 @@ function recurseInternal(
 			}
 		case 'schemaexpr':
 		case 'funexpr':
-			/* export interface SchemaexprObject {
-				_type: 'schemaexpr';
-				params: DefvObject[];
-				def$s: Def$Object[];
-				expr: ExprObject;
-				location: LocationObject;
-			} */
-
-			/* export interface FunexprObject {
-				_type: 'funexpr';
-				params: DefvObject[];
-				expr: ObjectExprObject;
-				location: LocationObject;
-			} */
 			if (context == Context.CALLEE)
 				return recurse(line, Context.NORMAL, 0);
 			
@@ -337,23 +216,10 @@ function recurseInternal(
 			}${expr}${braces[1]}`;
 		case 'type':
 			if (line.ftype) {
-				/* export interface FtypeObject {
-					_type: 'type';
-					ftype: true;
-					from: TypeObject[];
-					to: TypeObject;
-					location: LocationObject;
-				} */
 				var from = line.from.map(f => recurse(f, Context.NORMAL, 0)).join(', ');
 				return `[${from} -> ${recurse(line.to, Context.NORMAL, 0)}]`;
 			} else  {
-				/* export interface StypeObject {
-					_type: 'type';
-					ftype: false;
-					name: string;
-					location: LocationObject;
-				} */
-				return (line as StypeObject).name;
+				return line.name;
 			}
 		default:
 			throw Error('Unhandled type ' + (line as any)._type);
