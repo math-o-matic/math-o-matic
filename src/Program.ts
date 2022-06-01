@@ -31,25 +31,33 @@ export type EvalParserType = {
 export default class Program {
 	
 	public scope: SystemScope | null = null;
-	private readonly fileScopeMap = new Map<string, FileScope>();
 	
 	public static parser: ParserType = parser;
 	public static evalParser: EvalParserType = evalParser;
 
 	/**
-	 * A temporary list used by {@link loadModuleInternal} method.
+	 * A temporary list used by {@link loadSystemInternal} method.
 	 * 
-	 * This is the list of filenames of the files with a temporary mark during a
-	 * depth-first topological sort. Note that the file is considered to be
-	 * marked with a permanent mark if {@link fileScopeMap} has the filename.
+	 * This is the list of FQNs of the systems with a temporary mark during a
+	 * depth-first topological sort. Note that the system is considered to be
+	 * marked with a permanent mark if {@link fileScopeMap} has the FQN.
 	 * 
 	 * See https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search.
 	 */
-	private loadingModules: string[] | null = null;
+	private loadingSystems: string[] | null = null;
 
-	public async loadModule(fqn: string, loader: LoaderType): Promise<SystemScope> {
-		this.loadingModules = [];
-		var fileScope = await this.loadModuleInternal(fqn, loader);
+	/**
+	 * A map that maps the FQN of the system to the {@link FileScope} that
+	 * contains the system.
+	 * 
+	 * See {@link loadingSystems}.
+	 */
+	private readonly fileScopeMap = new Map<string, FileScope>();
+
+	public async loadSystem(fqn: string, loader: LoaderType): Promise<SystemScope> {
+		this.loadingSystems = [];
+
+		var fileScope = await this.loadSystemInternal(fqn, loader);
 
 		var systemName = fqn.slice(fqn.lastIndexOf('.') + 1);
 
@@ -60,31 +68,31 @@ export default class Program {
 		return this.scope = fileScope.getSystem(systemName);
 	}
 
-	private async loadModuleInternal(fqn: string, loader: LoaderType): Promise<FileScope> {
-		// the file has a permanent mark
+	private async loadSystemInternal(fqn: string, loader: LoaderType): Promise<FileScope> {
+		// the system has a permanent mark
 		if (this.fileScopeMap.has(fqn)) {
 			return this.fileScopeMap.get(fqn)!;
 		}
 
-		if (!this.loadingModules) {
+		if (!this.loadingSystems) {
 			throw Error('wut');
 		}
 
-		var loadingModuleIndex = this.loadingModules.indexOf(fqn);
+		var loadingSystemIndex = this.loadingSystems.indexOf(fqn);
 
-		// the file has a temporary mark
-		if (loadingModuleIndex >= 0) {
-			if (loadingModuleIndex == this.loadingModules.length - 1) {
+		// the system has a temporary mark
+		if (loadingSystemIndex >= 0) {
+			if (loadingSystemIndex == this.loadingSystems.length - 1) {
 				throw Error(`Cannot self import (${fqn})`);
 			}
 
-			var cycle = this.loadingModules.slice(loadingModuleIndex).concat(fqn);
+			var cycle = this.loadingSystems.slice(loadingSystemIndex).concat(fqn);
 
 			throw Error(`Circular import detected (${cycle.join(' -> ')}). Sadly, circular import is currently not supported.`);
 		}
 
-		// mark the file with a temporary mark
-		this.loadingModules.push(fqn);
+		// mark the system with a temporary mark
+		this.loadingSystems.push(fqn);
 
 		var {fileUri, code} = await loader(fqn);
 
@@ -101,7 +109,7 @@ export default class Program {
 		}
 
 		for (let line of start.imports) {
-			var imported = await this.loadModuleInternal(line.name, loader);
+			var imported = await this.loadSystemInternal(line.name, loader);
 			for (var importedSys of imported.systemMap.values()) {
 				scope.importMap.set(importedSys.name, importedSys);
 			}
@@ -117,12 +125,12 @@ export default class Program {
 			scope.addSystem(sysScope);
 		}
 
-		// remove temporary mark
-		if (this.loadingModules.pop() != fqn) {
+		// remove the temporary mark
+		if (this.loadingSystems.pop() != fqn) {
 			throw Error('Something\'s wrong');
 		}
 
-		// mark the file with a permanent mark
+		// mark the system with a permanent mark
 		this.fileScopeMap.set(fqn, scope);
 		return scope;
 	}

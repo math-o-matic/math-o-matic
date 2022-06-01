@@ -38,7 +38,7 @@ describe('Program', function () {
 
 	fqns.forEach(fqn => {
 		it(`can load ${fqn}`, async function () {
-			await program.loadModule(fqn, (fqn: string) => ({
+			await program.loadSystem(fqn, (fqn: string) => ({
                 fileUri: 'math/' + fqn.replace(/\./g, '/') + '.math',
 				code: fs.readFileSync(path.join(__dirname, '../math/' + fqn.replace(/\./g, '/') + '.math'), 'utf-8')
 			}));
@@ -50,7 +50,7 @@ describe('Issue #52', function () {
 	it('(f(x))(y) == (f(x))(y)', async function () {
 		var program = new Program();
 
-		await program.loadModule('duh', (_fqn: string) => ({
+		await program.loadSystem('duh', (_fqn: string) => ({
 			code: `
 system duh {
 	type cls;
@@ -72,7 +72,7 @@ describe('Sealed macro & using', function () {
 	it('N(p) != (sealed p => N(p))', async function () {
 		var program = new Program();
 		
-		await program.loadModule('duh', (_fqn: string) => ({
+		await program.loadSystem('duh', (_fqn: string) => ({
 			code: `
 system duh {
 	type st;
@@ -97,7 +97,7 @@ system duh {
 		it(`Issue #53 (${i + 1})`, async function () {
 			var program = new Program();
 			
-			await expect(program.loadModule('duh', (_fqn: string) => ({
+			await expect(program.loadSystem('duh', (_fqn: string) => ({
 				code: `
 system duh {
 	type st;

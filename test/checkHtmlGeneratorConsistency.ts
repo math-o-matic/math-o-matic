@@ -21,7 +21,7 @@ var program = new Program();
 	} = {};
 	
 	for (var name of arr) {
-		await program.loadModule('std.' + name, (fqn: string) => ({
+		await program.loadSystem('std.' + name, (fqn: string) => ({
 			fileUri: 'math/' + fqn.replace(/\./g, '/') + '.math',
 			code: fs.readFileSync(path.join(__dirname, '../math/' + fqn.replace(/\./g, '/') + '.math'), 'utf-8')
 		}));

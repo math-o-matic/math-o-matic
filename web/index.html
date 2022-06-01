@@ -305,7 +305,7 @@
 					console.log('--- PROGRAM START ---');
 					start = new Date();
 					Globals.program = new MathOMatic.Program();
-					await Globals.program.loadModule(fqn, async fqn => ({
+					await Globals.program.loadSystem(fqn, async fqn => ({
 						fileUri: '../math/' + fqn.replace(/\./g, '/') + '.math',
 						code: await new Promise((resolve, reject) => {
 							var xhr = new XMLHttpRequest();
