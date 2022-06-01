@@ -39,7 +39,7 @@ describe('Program', function () {
 	fqns.forEach(fqn => {
 		it(`can load ${fqn}`, async function () {
 			await program.loadModule(fqn, (fqn: string) => ({
-                fileUri: fqn,
+                fileUri: 'math/' + fqn.replace(/\./g, '/') + '.math',
 				code: fs.readFileSync(path.join(__dirname, '../math/' + fqn.replace(/\./g, '/') + '.math'), 'utf-8')
 			}));
 		});
