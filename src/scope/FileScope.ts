@@ -11,14 +11,11 @@ export default class FileScope extends Scope {
 	public readonly systemMap = new Map<string, SystemScope>();
 
 	/**
-	 * 파일 경로. 예를 들어 `/Propositional.math`이다. 파일과 일대일대응이어야 한다.
+	 * 
+	 * @param fileUri 파일 경로. 예를 들어 `/Propositional.math`이다. 파일과 일대일대응이어야 한다. stack trace를 만들 때 쓰인다.
 	 */
-	public readonly fileUri: string | null;
-
 	constructor (fileUri: string | null) {
 		super(null, new StackTrace(fileUri));
-
-		this.fileUri = fileUri;
 	}
 	
 	public hasSystem(name: string): boolean {
