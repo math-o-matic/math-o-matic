@@ -116,7 +116,7 @@
 				}
 			</script>
 		</blockquote>
-		<p style="margin-top:1em">This page shows the current math-o-matic proof system located at <code>/math</code>. Click on one of the buttons at the bottom of this page to load the proof system. Depending on the performance of your device this may take a lot of time.</p>
+		<p style="margin-top:1em">This page shows the current math-o-matic proof system located at <code>/math</code>. Click on one of the links at the bottom of this page to load the proof system. Depending on the performance of your device this may take a lot of time.</p>
 		<h2>Operator precedence</h2>
 		<div id="precedence">[not loaded yet]</div>
 		<h2>References</h2>
@@ -125,6 +125,38 @@
 			<dd>Pinter, C. <i>A Book of Set Theory.</i> Dover Books on Mathematics. Dover Publications, 2014.</dd>
 		</dl>
 		<h2>Definitions</h2>
+		<div id="list">Loading the systempath ...</div>
+		<script>
+			(async () => {
+
+			var res = await fetch('systempath.json');
+
+			if (!res.ok) throw Error(res.statusText);
+
+			Globals.systempath = await res.json();
+
+			var html = (function recurse(obj, packageName) {
+				var ret = '<ul>';
+
+				for (var key in obj) {
+					if (typeof obj[key] == 'string') {
+						ret += `<li><a href="javascript:reload('${packageName + key}')"><b>system</b> ${key}</a> (${obj[key]})</li>`;
+					} else {
+						ret += `<li><b>package</b> ${key}`;
+						ret += recurse(obj[key], key + '.');
+						ret += `</li>`;
+					}
+				}
+
+				ret += '</ul>';
+
+				return ret;
+			})(Globals.systempath.systems, '');
+
+			$('#list').innerHTML = html;
+
+			})();
+		</script>
 		<div style="padding:1em;margin: 1em 0;border:1px #ccc solid; border-radius:1em">
 			<div>
 				<input id="radio-load-selected-file-only" name="radio-load-what" type="radio" checked value="selected-file-only">
@@ -134,27 +166,6 @@
 			</div>
 			<p style="margin-top:1em">Not showing the imported files may break some features.</p>
 		</div>
-		<div id="list"></div>
-		<script>
-			(() => {
-			
-			var fqnList = [
-				['std.Propositional', 'Propositional logic'],
-				['std.Predicate', 'Predicate logic'],
-				['std.Set', 'Set theory'],
-				['std.Relation', 'Binary relations'],
-				['std.Function', 'Functions'],
-				['std.Algebra', 'Algebra'],
-				['std.Natural', 'Natural numbers'],
-				['std.Integer', 'Integers']
-			];
-
-			$('#list').innerHTML = fqnList.map(([k, v]) => {
-				return `<input type="button" value="${v}" style="border:1px #222 solid" onclick="reload('${k}')">`;
-			}).join('');
-
-			})();
-		</script>
 		<div id="summary"></div>
 		<div id="all"></div>
 		<div class="console-wrap-wrap" style="display:none">
@@ -306,14 +317,22 @@
 					start = new Date();
 					Globals.program = new MathOMatic.Program();
 					await Globals.program.loadSystem(fqn, async fqn => {
-						var fileUri = '../math/' + fqn.replace(/\./g, '/') + '.math';
-						var res = await fetch(fileUri);
+						for (var path of Globals.systempath.paths) {
+							try {
+								var fileUri = path + fqn.replace(/\./g, '/') + '.math';
+								var res = await fetch(fileUri);
 
-						if (!res.ok) throw Error(res.statusText);
+								if (!res.ok) continue;
 
-						var code = await res.text();
+								var code = await res.text();
 
-						return {fileUri, code};
+								return {fileUri, code};
+							} catch (e) {
+								continue;
+							}
+						}
+
+						throw Error(`System ${fqn} was not found from paths ${Globals.systempath.paths.join(':')}`);
 					});
 
 					Globals.updateSearchDatabase();

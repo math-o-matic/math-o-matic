@@ -1,0 +1,17 @@
+{
+	"paths": [
+		"../math/"
+	],
+	"systems": {
+		"std": {
+			"Propositional": "Propositional logic",
+			"Predicate": "Predicate logic",
+			"Set": "Set theory",
+			"Relation": "Binary relations",
+			"Function": "Functions",
+			"Algebra": "Algebra",
+			"Natural": "Natural numbers",
+			"Integer": "Integers"
+		}
+	}
+}

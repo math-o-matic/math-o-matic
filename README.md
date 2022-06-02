@@ -8,7 +8,7 @@
 [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/math-o-matic/math-o-matic)](https://lgtm.com/projects/g/math-o-matic/math-o-matic/alerts/)
 [![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/math-o-matic/math-o-matic)](https://lgtm.com/projects/g/math-o-matic/math-o-matic/context:javascript)
 
-**math-o-matic** is a computerized proof system that lets you create an axiomatic system and prove its theorems. Its aim is to make it easy to read and write rigorous mathematical proofs. You can see the current axiomatic system by pressing one of the buttons at the bottom of the [main page](https://math-o-matic.github.io/math-o-matic/web/index.html).
+**math-o-matic** is a computerized proof system that lets you create an axiomatic system and prove its theorems. Its aim is to make it easy to read and write rigorous mathematical proofs. You can see the current axiomatic system by pressing one of the links at the bottom of the [main page](https://math-o-matic.github.io/math-o-matic/web/index.html).
 
 ## Code example
 
