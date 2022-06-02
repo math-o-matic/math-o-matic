@@ -80,7 +80,7 @@ system Natural {
          * nat_zero() proves nat(zero), and nat_successor(zero)
          * proves nat(zero) |- nat(successor(zero)). The left associative
          * `>` operator then proves nat(successor(zero)) from the two
-         * operands, then the next > proves nat(successor(one)) from the
+         * operands, then the next `>` proves nat(successor(one)) from the
          * operands nat(one) and nat(one) |- nat(successor(one)). The
          * `as` operator makes sure that nat(successor(one)) and nat(two)
          * are the same thing and changes the displayed formula from
