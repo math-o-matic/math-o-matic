@@ -305,20 +305,16 @@
 					console.log('--- PROGRAM START ---');
 					start = new Date();
 					Globals.program = new MathOMatic.Program();
-					await Globals.program.loadSystem(fqn, async fqn => ({
-						fileUri: '../math/' + fqn.replace(/\./g, '/') + '.math',
-						code: await new Promise((resolve, reject) => {
-							var xhr = new XMLHttpRequest();
-							xhr.addEventListener('load', () => {
-								resolve(xhr.responseText);
-							});
-							xhr.addEventListener('error', () => {
-								reject();
-							});
-							xhr.open('GET', `../math/${fqn.replace(/\./g, '/')}.math`);
-							xhr.send();
-						})
-					}));
+					await Globals.program.loadSystem(fqn, async fqn => {
+						var fileUri = '../math/' + fqn.replace(/\./g, '/') + '.math';
+						var res = await fetch(fileUri);
+
+						if (!res.ok) throw Error(res.statusText);
+
+						var code = await res.text();
+
+						return {fileUri, code};
+					});
 
 					Globals.updateSearchDatabase();
 
