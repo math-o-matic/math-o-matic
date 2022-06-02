@@ -76,16 +76,19 @@ system Natural {
     
     "2 is a natural number."
     theorem nat_two() {
-        // nat_zero() proves nat(zero), and nat_successor(zero)
-        // proves nat(zero) |- nat(successor(zero)). The left associative
-        // `>` operator then proves nat(successor(zero)) from the two
-        // operands, then the next `>` proves nat(successor(one)) from the
-        // operands nat(one) and nat(one) |- nat(successor(one)). The
-        // `as` operator makes sure that nat(successor(one)) and nat(two)
-        // are the same thing and changes the displayed formula from
-        // nat(successor(one)) to nat(two).
-        // Check out the proof explorer from web/index.html to watch this
-        // in action.
+        /*
+         * nat_zero() proves nat(zero), and nat_successor(zero)
+         * proves nat(zero) |- nat(successor(zero)). The left associative
+         * `>` operator then proves nat(successor(zero)) from the two
+         * operands, then the next > proves nat(successor(one)) from the
+         * operands nat(one) and nat(one) |- nat(successor(one)). The
+         * `as` operator makes sure that nat(successor(one)) and nat(two)
+         * are the same thing and changes the displayed formula from
+         * nat(successor(one)) to nat(two).
+         *
+         * Check out the proof explorer from web/index.html to watch this
+         * in action.
+         */
         nat_zero()
         > nat_successor(zero)
         > nat_successor(one)
@@ -117,7 +120,7 @@ The green color indicates that the math-o-matic program succeeded to validate th
 
 ## The proof system we're building
 
-Otherwise you can [take a look at](https://math-o-matic.github.io/math-o-matic/web/index.html) & contribute to the proof system we're currently building, located in the [`/math`](/math) directory. Our proof system is based on natural deduction and the Morse&ndash;Kelley set theory and managed to prove theorems like:
+Otherwise you can [take a look at](https://math-o-matic.github.io/math-o-matic/web/index.html) & [contribute](/CONTRIBUTING.md) to the proof system we're currently building, located in the [`/math`](/math) directory. Our proof system is based on natural deduction and the Morse&ndash;Kelley set theory and managed to prove theorems like:
 
 * 1 + 1 = 2 (`std.Natural.one_plus_one_is_two`),
 * Recursion theorem (`std.Natural.recursion_theorem`),
