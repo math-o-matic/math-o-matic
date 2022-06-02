@@ -109,7 +109,11 @@ Then open the file `web/systempath.json` and write:
 }
 ```
 
-Open `web/index.html` in the browser and click on <code><b>system</b> Natural</code> to see the rendered proof system. The green color indicates that the math-o-matic program succeeded to validate the theorem.
+Open `web/index.html` in the browser and click on <code><b>system</b> Natural</code> to see the rendered proof system. For example the theorem `nat_two` will be rendered as follows:
+
+<p align="center"><img src="https://i.imgur.com/cKuIigA.png" width="500px"></p>
+
+The green color indicates that the math-o-matic program succeeded to validate the theorem or the axiom.
 
 ## The proof system we're building
 
