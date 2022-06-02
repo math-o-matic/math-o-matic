@@ -76,6 +76,53 @@
 					return ret;
 				}
 			})();
+
+			Globals = {
+				program: null,
+				reloading: false,
+				fqn: null,
+				currentlyLoadedThing: {
+					_thing: null,
+					set(thing) {
+						this._thing = thing;
+						$('#currently-loaded-thing b').innerText = thing;
+					},
+					get() {
+						return this._thing;
+					}
+				},
+				searchDatabase: [],
+				updateSearchDatabase() {
+					var visitedFiles = [this.fqn];
+
+					var searchDatabase = [];
+
+					function addThisScope(scope) {
+						searchDatabase = searchDatabase
+							.concat([...scope.variableMap.keys()]);
+					}
+
+					function addImportedScopes(scope) {
+						for (var [k, s] of scope.extendsMap) {
+							if (visitedFiles.includes(k)) continue;
+							visitedFiles.push(k);
+
+							addImportedScopes(s);
+							addThisScope(s);
+						}
+					}
+
+					addImportedScopes(this.program.scope);
+					addThisScope(this.program.scope);
+					
+
+					this.searchDatabase = searchDatabase;
+				},
+				expansionList: [],
+				getFileLoadPreference() {
+					return $('input[name="radio-load-what"]:checked').value;
+				}
+			};
 		</script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
@@ -177,53 +224,6 @@
 		</div>
 		<script src="console.js"></script>
 		<script>
-			Globals = {
-				program: null,
-				reloading: false,
-				fqn: null,
-				currentlyLoadedThing: {
-					_thing: null,
-					set(thing) {
-						this._thing = thing;
-						$('#currently-loaded-thing b').innerText = thing;
-					},
-					get() {
-						return this._thing;
-					}
-				},
-				searchDatabase: [],
-				updateSearchDatabase() {
-					var visitedFiles = [this.fqn];
-
-					var searchDatabase = [];
-
-					function addThisScope(scope) {
-						searchDatabase = searchDatabase
-							.concat([...scope.variableMap.keys()]);
-					}
-
-					function addImportedScopes(scope) {
-						for (var [k, s] of scope.extendsMap) {
-							if (visitedFiles.includes(k)) continue;
-							visitedFiles.push(k);
-
-							addImportedScopes(s);
-							addThisScope(s);
-						}
-					}
-
-					addImportedScopes(this.program.scope);
-					addThisScope(this.program.scope);
-					
-
-					this.searchDatabase = searchDatabase;
-				},
-				expansionList: [],
-				getFileLoadPreference() {
-					return $('input[name="radio-load-what"]:checked').value;
-				}
-			};
-
 			document.addEventListener('click', evt => {
 				var $a = evt.target;
 
