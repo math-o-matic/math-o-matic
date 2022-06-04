@@ -228,15 +228,6 @@ export default class HtmlGenerator {
 		var precedenceTable = [...precedenceMap].sort((a, b) => Number(a[0]) - Number(b[0]));
 	
 		var ret = {
-			'#precedence': `
-<table>
-	<tr><th>Precedence</th><th>Operators</th></tr>
-	${precedenceTable.map(([k, v]) => {
-		return `<tr><td>${k}</td><td>${v.map(w => {
-			return `<a href="#def-${w}">${w}</a>`;
-		}).join(', ')}</td></tr>`;
-	}).join('')}
-</table>`,
 			'#summary': `
 <ul>
 	<li><p><b>Types</b> (${primitiveTypeList.length + macroTypeList.length})</p>
@@ -269,7 +260,21 @@ export default class HtmlGenerator {
 		}
 		<li><b>Theorems</b> (${provedList.length})
 	</ul>
-</ul>`,
+</ul>
+<h3>Operator precedence</h3>
+<table>
+	<tr><th>Precedence</th><th>Operators</th></tr>
+	${precedenceTable.map(([k, v]) => {
+		return `<tr><td>${k}</td><td>${v.map(w => {
+			return `<a href="#def-${w}">${w}</a>`;
+		}).join(', ')}</td></tr>`;
+	}).join('')}
+</table>
+<h3>References</h3>
+<dl>
+	<dt>[Pinter]</dt>
+	<dd>Pinter, C. <i>A Book of Set Theory.</i> Dover Books on Mathematics. Dover Publications, 2014.</dd>
+</dl>`,
 			'#all': all
 		};
 
