@@ -28,7 +28,9 @@
   "devDependencies": {
     "@types/chai": "^4.2.18",
     "@types/chai-as-promised": "^7.1.4",
+    "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^8.2.2",
+    "@types/pegjs": "^0.10.3",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "del-cli": "^3.0.1",
