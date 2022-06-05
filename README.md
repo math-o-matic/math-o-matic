@@ -17,7 +17,7 @@ Install git & Node.js and run:
 ```shell
 git clone https://github.com/math-o-matic/math-o-matic.git
 cd math-o-matic
-npm install
+npm run install-all
 npm run build
 ```
 
@@ -86,7 +86,7 @@ system Natural {
          * are the same thing and changes the displayed formula from
          * nat(successor(one)) to nat(two).
          *
-         * Check out the proof explorer from web/index.html to watch this
+         * Check out the proof explorer from the web page to watch this
          * in action.
          */
         nat_zero()
@@ -97,7 +97,7 @@ system Natural {
 }
 ```
 
-Then open the file `web/systempath.json` and write:
+Then open the file `web/public/systempath.json` and write:
 
 ```json
 {
@@ -112,7 +112,7 @@ Then open the file `web/systempath.json` and write:
 }
 ```
 
-Open `web/index.html` in the browser and click on <code><b>system</b> Natural</code> to see the rendered proof system. For example the theorem `nat_two` will be rendered as follows:
+From the `web` directory run `npm run serve` and open the displayed link in the browser. Click on <code><b>system</b> Natural</code> to see the rendered proof system. For example the theorem `nat_two` will be rendered as follows:
 
 <p align="center"><img src="https://i.imgur.com/cKuIigA.png" width="500px"></p>
 
