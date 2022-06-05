@@ -28,11 +28,13 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: cd docs && npm ci && cd ..
+    - run: cd web && npm ci && cd ..
     - run: sed -i 's/^dist\/$//g' .gitignore
     - run: sed -i 's/^docs\/build\/$//g' .gitignore
     - run: npm test
     - run: npm run build
     - run: cd docs && npm run build && cd ..
+    - run: cd web && npm run build && cd ..
     - run: npx nyc report --reporter=lcov
     - name: Coveralls GitHub Action
       uses: coverallsapp/github-action@1.1.3
