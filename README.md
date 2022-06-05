@@ -1,5 +1,5 @@
 <h1 align="center">math-o-matic</h1>
-<p align="center"><a href="https://math-o-matic.github.io/math-o-matic/web/index.html">main page</a> &middot; <a href="https://math-o-matic.github.io/math-o-matic/docs/build/index.html">docs</a></p>
+<p align="center"><a href="https://math-o-matic.github.io/math-o-matic/index.html">main page</a> &middot; <a href="https://math-o-matic.github.io/math-o-matic/docs/build/index.html">docs</a></p>
 
 [![npm](https://img.shields.io/npm/v/math-o-matic)](https://www.npmjs.com/package/math-o-matic)
 [![GitHub](https://img.shields.io/github/license/math-o-matic/math-o-matic)](https://github.com/math-o-matic/math-o-matic/blob/master/LICENSE)
@@ -8,7 +8,7 @@
 [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/math-o-matic/math-o-matic)](https://lgtm.com/projects/g/math-o-matic/math-o-matic/alerts/)
 [![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/math-o-matic/math-o-matic)](https://lgtm.com/projects/g/math-o-matic/math-o-matic/context:javascript)
 
-**math-o-matic** is a program that lets you create a proof system and prove its theorems, in the most rigorous way possible. Its aim is to make it easy to read and write rigorous mathematical proofs. You can take a look at the current system by clicking on one of the links at the bottom of the [main page](https://math-o-matic.github.io/math-o-matic/web/index.html).
+**math-o-matic** is a program that lets you create a proof system and prove its theorems, in the most rigorous way possible. Its aim is to make it easy to read and write rigorous mathematical proofs. You can take a look at the current system by clicking on one of the links at the bottom of the [main page](https://math-o-matic.github.io/math-o-matic/index.html).
 
 ## Setting up the environment
 
@@ -120,7 +120,7 @@ The green color indicates that the math-o-matic program succeeded to validate th
 
 ## The proof system we're building
 
-Otherwise you can [take a look at](https://math-o-matic.github.io/math-o-matic/web/index.html) & [contribute](/CONTRIBUTING.md) to the proof system we're currently building, located in the [`/math`](/math) directory. Our proof system is based on natural deduction and the Morse&ndash;Kelley set theory and managed to prove theorems like:
+Otherwise you can [take a look at](https://math-o-matic.github.io/math-o-matic/index.html) & [contribute](/CONTRIBUTING.md) to the proof system we're currently building, located in the [`/math`](/math) directory. Our proof system is based on natural deduction and the Morse&ndash;Kelley set theory and managed to prove theorems like:
 
 * 1 + 1 = 2 (`std.Natural.one_plus_one_is_two`),
 * Recursion theorem (`std.Natural.recursion_theorem`),

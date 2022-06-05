@@ -2,7 +2,7 @@ var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-	publicPath: '/web/',
+	publicPath: '/math-o-matic/',
 	configureWebpack: {
 		plugins: [
 			new webpack.DefinePlugin({
