@@ -94,5 +94,3 @@ dist/
 docs/build/
 
 *.vsix
-
-build_tmp/

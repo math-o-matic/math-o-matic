@@ -1,8 +1,8 @@
 let parser: ParserType, evalParser: EvalParserType;
 
 if (process.env.__webpack__) {
-	parser = require('../build_tmp/parser');
-	evalParser = require('../build_tmp/evalParser');
+	parser = require('../dist/parser');
+	evalParser = require('../dist/evalParser');
 } else {
 	let fs = require('fs');
 	let path = require('path');

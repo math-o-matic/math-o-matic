@@ -20,8 +20,8 @@
   "main": "dist/math-o-matic.min.js",
   "scripts": {
     "test": "nyc mocha",
-    "build": "mkdirp dist && mkdirp build_tmp && pegjs --cache -o build_tmp/parser.js src/grammar.pegjs && pegjs --allowed-start-rules evaluable --cache -o build_tmp/evalParser.js src/grammar.pegjs && webpack && del-cli build_tmp",
-    "prepublishOnly": "npm test && del-cli dist && del-cli build_tmp && npm run build",
+    "build": "mkdirp dist && pegjs --cache -o dist/parser.js src/grammar.pegjs && pegjs --allowed-start-rules evaluable --cache -o dist/evalParser.js src/grammar.pegjs && webpack",
+    "prepublishOnly": "npm test && del-cli dist && npm run build",
     "reformat": "ts-node bin/reformat.ts"
   },
   "license": "MIT",
