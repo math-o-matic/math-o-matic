@@ -2,6 +2,7 @@ var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
+	publicPath: '/web/',
 	configureWebpack: {
 		plugins: [
 			new webpack.DefinePlugin({
