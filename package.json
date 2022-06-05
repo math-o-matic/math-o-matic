@@ -22,7 +22,10 @@
     "test": "nyc mocha",
     "build": "mkdirp dist && pegjs --cache -o dist/parser.js src/grammar.pegjs && pegjs --allowed-start-rules evaluable --cache -o dist/evalParser.js src/grammar.pegjs && webpack",
     "prepublishOnly": "npm test && del-cli dist && npm run build",
-    "reformat": "ts-node bin/reformat.ts"
+    "reformat": "ts-node bin/reformat.ts",
+    "install-all": "npm i && cd docs && npm i && cd ../web && npm i && cd ..",
+    "ci-all": "npm ci && cd docs && npm ci && cd ../web && npm ci && cd ..",
+    "build-all": "npm run build && cd docs && npm run build && cd ../web && npm run build && cd .."
   },
   "license": "MIT",
   "devDependencies": {
