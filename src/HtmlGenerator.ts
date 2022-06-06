@@ -99,7 +99,7 @@ export default class HtmlGenerator {
 						+ (
 							expandProofExplorer
 								? `<p>${this.program.getProofExplorer(k, this.ktx, this.yamd)}</p>`
-								: `<p><input type="button" value="show" class="colored button-expand-proof" onclick="this.parentElement.innerHTML = Globals.program.getProofExplorer('${k}', ktx, yamd);Globals.expansionList.push('${k}');"></p>`
+								: `<p><input type="button" value="show" class="colored button-expand-proof" data-name="${k}" onclick="Globals.onShowButtonClick(this)"></p>`
 						)
 			)
 	

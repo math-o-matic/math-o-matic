@@ -18,6 +18,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import getSearchResults from "./getSearchResults";
+import Globals from "./Globals";
 
 export default defineComponent({
 	name: 'Nav',
@@ -51,8 +52,7 @@ export default defineComponent({
 			$dropdown.querySelector('ul')!.innerHTML = '';
 		}
 
-		// @ts-ignore
-		hotkeys('s', (evt, handler) => {
+		Globals.hotkeys('s', (evt: any, handler: any) => {
 			evt.preventDefault();
 			$input.focus();
 		});
@@ -77,10 +77,7 @@ export default defineComponent({
 
 			list = [];
 
-			getSearchResults(v, '',
-				// @ts-ignore
-				Globals.searchDatabase
-				).forEach(({name, match}, i) => {
+			getSearchResults(v, '', Globals.searchDatabase).forEach(({name, match}, i) => {
 				if (i == 0) selected = 0;
 
 				html += `<li${i == 0 ? ' class="selected"' : ''}><a href="#def-${name}">`

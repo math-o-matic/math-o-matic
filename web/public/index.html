@@ -4,303 +4,35 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>math-o-matic</title>
-		<script src="/math-o-matic/public/dist/math-o-matic.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/yamd@0.4/dist/yamd.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/hotkeys-js@3.8.3/dist/hotkeys.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror@5.57.0/lib/codemirror.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror@5.57.0/keymap/sublime.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror@5.57.0/addon/hint/show-hint.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/codemirror@5.57.0/addon/display/placeholder.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-		<script>
-			yamd.set({
-				tags: {
-					'#': new yamd.renderer.Tag({
-						name: '#',
-						display: 'inline',
-						renderer: (el, options) => {
-							if (!el.innerIsText)
-								return el.error('Non-text input');
-							
-							var html = '';
-
-							try {
-								html = ktx(Globals.program.evaluate(el.innerText).toTeXString());
-							} catch (e) {
-								return el.error(e.message);
-							}
-							
-							return el.html(html);
-						}
-					})
-				},
-				katex
-			});
-
-			CodeMirror.keyMap.sublime['Shift-Ctrl-Enter'] = null;
-			CodeMirror.keyMap.sublime['Ctrl-L'] = null;
-
-			$ = (q, n) => (n || document).querySelector(q);
-			$$ = (q, n) => (n || document).querySelectorAll(q);
-
-			var escapeHtml = s => (s + '').replace(/[&<>"']/g, m => ({
-					'&': '&amp;', '<': '&lt;', '>': '&gt;',
-					'"': '&quot;', "'": '&#39;'
-			})[m]);
-
-			const ktx = (() => {
-				var katexOptions = {
-					trust: context => {
-						if (context.command == '\\href'
-								&& context.protocol == '_relative')
-							return true;
-						
-						if (['\\htmlId', '\\htmlData'].includes(context.command))
-							return true;
-						
-						return false;
-					},
-					strict: (errorCode, errorMsg, token) => {
-						if (errorCode == 'htmlExtension') return 'ignore';
-						return 'warn';
-					}
-				};
-
-				return s => {
-					var ret = '';
-					try {
-						ret = katex.renderToString(s, katexOptions);
-					} catch (e) {
-						console.error(`Error parsing ${s}`);
-						throw Error(e);
-					}
-
-					return ret;
-				}
-			})();
-
-			Globals = {
-				program: null,
-				reloading: false,
-				fqn: null,
-				currentlyLoadedThing: {
-					_thing: null,
-					set(thing) {
-						this._thing = thing;
-						$('#currently-loaded-thing b').innerText = thing;
-					},
-					get() {
-						return this._thing;
-					}
-				},
-				searchDatabase: [],
-				updateSearchDatabase() {
-					var visitedFiles = [this.fqn];
-
-					var searchDatabase = [];
-
-					function addThisScope(scope) {
-						searchDatabase = searchDatabase
-							.concat([...scope.variableMap.keys()]);
-					}
-
-					function addImportedScopes(scope) {
-						for (var [k, s] of scope.extendsMap) {
-							if (visitedFiles.includes(k)) continue;
-							visitedFiles.push(k);
-
-							addImportedScopes(s);
-							addThisScope(s);
-						}
-					}
-
-					addImportedScopes(this.program.scope);
-					addThisScope(this.program.scope);
-					
-
-					this.searchDatabase = searchDatabase;
-				},
-				expansionList: [],
-				getFileLoadPreference() {
-					return $('input[name="radio-load-what"]:checked').value;
-				}
-			};
-		</script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.6/dist/katex.min.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.57.0/lib/codemirror.min.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.57.0/addon/hint/show-hint.min.css">
-		<link rel="stylesheet" href="style.css">
+		<style>
+			* {
+				tab-size: 4;
+				box-sizing: border-box;
+			}
+
+			body {
+				font: 16px Roboto, sans-serif;
+				font-weight: 400;
+				-webkit-font-smoothing: antialiased;
+				color: #5f6368;
+				line-height: 1.5;
+				word-break: normal;
+				overflow-wrap: break-word;
+				padding-top:60px;
+			}
+		</style>
 	</head>
 	<body>
 		<div id="app"></div>
-		<div style="padding:1em;margin: 1em 0;border:1px #ccc solid; border-radius:1em">
-			<div>
-				<input id="radio-load-selected-file-only" name="radio-load-what" type="radio" checked value="selected-file-only">
-				<label for="radio-load-selected-file-only">Show only the selected file</label>
-				<input id="radio-load-selected-file-and-dependencies" name="radio-load-what" type="radio" value="selected-file-and-dependencies">
-				<label for="radio-load-selected-file-and-dependencies">Also show imported files</label>
-			</div>
-			<p style="margin-top:1em">Not showing the imported files may break some features.</p>
-		</div>
-		<div id="summary"></div>
-		<div id="all"></div>
-		<script>
-			document.addEventListener('click', evt => {
-				var $a = evt.target;
-
-				while ($a.id != 'popper-tooltip-holder') {
-					$a = $a.parentElement;
-
-					if (!$a) {
-						$('#popper-tooltip-holder').innerHTML = '';
-						return;
-					}
-				}
-			});
-
-			document.addEventListener('click', evt => {
-				var $a = evt.target;
-
-				while (!($a instanceof HTMLAnchorElement)) {
-					$a = $a.parentElement;
-
-					if (!$a) return;
-				}
-
-				var match = $a.getAttribute('href').match(/^#id-[0-9]+$/);
-
-				if (match) {
-					let $el = $(match[0]);
-
-					if ($el) {
-						if ($el.classList.contains('flicker')) {
-							return;
-						}
-
-						$el.classList.add('flicker');
-
-						let listener = evt => {
-							$el.removeEventListener('animationend', listener);
-							$el.classList.remove('flicker');
-						};
-						
-						$el.addEventListener('animationend', listener);
-					}
-				}
-
-				match = $a.getAttribute('href').match(/^#def-(.+)$/);
-
-				if (match) {
-					var name = match[1];
-
-					if ($a.closest('.label')) return;
-					if (!$a.closest('#all')) return;
-
-					evt.preventDefault();
-
-					var generator = new MathOMatic.HtmlGenerator(Globals.program, ktx, yamd);
-
-					if (Globals.program.scope.hasVariable(name)) {
-						var var_ = Globals.program.scope.getVariable(name);
-						var html;
-
-						if (var_.decoration instanceof MathOMatic.SchemaDecoration) {
-							html = generator.schema(
-								name, var_,
-								Globals.expansionList.includes(name),
-								true
-							);
-						} else {
-							html = generator.def(name, var_);
-						}
-
-						$('#popper-tooltip-holder').innerHTML = html;
-
-						Popper.createPopper($a, $('#popper-tooltip-holder *'));
-					}
-				}
-			});
-
-			async function reload(fqn) {
-				if (!fqn) return;
-
-				if (Globals.reloading) return;
-				Globals.reloading = true;
-				Globals.fqn = fqn;
-
-				$('#reload').disabled = true;
-				$('#reload svg').classList.add('rotate');
-
-				try {
-					var start, end;
-
-					console.log('--- PROGRAM START ---');
-					start = new Date();
-					Globals.program = new MathOMatic.Program();
-					await Globals.program.loadSystem(fqn, async fqn => {
-						for (var path of Globals.systempath.paths) {
-							try {
-								var fileUri = path + fqn.replace(/\./g, '/') + '.math';
-								var res = await fetch(fileUri);
-
-								if (!res.ok) continue;
-
-								var code = await res.text();
-
-								return {fileUri, code};
-							} catch (e) {
-								continue;
-							}
-						}
-
-						throw Error(`System ${fqn} was not found from paths ${Globals.systempath.paths.join(':')}`);
-					});
-
-					Globals.updateSearchDatabase();
-
-					end = new Date();
-					console.log(Globals.program);
-					console.log('--- PROGRAM END ---');
-					console.log(`Program took ${end - start} ms`);
-					console.log('--- HTML GENERATION START ---');
-					start = new Date();
-
-					var generator = new MathOMatic.HtmlGenerator(Globals.program, ktx, yamd);
-					var generated = generator.generate(
-						Globals.fqn,
-						Globals.expansionList,
-						Globals.getFileLoadPreference() == 'selected-file-and-dependencies'
-					);
-
-					end = new Date();
-					console.log('--- HTML GENERATION END ---');
-					console.log(`HTML generation took ${end - start} ms`);
-					console.log('--- HTML RENDER START ---');
-					start = new Date();
-					
-					for (var k in generated) {
-						$(k).innerHTML = generated[k];
-					}
-
-					end = new Date();
-					console.log('--- HTML RENDER END ---');
-					console.log(`HTML render took ${end - start} ms`);
-
-					Globals.currentlyLoadedThing.set(fqn);
-				} finally {
-					$('#reload').disabled = false;
-					$('#reload svg').classList.remove('rotate');
-					Globals.reloading = false;
-				}
-			}
-
-			hotkeys('r', (evt, handler) => {
-				evt.preventDefault();
-				reload(Globals.fqn);
-			});
-		</script>
-		<div id="popper-tooltip-holder"></div>
 	</body>
 </html>

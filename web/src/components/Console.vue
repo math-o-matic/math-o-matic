@@ -12,6 +12,7 @@
 import getSearchResults from "./getSearchResults";
 import InterpolativeError from '../../../src/util/InterpolativeError';
 import { defineComponent } from "vue";
+import Globals from "./Globals";
 
 var escapeHtml = (s: any) => (s + '').replace(/[&<>"']/g, m => ({
 	'&': '&amp;', '<': '&lt;', '>': '&gt;',
@@ -31,7 +32,6 @@ export default defineComponent({
 	name: 'Console',
 	methods: {
 		hint() {
-			// @ts-ignore
 			if (!Globals.program) return;
 
 			const cursor = codemirror.getCursor();
@@ -42,13 +42,9 @@ export default defineComponent({
 			var inputBefore = str.substring(0, str.length - keyword.length);
 
 			return {
-				list: getSearchResults(keyword, inputBefore,
-					// @ts-ignore
-					Globals.searchDatabase).map(({name, match}) => ({
-					
+				list: getSearchResults(keyword, inputBefore, Globals.searchDatabase).map(({name, match}) => ({
 					text: name,
-					// @ts-ignore
-					render($el, self, data) {
+					render($el: any, self: any, data: any) {
 						var $span = document.createElement('span');
 						$span.innerHTML = name.split('').map((e, i) => {
 							return match.includes(i) ? `<b>${e}</b>` : e;
@@ -73,8 +69,7 @@ export default defineComponent({
 
 				for (var i = 1; i < strings.length; i++) {
 					if (values[i - 1].toTeXString) {
-						// @ts-ignore
-						html += ktx(values[i - 1].toTeXString());
+						html += Globals.ktx(values[i - 1].toTeXString());
 					} else {
 						html += escapeOrNot(values[i - 1]);
 					}
@@ -121,7 +116,6 @@ export default defineComponent({
 			document.querySelector('#console-display')!.appendChild($tr);
 		},
 		showPreview() {
-			// @ts-ignore
 			if (!Globals.program) {
 				return this.preview('Error: program is not defined', {error: true});
 			}
@@ -134,8 +128,7 @@ export default defineComponent({
 
 			try {
 				this.preview(
-					// @ts-ignore
-					ktx(Globals.program.evaluate(v).toTeXString(null, true)), {
+					Globals.ktx(Globals.program.evaluate(v).toTeXString(undefined, true)), {
 					noescape: true
 				});
 			} catch (e) {
@@ -159,8 +152,7 @@ export default defineComponent({
 		}
 	},
 	mounted() {
-		// @ts-ignore
-		codemirror = CodeMirror(el => {
+		codemirror = Globals.CodeMirror((el: any) => {
 			el.id = 'console-input';
 			document.querySelector('.console-wrap')!.appendChild(el);
 		}, {
@@ -176,9 +168,7 @@ export default defineComponent({
 		});
 
 		codemirror.on('inputRead', (editor: any, event: any) => {
-			// @ts-ignore
-			CodeMirror
-				.showHint(codemirror, this.hint, {
+			Globals.CodeMirror.showHint(codemirror, this.hint, {
 				completeSingle: false,
 				extraKeys: {
 					'Shift-Tab': (cm: any, handle: any) => {
@@ -218,15 +208,13 @@ export default defineComponent({
 
 					this.write(v.trim(), {input: true});
 
-					// @ts-ignore
 					if (!Globals.program) {
 						return this.write('Error: program is not defined', {error: true});
 					}
 
 					try {
 						this.write(
-							// @ts-ignore
-							ktx(Globals.program.evaluate(v).toTeXString(null, true)), {
+							Globals.ktx(Globals.program.evaluate(v).toTeXString(undefined, true)), {
 							noescape: true
 						});
 					} catch (e) {
@@ -253,8 +241,7 @@ export default defineComponent({
 			}
 		});
 
-		// @ts-ignore
-		hotkeys('c,f7', (evt, handler) => {
+		Globals.hotkeys('c,f7', (evt: any, handler: any) => {
 			evt.preventDefault();
 			this.toggleConsole();
 		});
