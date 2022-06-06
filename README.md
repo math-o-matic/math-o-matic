@@ -1,5 +1,5 @@
 <h1 align="center">math-o-matic</h1>
-<p align="center"><a href="https://math-o-matic.github.io/math-o-matic/index.html">main page</a> &middot; <a href="https://math-o-matic.github.io/math-o-matic/docs/build/index.html">docs</a></p>
+<p align="center"><a href="https://math-o-matic.github.io/math-o-matic/index.html">main page</a> &middot; <a href="https://math-o-matic.github.io/math-o-matic/docs/index.html">docs</a></p>
 
 [![npm](https://img.shields.io/npm/v/math-o-matic)](https://www.npmjs.com/package/math-o-matic)
 [![GitHub](https://img.shields.io/github/license/math-o-matic/math-o-matic)](https://github.com/math-o-matic/math-o-matic/blob/master/LICENSE)
@@ -131,5 +131,5 @@ Otherwise you can [take a look at](https://math-o-matic.github.io/math-o-matic/i
 ## More stuff
 
 * Find more math-o-matic code under the [/math](/math) directory.
-* Refer to the [documentation](https://math-o-matic.github.io/math-o-matic/docs/build/index.html) to learn how to write proofs.
+* Refer to the [documentation](https://math-o-matic.github.io/math-o-matic/docs/index.html) to learn how to write proofs.
 * math-o-matic language support for Visual Studio Code can be found [here](https://github.com/math-o-matic/vscode).
