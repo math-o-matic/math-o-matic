@@ -10,7 +10,6 @@ module.exports = {
 			}),
 			new CopyWebpackPlugin({
 				patterns: [
-					{from: '../dist/', to: 'public/dist/'},
 					{from: '../logo/', to: 'public/logo/'},
 					{from: '../math/', to: 'public/math/'}
 				]
