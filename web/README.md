@@ -1,6 +1,6 @@
 # vue
 
-Created by running `npx -p @vue/cli@5.0.4 vue create .`.
+Created by running `npx -p @vue/cli@5.0.4 vue create .`. Uses Vue just to use TypeScript all the way.
 
 ## Project setup
 ```

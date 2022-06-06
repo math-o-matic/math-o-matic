@@ -1,11 +1,14 @@
 var maxSearchResultsLength = 10;
 
-function getSearchResults(keyword, inputBefore, list) {
+export default function getSearchResults(
+		keyword: string, inputBefore: string, list: string[]
+		): {name: string, match: number[]}[] {
+	
 	keyword = keyword.toLowerCase().trim();
 
 	if (!keyword || keyword == '$') return [];
 
-	return (
+	return ((
 			keyword.startsWith('$')
 				? [...new Set(inputBefore.match(/\$?[a-z0-9_]*/gi))]
 				: list
@@ -33,7 +36,10 @@ function getSearchResults(keyword, inputBefore, list) {
 				match: matchptrs
 			};
 		})
-		.filter(e => e)
+		.filter(e => e) as {
+			name: string,
+			match: number[]
+		}[])
 		.sort((a, b) => {
 			for (var i = 0; i < a.match.length; i++) {
 				if (a.match[i] != b.match[i])
