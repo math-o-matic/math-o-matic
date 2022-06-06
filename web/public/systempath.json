@@ -1,6 +1,6 @@
 {
 	"paths": [
-		"/math-o-matic/public/math/"
+		"./public/math/"
 	],
 	"systems": {
 		"std": {

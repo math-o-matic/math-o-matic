@@ -1,7 +1,7 @@
 <template>
 <nav>
 	<a href="#top" style="color: #222; font-size: 2em; text-decoration: none; display: flex">
-		<img src="/math-o-matic/public/logo/logomark.svg" height="26">
+		<img src="../../../logo/logomark.svg" height="26">
 	</a>
 	<p id="currently-loaded-thing" class="label"><b></b></p>
 	<div id="whatever" style="display:flex">

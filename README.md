@@ -102,7 +102,7 @@ Then open the file `web/public/systempath.json` and write:
 ```json
 {
     "paths": [
-        "/math-o-matic/public/math/"
+        "./public/math/"
     ],
     "systems": {
         "com.example": {

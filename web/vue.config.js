@@ -2,7 +2,7 @@ var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-	publicPath: '/math-o-matic/',
+	publicPath: './',
 	configureWebpack: {
 		plugins: [
 			new webpack.DefinePlugin({
@@ -10,7 +10,6 @@ module.exports = {
 			}),
 			new CopyWebpackPlugin({
 				patterns: [
-					{from: '../logo/', to: 'public/logo/'},
 					{from: '../math/', to: 'public/math/'}
 				]
 			})
