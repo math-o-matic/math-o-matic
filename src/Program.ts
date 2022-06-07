@@ -100,6 +100,10 @@ export default class Program {
 
 		var start = parser.parse(code);
 
+		if (!start.defpackage) {
+			throw scope.error(`Package declaration for ${fqn} not found`);
+		}
+
 		if (start.defpackage) {
 			var packageName = fqn.slice(0, fqn.lastIndexOf('.'));
 			

@@ -68,7 +68,7 @@ export default defineComponent({
 					}
 					else {
 						ret += `<li><b>package</b> ${key}`;
-						ret += recurse(obj[key], key + ".");
+						ret += recurse(obj[key], packageName + key + ".");
 						ret += `</li>`;
 					}
 				}
