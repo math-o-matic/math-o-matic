@@ -58,7 +58,7 @@ export default defineComponent({
 			if (!res.ok)
 				throw Error(res.statusText);
 			
-			Globals.systempath = await res.json();console.log(Globals.systempath);
+			Globals.systempath = await res.json();
 
 			var html = '<ul>' + Globals.systempath!.fqns.map(fqn => {
 				return `<li><a href="javascript:Globals.reload('${fqn}')"><b>system</b> ${fqn}</a></li>`;
