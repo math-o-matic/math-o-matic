@@ -1,17 +1,13 @@
 import Program from '../../../src/Program';
 import SystemScope from '../../../src/scope/SystemScope';
 import HtmlGenerator from '../../../src/HtmlGenerator';
-var yamd = require('yamd');
-var katex = require('katex');
 
-// @ts-ignore
-CodeMirror.keyMap.sublime['Shift-Ctrl-Enter'] = null;
-// @ts-ignore
-CodeMirror.keyMap.sublime['Ctrl-L'] = null;
+(window as any).CodeMirror.keyMap.sublime['Shift-Ctrl-Enter'] = null;
+(window as any).CodeMirror.keyMap.sublime['Ctrl-L'] = null;
 
-yamd.set({
+(window as any).yamd.set({
 	tags: {
-		'#': new yamd.renderer.Tag({
+		'#': new (window as any).yamd.renderer.Tag({
 			name: '#',
 			display: 'inline',
 			renderer: (el: any, options: any) => {
@@ -30,7 +26,7 @@ yamd.set({
 			}
 		})
 	},
-	katex
+	katex: (window as any).katex
 });
 
 const ktx = (() => {
@@ -54,7 +50,7 @@ const ktx = (() => {
 	return (s: string) => {
 		var ret = '';
 		try {
-			ret = katex.renderToString(s, katexOptions);
+			ret = (window as any).katex.renderToString(s, katexOptions);
 		} catch (e) {
 			console.error(`Error parsing ${s}`);
 			throw Error(e as any);
@@ -69,8 +65,6 @@ type GlobalsType = {
 	reloading: boolean,
 	fqn: string | null,
 	systempath: any,
-	yamd: {render: (s: string) => string},
-	ktx: (s: string) => string,
 	currentlyLoadedThing: {
 		_thing: string | null,
 		set: (thing: string) => void,
@@ -82,6 +76,8 @@ type GlobalsType = {
 	getFileLoadPreference: () => string,
 	onShowButtonClick: (target: HTMLElement) => void,
 	reload: (fqn: string) => Promise<void>,
+	yamd: {render: (s: string) => string},
+	ktx: (s: string) => string,
 	Popper: any,
 	CodeMirror: any,
 	hotkeys: any
@@ -92,7 +88,6 @@ var Globals: GlobalsType = {
 	reloading: false,
 	fqn: null,
 	systempath: null,
-	yamd, ktx,
 	currentlyLoadedThing: {
 		_thing: null,
 		set(thing: string) {
@@ -210,11 +205,13 @@ var Globals: GlobalsType = {
 			Globals.reloading = false;
 		}
 	},
-	// @ts-ignore
-	Popper, CodeMirror, hotkeys
+	yamd: (window as any).yamd,
+	ktx,
+	Popper: (window as any).Popper,
+	CodeMirror: (window as any).CodeMirror,
+	hotkeys: (window as any).hotkeys
 };
 
-// @ts-ignore
-window.Globals = Globals;
+(window as any).Globals = Globals;
 
 export default Globals;

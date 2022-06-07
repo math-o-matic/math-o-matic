@@ -28,8 +28,7 @@ export default class InterpolativeString extends String {
 
 	public static getInstance(strings: TemplateStringsArray, ...values: any[]): InterpolativeString {
 		return new InterpolativeString(
-			// @ts-ignore
-			strings,
+			strings as any,
 			values
 		);
 	}
@@ -38,8 +37,7 @@ export default class InterpolativeString extends String {
 		var myStrings = this.strings.slice();
 		myStrings[myStrings.length - 1] += strings.join('');
 		return InterpolativeString.getInstance(
-			// @ts-ignore
-			myStrings,
+			myStrings as any,
 			...this.values
 		)
 	}
