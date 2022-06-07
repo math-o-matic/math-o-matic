@@ -64,7 +64,10 @@ type GlobalsType = {
 	program: Program | null,
 	reloading: boolean,
 	fqn: string | null,
-	systempath: any,
+	systempath: {
+		paths: string[],
+		fqns: string[]
+	} | null,
 	currentlyLoadedThing: {
 		_thing: string | null,
 		set: (thing: string) => void,
@@ -150,7 +153,7 @@ var Globals: GlobalsType = {
 			start = new Date();
 			Globals.program = new Program();
 			await Globals.program.loadSystem(fqn, async fqn => {
-				for (var path of Globals.systempath.paths) {
+				for (var path of Globals.systempath!.paths) {
 					try {
 						var fileUri = path + fqn.replace(/\./g, '/') + '.math';
 						var res = await fetch(fileUri);
@@ -165,7 +168,7 @@ var Globals: GlobalsType = {
 					}
 				}
 
-				throw Error(`System ${fqn} was not found from paths ${Globals.systempath.paths.join(':')}`);
+				throw Error(`System ${fqn} was not found from paths ${Globals.systempath!.paths.join(':')}`);
 			});
 
 			Globals.updateSearchDatabase();

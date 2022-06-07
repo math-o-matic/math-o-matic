@@ -41,8 +41,7 @@ export default defineComponent({
 	components: { Nav, Console, Popper },
 	data() {
 		return {
-			isFileScheme: location.protocol == "file:",
-			systempath: null as any
+			isFileScheme: location.protocol == "file:"
 		};
 	},
 	methods: {
@@ -58,23 +57,13 @@ export default defineComponent({
 			var res = await fetch("systempath.json");
 			if (!res.ok)
 				throw Error(res.statusText);
-			this.systempath = await res.json();
-			Globals.systempath = this.systempath;
-			var html = (function recurse(obj, packageName) {
-				var ret = "<ul>";
-				for (var key in obj) {
-					if (typeof obj[key] == "string") {
-						ret += `<li><a href="javascript:Globals.reload('${packageName + key}')"><b>system</b> ${key}</a> (${obj[key]})</li>`;
-					}
-					else {
-						ret += `<li><b>package</b> ${key}`;
-						ret += recurse(obj[key], packageName + key + ".");
-						ret += `</li>`;
-					}
-				}
-				ret += "</ul>";
-				return ret;
-			})(this.systempath.systems, "");
+			
+			Globals.systempath = await res.json();console.log(Globals.systempath);
+
+			var html = '<ul>' + Globals.systempath!.fqns.map(fqn => {
+				return `<li><a href="javascript:Globals.reload('${fqn}')"><b>system</b> ${fqn}</a></li>`;
+			}).join('') + '</ul>';
+
 			document.querySelector("#list")!.innerHTML = html;
 		})();
 	}

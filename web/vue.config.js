@@ -1,5 +1,12 @@
 var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+var glob = require('glob');
+
+var systempath = require('./systempath.json');
+
+var copyPatterns = Object.keys(systempath.paths).map(k => {
+	return {from: k, to: systempath.paths[k]};
+});
 
 module.exports = {
 	publicPath: './',
@@ -9,9 +16,26 @@ module.exports = {
 				'process.env.__webpack__': true
 			}),
 			new CopyWebpackPlugin({
-				patterns: [
-					{from: '../math/', to: 'public/math/'}
-				]
+				patterns: copyPatterns.concat([
+					{
+						from: './systempath.json',
+						to: 'systempath.json',
+						transform: {
+							transformer(content, absoluteFrom) {
+								var fqns = []
+
+								for (var path in systempath.paths) {
+									fqns = fqns.concat(glob.sync('**/*.math', {cwd: path}).map(p => p.replace(/\.math$/, '').replace(/\//g, '.')));
+								}
+								
+								return JSON.stringify({
+									paths: Object.values(systempath.paths),
+									fqns
+								});
+							}
+						}
+					}
+				])
 			})
 		]
 	},
