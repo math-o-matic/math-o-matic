@@ -100,7 +100,7 @@ export default class Program {
 
 		var start = parser.parse(code);
 
-		if (!start.defpackage) {
+		if (fqn.indexOf('.') >= 0 && !start.defpackage) {
 			throw scope.error(`Package declaration for ${fqn} not found`);
 		}
 
