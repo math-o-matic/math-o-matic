@@ -9,18 +9,18 @@ system Set extends Predicate {
 	st in(cls x, cls y);
 
 	$\left(\cdot<<\in>>#1\right)$
-	pr is_in(cls y) {
+	unsealed pr is_in(cls y) {
 		(cls x) => in(x, y)
 	}
 
 	$\left(#1<<\in>>\cdot\right)$
-	pr contains(cls x) {
+	unsealed pr contains(cls x) {
 		(cls y) => in(x, y)
 	}
 
 	[precedence=450]
 	$#1<<\notin>>#2$
-	st Nin(cls x, cls y) {
+	unsealed st Nin(cls x, cls y) {
 		N(in(x, y))
 	}
 
@@ -36,7 +36,7 @@ system Set extends Predicate {
 
 	[precedence=350]
 	$#1<<\neq>>#2$
-	st neq(cls x, cls y) {
+	unsealed st neq(cls x, cls y) {
 		N(eq(x, y))
 	}
 
@@ -208,7 +208,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem self_subset_self(cls x) {
+	theorem self_subset_self(cls x) using subset {
 		(cls z) => { in(z, x) |- @h1 > cp } > Ui as subset(x, x)
 	}
 
@@ -230,13 +230,13 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem subset_to_eq(cls x: @11, cls y: @12) {
+	theorem subset_to_eq(cls x: @11, cls y: @12) using subset {
 		subset(x, y), subset(y, x) |- {
 			[@h1; @h2] > EiU(is_in(x), is_in(y)) > eq_i(x, y)
 		}
 	}
 
-	theorem subset_subset(cls x: @11, cls y: @12, cls z: @22) {
+	theorem subset_subset(cls x: @11, cls y: @12, cls z: @22) using subset {
 		subset(x, y), subset(y, z) |- {
 			[@h1; @h2] > syllU(is_in(x), is_in(y), is_in(z)) as subset(x, z)
 		}
@@ -260,7 +260,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem in_subset(cls x: @12, cls y: @22, cls z: @11) {
+	theorem in_subset(cls x: @12, cls y: @22, cls z: @11) using subset {
 		in(z, x), subset(x, y) |- {
 			[
 				@h1;
@@ -278,25 +278,25 @@ system Set extends Predicate {
 	"어떤 class 내에서의 [#U]."
 	[precedence=249]
 	$<<\forall>>_{\in #1}#2$
-	st Uin($A$ cls a, pr f) {
+	unsealed st Uin($A$ cls a, pr f) {
 		U((cls z) => I(in(z, a), f(z)))
 	}
 
 	[precedence=249]
 	$<<\forall^2>>_{\in #1\times #2}#3$
-	st Uin2($A$ cls a, $B$ cls b, pr2 f) {
+	unsealed st Uin2($A$ cls a, $B$ cls b, pr2 f) {
 		Uin(a, (cls x) => Uin(b, (cls y) => f(x, y)))
 	}
 
 	[precedence=249]
 	$<<\forall^3>>_{\in #1\times #2\times #3}#4$
-	st Uin3($A$ cls a, $B$ cls b, $C$ cls c, pr3 f) {
+	unsealed st Uin3($A$ cls a, $B$ cls b, $C$ cls c, pr3 f) {
 		Uin(a, (cls x) => Uin(b, (cls y) => Uin(c, (cls z) => f(x, y, z))))
 	}
 
 	[precedence=249]
 	$<<\forall^4>>_{\in #1\times #2\times #3\times #4}#5$
-	st Uin4($A$ cls a, $B$ cls b, $C$ cls c, $D$ cls d, pr4 f) {
+	unsealed st Uin4($A$ cls a, $B$ cls b, $C$ cls c, $D$ cls d, pr4 f) {
 		Uin(a, (cls x) => Uin(b, (cls y) => Uin(c, (cls z) => Uin(d, (cls w) => f(x, y, z, w)))))
 	}
 
@@ -387,7 +387,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem Uin_subset($A$ cls a: @11, $B$ cls b: @12, pr f: @22) {
+	theorem Uin_subset($A$ cls a: @11, $B$ cls b: @12, pr f: @22) using subset {
 		subset(a, b), Uin(b, f) |- {
 			[@h1; @h2] > syllU(is_in(a), is_in(b), f) as Uin(a, f)
 		}
@@ -445,25 +445,25 @@ system Set extends Predicate {
 	"어떤 class 내에서의 [#X]. [#Uin]과 달리 [#A]로 연결된다."
 	[precedence=249]
 	$<<\exists>>_{\in #1}#2$
-	st Xin($A$ cls a, pr f) {
+	unsealed st Xin($A$ cls a, pr f) {
 		X((cls z) => A(in(z, a), f(z)))
 	}
 
 	[precedence=249]
 	$<<\exists^2>>_{\in #1\times #2}#3$
-	st Xin2($A$ cls a, $B$ cls b, pr2 f) {
+	unsealed st Xin2($A$ cls a, $B$ cls b, pr2 f) {
 		Xin(a, (cls x) => Xin(b, (cls y) => f(x, y)))
 	}
 
 	[precedence=249]
 	$<<\exists^3>>_{\in #1\times #2\times #3}#4$
-	st Xin3($A$ cls a, $B$ cls b, $C$ cls c, pr3 f) {
+	unsealed st Xin3($A$ cls a, $B$ cls b, $C$ cls c, pr3 f) {
 		Xin(a, (cls x) => Xin(b, (cls y) => Xin(c, (cls z) => f(x, y, z))))
 	}
 
 	[precedence=249]
 	$<<\exists^4>>_{\in #1\times #2\times #3\times #4}#5$
-	st Xin4($A$ cls a, $B$ cls b, $C$ cls c, $D$ cls d, pr4 f) {
+	unsealed st Xin4($A$ cls a, $B$ cls b, $C$ cls c, $D$ cls d, pr4 f) {
 		Xin(a, (cls x) => Xin(b, (cls y) => Xin(c, (cls z) => Xin(d, (cls w) => f(x, y, z, w)))))
 	}
 
@@ -677,7 +677,7 @@ system Set extends Predicate {
 	}
 
 	"[#is_set]을 도입한다."
-	theorem is_set_i(cls x: @11, cls y: @12) {
+	theorem is_set_i(cls x: @11, cls y: @12) using is_set {
 		in(x, y) |- {
 			@h1 > Xi(contains(x), y) as is_set(x)
 		}
@@ -706,7 +706,7 @@ system Set extends Predicate {
 		U2((cls x, cls y) => I(A(f(x), f(y)), eq(x, y)))
 	}
 
-	theorem NX_to_Q(pr f: @111) {
+	theorem NX_to_Q(pr f: @111) using Q {
 		N(X(f)) |- {
 			(cls x, cls y) => {
 				f(x), f(y) |- {
@@ -718,7 +718,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem Qi(pr f) {
+	theorem Qi(pr f) using Q {
 		X((cls c) => U((cls x) => I(f(x), eq(x, c)))) |- {
 			(cls x, cls y) => {
 				f(x), f(y) |- {
@@ -750,7 +750,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem Qe(pr f: @11, cls x, cls y) {
+	theorem Qe(pr f: @11, cls x, cls y) using Q {
 		Q(f), f(x), f(y) |- {
 			[
 				[@h2; @h3] > Ai;
@@ -759,7 +759,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem QU(pr f: @11, pr g: @r1) {
+	theorem QU(pr f: @11, pr g: @r1) using Q {
 		Q(f), U(If(g, f)) |- {
 			(cls x, cls y) => {
 				g(x), g(y) |- {
@@ -789,7 +789,7 @@ system Set extends Predicate {
 	}
 
 	"[#Qi]와 비교하라."
-	theorem Xqi(pr f) {
+	theorem Xqi(pr f) using Xq {
 		X((cls c) => U((cls x) => E(f(x), eq(x, c)))) |- {
 			[
 				@h1;
@@ -815,7 +815,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem XQ_to_Xq(pr f: @11) {
+	theorem XQ_to_Xq(pr f: @11) using Xq {
 		X(f), Q(f) |- {
 			[@h1; @h2] > Ai as Xq(f)
 		}
@@ -865,7 +865,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem setbuilder_subset_i(pr f: @111, pr g: @112) {
+	theorem setbuilder_subset_i(pr f: @111, pr g: @112) using subset {
 		U(If(f, g)) |- {
 			(cls z) => {
 				in(z, setbuilder(f)) |- {
@@ -892,7 +892,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem setbuilder_eq_i(pr f: @111, pr g: @112) {
+	theorem setbuilder_eq_i(pr f: @111, pr g: @112) using subset {
 		U(Ef(f, g)) |- {
 			[
 				@h1 > Ee1U > setbuilder_subset_i;
@@ -944,7 +944,7 @@ system Set extends Predicate {
 		setbuilder((cls w) => X((cls z) => A(eq(w, f(z)), g(z))))
 	}
 
-	theorem setbuilder2_i(fun f: @r21, pr g: @r22, cls z) {
+	theorem setbuilder2_i(fun f: @r21, pr g: @r22, cls z) using setbuilder2 {
 		is_set(f(z)), g(z) |- {
 			[
 				@h1;
@@ -960,7 +960,7 @@ system Set extends Predicate {
 		setbuilder((cls y) => A(in(y, x), f(y)))
 	}
 
-	theorem subsetbuilder_i(cls x: @12, pr f: @r22, cls z: @11) {
+	theorem subsetbuilder_i(cls x: @12, pr f: @r22, cls z: @11) using subsetbuilder {
 		in(z, x), f(z) |- {
 			[
 				@h1 > is_set_i;
@@ -969,13 +969,13 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem subsetbuilder_e(cls x: @121, pr f: @122, cls z: @11) {
+	theorem subsetbuilder_e(cls x: @121, pr f: @122, cls z: @11) using subsetbuilder {
 		in(z, subsetbuilder(x, f)) |- {
 			@h1 > setbuilder_e > Ae2
 		}
 	}
 
-	theorem subsetbuilder_is_subset(cls x, pr f) {
+	theorem subsetbuilder_is_subset(cls x, pr f) using subsetbuilder, subset {
 		(cls z) => {
 			in(z, subsetbuilder(x, f)) |- {
 				@h1 > setbuilder_e > Ae1
@@ -997,7 +997,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem subset_is_set(cls x: @21, cls y: @22) {
+	theorem subset_is_set(cls x: @21, cls y: @22) using subsetbuilder {
 		is_set(y), subset(x, y) |- {
 			with (cls x2 = subsetbuilder(y, is_in(x))) {
 				$eq = (cls z) => {
@@ -1051,13 +1051,13 @@ system Set extends Predicate {
 	}
 
 	"[#emptyset]의 defining property."
-	theorem emptyset_def(cls z) {
+	theorem emptyset_def(cls z) using emptyset {
 		in(z, emptyset) |- {
 			@h1 > setbuilder_e
 		} > Nim as Nin(z, emptyset)
 	}
 
-	theorem emptyset_subset_any($A$ cls a) {
+	theorem emptyset_subset_any($A$ cls a) using subset {
 		(cls z) => {
 			emptyset_def(z) > Nec1(?, in(z, a))
 		} > Ui as subset(emptyset, a)
@@ -1067,13 +1067,13 @@ system Set extends Predicate {
 	$V$
 	cls universe = setbuilder((cls z) => T);
 
-	theorem universe_in_i(cls x: @11) {
+	theorem universe_in_i(cls x: @11) using universe {
 		is_set(x) |- {
 			[@h1; Ti()] > setbuilder_i as in(x, universe)
 		}
 	}
 
-	theorem universe_subset_i($X$ cls x) {
+	theorem universe_subset_i($X$ cls x) using subset {
 		(cls z) => {
 			in(z, x) |- {
 				@h1 > is_set_i > universe_in_i
@@ -1085,7 +1085,7 @@ system Set extends Predicate {
 	cls russell_set = setbuilder((cls z) => Nin(z, z));
 
 	"러셀 집합은 집합이 아니다."
-	theorem russell_set_is_not_set() {
+	theorem russell_set_is_not_set() using russell_set {
 		is_set(russell_set) |- {
 			$russell_in_russell = Nin(russell_set, russell_set) |- {
 				[
@@ -1113,7 +1113,7 @@ system Set extends Predicate {
 		setbuilder((cls z) => A(in(z, x), in(z, y)))
 	}
 
-	theorem cap_in_i(cls x: @12, cls y: @22, cls z: @11) {
+	theorem cap_in_i(cls x: @12, cls y: @22, cls z: @11) using cap {
 		in(z, x), in(z, y) |- {
 			[
 				@h1 > is_set_i;
@@ -1122,7 +1122,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem cap_in_e(cls x: @121, cls y: @122, cls z: @11) {
+	theorem cap_in_e(cls x: @121, cls y: @122, cls z: @11) using cap {
 		in(z, cap(x, y)) |- {
 			@h1 > setbuilder_e
 		}
@@ -1162,7 +1162,7 @@ system Set extends Predicate {
 		setbuilder((cls z) => O(in(z, x), in(z, y)))
 	}
 
-	theorem cup_in_i1(cls x: @12, cls y, cls z: @11) {
+	theorem cup_in_i1(cls x: @12, cls y, cls z: @11) using cup {
 		in(z, x) |- {
 			[
 				@h1 > is_set_i;
@@ -1171,7 +1171,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem cup_in_i2(cls x, cls y: @12, cls z: @11) {
+	theorem cup_in_i2(cls x, cls y: @12, cls z: @11) using cup {
 		in(z, y) |- {
 			[
 				@h1 > is_set_i;
@@ -1191,13 +1191,13 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem cup_in_e(cls x: @121, cls y: @122, cls z: @11) {
+	theorem cup_in_e(cls x: @121, cls y: @122, cls z: @11) using cup {
 		in(z, cup(x, y)) |- {
 			@h1 > setbuilder_e
 		}
 	}
 
-	theorem cup_is_bigger_1(cls x, cls y) {
+	theorem cup_is_bigger_1(cls x, cls y) using subset {
 		(cls z) => {
 			in(z, x) |- {
 				@h1 > Oi1(?, in(z, y)) > cup_in_i
@@ -1205,7 +1205,7 @@ system Set extends Predicate {
 		} > Ui as subset(x, cup(x, y))
 	}
 
-	theorem cup_is_bigger_2(cls x, cls y) {
+	theorem cup_is_bigger_2(cls x, cls y) using subset {
 		(cls z) => {
 			in(z, y) |- {
 				@h1 > Oi2(in(z, x), ?) > cup_in_i
@@ -1213,7 +1213,7 @@ system Set extends Predicate {
 		} > Ui as subset(y, cup(x, y))
 	}
 
-	theorem cup_eq_i(cls x: @11, cls y: @12, cls u: @21, cls v: @22) {
+	theorem cup_eq_i(cls x: @11, cls y: @12, cls u: @21, cls v: @22) using cup {
 		$foo = (cls x, cls y, cls u, cls v, cls z) => {
 			eq(x, y), eq(u, v) |- {
 				in(z, cup(x, u)) |- {
@@ -1246,7 +1246,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem cup_universe_is_universe($X$ cls x) {
+	theorem cup_universe_is_universe($X$ cls x) using subset {
 		[
 			(cls z) => {
 				in(z, cup(x, universe)) |- {
@@ -1257,7 +1257,7 @@ system Set extends Predicate {
 		] > subset_to_eq
 	}
 
-	theorem universe_cup_is_universe($X$ cls x) {
+	theorem universe_cup_is_universe($X$ cls x) using subset {
 		[
 			(cls z) => {
 				in(z, cup(universe, x)) |- {
@@ -1286,25 +1286,25 @@ system Set extends Predicate {
 		setbuilder((cls z) => U((cls x) => I(f(x), in(z, g(x)))))
 	}
 
-	theorem bigcap_in_i($A$ cls a, cls z) {
+	theorem bigcap_in_i($A$ cls a, cls z) using bigcap {
 		is_set(z), Uin(a, (cls x) => in(z, x)) |- {
 			[@h1; @h2] > setbuilder_i as in(z, bigcap(a))
 		}
 	}
 
-	theorem bigcap_in_e($A$ cls a, cls z) {
+	theorem bigcap_in_e($A$ cls a, cls z) using bigcap {
 		in(z, bigcap(a)) |- {
 			@h1 > setbuilder_e((cls z) => Uin(a, (cls x) => in(z, x)), z)
 		}
 	}
 
-	theorem bigcap3_in_i(pr f: @r21, fun g: @r22, cls z: @11) {
+	theorem bigcap3_in_i(pr f: @r21, fun g: @r22, cls z: @11) using bigcap3 {
 		is_set(z), U((cls x) => I(f(x), in(z, g(x)))) |- {
 			[@h1; @h2] > setbuilder_i as in(z, bigcap3(f, g))
 		}
 	}
 
-	theorem bigcap_is_smaller($A$ cls a: @12, cls x: @11) {
+	theorem bigcap_is_smaller($A$ cls a: @12, cls x: @11) using subset {
 		in(x, a) |- {
 			(cls z) => {
 				in(z, bigcap(a)) |- {
@@ -1317,7 +1317,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem bigcap3_is_smaller(pr f: @r11, fun g: @r12, cls x) {
+	theorem bigcap3_is_smaller(pr f: @r11, fun g: @r12, cls x) using bigcap3, subset {
 		f(x) |- {
 			(cls z) => {
 				in(z, bigcap3(f, g)) |- {
@@ -1330,7 +1330,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem cap_is_set_1(cls x, cls y) {
+	theorem cap_is_set_1(cls x, cls y) using cap, subsetbuilder {
 		is_set(x) |- {
 			@h1 > ax_specify_m(is_in(y), ?) as is_set(cap(x, y))
 		}
@@ -1363,7 +1363,7 @@ system Set extends Predicate {
 		setbuilder((cls z) => X((cls x) => A(f(x), in(z, g(x)))))
 	}
 
-	theorem bigcup_in_i($A$ cls a: @12, cls x: @11, cls z: @21) {
+	theorem bigcup_in_i($A$ cls a: @12, cls x: @11, cls z: @21) using bigcup {
 		in(x, a), in(z, x) |- {
 			[
 				@h2 > is_set_i;
@@ -1372,7 +1372,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem bigcup2_in_i($A$ cls a: @12, fun f: @r22, cls x: @11, cls z: @21) {
+	theorem bigcup2_in_i($A$ cls a: @12, fun f: @r22, cls x: @11, cls z: @21) using bigcup2 {
 		in(x, a), in(z, f(x)) |- {
 			[
 				@h2 > is_set_i;
@@ -1381,7 +1381,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem bigcup_eq_i($A$ cls a: @11, $B$ cls b: @12) {
+	theorem bigcup_eq_i($A$ cls a: @11, $B$ cls b: @12) using bigcup {
 		eq(a, b) |- {
 			(cls z) => { @h1 > Xin_eq(?, ?, contains(z)) } > Ui > setbuilder_eq_i((cls z) => Xin(a, contains(z)), (cls z) => Xin(b, contains(z))) as eq(bigcup(a), bigcup(b))
 		}
@@ -1394,7 +1394,7 @@ system Set extends Predicate {
 		})
 	}
 
-	theorem bigcup_is_set($\mathscr A$ cls aa: @11) {
+	theorem bigcup_is_set($\mathscr A$ cls aa: @11) using bigcup {
 		is_set(aa) |- {
 			$X = [
 				@h1 > universe_in_i;
@@ -1458,7 +1458,7 @@ system Set extends Predicate {
 		setbuilder((cls z) => A(in(z, x), Nin(z, y)))
 	}
 
-	theorem setminus_in_i(cls x: @12, cls y: @212, cls z: @11) {
+	theorem setminus_in_i(cls x: @12, cls y: @212, cls z: @11) using setminus {
 		in(z, x), N(in(z, y)) |- {
 			[
 				@h1 > is_set_i;
@@ -1467,13 +1467,13 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem setminus_in_e1(cls x: @121, cls y: @122, cls z: @11) {
+	theorem setminus_in_e1(cls x: @121, cls y: @122, cls z: @11) using setminus {
 		in(z, setminus(x, y)) |- {
 			@h1 > setbuilder_e > Ae1
 		}
 	}
 
-	theorem setminus_is_smaller(cls x, cls y) {
+	theorem setminus_is_smaller(cls x, cls y) using subset {
 		(cls z) => {
 			in(z, setminus(x, y)) |- {
 				@h1 > setminus_in_e1
@@ -1481,7 +1481,7 @@ system Set extends Predicate {
 		} > Ui as subset(setminus(x, y), x)
 	}
 
-	theorem setminus_in_e2(cls x: @121, cls y: @122, cls z: @11) {
+	theorem setminus_in_e2(cls x: @121, cls y: @122, cls z: @11) using setminus {
 		in(z, setminus(x, y)) |- {
 			@h1 > setbuilder_e > Ae2
 		}
@@ -1491,11 +1491,11 @@ system Set extends Predicate {
 
 	즉 Principia Mathematica의 inverted iota 연산자 같은 것이다. Metamath의 [~(href=http://us.metamath.org/mpeuni/df-iota.html)df-iota]를 참조하였으나 꽤 다르게 정의되었다."
 	$\left(<<\operatorname{the}>>#1\right)$
-	sealed cls instantiate(pr f) {
+	cls instantiate(pr f) {
 		setbuilder((cls z) => I(Xq(f), X((cls x) => A(f(x), in(z, x)))))
 	}
 
-	theorem instantiate_eq_i(pr f: @11, cls x) using instantiate {
+	theorem instantiate_eq_i(pr f: @11, cls x) using instantiate, Xq {
 		Q(f), f(x) |- {
 			$foo = (cls z) => {
 				$c1 = in(z, x) |- {
@@ -1532,7 +1532,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem instantiate_not_set_i(pr f: @111) using instantiate {
+	theorem instantiate_not_set_i(pr f: @111) using instantiate, subset {
 		N(Xq(f)) |- {
 			[
 				universe_is_not_set();
@@ -1561,7 +1561,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem instantiate_def(pr f: @11) {
+	theorem instantiate_def(pr f: @11) using Xq {
 		Xq(f) |- {
 			[
 				@h1 > Ae1;
@@ -1584,7 +1584,7 @@ system Set extends Predicate {
 		#2 & <<\text{if}>>\ #1 \\
 		#3 & \text{otherwise}
 	\end{cases}\right)$
-	sealed cls if(st p, cls x, cls y) {
+	cls if(st p, cls x, cls y) {
 		setbuilder((cls z) => A(I(p, in(z, x)), I(N(p), in(z, y))))
 	}
 
@@ -1643,7 +1643,7 @@ system Set extends Predicate {
 		U((cls w) => E(in(w, x), eq(w, z)))
 	}
 
-	theorem self_in_singletonlike(cls x: @11, cls z: @12) {
+	theorem self_in_singletonlike(cls x: @11, cls z: @12) using is_singleton_of {
 		is_singleton_of(x, z) |- {
 			[
 				eq_reflexive(z);
@@ -1652,7 +1652,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem singletonlike_e(cls x: @11, cls z: @12, cls w: @21) {
+	theorem singletonlike_e(cls x: @11, cls z: @12, cls w: @21) using is_singleton_of {
 		is_singleton_of(x, z), in(w, x) |- {
 			[
 				@h2;
@@ -1661,7 +1661,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem is_singleton_of_Q(cls z) {
+	theorem is_singleton_of_Q(cls z) using is_singleton_of, Q {
 		(cls x1, cls x2) => {
 			is_singleton_of(x1, z), is_singleton_of(x2, z) |- {
 				[
@@ -1672,7 +1672,7 @@ system Set extends Predicate {
 		} > U2i as Q((cls x) => is_singleton_of(x, z))
 	}
 
-	theorem is_singleton_of_example(cls z: @11) {
+	theorem is_singleton_of_example(cls z: @11) using is_singleton_of {
 		is_set(z) |- {
 			(cls w) => {
 				eq(w, z) |- {
@@ -1682,7 +1682,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem is_singleton_of_Xq(cls z: @11) {
+	theorem is_singleton_of_Xq(cls z: @11) using Xq {
 		is_set(z) |- {
 			[
 				@h1 > is_singleton_of_example > Xi((cls x) => is_singleton_of(x, z), setbuilder((cls w) => eq(w, z)));
@@ -1695,7 +1695,7 @@ system Set extends Predicate {
 		Xq(is_in(x))
 	}
 
-	theorem is_singleton_i(cls x: @11, cls z: @12) {
+	theorem is_singleton_i(cls x: @11, cls z: @12) using is_singleton_of, is_singleton {
 		is_singleton_of(x, z) |- {
 			@h1 > Xqim(is_in(x), z) as is_singleton(x)
 		}
@@ -1707,7 +1707,7 @@ system Set extends Predicate {
 
 	@sealed [$x]가 집합이 아닐 때 이상하게 되어 봉인되었다."
 	$\left\{#1\right\}{}^{<<\scriptscriptstyle\dag>>}$
-	sealed cls singleton(cls x) {
+	cls singleton(cls x) {
 		instantiate(($S$ cls s) => is_singleton_of(s, x))
 	}
 
@@ -1738,7 +1738,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem singleton_Q(cls x: @11) {
+	theorem singleton_Q(cls x: @11) using Q {
 		is_set(x) |- {
 			(cls z1, cls z2) => {
 				in(z1, singleton(x)), in(z2, singleton(x)) |- {
@@ -1751,7 +1751,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem singleton_is_singleton(cls x) {
+	theorem singleton_is_singleton(cls x) using Xq, is_singleton {
 		is_set(x) |- {
 			[
 				@h1 > self_in_singleton > Xi(is_in(singleton(x)), x);
@@ -1784,7 +1784,7 @@ system Set extends Predicate {
 		cup(singleton(x), singleton(y))
 	}
 
-	theorem doubleton_e(cls x: @11, cls y: @21, cls z: @31) {
+	theorem doubleton_e(cls x: @11, cls y: @21, cls z: @31) using cup, doubleton {
 		is_set(x), is_set(y), in(z, doubleton(x, y)) |- {
 			[
 				@h3 > setbuilder_e;
@@ -1799,20 +1799,20 @@ system Set extends Predicate {
 	}
 
 	"[$\mathfrak My] 조건을 완화할 수도 있으나, 그러면 [$y]가 집합이 아닐 때의 [#doubleton]의 정의에 너무 의존하게 되므로 그러지 않았다."
-	theorem doubleton_in_1(cls x, cls y) {
+	theorem doubleton_in_1(cls x, cls y) using doubleton {
 		is_set(x), is_set(y) |- {
 			@h1 > self_in_singleton(x) > cup_in_i1(?, singleton(y), ?) as in(x, doubleton(x, y))
 		}
 	}
 
 	"[$\mathfrak Mx] 조건을 완화할 수도 있으나, 그러면 [$x]가 집합이 아닐 때의 [#doubleton]의 정의에 너무 의존하게 되므로 그러지 않았다."
-	theorem doubleton_in_2(cls x, cls y) {
+	theorem doubleton_in_2(cls x, cls y) using doubleton {
 		is_set(x), is_set(y) |- {
 			@h2 > self_in_singleton(y) > cup_in_i2(singleton(x), ?, ?) as in(y, doubleton(x, y))
 		}
 	}
 
-	theorem doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) {
+	theorem doubleton_eq_i(cls x: @11, cls y: @21, cls u: @12, cls v: @22) using doubleton {
 		eq(x, u), eq(y, v) |- {
 			[
 				@h1 > singleton_eq_i;
@@ -1821,13 +1821,13 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem doubleton_set_e1(cls x: @111, cls y: @112) {
+	theorem doubleton_set_e1(cls x: @111, cls y: @112) using doubleton {
 		is_set(doubleton(x, y)) |- {
 			[@h1; cup_is_bigger_1(singleton(x), singleton(y))] > subset_is_set > singleton_set_e
 		}
 	}
 
-	theorem doubleton_set_e2(cls x: @111, cls y: @112) {
+	theorem doubleton_set_e2(cls x: @111, cls y: @112) using doubleton {
 		is_set(doubleton(x, y)) |- {
 			[@h1; cup_is_bigger_2(singleton(x), singleton(y))] > subset_is_set > singleton_set_e
 		}
@@ -1927,7 +1927,7 @@ system Set extends Predicate {
 		})
 	}
 
-	theorem doubleton_set_i(cls x: @11, cls y: @21) {
+	theorem doubleton_set_i(cls x: @11, cls y: @21) using subset {
 		is_set(x), is_set(y) |- {
 			[
 				[
@@ -1972,7 +1972,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem bigcup_singleton_to_element($A$ cls a: @11, cls x: @21, cls z: @31) {
+	theorem bigcup_singleton_to_element($A$ cls a: @11, cls x: @21, cls z: @31) using bigcup, Xq, is_singleton, Q {
 		is_singleton(a), in(x, a), in(z, bigcup(a)) |- {
 			[
 				@h3 > setbuilder_e;
@@ -2009,7 +2009,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem bigcup_singleton_to_self(cls x: @11, cls z: @21) {
+	theorem bigcup_singleton_to_self(cls x: @11, cls z: @21) using bigcup {
 		is_set(x), in(z, bigcup(singleton(x))) |- {
 			[
 				@h2 > setbuilder_e;
@@ -2028,7 +2028,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem self_to_bigcup_singleton(cls x: @11, cls z: @21) {
+	theorem self_to_bigcup_singleton(cls x: @11, cls z: @21) using bigcup {
 		is_set(x), in(z, x) |- {
 			[
 				@h2 > is_set_i;
@@ -2055,7 +2055,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem bigcup_doubleton_to_cup(cls x: @11, cls y: @21, cls w: @31) {
+	theorem bigcup_doubleton_to_cup(cls x: @11, cls y: @21, cls w: @31) using bigcup {
 		is_set(x), is_set(y), in(w, bigcup(doubleton(x, y))) |- {
 			[
 				@h3 > setbuilder_e;
@@ -2072,7 +2072,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) {
+	theorem cup_to_bigcup_doubleton(cls x: @11, cls y: @21, cls w: @31) using bigcup {
 		is_set(x), is_set(y), in(w, cup(x, y)) |- {
 			[
 				@h3 > is_set_i;
@@ -2125,7 +2125,7 @@ system Set extends Predicate {
 		setbuilder((cls z) => subset(z, x))
 	}
 
-	theorem power_in_i(cls x: @11, cls z: @21) {
+	theorem power_in_i(cls x: @11, cls z: @21) using power {
 		is_set(x), subset(z, x) |- {
 			[
 				[@h1; @h2] > subset_is_set;
@@ -2134,7 +2134,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem power_def_Ue(cls x, cls y) {
+	theorem power_def_Ue(cls x, cls y) using power {
 		is_set(x) |- {
 			[
 				in(y, power(x)) |- {
@@ -2162,7 +2162,7 @@ system Set extends Predicate {
 		}
 	}
 
-	theorem singleton_subset_power(cls x: @11) {
+	theorem singleton_subset_power(cls x: @11) using subset {
 		is_set(x) |- {
 			(cls y) => {
 				in(y, singleton(x)) |- {
@@ -2190,7 +2190,7 @@ system Set extends Predicate {
 	}
 
 	"멱집합은 집합이다."
-	theorem power_is_set(cls x: @11) {
+	theorem power_is_set(cls x: @11) using power, subset {
 		is_set(x) |- {
 			[
 				@h1 > ax_power_m(x);

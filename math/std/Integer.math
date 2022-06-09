@@ -15,7 +15,7 @@ system Integer extends Natural {
 	$\Z$
 	cls int = quotient_set(cartesian(omega, omega), rel_omega_pair);
 
-	theorem int_is_set() {
+	theorem int_is_set() using int {
 		$om = omega_is_set();
 		$cart = [$om; $om] > cartesian_is_set;
 		$cart > quotient_set_is_set as is_set(int)
@@ -27,7 +27,7 @@ system Integer extends Natural {
 		equiv_cls(pair(m, n), cartesian(omega, omega), rel_omega_pair)
 	}
 
-	theorem omega_sub_as_int_in_int(cls m: @11, cls n: @21) {
+	theorem omega_sub_as_int_in_int(cls m: @11, cls n: @21) using omega_sub_as_int, int {
 		in(m, omega), in(n, omega) |- {
 			$set_om = omega_is_set();
 			[
@@ -64,7 +64,7 @@ system Integer extends Natural {
 		omega_sub_as_int(n, omega_zero)
 	}
 
-	theorem ntoz_in_int(cls n: @11) {
+	theorem ntoz_in_int(cls n: @11) using ntoz {
 		in(n, omega) |- {
 			[@h1; zero_in_omega()] > omega_sub_as_int_in_int as in(ntoz(n), int)
 		}
@@ -82,7 +82,7 @@ system Integer extends Natural {
 	$2_\Z$
 	cls int_two = ntoz(omega_two);
 
-	theorem rel_omega_pair_is_rel() {
+	theorem rel_omega_pair_is_rel() using setbuilder_pair, rel_omega_pair, subset, is_rel_over_sets, is_rel_over_set {
 		(cls z) => {
 			in(z, rel_omega_pair) |- {
 				$X = @h1 > setbuilder_e as X2((cls x, cls y) => A(
@@ -144,7 +144,7 @@ system Integer extends Natural {
 		} > Ui as is_rel_over_set(rel_omega_pair, cartesian(omega, omega))
 	}
 
-	theorem rel_omega_pair_is_reflexive() {
+	theorem rel_omega_pair_is_reflexive() using setbuilder_pair, cartesian, rel_omega_pair, rel_call, rel_reflexive {
 		(cls x) => {
 			in(x, cartesian(omega, omega)) |- {
 				$X = @h1 > setbuilder_e;
@@ -176,7 +176,7 @@ system Integer extends Natural {
 		} > Ui as rel_reflexive(rel_omega_pair, cartesian(omega, omega))
 	}
 
-	theorem rel_omega_pair_is_symmetric() {
+	theorem rel_omega_pair_is_symmetric() using rel_omega_pair, rel_call, rel_symmetric {
 		(cls x, cls y) => {
 			in(x, cartesian(omega, omega)), in(y, cartesian(omega, omega)) |- {
 				with ([cls, cls -> pr4] predicate = (cls x, cls y) => {
@@ -208,7 +208,7 @@ system Integer extends Natural {
 		} > Uin2i as rel_symmetric(rel_omega_pair, cartesian(omega, omega))
 	}
 
-	theorem rel_omega_pair_i(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41) {
+	theorem rel_omega_pair_i(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41) using rel_omega_pair, rel_call {
 		in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega), eq(omega_add(a1, b2), omega_add(a2, b1)) |- {
 			with ([cls, cls -> pr4] predicate = (cls x, cls y) => {
 				(cls a, cls b, $a'$ cls ap, $b'$ cls bp) => A(
@@ -232,7 +232,7 @@ system Integer extends Natural {
 		}
 	}
 
-	theorem rel_omega_pair_e(cls a: @11, cls b: @21, $a'$ cls ap: @31, $b'$ cls bp: @41) {
+	theorem rel_omega_pair_e(cls a: @11, cls b: @21, $a'$ cls ap: @31, $b'$ cls bp: @41) using rel_omega_pair, rel_call {
 		in(a, omega), in(b, omega), in(ap, omega), in(bp, omega),
 		rel_call(rel_omega_pair, pair(a, b), pair(ap, bp)) |- {
 			$X = @h5 > setbuilder_pair_e as Xin4(omega, omega, omega, omega, (cls c, cls d, $c'$ cls cp, $d'$ cls dp) => {
@@ -276,7 +276,7 @@ system Integer extends Natural {
 		}
 	}
 
-	theorem int_eq_e(cls a: @11, cls b: @21, $a'$ cls ap: @31, $b'$ cls bp: @41) {
+	theorem int_eq_e(cls a: @11, cls b: @21, $a'$ cls ap: @31, $b'$ cls bp: @41) using omega_sub_as_int {
 		in(a, omega), in(b, omega), in(ap, omega), in(bp, omega),
 		eq(omega_sub_as_int(a, b), omega_sub_as_int(ap, bp)) |- {
 			[
@@ -288,7 +288,7 @@ system Integer extends Natural {
 		}
 	}
 
-	theorem rel_omega_pair_is_transitive() {
+	theorem rel_omega_pair_is_transitive() using rel_omega_pair, rel_call, rel_transitive {
 		(cls x, cls y, cls z) => {
 			in(x, cartesian(omega, omega)), in(y, cartesian(omega, omega)), in(z, cartesian(omega, omega)) |- {
 				with ([cls, cls -> pr4] predicate = (cls x, cls y) => {
@@ -383,7 +383,7 @@ system Integer extends Natural {
 		] > equiv_rel_i
 	}
 
-	theorem int_in_e(cls n: @11) {
+	theorem int_in_e(cls n: @11) using setbuilder2, quotient_set, int, setbuilder_pair, cartesian, omega_sub_as_int {
 		in(n, int) |- {
 			$X = @h1 > setbuilder_e;
 			
@@ -469,7 +469,7 @@ system Integer extends Natural {
 		}
 	}
 
-	theorem omega_add_sub_eq_i(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41, $a_1'$ cls a1p: @51, $b_1'$ cls b1p: @61, $a_2'$ cls a2p: @71, $b_2'$ cls b2p: @81) {
+	theorem omega_add_sub_eq_i(cls a1: @11, cls b1: @21, cls a2: @31, cls b2: @41, $a_1'$ cls a1p: @51, $b_1'$ cls b1p: @61, $a_2'$ cls a2p: @71, $b_2'$ cls b2p: @81) using omega_sub_as_int {
 		in(a1, omega), in(b1, omega), in(a2, omega), in(b2, omega),
 		in(a1p, omega), in(b1p, omega), in(a2p, omega), in(b2p, omega),
 		eq(omega_sub_as_int(a1, b1), omega_sub_as_int(a1p, b1p)),
@@ -619,7 +619,7 @@ system Integer extends Natural {
 		}
 	}
 
-	theorem int_add_def(cls m: @11, cls n: @21) {
+	theorem int_add_def(cls m: @11, cls n: @21) using int_add {
 		in(m, int), in(n, int) |- {
 			with (pr predicate = (cls k) => {
 				Xin4(omega, omega, omega, omega, (cls a1, cls b1, cls a2, cls b2) => {

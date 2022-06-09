@@ -22,14 +22,14 @@ system Propositional {
 	"or (TTTF)."
 	[precedence=596]
 	$#1<<\lor>>#2$
-	sealed st O(st p, st q) {
+	st O(st p, st q) {
 		I(N(p), q)
 	}
 
 	"iff (TFFT)."
 	[precedence=599]
 	$#1<<\leftrightarrow>>#2$
-	sealed st E(st p, st q) {
+	st E(st p, st q) {
 		A(I(p, q), I(q, p))
 	}
 
@@ -39,7 +39,7 @@ system Propositional {
 
 	"falsum (F). 즉 임의의 모순명제를 표시한다."
 	$\bot$
-	sealed st F = N(T);
+	st F = N(T);
 
 	"함의 도입(implication introduction). conditional proof를 가능케 한다. 특정 힐베르트 체계(Hilbert system)에서는 메타정리(metatheorem)이며 이를 연역 정리(deduction theorem)라 부른다."
 	axiom cp(st p: @11, st q: @1r) {

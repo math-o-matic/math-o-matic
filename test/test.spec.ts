@@ -81,7 +81,7 @@ system duh {
 
 	st N(st p);
 
-	sealed st N2(st p) {
+	st N2(st p) {
 		N(p)
 	}
 }
@@ -104,7 +104,7 @@ system duh {
 	st p;
 	st N(st p);
 
-	sealed st N2(st p) {
+	st N2(st p) {
 		N(p)
 	}
 

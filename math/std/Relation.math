@@ -5,7 +5,7 @@ import std.Set;
 system Relation extends Set {
 	"순서쌍(ordered pair). Kuratowski의 정의이다."
 	$\left(#1<<,>>#2\right)$
-	sealed cls pair(cls x, cls y) {
+	cls pair(cls x, cls y) {
 		doubleton(singleton(x), doubleton(x, y))
 	}
 
@@ -208,7 +208,7 @@ system Relation extends Set {
 		setbuilder((cls z) => X2((cls a, cls b) => A(eq(z, pair(a, b)), f(a, b))))
 	}
 
-	theorem setbuilder_pair_i(pr2 f: @r21, cls a: @111, cls b: @112) {
+	theorem setbuilder_pair_i(pr2 f: @r21, cls a: @111, cls b: @112) using setbuilder_pair {
 		is_set(pair(a, b)), f(a, b) |- {
 			[
 				@h1;
@@ -217,7 +217,7 @@ system Relation extends Set {
 		}
 	}
 
-	theorem setbuilder_pair_e(pr2 f: @121, cls a: @111, cls b: @112) {
+	theorem setbuilder_pair_e(pr2 f: @121, cls a: @111, cls b: @112) using setbuilder_pair {
 		in(pair(a, b), setbuilder_pair(f)) |- {
 			$set_a_b = @h1 > is_set_i;
 
@@ -249,7 +249,7 @@ system Relation extends Set {
 		setbuilder_pair((cls x, cls y) => A(in(x, a), in(y, b)))
 	}
 
-	theorem cartesian_in_i($A$ cls a: @12, $B$ cls b: @22, cls x: @11, cls y: @21) {
+	theorem cartesian_in_i($A$ cls a: @12, $B$ cls b: @22, cls x: @11, cls y: @21) using setbuilder_pair, cartesian {
 		in(x, a), in(y, b) |- {
 			[
 				[
@@ -264,7 +264,7 @@ system Relation extends Set {
 		}
 	}
 
-	theorem cartesian_in_e($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) {
+	theorem cartesian_in_e($A$ cls a: @121, $B$ cls b: @122, cls x: @111, cls y: @112) using setbuilder_pair, cartesian {
 		in(pair(x, y), cartesian(a, b)) |- {
 			$set_pair_xy = @h1 > is_set_i;
 
@@ -346,7 +346,7 @@ system Relation extends Set {
 		setbuilder((cls x) => X((cls y) => in(pair(x, y), r)))
 	}
 
-	theorem rel_dom_in_i($R$ cls r: @12, cls x: @111, cls y: @112) {
+	theorem rel_dom_in_i($R$ cls r: @12, cls x: @111, cls y: @112) using rel_dom {
 		in(pair(x, y), r) |- {
 			$set_x = @h1 > is_set_i > pair_set_e1;
 
@@ -370,13 +370,13 @@ system Relation extends Set {
 		setbuilder((cls y) => Xin(a, (cls x) => in(pair(x, y), r)))
 	}
 
-	theorem rel_im_set_eq_i($R$ cls r, $A$ cls a: @11, $B$ cls b: @12) {
+	theorem rel_im_set_eq_i($R$ cls r, $A$ cls a: @11, $B$ cls b: @12) using rel_im_set {
 		eq(a, b) |- {
 			(cls y) => { @h1 > Xin_eq(?, ?, (cls x) => in(pair(x, y), r)) } > Ui > setbuilder_eq_i((cls y) => Xin(a, (cls x) => in(pair(x, y), r)), (cls y) => Xin(b, (cls x) => in(pair(x, y), r))) as eq(rel_im_set(r, a), rel_im_set(r, b))
 		}
 	}
 
-	theorem rel_im_set_subset_i($R$ cls r, $A$ cls a: @11, $B$ cls b: @12) {
+	theorem rel_im_set_subset_i($R$ cls r, $A$ cls a: @11, $B$ cls b: @12) using rel_im_set, subset {
 		subset(a, b) |- {
 			(cls y) => {
 				in(y, rel_im_set(r, a)) |- {
@@ -392,7 +392,7 @@ system Relation extends Set {
 		}
 	}
 
-	theorem rel_im_set_in_i($R$ cls r: @22, $A$ cls a: @12, cls x: @11, cls y: @212) {
+	theorem rel_im_set_in_i($R$ cls r: @22, $A$ cls a: @12, cls x: @11, cls y: @212) using rel_im_set {
 		in(x, a), in(pair(x, y), r) |- {
 			[
 				@h2 > is_set_i > pair_set_e2;
@@ -406,7 +406,7 @@ system Relation extends Set {
 	"이항관계의 역(inverse)."
 	[precedence=190]
 	${#1}^{<<-1>>}$
-	sealed cls rel_inverse(cls x) {
+	cls rel_inverse(cls x) {
 		setbuilder_pair((cls a, cls b) => in(pair(b, a), x))
 	}
 
@@ -432,7 +432,7 @@ system Relation extends Set {
 		] > Ei
 	}
 
-	theorem rel_inverse_is_rel($R$ cls r: @11, $A$ cls a: @12, $B$ cls b: @13) using rel_inverse {
+	theorem rel_inverse_is_rel($R$ cls r: @11, $A$ cls a: @12, $B$ cls b: @13) using setbuilder_pair, rel_inverse, subset, is_rel_over_sets {
 		is_rel_over_sets(r, a, b) |- {
 			(cls z) => {
 				in(z, rel_inverse(r)) |- {
@@ -464,7 +464,7 @@ system Relation extends Set {
 		setbuilder_pair((cls a, cls c) => X((cls b) => A(in(pair(a, b), y), in(pair(b, c), x))))
 	}
 
-	theorem rel_composite_in_i(cls f: @12, cls g: @22, cls x: @111, cls y: @112, cls z: @212) {
+	theorem rel_composite_in_i(cls f: @12, cls g: @22, cls x: @111, cls y: @112, cls z: @212) using rel_composite {
 		in(pair(x, y), f), in(pair(y, z), g) |- {
 			[
 				[
@@ -476,7 +476,7 @@ system Relation extends Set {
 		}
 	}
 
-	theorem rel_composite_im_set($R_1$ cls r1, $R_2$ cls r2, $A$ cls a) {
+	theorem rel_composite_im_set($R_1$ cls r1, $R_2$ cls r2, $A$ cls a) using rel_im_set, rel_composite {
 		(cls z) => {
 			$c1 = in(z, rel_im_set(rel_composite(r1, r2), a)) |- {
 				$X = @h1 > setbuilder_e;
@@ -551,7 +551,7 @@ system Relation extends Set {
 		Uin2(a, a, (cls x, cls y) => I(rel_call(r, x, y), rel_call(r, y, x)))
 	}
 
-	theorem rel_symmetric_m($\sim$ cls r: @11, $A$ cls a: @12, cls x: @21, cls y: @31) {
+	theorem rel_symmetric_m($\sim$ cls r: @11, $A$ cls a: @12, cls x: @21, cls y: @31) using rel_symmetric {
 		rel_symmetric(r, a), in(x, a), in(y, a), rel_call(r, x, y) |- {
 			[@h4; [@h1; @h2; @h3] > Uin2e] > mp
 		}
@@ -593,25 +593,25 @@ system Relation extends Set {
 		A(is_preorder(r, a), rel_symmetric(r, a))
 	}
 
-	theorem equiv_rel_i($\sim$ cls r: @11, $A$ cls a: @12) {
+	theorem equiv_rel_i($\sim$ cls r: @11, $A$ cls a: @12) using is_preorder, is_equiv_rel {
 		is_rel_over_set(r, a), rel_reflexive(r, a), rel_symmetric(r, a), rel_transitive(r, a) |- {
 			[[@h1; [@h2; @h4] > Ai] > Ai as is_preorder(r, a); @h3] > Ai as is_equiv_rel(r, a)
 		}
 	}
 
-	theorem equiv_rel_is_reflexive($\sim$ cls r: @11, $A$ cls a: @12) {
+	theorem equiv_rel_is_reflexive($\sim$ cls r: @11, $A$ cls a: @12) using is_equiv_rel, is_preorder {
 		is_equiv_rel(r, a) |- {
 			@h1 > Ae1 > Ae2 > Ae1
 		}
 	}
 
-	theorem equiv_rel_is_symmetric($\sim$ cls r: @11, $A$ cls a: @12) {
+	theorem equiv_rel_is_symmetric($\sim$ cls r: @11, $A$ cls a: @12) using is_equiv_rel {
 		is_equiv_rel(r, a) |- {
 			@h1 > Ae2
 		}
 	}
 
-	theorem equiv_rel_is_transitive($\sim$ cls r: @11, $A$ cls a: @12) {
+	theorem equiv_rel_is_transitive($\sim$ cls r: @11, $A$ cls a: @12) using is_equiv_rel, is_preorder {
 		is_equiv_rel(r, a) |- {
 			@h1 > Ae1 > Ae2 > Ae2
 		}
@@ -625,19 +625,19 @@ system Relation extends Set {
 		subsetbuilder(a, (cls z) => rel_call(r, z, x))
 	}
 
-	theorem equiv_cls_set_i(cls x: @r11, $A$ cls a: @11, $\sim$ cls r: @r13) {
+	theorem equiv_cls_set_i(cls x: @r11, $A$ cls a: @11, $\sim$ cls r: @r13) using equiv_cls {
 		is_set(a) |- {
 			@h1 > subsetbuilder_set_i as is_set(equiv_cls(x, a, r))
 		}
 	}
 
-	theorem equiv_cls_in_i(cls x: @23, $A$ cls a: @12, $\sim$ cls r: @21, cls z: @11) {
+	theorem equiv_cls_in_i(cls x: @23, $A$ cls a: @12, $\sim$ cls r: @21, cls z: @11) using equiv_cls {
 		in(z, a), rel_call(r, z, x) |- {
 			[@h1; @h2] > subsetbuilder_i as in(z, equiv_cls(x, a, r))
 		}
 	}
 
-	theorem equiv_cls_in_i2(cls x: @21, $A$ cls a: @12, $\sim$ cls r: @11) {
+	theorem equiv_cls_in_i2(cls x: @21, $A$ cls a: @12, $\sim$ cls r: @11) using rel_reflexive {
 		rel_reflexive(r, a), in(x, a) |- {
 			[
 				@h2;
@@ -646,7 +646,7 @@ system Relation extends Set {
 		}
 	}
 
-	theorem equiv_cls_eq_i($\sim$ cls r: @11, $A$ cls a: @12, cls x: @21, cls y: @31) {
+	theorem equiv_cls_eq_i($\sim$ cls r: @11, $A$ cls a: @12, cls x: @21, cls y: @31) using subsetbuilder, equiv_cls, rel_transitive {
 		$foo = (cls x, cls y, $A$ cls a, $\sim$ cls r, cls z) => {
 			is_equiv_rel(r, a), in(x, a), in(y, a), rel_call(r, x, y) |- {
 				in(z, equiv_cls(x, a, r)) |- {
@@ -677,7 +677,7 @@ system Relation extends Set {
 		}
 	}
 
-	theorem equiv_cls_eq_e($\sim$ cls r: @11, $A$ cls a: @12, cls x: @21, cls y: @31) {
+	theorem equiv_cls_eq_e($\sim$ cls r: @11, $A$ cls a: @12, cls x: @21, cls y: @31) using equiv_cls {
 		rel_reflexive(r, a), in(x, a), in(y, a), eq(equiv_cls(x, a, r), equiv_cls(y, a, r)) |- {
 			[[@h1; @h2] > equiv_cls_in_i2; @h4] > in_eq > subsetbuilder_e
 		}
@@ -691,7 +691,7 @@ system Relation extends Set {
 		setbuilder2((cls x) => equiv_cls(x, a, r), is_in(a))
 	}
 
-	theorem quotient_set_is_set($A$ cls a: @11, $\sim$ cls r: @r12) {
+	theorem quotient_set_is_set($A$ cls a: @11, $\sim$ cls r: @r12) using equiv_cls, setbuilder2, quotient_set, subset {
 		is_set(a) |- {
 			$subset = ($B$ cls b) => {
 				in(b, quotient_set(a, r)) |- {
@@ -720,7 +720,7 @@ system Relation extends Set {
 		}
 	}
 
-	theorem quotient_set_in_i(cls x: @21, $A$ cls a: @11, $\sim$ cls r: @r22) {
+	theorem quotient_set_in_i(cls x: @21, $A$ cls a: @11, $\sim$ cls r: @r22) using quotient_set {
 		is_set(a), in(x, a) |- {
 			[
 				@h1 > equiv_cls_set_i as is_set(equiv_cls(x, a, r));
@@ -741,7 +741,7 @@ system Relation extends Set {
 		A(is_rel_over_set(r, a), A(rel_asymmetric(r, a), rel_transitive(r, a)))
 	}
 
-	theorem setbuilder_pair_is_rel(pr2 f: @r11) {
+	theorem setbuilder_pair_is_rel(pr2 f: @r11) using setbuilder_pair, subset, is_rel_over_sets, is_rel_over_set, is_rel {
 		with ($A$ cls aa = setbuilder_pair(f)) {
 			|- {
 				(cls z) => {
@@ -772,7 +772,7 @@ system Relation extends Set {
 	"이항관계를 위한 [#U].
 
 	[$R]이 이항관계일 때 임의의 [$.(a, b)\in R]에 대해 [$f(a, b)]이면, 임의의 [$x\in R]에 대해 [$fx]이다."
-	theorem rel_U(pr f: @r2, $R$ cls r: @11) {
+	theorem rel_U(pr f: @r2, $R$ cls r: @11) using is_rel_over_sets, is_rel_over_set, is_rel, setbuilder_pair, cartesian {
 		is_rel(r), U2((cls x, cls y) => I(in(pair(x, y), r), f(pair(x, y)))) |- {
 			(cls z) => {
 				in(z, r) |- {
@@ -795,7 +795,7 @@ system Relation extends Set {
 		}
 	}
 
-	theorem rel_eq_i($R_1$ cls r1: @11, $R_2$ cls r2: @21) {
+	theorem rel_eq_i($R_1$ cls r1: @11, $R_2$ cls r2: @21) using subset {
 		is_rel(r1), is_rel(r2),
 		U2((cls x, cls y) => E(in(pair(x, y), r1), in(pair(x, y), r2))) |- {
 			$Ee1 = @h3 > Ee1U2((cls x, cls y) => in(pair(x, y), r1), (cls x, cls y) => in(pair(x, y), r2)) as U2((cls x, cls y) => I(in(pair(x, y), r1), in(pair(x, y), r2)));
@@ -810,7 +810,7 @@ system Relation extends Set {
 	}
 
 	"곱집합은 이항관계이다."
-	theorem cartesian_is_rel(cls x, cls y) {
+	theorem cartesian_is_rel(cls x, cls y) using setbuilder_pair, cartesian, subset, is_rel_over_sets, is_rel_over_set, is_rel {
 		(cls z) => {
 			in(z, cartesian(x, y)) |- {
 				[
@@ -851,7 +851,7 @@ system Relation extends Set {
 		}
 	}
 
-	theorem cartesian_inverse($A$ cls a, $B$ cls b) {
+	theorem cartesian_inverse($A$ cls a, $B$ cls b) using is_rel_over_set, is_rel {
 		$foo = ($A$ cls a, $B$ cls b, cls x, cls y) => {
 			in(pair(x, y), cartesian(a, b)) |- {
 				[
@@ -873,14 +873,14 @@ system Relation extends Set {
 		] > rel_eq_i > eq_symmetric
 	}
 
-	theorem rel_subset_is_rel(cls x: @11, cls y: @12) {
+	theorem rel_subset_is_rel(cls x: @11, cls y: @12) using is_rel_over_sets, is_rel_over_set, is_rel {
 		subset(x, y), is_rel(y) |- {
 			[@h1; @h2] > subset_subset as is_rel(x)
 		}
 	}
 
 	"`[Pinter]` 정리 1.51. 곱집합은 집합이다."
-	theorem cartesian_is_set($A$ cls a: @11, $B$ cls b: @21) using pair {
+	theorem cartesian_is_set($A$ cls a: @11, $B$ cls b: @21) using subset, power, pair {
 		is_set(a), is_set(b) |- {
 			$power_power_cup_is_set = [@h1; @h2] > cup_is_set > power_is_set > power_is_set;
 
@@ -959,7 +959,7 @@ system Relation extends Set {
 		is_rel(x), is_rel(y), is_rel(z) |- eq(rel_composite(rel_composite(x, y), z), rel_composite(x, rel_composite(y, z)))
 	}
 
-	theorem rel_inverse_subset($A$ cls a: @21, $B$ cls b: @22) {
+	theorem rel_inverse_subset($A$ cls a: @21, $B$ cls b: @22) using subset, is_rel_over_set, is_rel {
 		is_rel(a), subset(a, b) |- {
 			[
 				@h1 > rel_inverse_is_rel as is_rel(rel_inverse(a));

@@ -26,73 +26,73 @@ system Predicate extends Propositional {
 
 	"pr 타입을 위한 [#A]."
 	$\left(#1<<\land>>#2\right)$
-	pr Af(pr f, pr g) {
+	unsealed pr Af(pr f, pr g) {
 		(cls z) => A(f(z), g(z))
 	}
 
 	"pr 타입을 위한 [#O]."
 	$\left(#1<<\lor>>#2\right)$
-	pr Of(pr f, pr g) {
+	unsealed pr Of(pr f, pr g) {
 		(cls z) => O(f(z), g(z))
 	}
 
 	"pr 타입을 위한 [#I]."
 	$\left(#1<<\to>>#2\right)$
-	pr If(pr f, pr g) {
+	unsealed pr If(pr f, pr g) {
 		(cls z) => I(f(z), g(z))
 	}
 
 	"pr 타입을 위한 [#E]."
 	$\left(#1<<\leftrightarrow>>#2\right)$
-	pr Ef(pr f, pr g) {
+	unsealed pr Ef(pr f, pr g) {
 		(cls z) => E(f(z), g(z))
 	}
 
 	"pr 타입을 위한 [#N]."
 	$\left(<<\neg>>#1\right)$
-	pr Nf(pr f) {
+	unsealed pr Nf(pr f) {
 		(cls z) => N(f(z))
 	}
 
 	"pr2 타입을 위한 [#A]."
 	$\left(#1<<\land>>#2\right)$
-	pr2 Af2(pr2 f, pr2 g) {
+	unsealed pr2 Af2(pr2 f, pr2 g) {
 		(cls x, cls y) => A(f(x, y), g(x, y))
 	}
 
 	"pr2 타입을 위한 [#O]."
 	$\left(#1<<\lor>>#2\right)$
-	pr2 Of2(pr2 f, pr2 g) {
+	unsealed pr2 Of2(pr2 f, pr2 g) {
 		(cls x, cls y) => O(f(x, y), g(x, y))
 	}
 
 	"pr2 타입을 위한 [#I]."
 	$\left(#1<<\to>>#2\right)$
-	pr2 If2(pr2 f, pr2 g) {
+	unsealed pr2 If2(pr2 f, pr2 g) {
 		(cls x, cls y) => I(f(x, y), g(x, y))
 	}
 
 	"pr3 타입을 위한 [#I]."
 	$\left(#1<<\to>>#2\right)$
-	pr3 If3(pr3 f, pr3 g) {
+	unsealed pr3 If3(pr3 f, pr3 g) {
 		(cls x, cls y, cls z) => I(f(x, y, z), g(x, y, z))
 	}
 
 	"pr4 타입을 위한 [#I]."
 	$\left(#1<<\to>>#2\right)$
-	pr4 If4(pr4 f, pr4 g) {
+	unsealed pr4 If4(pr4 f, pr4 g) {
 		(cls x, cls y, cls z, cls w) => I(f(x, y, z, w), g(x, y, z, w))
 	}
 
 	"pr2 타입을 위한 [#E]."
 	$\left(#1<<\leftrightarrow>>#2\right)$
-	pr2 Ef2(pr2 f, pr2 g) {
+	unsealed pr2 Ef2(pr2 f, pr2 g) {
 		(cls x, cls y) => E(f(x, y), g(x, y))
 	}
 
 	"pr2 타입을 위한 [#N]."
 	$\left(<<\neg>>#1\right)$
-	pr2 Nf2(pr2 f) {
+	unsealed pr2 Nf2(pr2 f) {
 		(cls x, cls y) => N(f(x, y))
 	}
 
@@ -104,21 +104,21 @@ system Predicate extends Propositional {
 	"pr2를 위한 보편 양화."
 	[precedence=249]
 	$<<\forall^2>>#1$
-	st U2(pr2 f) {
+	unsealed st U2(pr2 f) {
 		U((cls x) => U((cls y) => f(x, y)))
 	}
 
 	"pr3을 위한 보편 양화."
 	[precedence=249]
 	$<<\forall^3>>#1$
-	st U3(pr3 f) {
+	unsealed st U3(pr3 f) {
 		U((cls x) => U((cls y) => U((cls z) => f(x, y, z))))
 	}
 
 	"pr4를 위한 보편 양화."
 	[precedence=249]
 	$<<\forall^4>>#1$
-	st U4(pr4 f) {
+	unsealed st U4(pr4 f) {
 		U((cls x) => U((cls y) => U((cls z) => U((cls w) => f(x, y, z, w)))))
 	}
 
@@ -131,38 +131,38 @@ system Predicate extends Propositional {
 
 	[precedence=249]
 	$<<\nexists>>#1$
-	st NX(pr f) {
+	unsealed st NX(pr f) {
 		N(X(f))
 	}
 
 	"pr2를 위한 존재 양화. [#X]에 의존한다."
 	[precedence=249]
 	$<<\exists^2>>#1$
-	st X2(pr2 f) {
+	unsealed st X2(pr2 f) {
 		X((cls x) => X((cls y) => f(x, y)))
 	}
 
 	"pr3를 위한 존재 양화."
 	[precedence=249]
 	$<<\exists^3>>#1$
-	st X3(pr3 f) {
+	unsealed st X3(pr3 f) {
 		X((cls x) => X((cls y) => X((cls z) => f(x, y, z))))
 	}
 
 	"pr4를 위한 존재 양화."
 	[precedence=249]
 	$<<\exists^4>>#1$
-	st X4(pr4 f) {
+	unsealed st X4(pr4 f) {
 		X((cls x) => X((cls y) => X((cls z) => X((cls w) => f(x, y, z, w)))))
 	}
 
-	theorem NX_to_UN(pr f: @111) {
+	theorem NX_to_UN(pr f: @111) using X {
 		N(X(f)) |- {
 			@h1 > NNe as U(Nf(f))
 		}
 	}
 
-	theorem UN_to_NX(pr f: @111) {
+	theorem UN_to_NX(pr f: @111) using X {
 		U(Nf(f)) |- {
 			@h1 > NNi as NX(f)
 		}
@@ -226,7 +226,7 @@ system Predicate extends Propositional {
 		}
 	}
 
-	theorem NU_to_XN(pr f: @111) {
+	theorem NU_to_XN(pr f: @111) using X {
 		N(U(f)) |- {
 			[
 				@h1;
@@ -235,7 +235,7 @@ system Predicate extends Propositional {
 		}
 	}
 
-	theorem XN_to_NU(pr f: @111) {
+	theorem XN_to_NU(pr f: @111) using X {
 		X(Nf(f)) |- {
 			[
 				@h1;
@@ -414,7 +414,7 @@ system Predicate extends Propositional {
 	}
 
 	"존재 양화 도입(existential introduction). [#Ue]와 합치면 [$\forall f \vdash \exists f]가 될 것도 같으나 어떤 class x가 있어야 한다."
-	theorem Xi(pr f: @r1, cls x: @12) {
+	theorem Xi(pr f: @r1, cls x: @12) using X {
 		f(x) |- {
 			@h1 > NNi > (Ue(Nf(f), x) > contrapose_alt) as X(f)
 		}
@@ -427,7 +427,7 @@ system Predicate extends Propositional {
 	}
 
 	"[#X]를 위한 [#mp]."
-	theorem mpX(pr f: @11, pr g: @r1) {
+	theorem mpX(pr f: @11, pr g: @r1) using X {
 		X(f), U(If(f, g)) |- {
 			N(X(g)) |- {
 				[
@@ -521,7 +521,7 @@ system Predicate extends Propositional {
 	}
 
 	"문장 타입을 위한 존재 양화 소거(existential elimination). 존재 양화 소거는 일반적으로 [$.(\exists x)(\varphi(x))\vdash \varphi(c)]를 뜻하나 이는 새로운 상수 기호 [$c]의 도입을 필요로 하며 math-o-matic 문법은 이를 지원하지 않는다. 또 완전히 새로운 기호 [$c]에 관하여 [$\varphi(c)]임을 주장하는 것은 이상한 일이다. 그러므로 math-o-matic에서는 일반적 존재 양화 소거를 지원하지 않는데, [#mpX] 및 [#Xe] 등을 사용하여 비슷한 효과를 낼 수 있디."
-	theorem Xe(st p) {
+	theorem Xe(st p) using X {
 		X((cls x) => p) |- {
 			N(p) |- {
 				[
@@ -550,7 +550,7 @@ system Predicate extends Propositional {
 		}
 	}
 
-	theorem XO_to_OX(pr f: @111, pr g: @112) {
+	theorem XO_to_OX(pr f: @111, pr g: @112) using X {
 		X(Of(f, g)) |- {
 			N(O(X(f), X(g))) |- {
 				$noan = @h2 > NO_to_AN;
@@ -568,7 +568,7 @@ system Predicate extends Propositional {
 		}
 	}
 
-	theorem OX_to_XO(pr f: @111, pr g: @121) {
+	theorem OX_to_XO(pr f: @111, pr g: @121) using X {
 		O(X(f), X(g)) |- {
 			N(X(Of(f, g))) |- {
 				$foo = @h2 > NNe;
@@ -592,7 +592,7 @@ system Predicate extends Propositional {
 		}
 	}
 
-	theorem XA_to_AX(pr f: @111, pr g: @112) {
+	theorem XA_to_AX(pr f: @111, pr g: @112) using X {
 		X(Af(f, g)) |- {
 			[
 				@h1 > (ON_to_NA_U(f, g) > contrapose_alt);

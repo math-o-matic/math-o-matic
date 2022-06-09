@@ -9,7 +9,7 @@ system Natural extends Function {
 		cup(x, singleton(x))
 	}
 
-	theorem successor_eq_i(cls x: @11, cls y: @12) {
+	theorem successor_eq_i(cls x: @11, cls y: @12) using successor {
 		eq(x, y) |- {
 			[
 				@h1;
@@ -18,13 +18,13 @@ system Natural extends Function {
 		}
 	}
 
-	theorem self_in_successor(cls x: @11) {
+	theorem self_in_successor(cls x: @11) using successor {
 		is_set(x) |- {
 			@h1 > self_in_singleton(x) > cup_in_i2(x, ?, ?) as in(x, successor(x))
 		}
 	}
 
-	theorem successor_is_bigger(cls x) {
+	theorem successor_is_bigger(cls x) using successor {
 		cup_is_bigger_1(x, singleton(x))
 		> id(subset(x, successor(x)))
 	}
@@ -42,7 +42,7 @@ system Natural extends Function {
 	cls omega_two = successor(omega_one);
 
 	"따름 순서수는 집합이다."
-	theorem successor_is_set(cls x: @11) {
+	theorem successor_is_set(cls x: @11) using successor {
 		is_set(x) |- {
 			[
 				@h1;
@@ -67,7 +67,7 @@ system Natural extends Function {
 	cls omega = bigcap(setbuilder((cls z) => is_successor_set(z)));
 
 	"자연수 집합은 [#omega_zero]을 포함한다. `[Pinter]`에 따르면 페아노 공리계 제1공리이다."
-	theorem zero_in_omega() {
+	theorem zero_in_omega() using omega_zero, is_successor_set, omega {
 		[
 			ax_emptyset();
 			(cls z) => {
@@ -79,7 +79,7 @@ system Natural extends Function {
 	}
 
 	"`[Pinter]`에 따르면 페아노 공리계 제2공리인 것."
-	theorem successor_in_omega(cls n: @11) {
+	theorem successor_in_omega(cls n: @11) using is_set, omega, is_successor_set {
 		in(n, omega) |- {
 			[
 				@h1 > Xi(contains(n), omega) > successor_is_set(n);
@@ -99,7 +99,7 @@ system Natural extends Function {
 	}
 
 	"`[Pinter]`에 따르면 페아노 공리계 제3공리인 것."
-	theorem successor_is_not_zero(cls n: @11) {
+	theorem successor_is_not_zero(cls n: @11) using omega_zero {
 		in(n, omega) |- {
 			eq(successor(n), omega_zero) |- {
 				[
@@ -113,13 +113,13 @@ system Natural extends Function {
 		}
 	}
 
-	theorem one_in_omega() {
+	theorem one_in_omega() using omega_one {
 		zero_in_omega()
 		> successor_in_omega as in(omega_one, omega)
 	}
 
 	"[#omega]는 successor set이다."
-	theorem omega_is_successor_set() {
+	theorem omega_is_successor_set() using omega_zero, is_successor_set {
 		[
 			zero_in_omega();
 			(cls z) => { successor_in_omega(z) > cp } > Ui
@@ -127,7 +127,7 @@ system Natural extends Function {
 	}
 
 	"자연수 집합은 집합이다. [#ax_infinity]로부터 유도된다."
-	theorem omega_is_set() {
+	theorem omega_is_set() using omega {
 		[
 			ax_infinity();
 			(cls x) => {
@@ -142,7 +142,7 @@ system Natural extends Function {
 	}
 
 	"`[Pinter]` 정리 6.3. `[Pinter]`에 따르면 페아노 공리계 제4공리이다."
-	theorem induce_set($X$ cls x: @11) {
+	theorem induce_set($X$ cls x: @11) using omega_zero, is_successor_set, omega {
 		subset(x, omega), in(omega_zero, x),
 		Uin(omega, (cls n) => I(in(n, x), in(successor(n), x))) |- {
 			$x_is_successor_set = [
@@ -221,7 +221,7 @@ system Natural extends Function {
 	}
 
 	"[#induce_set]의 더 강력한 버전."
-	theorem induce_set_strong($X$ cls x: @12) {
+	theorem induce_set_strong($X$ cls x: @12) using subset {
 		in(omega_zero, x), Uin(omega, (cls n) => I(in(n, x), in(successor(n), x))) |- {
 			[@h1; @h2] > induce(is_in(x)) as subset(omega, x)
 		}
@@ -241,7 +241,7 @@ system Natural extends Function {
 		subset(m, n)
 	}
 
-	theorem omega_lt_in_omega(cls m: @21, cls n: @11) {
+	theorem omega_lt_in_omega(cls m: @21, cls n: @11) using omega_zero, successor, omega_lt {
 		in(n, omega), omega_lt(m, n) |- {
 			with (pr predicate = (cls n) => I(in(m, n), in(m, omega))) {
 				$base = in(m, omega_zero) |- {
@@ -327,7 +327,7 @@ system Natural extends Function {
 	}
 
 	"`[Pinter]` 보조정리 6.6."
-	theorem omega_lt_to_leq(cls m: @21, cls n: @11) {
+	theorem omega_lt_to_leq(cls m: @21, cls n: @11) using omega_zero, successor, omega_lt, omega_leq {
 		$base = (cls m) => {
 			in(m, omega_zero) |- {
 				N(subset(m, omega_zero)) |- {
@@ -382,7 +382,7 @@ system Natural extends Function {
 	}
 
 	"`[Pinter]`에 따르면 페아노 공리계 제5공리인 것."
-	theorem successor_eq_e(cls m: @11, cls n: @21) {
+	theorem successor_eq_e(cls m: @11, cls n: @21) using cup, successor, omega_lt, omega_leq {
 		in(m, omega), in(n, omega), eq(successor(m), successor(n)) |- {
 			$base = [
 				@h1 > is_set_i > self_in_successor;
@@ -443,7 +443,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem omega_lt_to_leq_successor(cls m: @21, cls n: @11) {
+	theorem omega_lt_to_leq_successor(cls m: @21, cls n: @11) using successor, subset, omega_leq, omega_lt {
 		in(n, omega), omega_lt(m, n) |- {
 			(cls k) => {
 				in(k, successor(m)) |- {
@@ -471,7 +471,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem omega_leq_to_lt_successor(cls m: @11, cls n: @21) {
+	theorem omega_leq_to_lt_successor(cls m: @11, cls n: @21) using subset, omega_leq, omega_zero, omega_lt, successor {
 		in(m, omega), in(n, omega), omega_leq(m, n) |- {
 			with (pr predicate = (cls n) => I(omega_leq(m, n), omega_lt(m, successor(n)))) {
 				$base = /* @h4 */ omega_leq(m, omega_zero) |- {
@@ -566,7 +566,7 @@ system Natural extends Function {
 	]
 	을 만족하는 함수 [$\gamma:\omega\to A]를 만든다. [$c]와 [$f]가 조건을 만족하지 않으면 만들어지지 않는다. `[Pinter]`의 정리 6.8에 등장한다."
 	$<<\operatorname{recursive\ def.}>>\left(\text{to=}#1, \text{base=}#2, \text{step=}#3\right)$
-	sealed cls define_recursively($A$ cls a, cls c, cls f) {
+	cls define_recursively($A$ cls a, cls c, cls f) {
 		bigcap3(($G$ cls g) => is_recursive_supset(g, a, c, f), ($G$ cls g) => g)
 	}
 
@@ -578,7 +578,7 @@ system Natural extends Function {
 
 	"[#is_recursive_supset]의 첫 번째 조건. 즉 [$\gamma\subseteq\omega\times A]이다.
 	[$\gamma]가 함수가 되기 위한 첫 번째 조건이기도 하다."
-	theorem recursion_theorem_1($A$ cls a: @12, cls c: @11, cls f: @21) using define_recursively {
+	theorem recursion_theorem_1($A$ cls a: @12, cls c: @11, cls f: @21) using is_recursive_supset, define_recursively {
 		in(c, a), is_fun(f, a, a) |- {
 			$irs = [
 				self_subset_self(cartesian(omega, a));
@@ -618,7 +618,7 @@ system Natural extends Function {
 	}
 
 	"[#is_recursive_supset]의 두 번째 조건."
-	theorem recursion_theorem_2($A$ cls a: @12, cls c: @11, cls f) using define_recursively {
+	theorem recursion_theorem_2($A$ cls a: @12, cls c: @11, cls f) using is_recursive_supset, define_recursively {
 		in(c, a) |- {
 			$set_0c = [
 				zero_in_omega() > is_set_i;
@@ -637,7 +637,7 @@ system Natural extends Function {
 	}
 
 	"[#is_recursive_supset]의 세 번째 조건."
-	theorem recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) using define_recursively {
+	theorem recursion_theorem_3($A$ cls a: @12, cls c, cls f: @11) using is_recursive_supset, bigcap3, define_recursively {
 		is_fun(f, a, a) |- {
 			with ($\gamma$ cls g = define_recursively(a, c, f)) {
 				(cls n) => {
@@ -722,7 +722,7 @@ system Natural extends Function {
 	}
 
 	"[$\gamma]가 함수가 되기 위한 세 번째 조건의 base case."
-	theorem recursion_theorem_5_base($A$ cls a: @12, cls c: @11, cls f: @21) using define_recursively {
+	theorem recursion_theorem_5_base($A$ cls a: @12, cls c: @11, cls f: @21) using omega_zero, is_recursive_supset, define_recursively {
 		in(c, a), is_fun(f, a, a) |- {
 			with ($\gamma$ cls g = define_recursively(a, c, f)) {
 				(cls d) => {
@@ -806,7 +806,7 @@ system Natural extends Function {
 	}
 
 	"[$\gamma]가 함수가 되기 위한 세 번째 조건의 step case."
-	theorem recursion_theorem_5_step($A$ cls a: @12, cls c: @11, cls f: @21) using define_recursively {
+	theorem recursion_theorem_5_step($A$ cls a: @12, cls c: @11, cls f: @21) using Q, is_recursive_supset, define_recursively {
 		in(c, a), is_fun(f, a, a) |- {
 			with ($\gamma$ cls g = define_recursively(a, c, f)) {
 				(cls n) => {
@@ -970,7 +970,7 @@ system Natural extends Function {
 	}
 
 	"[$\gamma:\omega\to A]가 함수이다."
-	theorem recursion_theorem_6($A$ cls a: @12, cls c: @11, cls f: @21) {
+	theorem recursion_theorem_6($A$ cls a: @12, cls c: @11, cls f: @21) using is_fun {
 		in(c, a), is_fun(f, a, a) |- {
 			[
 				[@h1; @h2] > recursion_theorem_1;
@@ -983,7 +983,7 @@ system Natural extends Function {
 	}
 
 	"[$\gamma]가 함수이고 재귀적으로 정의된다."
-	theorem recursion_theorem_7($A$ cls a: @12, cls c: @11, cls f: @21) {
+	theorem recursion_theorem_7($A$ cls a: @12, cls c: @11, cls f: @21) using is_recursively_defined {
 		in(c, a), is_fun(f, a, a) |- {
 			with ($\gamma$ cls g = define_recursively(a, c, f)) {
 				$c1 = [@h1; @h2] > recursion_theorem_6 as is_fun(g, omega, a);
@@ -1036,7 +1036,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem recursion_theorem_7m($A$ cls a: @12, cls c: @11, fun f: @r4) {
+	theorem recursion_theorem_7m($A$ cls a: @12, cls c: @11, fun f: @r4) using define_recursively_m, is_recursively_defined, is_recursively_defined_m {
 		in(c, a), Uin(a, ($\gamma$ cls g) => in(f(g), a)) |- {
 			with ($\gamma$ cls g = define_recursively_m(a, c, f)) {
 				$map_f_is_fun = @h2 > map_is_fun(f, a, a);
@@ -1075,7 +1075,7 @@ system Natural extends Function {
 	}
 
 	"[$\gamma]는 여러 개 있지 않다."
-	theorem recursion_theorem_8($A$ cls a: @12, cls c: @11, cls f: @21) {
+	theorem recursion_theorem_8($A$ cls a: @12, cls c: @11, cls f: @21) using is_recursively_defined, Q {
 		in(c, a), is_fun(f, a, a) |- {
 			($\gamma_1$ cls g1, $\gamma_2$ cls g2) => {
 				is_recursively_defined(g1, a, c, f), is_recursively_defined(g2, a, c, f) |- {
@@ -1133,7 +1133,7 @@ system Natural extends Function {
 		define_recursively_m(omega, n, ($\gamma$ cls g) => successor(g))
 	}
 
-	theorem omega_add_unary_ird(cls n) {
+	theorem omega_add_unary_ird(cls n) using omega_add_unary {
 		in(n, omega) |- {
 			$foo = ($\gamma$ cls g) => {
 				in(g, omega) |- {
@@ -1173,7 +1173,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem omega_add_in_omega(cls m: @11, cls n: @21) {
+	theorem omega_add_in_omega(cls m: @11, cls n: @21) using is_recursively_defined_m, omega_add {
 		in(m, omega), in(n, omega) |- {
 			[
 				@h1 > omega_add_unary_ird(m) > Ae1;
@@ -1183,14 +1183,14 @@ system Natural extends Function {
 	}
 
 	"`[Pinter]` 6.10의 1."
-	theorem omega_add_base(cls n: @11) {
+	theorem omega_add_base(cls n: @11) using is_recursively_defined_m, omega_add {
 		in(n, omega) |- {
 			@h1 > omega_add_unary_ird(n) > Ae2 > Ae1 as eq(omega_add(n, omega_zero), n)
 		}
 	}
 
 	"`[Pinter]` 6.10의 2."
-	theorem omega_add_step(cls m: @11, cls n: @21) {
+	theorem omega_add_step(cls m: @11, cls n: @21) using is_recursively_defined_m, omega_add {
 		in(m, omega), in(n, omega) |- {
 			[
 				@h2;
@@ -1408,7 +1408,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem omega_add_one(cls n: @11) {
+	theorem omega_add_one(cls n: @11) using omega_one {
 		in(n, omega) |- {
 			[
 				[@h1; zero_in_omega()] > omega_add_step;
@@ -1417,7 +1417,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem one_plus_one_is_two() {
+	theorem one_plus_one_is_two() using omega_two {
 		one_in_omega()
 		> omega_add_one(omega_one)
 		as eq(omega_add(omega_one, omega_one), omega_two)
@@ -1443,7 +1443,7 @@ system Natural extends Function {
 		define_recursively_m(rel_dom(f), x, ($\gamma$ cls g) => funcall(f, g))
 	}
 
-	theorem fun_iterated_ird(cls f: @11, $A$ cls a: @12, cls x: @21) {
+	theorem fun_iterated_ird(cls f: @11, $A$ cls a: @12, cls x: @21) using fun_iterated_ {
 		is_fun(f, a, a), in(x, a) |- {
 			$dom_f_is_a = @h1 > fun_dom;
 
@@ -1464,7 +1464,7 @@ system Natural extends Function {
 	}
 
 	${#1}^{#2}{\left(#3\right)}{}^{\scriptscriptstyle<<\dag\text{discouraged}>>}$
-	sealed cls fun_iterated_call(cls f, cls n, cls x) {
+	cls fun_iterated_call(cls f, cls n, cls x) {
 		funcall(fun_iterated_(f, x), n)
 	}
 
@@ -1476,7 +1476,7 @@ system Natural extends Function {
 		map((cls x) => fun_iterated_call(f, n, x), rel_dom(f))
 	}
 
-	theorem fun_iterated_def(cls f: @11, $A$ cls a: @12, cls n: @21, cls x: @31) using fun_iterated_call {
+	theorem fun_iterated_def(cls f: @11, $A$ cls a: @12, cls n: @21, cls x: @31) using is_recursively_defined_m, fun_iterated_call, fun_iterated {
 		is_fun(f, a, a), in(n, omega), in(x, a) |- {
 			$fun_dom = @h1 > fun_dom;
 
@@ -1501,7 +1501,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem fun_iterated_is_fun(cls f: @11, $A$ cls a: @12, cls n: @21) using fun_iterated_call {
+	theorem fun_iterated_is_fun(cls f: @11, $A$ cls a: @12, cls n: @21) using is_recursively_defined_m, fun_iterated_call, fun_iterated {
 		is_fun(f, a, a), in(n, omega) |- {
 			$fun_dom = @h1 > fun_dom;
 
@@ -1523,7 +1523,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem fun_iterated_base(cls f: @11, $A$ cls a: @12, cls x: @21) using fun_iterated_call {
+	theorem fun_iterated_base(cls f: @11, $A$ cls a: @12, cls x: @21) using is_recursively_defined_m, fun_iterated_call {
 		is_fun(f, a, a), in(x, a) |- {
 			[
 				[@h1; zero_in_omega(); @h2] > fun_iterated_def;
@@ -1532,7 +1532,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem fun_iterated_step(cls f: @11, $A$ cls a: @12, cls n: @21, cls x: @31) using fun_iterated_call {
+	theorem fun_iterated_step(cls f: @11, $A$ cls a: @12, cls n: @21, cls x: @31) using is_recursively_defined_m, fun_iterated_call {
 		is_fun(f, a, a), in(n, omega), in(x, a) |- {
 			$foo = [
 				@h2;
@@ -1577,7 +1577,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem fun_iterated_one(cls f: @11, $A$ cls a: @12, cls x: @21) {
+	theorem fun_iterated_one(cls f: @11, $A$ cls a: @12, cls x: @21) using omega_one {
 		is_fun(f, a, a), in(x, a) |- {
 			$zero = [@h1; @h2] > fun_iterated_base > funcall_eq_i(f, ?, ?);
 			$one = [@h1; zero_in_omega(); @h2] > fun_iterated_step;
@@ -1589,7 +1589,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem fun_iterated_one_alt(cls f: @11, $A$ cls a: @12) {
+	theorem fun_iterated_one_alt(cls f: @11, $A$ cls a: @12) using omega_one {
 		is_fun(f, a, a) |- {
 			$eq = (cls x) => {
 				in(x, a) |- {
@@ -1611,7 +1611,7 @@ system Natural extends Function {
 		}
 	}
 
-	theorem fun_iterated_im_base(cls f: @11, $A$ cls a: @12, $B$ cls b: @21) {
+	theorem fun_iterated_im_base(cls f: @11, $A$ cls a: @12, $B$ cls b: @21) using rel_im_set {
 		is_fun(f, a, a), subset(b, a) |- {
 			$f0_is_fun = [@h1; zero_in_omega()] > fun_iterated_is_fun;
 
@@ -1701,7 +1701,7 @@ system Natural extends Function {
 	"[$A]에서 [$B]로의 단사함수 및 [$B]에서 [$A]로의 단사함수를 사용하여 [$A]에서 [$B]로의 전단사함수를 만든다.
 
 	증명의 골자는 [~(href=https://github.com/math-o-matic/math-o-matic/issues/86#issuecomment-765631917)이슈 #86]에서 확인할 수 있다."
-	theorem schroeder_bernstein_1($A$ cls a: @12, $B$ cls b: @13, cls f: @11, cls g: @21) {
+	theorem schroeder_bernstein_1($A$ cls a: @12, $B$ cls b: @13, cls f: @11, cls g: @21) using is_injection, rel_im_set, bigcup2, Q, subset, omega_one, is_surjection {
 		is_injection(f, a, b), is_injection(g, b, a) |- {
 			with ($A^\ast$ cls aa = bigcup2(omega, (cls n) => rel_im_set(fun_iterated(rel_composite(g, f), n), setminus(a, rel_im(g))))) {
 				with ($\mathfrak h$ fun hh = (cls x) => if(in(x, aa), funcall(g, funcall(f, x)), x)) {

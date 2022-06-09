@@ -49,7 +49,7 @@ function recurseInternal(
 	line.doc ? `"${line.doc}"` + s : ''
 }${
 	line.tex ? `$${line.tex}$` + s : ''
-}${line.sealed ? 'sealed ' : ''}${recurse(line.type, Context.NORMAL, 0)} ${line.name}${
+}${line.sealed || param ? '' : 'unsealed '}${recurse(line.type, Context.NORMAL, 0)} ${line.name}${
 	line.selector ? ': @' + line.selector : ''
 }${
 	line.expr ? ' = ' + recurse(line.expr, Context.NORMAL, 0) : ''
@@ -81,7 +81,7 @@ function recurseInternal(
 	line.doc ? `"${line.doc}"\n` : ''
 }${typeof line.tex_attributes.precedence == 'number' ? `[precedence=${line.tex_attributes.precedence}]\n` : ''}${
 	line.tex ? `$${line.tex}$\n` : ''
-}${line.sealed ? 'sealed ' : ''}${recurse(line.rettype, Context.NORMAL, 0)} ${line.name}(${
+}${line.sealed ? '' : 'unsealed '}${recurse(line.rettype, Context.NORMAL, 0)} ${line.name}(${
 	line.params.map(param => recurse(param, Context.NORMAL, 0)).join(', ')
 })${
 	line.expr

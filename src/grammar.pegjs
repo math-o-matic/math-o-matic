@@ -96,7 +96,7 @@ typedef =
 defv =
 	doc:(documentation __)?
 	tex:(tex __)?
-	sealed:('sealed' __)?
+	unsealed:('unsealed' __)?
 	type:type __
 	name:ident _
 	expr:(
@@ -112,7 +112,7 @@ defv =
 			isParam: false,
 			doc: doc ? doc[0] : null,
 			tex: tex ? tex[0] : null,
-			sealed: !!sealed,
+			sealed: !unsealed,
 			type,
 			name,
 			expr,
@@ -154,7 +154,7 @@ defun =
 	doc:(documentation __)?
 	tex_attributes:(tex_attributes __)?
 	tex:(tex __)?
-	sealed:('sealed' __)?
+	unsealed:('unsealed' __)?
 	rettype:type __
 	name:ident _
 	params:(
@@ -182,7 +182,7 @@ defun =
 				precedence: 0
 			},
 			tex: tex ? tex[0] : null,
-			sealed: !!sealed,
+			sealed: !unsealed,
 			rettype,
 			name,
 			params,
@@ -608,10 +608,10 @@ keyword =
 	/ 'import'
 	/ 'package'
 	/ 'schema'
-	/ 'sealed'
 	/ 'system'
 	/ 'theorem'
 	/ 'type'
+	/ 'unsealed'
 	/ 'using'
 	/ 'with'
 
