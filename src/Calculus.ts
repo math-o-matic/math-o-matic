@@ -395,54 +395,44 @@ export default class Calculus {
 	}
 
 	public static getProof(self: Expr): ProofType[] {
-		return Calculus.getProofInternal(self, new Map(), new Map(), new Counter(), true);
+		return Calculus.getProofInternal(self, new Map(), new Counter(), true);
 	}
 
 	protected static getProofInternal(
 			self: Expr,
-			hypothesisMap: Map<Expr, number>,
-			$Map: Map<Expr, number | [number, number]>,
+			provedExprMap: Map<Expr, number | [number, number]>,
 			ctr: Counter,
 			root: boolean=false): ProofType[] {
 		
-		if (hypothesisMap.has(self)) {
+		if (provedExprMap.has(self)) {
 			return [{
 				_type: 'R',
 				ctr: ctr.next(),
-				num: hypothesisMap.get(self)!,
-				expr: self
-			}];
-		}
-
-		if ($Map.has(self)) {
-			return [{
-				_type: 'R',
-				ctr: ctr.next(),
-				num: $Map.get(self)!,
+				num: provedExprMap.get(self)!,
 				expr: self
 			}];
 		}
 		
 		if (self instanceof $Variable) {
-			if (!$Map.has(self)) {
+			if (!provedExprMap.has(self)) {
 				throw Error(`${self.name} is not defined`);
 			}
 	
 			return [{
 				_type: 'R',
 				ctr: ctr.next(),
-				num: $Map.get(self)!,
+				num: provedExprMap.get(self)!,
 				expr: self.expr
 			}];
 		}
 
 		if (self instanceof Conditional) {
-			hypothesisMap = new Map(hypothesisMap);
+			provedExprMap = new Map(provedExprMap);
 
 			var start = ctr.peek() + 1;
 
 			var leftlines: ProofType[] = self.left.map(l => {
-				hypothesisMap.set(l, ctr.next());
+				provedExprMap.set(l, ctr.next());
 				
 				return {
 					_type: 'H',
@@ -451,19 +441,17 @@ export default class Calculus {
 				};
 			});
 
-			$Map = new Map($Map);
-
 			let $lines = self.def$s.map($ => {
-				var lines = Calculus.getProofInternal($.expr, hypothesisMap, $Map, ctr);
+				var lines = Calculus.getProofInternal($.expr, provedExprMap, ctr);
 				var $num = lines[lines.length - 1].ctr;
-				$Map.set($, $num);
+				provedExprMap.set($, $num);
 				return lines;
 			}).flat(1);
 
 			return [{
 				_type: 'T',
 				leftlines: leftlines as any,
-				rightlines: $lines.concat(Calculus.getProofInternal(self.right, hypothesisMap, $Map, ctr)),
+				rightlines: $lines.concat(Calculus.getProofInternal(self.right, provedExprMap, ctr)),
 				ctr: [start, ctr.peek()]
 			}];
 		}
@@ -478,7 +466,7 @@ export default class Calculus {
 					}];
 				}
 				
-				return Calculus.getProofInternal(self.expr!, hypothesisMap, $Map, ctr, root);
+				return Calculus.getProofInternal(self.expr!, provedExprMap, ctr, root);
 			}
 
 			return [{
@@ -489,45 +477,45 @@ export default class Calculus {
 		}
 
 		if (self instanceof Fun) {
-			$Map = new Map($Map);
+			provedExprMap = new Map(provedExprMap);
 	
 			var start = ctr.peek() + 1;
 	
 			let $lines: ProofType[] = [];
 			
 			self.def$s.forEach($ => {
-				var lines = Calculus.getProofInternal($.expr, hypothesisMap, $Map, ctr);
+				var lines = Calculus.getProofInternal($.expr, provedExprMap, ctr);
 				$lines = $lines.concat(lines);
 
 				var $num = lines[lines.length - 1].ctr;
-				$Map.set($, $num);
+				provedExprMap.set($, $num);
 			});
 	
 			return [{
 				_type: 'V',
 				$lines,
-				lines: Calculus.getProofInternal(self.expr, hypothesisMap, $Map, ctr),
+				lines: Calculus.getProofInternal(self.expr, provedExprMap, ctr),
 				params: self.params,
 				ctr: [start, ctr.peek()]
 			}];
 		}
 
 		if (self instanceof Funcall) {
-			if (hypothesisMap.has(self.fun)) {
+			if (provedExprMap.has(self.fun)) {
 				return [{
 					_type: 'SE',
 					ctr: ctr.next(),
-					schema: hypothesisMap.get(self.fun)!,
+					schema: provedExprMap.get(self.fun)!,
 					args: self.args,
 					expr: self
 				}];
 			}
 	
-			if ($Map.has(self.fun)) {
+			if (provedExprMap.has(self.fun)) {
 				return [{
 					_type: 'SE',
 					ctr: ctr.next(),
-					schema: $Map.get(self.fun)!,
+					schema: provedExprMap.get(self.fun)!,
 					args: self.args,
 					expr: self
 				}];
@@ -551,7 +539,7 @@ export default class Calculus {
 				}];
 			}
 	
-			var schemalines = Calculus.getProofInternal(self.fun, hypothesisMap, $Map, ctr);
+			var schemalines = Calculus.getProofInternal(self.fun, provedExprMap, ctr);
 	
 			return [
 				...schemalines,
@@ -568,17 +556,12 @@ export default class Calculus {
 		if (self instanceof Reduction) {
 			var antecedentLinesList: ProofType[][] = [];
 			var antecedentNums: (number | [number, number])[] = self.antecedents.map((l, i) => {
-				if (!self.antecedentEqualsResults[i].length) {
-					if (hypothesisMap.has(l)) return hypothesisMap.get(l)!;
-					if ($Map.has(l)) return $Map.get(l)!;
+				if (self.antecedentEqualsResults[i].length == 0) {
+					if (provedExprMap.has(l)) return provedExprMap.get(l)!;
 				}
 
-				var ref = hypothesisMap.has(l)
-					? hypothesisMap.get(l)
-					: $Map.has(l)
-						? $Map.get(l)
-						: null;
-				var lines = ref ? [] : Calculus.getProofInternal(l, hypothesisMap, $Map, ctr);
+				var ref = provedExprMap.get(l) || null;
+				var lines = ref ? [] : Calculus.getProofInternal(l, provedExprMap, ctr);
 
 				if (self.antecedentEqualsResults[i].length) {
 					lines.push({
@@ -599,17 +582,13 @@ export default class Calculus {
 			var args: Expr[] | null = null;
 			var subjectlines: ProofType[] = [];
 			var subjectnum = (() => {
-				if (hypothesisMap.has(self.subject)) {
-					return hypothesisMap.get(self.subject)!;
+				if (provedExprMap.has(self.subject)) {
+					return provedExprMap.get(self.subject)!;
 				}
 
-				if ($Map.has(self.subject)) {
-					return $Map.get(self.subject)!;
-				}
-
-				if (self.subject instanceof Funcall && $Map.has(self.subject.fun)) {
+				if (self.subject instanceof Funcall && provedExprMap.has(self.subject.fun)) {
 					args = self.subject.args;
-					return $Map.get(self.subject.fun)!;
+					return provedExprMap.get(self.subject.fun)!;
 				}
 
 				if (self.subject instanceof Variable
@@ -619,7 +598,7 @@ export default class Calculus {
 					return self.subject;
 				}
 
-				subjectlines = Calculus.getProofInternal(self.subject, hypothesisMap, $Map, ctr);
+				subjectlines = Calculus.getProofInternal(self.subject, provedExprMap, ctr);
 
 				return subjectlines[subjectlines.length - 1].ctr;
 			})();
@@ -662,7 +641,7 @@ export default class Calculus {
 		}
 
 		if (self instanceof With) {
-			$Map = new Map($Map);
+			provedExprMap = new Map(provedExprMap);
 
 			var def: ProofType = {
 				_type: 'def',
@@ -671,16 +650,16 @@ export default class Calculus {
 			};
 
 			let $lines = self.def$s.map($ => {
-				var lines = Calculus.getProofInternal($.expr, hypothesisMap, $Map, ctr);
+				var lines = Calculus.getProofInternal($.expr, provedExprMap, ctr);
 				var $num = lines[lines.length - 1].ctr;
-				$Map.set($, $num);
+				provedExprMap.set($, $num);
 				return lines;
 			}).flat(1);
 
 			return [
 				def,
 				...$lines,
-				...Calculus.getProofInternal(self.expr, hypothesisMap, $Map, ctr)
+				...Calculus.getProofInternal(self.expr, provedExprMap, ctr)
 			];
 		}
 
