@@ -2,7 +2,7 @@ import Expr from "./expr/Expr";
 import Parameter from "./expr/Parameter";
 import Variable from "./expr/Variable";
 
-export type ProofType = R | SE | RC | RS | H | NP | Wut | T | V | TE | Def | ByDef;
+export type ProofType = R | SE | RC | RS | H | NP | T | V | TE | Def | ByDef;
 
 /** repeat */
 interface R {
@@ -42,12 +42,6 @@ interface H {
 /** not proved */
 interface NP {
 	_type: 'NP';
-	ctr: number;
-	expr: Expr;
-}
-
-interface Wut {
-	_type: '?';
 	ctr: number;
 	expr: Expr;
 }

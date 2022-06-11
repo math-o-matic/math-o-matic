@@ -108,13 +108,6 @@ export default class ProofExplorer {
 						);
 
 						return ret;
-					case '?':
-						return getHtmlLine(
-							line.ctr,
-							left,
-							exprToHtml(line.expr, true),
-							'???'
-						);
 					case 'H':
 						throw Error('no');
 					case 'R':
