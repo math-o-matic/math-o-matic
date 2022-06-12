@@ -417,13 +417,6 @@ export default class Calculus {
 			if (!provedExprMap.has(self)) {
 				throw Error(`${self.name} is not defined`);
 			}
-	
-			return [{
-				_type: 'R',
-				ctr: ctr.next(),
-				num: provedExprMap.get(self)!,
-				expr: self.expr
-			}];
 		}
 
 		if (self instanceof Conditional) {
@@ -511,16 +504,6 @@ export default class Calculus {
 				}];
 			}
 	
-			if (provedExprMap.has(self.fun)) {
-				return [{
-					_type: 'SE',
-					ctr: ctr.next(),
-					schema: provedExprMap.get(self.fun)!,
-					args: self.args,
-					expr: self
-				}];
-			}
-	
 			if (self.fun instanceof Variable 
 					&& self.fun.decoration instanceof SchemaDecoration) {
 				return [{
@@ -530,8 +513,8 @@ export default class Calculus {
 				}];
 			}
 	
-			if (!(self.fun instanceof Variable
-					&& self.fun.decoration instanceof SchemaDecoration)) {
+			if (self.fun instanceof Variable
+					&& !(self.fun.decoration instanceof SchemaDecoration)) {
 				return [{
 					_type: 'NP',
 					ctr: ctr.next(),
