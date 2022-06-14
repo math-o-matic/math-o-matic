@@ -43,7 +43,7 @@ export default class HtmlGenerator {
 	public def(k: string, v: Variable) {
 		return `<div class="block">`
 			+ `<p class="label"><a id="def-${k}" href="#def-${k}"><b>${
-				'sealed' in v.decoration && v.decoration.sealed ? '' : 'unsealed '
+				'sealed' in v.decoration && !v.decoration.sealed ? 'unsealed ' : ''
 			}definition</b> ${k}</a>${!(v.decoration instanceof FunctionalAtomicDecoration || v.decoration instanceof FunctionalMacroDecoration)
 					? ': ' + v.type
 					: (v => {
