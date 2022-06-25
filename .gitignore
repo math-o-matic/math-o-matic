@@ -94,3 +94,5 @@ dist/
 docs/build/
 
 *.vsix
+
+math/test/
