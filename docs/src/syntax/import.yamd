@@ -1,3 +1,3 @@
-[=[;import] 구문]
+[=The [;import] syntax]
 
-[;import] 구문은 파일 맨 위에만 쓸 수 있다.
+[;import] statements can only be at the top of each files.

@@ -9,7 +9,7 @@ var styles = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highligh
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yamd@0.4/web/yamd.default.css">`;
 
 module.exports = {
-	name: 'math-o-matic 설명서',
+	name: 'math-o-matic docs',
 	src: 'src',
 	dst: 'build',
 	render: text => yamd.render(text),
@@ -18,11 +18,11 @@ module.exports = {
 	},
 	list: [
 		{
-			name: '코드를 작성하는 법',
+			name: 'How to write code',
 			file: 'code.yamd'
 		},
 		{
-			name: '문법',
+			name: 'A comprehensive description of all math-o-matic syntaxes (TODO)',
 			dir: 'syntax',
 			list: [
 				{
@@ -32,21 +32,21 @@ module.exports = {
 			]
 		},
 		{
-			name: '현재의 공리계',
+			name: 'The current axiomatic system',
 			dir: 'current-axiomatic-system',
 			list: [
 				{
-					name: '대응 관계',
+					name: 'Counterparts',
 					file: 'counterparts.yamd'
 				}
 			]
 		},
 		{
-			name: '개발자를 위한 명세',
+			name: 'Specs for devs',
 			dir: 'dev',
 			list: [
 				{
-					name: '우선순위',
+					name: 'Precedence',
 					file: 'precedence.yamd'
 				}
 			]

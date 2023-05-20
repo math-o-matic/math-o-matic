@@ -1,84 +1,102 @@
-[=코드를 작성하는 법]
+[=How to write code]
 
-저장소에서 [~(href=https://github.com/math-o-matic/math-o-matic/tree/master/math)/math] 디렉터리를 보면 많은 예시가 있다.
+Check out the [~(href=https://github.com/math-o-matic/math-o-matic/tree/master/math)/math] directory from the repo for many examples.
 
-[==대상언어의 정의]
+[==The object language]
 
-[===타입의 정의]
+[===Types]
 
-대상언어의 모든 문장에는 타입이 있어야 한다. 먼저 타입을 정의해 보자.
+Every statement in the object language is assigned a type. A type is either:
 
-[====원시 타입]
+[ul
+  [*] a primitive type,
+  [*] a functional type, or
+  [*] a macro type.
+]
+
+[====Primitive types]
 
 [;;
-"문장 타입."
+"The statement type."
 [**type] st;]
 
-원시 타입은 [;type <타입 이름>;]이라 써서 선언할 수 있다. 또 타입에 관한 설명을 큰따옴표 안에 작성할 수 있다. 이름이 다른 원시 타입은 모두 서로 다르다.
+Primitive types can be declared by writing [;type <type name>;]. The docstring for the type can also be written within the double quotes. All primitive types with a different name are considered different.
 
-[====함수형 타입]
+[====Functional types]
 
-타입 생성자(type constructor) [$\to]를 사용하여 기존의 타입으로부터 함수형 타입을 만들 수 있다. 예를 들어 [;cls], [;st]가 타입이라면 [;`[cls, cls -> st]`]라 써서 [;cls] 타입 두 개를 입력받아 [;st] 타입을 출력하는 함수의 타입을 만들 수 있다.
+Functional types can be created from existing types by using the [**type constructor] [$\to]. For example, if [;cls] and [;st] are types, then [;`[cls, cls -> st]`] is the type of the function that maps two [;cls] type terms to one [;st] type term.
 
-[====매크로 타입]
+[====Macro types]
 
-새로운 타입 이름이 기존의 타입을 가리키도록 할 수도 있다. 예를 들어 새로운 타입 이름 [;pr]이 함수형 타입 [;`[cls -> st]`]를 가리키도록 하려면 다음과 같이 할 수 있다.
+Macro types provide an alias for an already existing type. For example, the following code declares the macro type [;pr] as an alias for the functional type [;`[cls -> st]`]:
 
 [;;
-"단항 술어 타입."
+"The unary predicate type."
 [**type] pr = `[cls -> st]`;]
 
-[===용어의 정의]
+[===Terms]
 
-타입을 정의한 뒤에는 그 타입을 갖는 용어를 정의할 수 있다.
+Now that types are defined, we can now define terms that are assigned one of those types. A term can either be an undefined term or a macro term.
 
-[====무정의용어의 정의]
+[====Undefined terms]
 
 [;;
-"verum (T). 즉 임의의 항진명제를 표시한다."
+"Verum (T). Denotes an arbitrary tautology."
 $\top$
 st T;]
 
-[$\LaTeX] 코드를 [;$]로 감싸서 기호가 어떻게 보이는지를 바꿀 수 있다. 위의 예시는 [;T] 변수가 [$\top]처럼 표시되게 하였다. 또 함수형 타입을 갖는 무정의용어는 다음과 같이 정의할 수 있다.
+You can change the appearance of the term by writing a corresponding [$\LaTeX] code between the [;$] signs. The above example sets the appearance of the term [;T] as [$\top] ([;\top]).
+
+Undefined terms with a functional type can also be defined as follows:
 
 [;;`
-"and (TFFF)."
+"The binary logical connective AND (TFFF)."
 $\land$
 [st, st -> st] A;
 `]
 
-그러나 다음과 같이 작성하는 편이 낫다.
+However it is recommended to write instead like this:
 
 [;;`
-"and (TFFF)."
+"The binary logical connective AND (TFFF)."
 [precedence=596]
 $#1<<\land>>#2$
 st A(st p, st q);
 `]
 
-[;`[precedence=596]`]은 [$\land]의 연산자 우선순위를 596으로 하겠다는 뜻이다. 연산자 우선순위 문맥에 따라 표시할 때 괄호가 필요한지가 결정된다. [;#1]과 [;#2]는 각각 첫 번째와 두 번째 인자가 표시될 위치를 표시한다. [;<<]와 [;>>]는 클릭 되는 부분을 표시한다.
+One advantage of writing like this is that you can make the function call [;A(p, q)] be displayed as [$p\land q] ([;p \land q]) instead of [$\land(p, q)] ([;\land(p, q)]).
 
-[====함수의 생성과 호출]
+[ul
+	[*] [;`[precedence=596]`] sets the operator precedence of [;A] as 596. The operator precedence is the mechanism that determines whether additional parentheses are required or not when displaying the expressions in [$\LaTeX].
+	[*] [;#1] and [;#2] serve as placeholders for the first and the second argument of the function, respectively. When the function call is displayed, the placeholders are replaced with the arguments and then rendered as [$\LaTeX].
+	[*] The segment enclosed with [;<<] and [;>>] is the clickable part that when clicked, displays the definition and the description of the term.
+]
 
-이때 함수를 생성 또는 호출하는 구문 역시 대상언어의 문법에 포함된다.
+[====Function expressions and function calls]
 
-[=====함수의 호출]
+The object language also has syntaxes for function expressions and function calls.
 
-함수 호출은 함수를 앞에 쓰고 함수형 타입 문장의 입력항 타입과 일치하는 타입을 갖는 문장들을 소괄호 안에 써서 할 수 있다. 예를 들어 [;A]에 [;T], [;T]를 입력하려면 [;A(T, T)]라 쓰면 된다.
+[=====Function calls]
 
-[=====함수의 생성]
+Function calls, just like one would normally write doing mathematics or programming, can be written by first writing the function name followed by arguments separated by commas and enclosed with parentheses. The number of arguments and the types of arguments must correspond to the type of the function.
 
-예를 들어 [;st] 타입 [;p]를 받아 [;A(p, T)]를 반환하는 함수는 다음과 같이 작성할 수 있다.
+For example, in order to call the function [;A] with the arguments [;T] and [;T], one can write [;A(T, T)]. If the type of the function [;A] is [;`[st, st -> st]`], in order to match the input type, the term [;T] should have the type [;st].
+
+[=====Function expressions]
+
+You can write function expressions to create anonymous functions, much like writing lambda expressions in many programming languages. For example, a function with one input parameter [;p] of type [;st] and an output of [;A(p, T)] can be written as:
 
 [;;.(st p) => A(p, T)]
 
+or,
+
 [;;.(st p) => { A(p, T) }]
 
-중괄호는 생략하거나 생략하지 않을 수 있다. 이때 위 함수는 [;st] 타입 하나를 받아 [;st] 타입을 반환하므로 [;`[st -> st]`] 타입이 된다.
+The curly braces can either be omitted or not. Since the above function returns a [;st] type term, it is automatically assigned the type [;`[st -> st]`].
 
-[====매크로 용어의 정의]
+[====Macro terms]
 
-새로운 용어 이름이 기존의 문장을 가리키도록 할 수도 있다. 예를 들어 새로운 용어 이름 [;F]가 문장 [;N(T)]를 가리키도록 하려면 다음과 같이 할 수 있다.
+Macro terms provide an alias for an already existing expression. For example, the following code declares the macro term [;F] as an alias for the expression [;`N(T)`]:
 
 [;;`
 "falsum (F)."
@@ -86,47 +104,49 @@ $\bot$
 st F = N(T);
 `]
 
-함수형 타입을 갖는 매크로 용어는 다음과 같이 정의할 수 있다.
+Macro terms with a functional type can also be defined as follows:
 
 [;;`
-"단항 술어 타입을 위한 A."
+"[#A] for unary predicates."
 $\land$
 [pr, pr -> pr] Af = (pr f, pr g) => {
 	(cls z) => A(f(z), g(z))
 };
 `]
 
-그러나 다음과 같이 작성하는 편이 낫다.
+However it is recommended to write instead like this:
 
-[;;
-"단항 술어 타입을 위한 A."
+[;;`
+"[#A] for unary predicates."
 $\left(#1<<\land>>#2\right)$
 pr Af(pr f, pr g) {
 	(cls z) => A(f(z), g(z))
-}]
+}`]
 
-[==공리 및 증명의 작성]
+Compared to the syntax for the undefined terms, the above declaration includes the body that describes the macro term.
 
-공리는 다음과 같이 작성한다.
+[==Axioms and proofs]
+
+Axioms can be written like this:
 
 [;;
-"연언 도입(conjunction introduction)."
+"Conjunction introduction."
 [**axiom] `Ai(st p: @1, st q: @2) {
 	p, q |- A(p, q)
 }`]
 
-공리라서 [;axiom]이 붙었다. [;|-]가 [$\vdash]를 나타낸다. [;@1]과 [;@2]는 ⊦E 구문을 쓸 때 인자가 자동으로 인식되도록 하기 위한 것이다. 공리를 그냥 정의할 수는 없고 공리 스키마로 감싸야 한다. 정리 역시 그러하다. 예를 들어 다음과 같이 인자 없는 스키마로 감싸면 된다.
+The [**[;axiom]] keyword denotes that the above schema is an axiom. The mathematical symbol [$\vdash] is written as [;|-]. The selectors [;@1] and [;@2] are to automatically detect the arguments when applying the ⊦E rules. Axioms and theorems should be defined as a nullary schema even though no parameters are necessary. Like this:
 
 [;;
-"axiom of empty set."
+"Axiom of empty set."
 [**axiom] ax_emptyset() {
 	set(emptyset)
 }]
 
-증명은 다음과 같이 작성한다.
+Theorems can be written like this:
 
 [;;
-"연언 도입 2번."
+"Conjunection introduction, applied twice."
 [**theorem]` A3i(st p: @1, st q: @2, st r: @3) {
 	p, q, r |- {
 		[[@h1; @h2] > Ai; @h3] > Ai
@@ -134,18 +154,46 @@ pr Af(pr f, pr g) {
 }`
 ]
 
-[;@h1], [;@h2], [;@h3]이 각각 1[&ndash]3번째 가정 [;p], [;q], [;r]을 나타낸다. [;`[@h1; @h2] > Ai`]가 [;`[p; q] > Ai`]인데, 이는 [;`[p; q] > Ai(p, q)`]가 인자 생략된 것이다. 즉 [;`[p; q] > (p, q |- A(p, q))`]인데, [;>] 연산자가 ⊦E 구문을 적용하라는 뜻으로 [;p, q]를 [;|-]의 좌변과 비교하여 같으면 [;A(p, q)]가 증명되는 방식이다. 그러므로 [;`[@h1; @h2] > Ai`]가 [;A(p, q)]가 되고, [;`[A(p, q); r] > Ai`]가 [;A(A(p, q), r)]이 된다. 즉 Fitch 표기법으로 다음과 같은 증명을 한 것이다.
+The selectors [;@h1], [;@h2], and [;@h3] each denote the first, second, and the third hypotheses [;p], [;q], and [;r]. Therefore
+
+[;;`[@h1; @h2] > Ai`]
+
+becomes
+
+[;;`[p; q] > Ai`]
+
+which becomes
+
+[;;`[p; q] > Ai(p, q)`]
+
+since the arguments [;.(p, q)] are automatically detected. Since [;Ai(p, q)] is equal to [;p, q |- A(p, q)], the above expression becomes
+
+[;;`[p; q] > (p, q |- A(p, q))`]
+
+The [;>] operator is for applying the ⊦E rule, which compares the left operand [;p, q] to the LHS of [;|-], i.e., [;p, q], and if they are equal, creates a proof chain from the left and right operand of [;>] operator to the RHS of [;|-]. Therefore the above expression becomes
+
+[;;A(p, q)]
+
+and
+
+[;;`[A(p, q); r] > Ai`]
+
+becomes
+
+[;;A(A(p, q), r)]
+
+Therefore, in Fitch notation, [;A3i] can be written like this:
 
 [<;;
-1 ┃ p                      가정
-2 ┃ q                      가정
-3 ┃ r                      가정
+1 ┃ p                      hypothesis
+2 ┃ q                      hypothesis
+3 ┃ r                      hypothesis
   ┣━━━
 4 ┃ p ∧ q                  ⊦E, Ai, [1, 2]
-5 ┃ (p ∧ q) ∧ r           ⊦E, Ai, [4, 3]
+5 ┃ (p ∧ q) ∧ r            ⊦E, Ai, [4, 3]
 6 p, q, r ⊦ (p ∧ q) ∧ r    ⊦I [1[<&ndash>]5]
 >]
 
-이는 증명탐색기에 표시되는 바와 같다. 증명이 잘 되었는지는 math-o-matic 프로그램이 판단하며 잘 되었으면 초록불이 들어온다.
+The above diagram can also be seen from the proof explorer. math-o-matic proof checker checks if the proof has been successful and if it is the theorem is colored green.
 
 (TODO)
