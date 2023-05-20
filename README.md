@@ -5,8 +5,6 @@
 [![GitHub](https://img.shields.io/github/license/math-o-matic/math-o-matic)](https://github.com/math-o-matic/math-o-matic/blob/master/LICENSE)
 [![Node.js CI](https://github.com/math-o-matic/math-o-matic/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/math-o-matic/math-o-matic/actions/workflows/test-and-build.yml)
 [![Coverage Status](https://img.shields.io/coveralls/github/math-o-matic/math-o-matic)](https://coveralls.io/github/math-o-matic/math-o-matic?branch=master)
-[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/math-o-matic/math-o-matic)](https://lgtm.com/projects/g/math-o-matic/math-o-matic/alerts/)
-[![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/math-o-matic/math-o-matic)](https://lgtm.com/projects/g/math-o-matic/math-o-matic/context:javascript)
 
 **math-o-matic** is a program that lets you create a proof system and prove its theorems, in the most rigorous way possible. Its aim is to make it easy to read and write rigorous mathematical proofs. You can take a look at the current system by clicking on one of the links at the bottom of the [main page](https://math-o-matic.github.io/math-o-matic/index.html).
 
