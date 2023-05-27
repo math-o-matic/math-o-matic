@@ -96,3 +96,5 @@ docs/build/
 *.vsix
 
 math/test/
+
+dependency-graph.svg

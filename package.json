@@ -25,7 +25,8 @@
     "reformat": "ts-node bin/reformat.ts",
     "install-all": "npm i && cd docs && npm i && cd ../web && npm i && cd ..",
     "ci-all": "npm ci && cd docs && npm ci && cd ../web && npm ci && cd ..",
-    "build-all": "npm run build && cd docs && npm run build && cd ../web && npm run build && cd .."
+    "build-all": "npm run build && cd docs && npm run build && cd ../web && npm run build && cd ..",
+    "build-graph": "npx depcruise . --output-type dot | dot -T svg > logs/dependency-graph.svg"
   },
   "license": "MIT",
   "devDependencies": {
@@ -37,6 +38,7 @@
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "del-cli": "^3.0.1",
+    "dependency-cruiser": "^13.0.2",
     "glob": "^8.0.3",
     "mkdirp": "^1.0.4",
     "mocha": "^9.2.0",
