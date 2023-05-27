@@ -12,5 +12,11 @@
 		"noImplicitOverride": true,
 		"strict": true
 	},
-	"include": ["./src/**/*.ts"]
+	"include": [
+		"src/**/*.ts",
+		"bin/**/*.ts",
+		"test/**/*.ts",
+	    "web/src/**/*.ts",
+		"web/src/**/*.vue"
+	]
 }
