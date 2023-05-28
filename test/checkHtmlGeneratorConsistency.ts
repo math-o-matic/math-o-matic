@@ -7,6 +7,21 @@ var mkdirp = require('mkdirp');
 
 var program = new Program();
 
+function formatResult(result: {[k: string]: {[k: string]: string}}): string {
+	var ret = '';
+
+	for (let i in result) {
+		ret += `${i}\n`;
+
+		for (let j in result[i]) {
+			ret += `\t${j}\n`;
+			ret += `\t\t${result[i][j].replace(/\n/g, '\n\t\t')}\n`;
+		}
+	}
+
+	return ret;
+}
+
 (async () => {
 	var arr = [
 		'Propositional', 'Predicate', 'Set',
@@ -33,7 +48,7 @@ var program = new Program();
 		);
 	}
 
-	var compareThis = JSON.stringify(result, null, 4);
+	var compareThis = formatResult(result);
 
 	mkdirp.sync('logs');
 	var filename = 'logs/checkHtmlGeneratorConsistency.log'
@@ -48,8 +63,8 @@ var program = new Program();
 		}
 
 		if (compareThis != withThis) {
-			fs.closeSync(fs.openSync(filename + '.new', 'w'));
-			fs.writeFileSync(filename + '.new', compareThis);
+			fs.closeSync(fs.openSync('logs/checkHtmlGeneratorConsistency.new.log', 'w'));
+			fs.writeFileSync('logs/checkHtmlGeneratorConsistency.new.log', compareThis);
 
 			throw Error('The current version is different from the previous one');
 		}

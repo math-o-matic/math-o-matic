@@ -192,7 +192,7 @@ export default class HtmlGenerator {
 				? ' extends ' + [...scope.extendsMap.keys()].join(', ')
 				: ''
 			} (${Object.keys(map).length})</h3><div class="block-file">`
-				+ Object.keys(map).sort((l, r) => Number(l) - Number(r)).map(k => map[k]).join('')
+				+ Object.keys(map).sort((l, r) => Number(l) - Number(r)).map(k => map[k]).join('\n\n')
 				+ '</div>';
 		};
 	
