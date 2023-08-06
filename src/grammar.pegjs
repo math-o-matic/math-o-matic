@@ -232,11 +232,13 @@ defschema =
 		}
 	}
 
-// var[...]
-// foo(...)[...]
-// foo[...][...]
-// (expr)[...]
-// schema(?, ...)[...]
+// foo > ...
+// [foo] > ...
+// [foo, baz] > ...
+// ... > (expr)
+// ... > var
+// ... > schemacall
+// ... > schemacall(?, ..., ?) as ... > ...
 reduction =
 	antecedents:(
 		a:expr_internal_2 {return [a]}
