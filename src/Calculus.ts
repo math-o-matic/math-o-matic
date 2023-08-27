@@ -395,7 +395,7 @@ export default class Calculus {
 	}
 
 	public static getProof(self: Expr): ProofType[] {
-		return Calculus.getProofInternal(self, new Map(), new Counter(), true);
+		return Calculus.getProofInternal(self, new Map(), new Counter(1), true);
 	}
 
 	protected static getProofInternal(
