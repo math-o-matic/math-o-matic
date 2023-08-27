@@ -247,7 +247,7 @@ module.exports = {
        true: also detect dependencies that only exist before typescript-to-javascript compilation
        "specify": for each dependency identify whether it only exists before compilation or also after
      */
-    // tsPreCompilationDeps: false,
+    tsPreCompilationDeps: true,
     
     /* 
        list of extensions to scan that aren't javascript or compile-to-javascript. 
