@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>import</title>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.1/styles/tomorrow.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yamd@0.4/web/yamd.default.css">
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+
+			html, body {
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				padding: 0; 
+				margin: 0;
+				font: 16px Roboto, sans-serif;
+				font-weight: 400;
+				-webkit-font-smoothing: antialiased;
+				color: #5f6368;
+				line-height: 1.5;
+				word-break: normal;
+				overflow-wrap: break-word;
+			}
+
+			h1, h2, h3, h4, h5, h6 {
+				font-weight: 400;
+				line-height: 1.2;
+			}
+
+			h1, h2, h3, h4, h5, h6, a, b, strong, input, textarea, th, .katex {
+				color: #202124;
+			}
+
+			img {
+				max-width: 100%;
+			}
+
+			pre, pre.hljs, code {
+				font-family: Consolas, 'Roboto Mono', monospace;
+				background-color: rgba(0,0,0,.05);
+				white-space: pre-wrap;
+				word-break: break-all;
+				tab-size: 4;
+			}
+
+			pre {
+				padding: 6px;
+			}
+
+			code {
+				font-size: .85em;
+				padding: .15em .3em;
+				border-radius: .3em;
+			}
+
+			pre code {
+				background-color: unset;
+				padding: 0;
+			}
+
+			p {
+				margin: 0;
+			}
+
+			p + p {
+				margin-top: 1em;
+			}
+
+			ul, ol {
+				margin: 1em 0;
+			}
+
+			ol li, ul li {
+				margin: .5em 0;
+			}
+
+			table {
+				margin: 1em 0;
+				border-collapse: collapse;
+			}
+
+			table tr td {
+				border: 1px #ccc solid;
+				padding: .6em;
+			}
+
+			kbd {
+				font: .85em 'Roboto Mono', monospace;
+				color: #202124;
+				border: 1px #ccc solid;
+				padding: .1em;
+				border-radius: .2em;
+			}
+
+			blockquote {
+				margin: 1em 0;
+				padding: .5em 20px;
+				border-left: 5px #202124 solid;
+				background-color: #f7f7f7;
+			}
+
+			#toc {
+				position: fixed;
+				z-index: 1;
+				overflow-y: auto;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				width: 280px;
+				height: 100%;
+				background-color: #f1f1f1;
+				padding-bottom:100px;
+			}
+
+			#toc > div {
+				display: block;
+				text-align: center;
+				background-color: #263238;
+				padding: 1.5em;
+			}
+
+			#toc > div button {
+				background: none;
+				border: none;
+				vertical-align: middle;
+				display: none;
+			}
+
+			#toc > div a {
+				color: white;
+				text-decoration: none;
+			}
+
+			#toc ol {
+				padding: 0;
+				margin: 0;
+			}
+
+			#toc > ol {
+				background-color: #f1f1f1;
+			}
+
+			#toc ol li {
+				list-style: none;
+				margin: 0;
+			}
+
+			#toc ol li a {
+				display: block;
+				padding: .5em;
+				text-decoration: none;
+			}
+
+			#toc ol li a:hover {
+				background-color: rgba(0, 0, 0, .12);
+			}
+
+			#toc ol li ol {
+				padding: 0;
+				margin: 0;
+				background-color: rgba(0, 0, 0, .08);
+				font-size: .85em;
+			}
+
+			#toc ol li ol li {
+				list-style: none;
+			}
+
+			#content {
+				margin-left: 280px;
+				padding: 1em;
+				padding-top: 30px;
+				padding-bottom: 150px;
+			}
+
+			@media screen and (max-width: 800px) {
+				#toc {
+					position: fixed;
+					width: 100%;
+					top: 0;
+					border-bottom: 1px #ccc solid;
+				}
+
+				#toc:not(.toc-expanded) {
+					bottom: unset;
+					height: unset;
+					padding-bottom: 0;
+					box-shadow: 0 0 2px 0 rgba(0,0,0,.16), 0 0 0 1px rgba(0,0,0,.08);
+				}
+
+				#toc.toc-expanded .toc-on-folded {
+					display: none;
+				}
+
+				#toc:not(.toc-expanded) .toc-on-expanded {
+					display: none;
+				}
+
+				#toc > div {
+					padding: 1em;
+					text-align: left;
+					height: 60px;
+				}
+
+				#toc > div button {
+					display: inline-block;
+					margin-right: 1em;
+				}
+
+				#content {
+					margin-left: 0;
+					margin-top: 60px;
+				}
+			}
+		</style>
+		
+	</head>
+	<body>
+		<div id="toc">
+			<div>
+						<button id="toc-fold-toggle">
+							<svg class="toc-on-folded" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+							<svg class="toc-on-expanded" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+						</button>
+						<a href="../index.html">math-o-matic docs</a>
+					</div>
+					<ol class="toc-on-expanded"><li><div><a href="../code.html">How to write code</a></div></li><li><div><a href="./index.html">A comprehensive description of all math-o-matic syntaxes (TODO)</a></div><ol><li><div><a href="./import.html">import</a></div></li></ol></li><li><div><a href="../current-axiomatic-system/index.html">The current axiomatic system</a></div><ol><li><div><a href="../current-axiomatic-system/counterparts.html">Counterparts</a></div></li></ol></li><li><div><a href="../dev/index.html">Specs for devs</a></div><ol><li><div><a href="../dev/precedence.html">Precedence</a></div></li></ol></li></ol>
+		</div>
+		<div id="content">
+			
+				<h1>The <code>import</code> syntax</h1><p><code>import</code> statements can only be at the top of each files.</p>
+			
+		</div>
+		<script>
+			$ = (q, n) => (n || document).querySelector(q);
+
+			var expanded = false;
+
+			function applyExpandedState(expanded) {
+				if (expanded) {
+					$('#toc').classList.add('toc-expanded');
+					$('#content').classList.add('toc-expanded');
+				} else {
+					$('#toc').classList.remove('toc-expanded');
+					$('#content').classList.remove('toc-expanded');
+				}
+			}
+
+			applyExpandedState(expanded);
+
+			$('#toc-fold-toggle').addEventListener('click', _ => {
+				expanded = !expanded;
+
+				applyExpandedState(expanded);
+			});
+		</script>
+	</body>
+</html>

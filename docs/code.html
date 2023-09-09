@@ -1,0 +1,329 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>How to write code</title>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.1/styles/tomorrow.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yamd@0.4/web/yamd.default.css">
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+
+			html, body {
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				padding: 0; 
+				margin: 0;
+				font: 16px Roboto, sans-serif;
+				font-weight: 400;
+				-webkit-font-smoothing: antialiased;
+				color: #5f6368;
+				line-height: 1.5;
+				word-break: normal;
+				overflow-wrap: break-word;
+			}
+
+			h1, h2, h3, h4, h5, h6 {
+				font-weight: 400;
+				line-height: 1.2;
+			}
+
+			h1, h2, h3, h4, h5, h6, a, b, strong, input, textarea, th, .katex {
+				color: #202124;
+			}
+
+			img {
+				max-width: 100%;
+			}
+
+			pre, pre.hljs, code {
+				font-family: Consolas, 'Roboto Mono', monospace;
+				background-color: rgba(0,0,0,.05);
+				white-space: pre-wrap;
+				word-break: break-all;
+				tab-size: 4;
+			}
+
+			pre {
+				padding: 6px;
+			}
+
+			code {
+				font-size: .85em;
+				padding: .15em .3em;
+				border-radius: .3em;
+			}
+
+			pre code {
+				background-color: unset;
+				padding: 0;
+			}
+
+			p {
+				margin: 0;
+			}
+
+			p + p {
+				margin-top: 1em;
+			}
+
+			ul, ol {
+				margin: 1em 0;
+			}
+
+			ol li, ul li {
+				margin: .5em 0;
+			}
+
+			table {
+				margin: 1em 0;
+				border-collapse: collapse;
+			}
+
+			table tr td {
+				border: 1px #ccc solid;
+				padding: .6em;
+			}
+
+			kbd {
+				font: .85em 'Roboto Mono', monospace;
+				color: #202124;
+				border: 1px #ccc solid;
+				padding: .1em;
+				border-radius: .2em;
+			}
+
+			blockquote {
+				margin: 1em 0;
+				padding: .5em 20px;
+				border-left: 5px #202124 solid;
+				background-color: #f7f7f7;
+			}
+
+			#toc {
+				position: fixed;
+				z-index: 1;
+				overflow-y: auto;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				width: 280px;
+				height: 100%;
+				background-color: #f1f1f1;
+				padding-bottom:100px;
+			}
+
+			#toc > div {
+				display: block;
+				text-align: center;
+				background-color: #263238;
+				padding: 1.5em;
+			}
+
+			#toc > div button {
+				background: none;
+				border: none;
+				vertical-align: middle;
+				display: none;
+			}
+
+			#toc > div a {
+				color: white;
+				text-decoration: none;
+			}
+
+			#toc ol {
+				padding: 0;
+				margin: 0;
+			}
+
+			#toc > ol {
+				background-color: #f1f1f1;
+			}
+
+			#toc ol li {
+				list-style: none;
+				margin: 0;
+			}
+
+			#toc ol li a {
+				display: block;
+				padding: .5em;
+				text-decoration: none;
+			}
+
+			#toc ol li a:hover {
+				background-color: rgba(0, 0, 0, .12);
+			}
+
+			#toc ol li ol {
+				padding: 0;
+				margin: 0;
+				background-color: rgba(0, 0, 0, .08);
+				font-size: .85em;
+			}
+
+			#toc ol li ol li {
+				list-style: none;
+			}
+
+			#content {
+				margin-left: 280px;
+				padding: 1em;
+				padding-top: 30px;
+				padding-bottom: 150px;
+			}
+
+			@media screen and (max-width: 800px) {
+				#toc {
+					position: fixed;
+					width: 100%;
+					top: 0;
+					border-bottom: 1px #ccc solid;
+				}
+
+				#toc:not(.toc-expanded) {
+					bottom: unset;
+					height: unset;
+					padding-bottom: 0;
+					box-shadow: 0 0 2px 0 rgba(0,0,0,.16), 0 0 0 1px rgba(0,0,0,.08);
+				}
+
+				#toc.toc-expanded .toc-on-folded {
+					display: none;
+				}
+
+				#toc:not(.toc-expanded) .toc-on-expanded {
+					display: none;
+				}
+
+				#toc > div {
+					padding: 1em;
+					text-align: left;
+					height: 60px;
+				}
+
+				#toc > div button {
+					display: inline-block;
+					margin-right: 1em;
+				}
+
+				#content {
+					margin-left: 0;
+					margin-top: 60px;
+				}
+			}
+		</style>
+		
+	</head>
+	<body>
+		<div id="toc">
+			<div>
+						<button id="toc-fold-toggle">
+							<svg class="toc-on-folded" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+							<svg class="toc-on-expanded" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+						</button>
+						<a href="./index.html">math-o-matic docs</a>
+					</div>
+					<ol class="toc-on-expanded"><li><div><a href="./code.html">How to write code</a></div></li><li><div><a href="./syntax/index.html">A comprehensive description of all math-o-matic syntaxes (TODO)</a></div><ol><li><div><a href="./syntax/import.html">import</a></div></li></ol></li><li><div><a href="./current-axiomatic-system/index.html">The current axiomatic system</a></div><ol><li><div><a href="./current-axiomatic-system/counterparts.html">Counterparts</a></div></li></ol></li><li><div><a href="./dev/index.html">Specs for devs</a></div><ol><li><div><a href="./dev/precedence.html">Precedence</a></div></li></ol></li></ol>
+		</div>
+		<div id="content">
+			
+				<h1>How to write code</h1><p>Check out the <a href="https://github.com/math-o-matic/math-o-matic/tree/master/math" title="https://github.com/math-o-matic/math-o-matic/tree/master/math">/math</a> directory from the repo for many examples.</p><h2>The object language</h2><h3>Types</h3><p>Every statement in the object language is assigned a type. A type is either:</p><ul><li><p> a primitive type,
+  </p></li><li><p> a functional type, or
+  </p></li><li><p> a macro type.
+</p></li></ul><h4>Primitive types</h4><pre><code>&quot;The statement type.&quot;
+<b>type</b> st;
+</code></pre><p>Primitive types can be declared by writing <code>type &lt;type name&gt;;</code>. The docstring for the type can also be written within the double quotes. All primitive types with a different name are considered different.</p><h4>Functional types</h4><p>Functional types can be created from existing types by using the <b>type constructor</b> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\to</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span>. For example, if <code>cls</code> and <code>st</code> are types, then <code>[cls, cls -&gt; st]</code> is the type of the function that maps two <code>cls</code> type terms to one <code>st</code> type term.</p><h4>Macro types</h4><p>Macro types provide an alias for an already existing type. For example, the following code declares the macro type <code>pr</code> as an alias for the functional type <code>[cls -&gt; st]</code>:</p><pre><code>&quot;The unary predicate type.&quot;
+<b>type</b> pr = [cls -&gt; st];
+</code></pre><h3>Terms</h3><p>Now that types are defined, we can now define terms that are assigned one of those types. A term can either be an undefined term or a macro term.</p><h4>Undefined terms</h4><pre><code>&quot;Verum (T). Denotes an arbitrary tautology.&quot;
+$\top$
+st T;
+</code></pre><p>You can change the appearance of the term by writing a corresponding <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>LaTeX</mtext></mrow><annotation encoding="application/x-tex">\LaTeX</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.89883em;vertical-align:-0.2155em;"></span><span class="mord text"><span class="mord textrm">L</span><span class="mspace" style="margin-right:-0.36em;"></span><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.68333em;"><span style="top:-2.904999em;"><span class="pstrut" style="height:2.7em;"></span><span class="mord"><span class="mord textrm mtight sizing reset-size6 size3">A</span></span></span></span></span></span><span class="mspace" style="margin-right:-0.15em;"></span><span class="mord text"><span class="mord textrm">T</span><span class="mspace" style="margin-right:-0.1667em;"></span><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.46782999999999997em;"><span style="top:-2.7845em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord textrm">E</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2155em;"><span></span></span></span></span><span class="mspace" style="margin-right:-0.125em;"></span><span class="mord textrm">X</span></span></span></span></span></span> code between the <code>$</code> signs. The above example sets the appearance of the term <code>T</code> as <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">⊤</mi></mrow><annotation encoding="application/x-tex">\top</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">⊤</span></span></span></span> (<code>\top</code>).</p><p>Undefined terms with a functional type can also be defined as follows:</p><pre><code>&quot;The binary logical connective AND (TFFF).&quot;
+$\land$
+[st, st -&gt; st] A;
+</code></pre><p>However it is recommended to write instead like this:</p><pre><code>&quot;The binary logical connective AND (TFFF).&quot;
+[precedence=596]
+$#1&lt;&lt;\land&gt;&gt;#2$
+st A(st p, st q);
+</code></pre><p>One advantage of writing like this is that you can make the function call <code>A(p, q)</code> be displayed as <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>∧</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">p\land q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.75em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span></span></span></span> (<code>p \land q</code>) instead of <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∧</mo><mo stretchy="false">(</mo><mi>p</mi><mo separator="true">,</mo><mi>q</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\land(p, q)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∧</span><span class="mopen">(</span><span class="mord mathnormal">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mclose">)</span></span></span></span> (<code>\land(p, q)</code>).</p><ul><li><p> <code>[precedence=596]</code> sets the operator precedence of <code>A</code> as 596. The operator precedence is the mechanism that determines whether additional parentheses are required or not when displaying the expressions in <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>LaTeX</mtext></mrow><annotation encoding="application/x-tex">\LaTeX</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.89883em;vertical-align:-0.2155em;"></span><span class="mord text"><span class="mord textrm">L</span><span class="mspace" style="margin-right:-0.36em;"></span><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.68333em;"><span style="top:-2.904999em;"><span class="pstrut" style="height:2.7em;"></span><span class="mord"><span class="mord textrm mtight sizing reset-size6 size3">A</span></span></span></span></span></span><span class="mspace" style="margin-right:-0.15em;"></span><span class="mord text"><span class="mord textrm">T</span><span class="mspace" style="margin-right:-0.1667em;"></span><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.46782999999999997em;"><span style="top:-2.7845em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord textrm">E</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2155em;"><span></span></span></span></span><span class="mspace" style="margin-right:-0.125em;"></span><span class="mord textrm">X</span></span></span></span></span></span>.
+	</p></li><li><p> <code>#1</code> and <code>#2</code> serve as placeholders for the first and the second argument of the function, respectively. When the function call is displayed, the placeholders are replaced with the arguments and then rendered as <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>LaTeX</mtext></mrow><annotation encoding="application/x-tex">\LaTeX</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.89883em;vertical-align:-0.2155em;"></span><span class="mord text"><span class="mord textrm">L</span><span class="mspace" style="margin-right:-0.36em;"></span><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.68333em;"><span style="top:-2.904999em;"><span class="pstrut" style="height:2.7em;"></span><span class="mord"><span class="mord textrm mtight sizing reset-size6 size3">A</span></span></span></span></span></span><span class="mspace" style="margin-right:-0.15em;"></span><span class="mord text"><span class="mord textrm">T</span><span class="mspace" style="margin-right:-0.1667em;"></span><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.46782999999999997em;"><span style="top:-2.7845em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord textrm">E</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2155em;"><span></span></span></span></span><span class="mspace" style="margin-right:-0.125em;"></span><span class="mord textrm">X</span></span></span></span></span></span>.
+	</p></li><li><p> The segment enclosed with <code>&lt;&lt;</code> and <code>&gt;&gt;</code> is the clickable part that when clicked, displays the definition and the description of the term.
+</p></li></ul><h4>Function expressions and function calls</h4><p>The object language also has syntaxes for function expressions and function calls.</p><h5>Function calls</h5><p>Function calls, just like one would normally write doing mathematics or programming, can be written by first writing the function name followed by arguments separated by commas and enclosed with parentheses. The number of arguments and the types of arguments must correspond to the type of the function.</p><p>For example, in order to call the function <code>A</code> with the arguments <code>T</code> and <code>T</code>, one can write <code>A(T, T)</code>. If the type of the function <code>A</code> is <code>[st, st -&gt; st]</code>, in order to match the input type, the term <code>T</code> should have the type <code>st</code>.</p><h5>Function expressions</h5><p>You can write function expressions to create anonymous functions, much like writing lambda expressions in many programming languages. For example, a function with one input parameter <code>p</code> of type <code>st</code> and an output of <code>A(p, T)</code> can be written as:</p><pre><code>(st p) =&gt; A(p, T)
+</code></pre><p>or,</p><pre><code>(st p) =&gt; { A(p, T) }
+</code></pre><p>The curly braces can either be omitted or not. Since the above function returns a <code>st</code> type term, it is automatically assigned the type <code>[st -&gt; st]</code>.</p><h4>Macro terms</h4><p>Macro terms provide an alias for an already existing expression. For example, the following code declares the macro term <code>F</code> as an alias for the expression <code>N(T)</code>:</p><pre><code>&quot;falsum (F).&quot;
+$\bot$
+st F = N(T);
+</code></pre><p>Macro terms with a functional type can also be defined as follows:</p><pre><code>&quot;[#A] for unary predicates.&quot;
+$\land$
+[pr, pr -&gt; pr] Af = (pr f, pr g) =&gt; {
+	(cls z) =&gt; A(f(z), g(z))
+};
+</code></pre><p>However it is recommended to write instead like this:</p><pre><code>&quot;[#A] for unary predicates.&quot;
+$\left(#1&lt;&lt;\land&gt;&gt;#2\right)$
+pr Af(pr f, pr g) {
+	(cls z) =&gt; A(f(z), g(z))
+}
+</code></pre><p>Compared to the syntax for the undefined terms, the above declaration includes the body that describes the macro term.</p><h2>Axioms and proofs</h2><p>Axioms can be written like this:</p><pre><code>&quot;Conjunction introduction.&quot;
+<b>axiom</b> Ai(st p: @1, st q: @2) {
+	p, q |- A(p, q)
+}
+</code></pre><p>The <b><code>axiom</code></b> keyword denotes that the above schema is an axiom. The mathematical symbol <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⊢</mo></mrow><annotation encoding="application/x-tex">\vdash</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mrel">⊢</span></span></span></span> is written as <code>|-</code>. The selectors <code>@1</code> and <code>@2</code> are to automatically detect the arguments when applying the ⊦E rules. Axioms and theorems should be defined as a nullary schema even though no parameters are necessary. Like this:</p><pre><code>&quot;Axiom of empty set.&quot;
+<b>axiom</b> ax_emptyset() {
+	set(emptyset)
+}
+</code></pre><p>Theorems can be written like this:</p><pre><code>&quot;Conjunection introduction, applied twice.&quot;
+<b>theorem</b> A3i(st p: @1, st q: @2, st r: @3) {
+	p, q, r |- {
+		[[@h1; @h2] &gt; Ai; @h3] &gt; Ai
+	}
+}
+</code></pre><p>The selectors <code>@h1</code>, <code>@h2</code>, and <code>@h3</code> each denote the first, second, and the third hypotheses <code>p</code>, <code>q</code>, and <code>r</code>. Therefore</p><pre><code>[@h1; @h2] &gt; Ai
+</code></pre><p>becomes</p><pre><code>[p; q] &gt; Ai
+</code></pre><p>which becomes</p><pre><code>[p; q] &gt; Ai(p, q)
+</code></pre><p>since the arguments <code>(p, q)</code> are automatically detected. Since <code>Ai(p, q)</code> is equal to <code>p, q |- A(p, q)</code>, the above expression becomes</p><pre><code>[p; q] &gt; (p, q |- A(p, q))
+</code></pre><p>The <code>&gt;</code> operator is for applying the ⊦E rule, which compares the left operand <code>p, q</code> to the LHS of <code>|-</code>, i.e., <code>p, q</code>, and if they are equal, creates a proof chain from the left and right operand of <code>&gt;</code> operator to the RHS of <code>|-</code>. Therefore the above expression becomes</p><pre><code>A(p, q)
+</code></pre><p>and</p><pre><code>[A(p, q); r] &gt; Ai
+</code></pre><p>becomes</p><pre><code>A(A(p, q), r)
+</code></pre><p>Therefore, in Fitch notation, <code>A3i</code> can be written like this:</p><pre><code>1 ┃ p                      hypothesis
+2 ┃ q                      hypothesis
+3 ┃ r                      hypothesis
+  ┣━━━
+4 ┃ p ∧ q                  ⊦E, Ai, [1, 2]
+5 ┃ (p ∧ q) ∧ r            ⊦E, Ai, [4, 3]
+6 p, q, r ⊦ (p ∧ q) ∧ r    ⊦I [1&ndash;5]
+</code></pre><p>The above diagram can also be seen from the proof explorer. math-o-matic proof checker checks if the proof has been successful and if it is the theorem is colored green.</p><p>(TODO)</p>
+			
+		</div>
+		<script>
+			$ = (q, n) => (n || document).querySelector(q);
+
+			var expanded = false;
+
+			function applyExpandedState(expanded) {
+				if (expanded) {
+					$('#toc').classList.add('toc-expanded');
+					$('#content').classList.add('toc-expanded');
+				} else {
+					$('#toc').classList.remove('toc-expanded');
+					$('#content').classList.remove('toc-expanded');
+				}
+			}
+
+			applyExpandedState(expanded);
+
+			$('#toc-fold-toggle').addEventListener('click', _ => {
+				expanded = !expanded;
+
+				applyExpandedState(expanded);
+			});
+		</script>
+	</body>
+</html>

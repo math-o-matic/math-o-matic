@@ -1,0 +1,44 @@
+package std.nat;
+
+import std.Set;
+
+system Peano extends Set {
+	"The set of natural numbers."
+	$\mathbb N$
+	cls nat;
+
+	"The natural number 0."
+	$0$
+	cls zero;
+
+	"The value [$n + 1] of a natural number [$n]."
+	${#1}^{<<+>>}$
+	cls successor(cls n);
+
+	"Peano axiom #1."
+	axiom zero_in_nat() {
+		in(zero, nat)
+	}
+
+	"Peano axiom #2."
+	axiom successor_in_nat(cls n) {
+		in(n, nat) |- in(successor(n), nat)
+	}
+
+	"Peano axiom #3."
+	axiom successor_eq_e(cls m, cls n) {
+		in(m, nat), in(n, nat), eq(successor(m), successor(n)) |- eq(m, n)
+	}
+
+	"Peano axiom #4."
+	axiom successor_is_not_zero(cls n) {
+		in(n, nat) |- neq(successor(n), zero)
+	}
+
+	"Peano axiom #5."
+	axiom induce(cls K) {
+		in(zero, K), Uin(nat, (cls n) => {
+			I(in(n, K), in(successor(n), K))
+		}) |- subset(nat, K)
+	}
+}
